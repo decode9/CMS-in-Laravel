@@ -1,0 +1,8 @@
+{
+  "language": "php",
+  "php":
+  - 7.1,
+  "group": "Development",
+  "dist": "Stretch",
+  "os": "linux"
+}
