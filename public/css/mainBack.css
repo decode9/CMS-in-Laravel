@@ -112,3 +112,21 @@ body{
     border-bottom: 1px solid black;
     padding: 10px;
 }
+
+/**New Post**/
+.previewImg{
+    height: auto;
+    max-height: 300px;
+    max-width: 100%;
+    width: 100%;
+    margin-bottom: 20px;
+}
+#previewImage{
+    max-width: inherit;
+    max-height: inherit;
+    margin: 0 auto;
+    display: block;
+}
+#contentnews{
+    max-width: 100%
+}

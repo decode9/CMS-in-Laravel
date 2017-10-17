@@ -57,9 +57,8 @@
                         </li>
                         <li class="menuItem menuPost"><i class="fa fa-pencil-square-o "></i> <p>Posts</p>
                             <ul class="submenuItem" style ="display: none;">
-                                <li>Create Post</li>
-                                <li>List Posts</li>
-                                <li>Modify Post</li>
+                                <a href="{{route('create.news')}}"><li>Create Post</li></a>
+                                <a href="{{route('news')}}"><li>List Posts</li></a>
                             </ul>
                         </li>
                     </ul>

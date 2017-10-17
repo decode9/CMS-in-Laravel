@@ -28,6 +28,9 @@
                     </ul>
                 </div>
             </header>
+            <div class="page">
+                @yield('content')
+            </div>
         </div>
         <!-- Scripts -->
         <script src="{{ asset('js/app.js') }}"></script>
