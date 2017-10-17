@@ -3,6 +3,4 @@
       - "7.0"
       - "7.1"
       - "7.2"
-  "group": "Development"
-  "dist": "Stretch"
   "os": "linux"
