@@ -5,6 +5,7 @@ namespace App\Http\Controllers\backend;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 use App\Post;
 
 
@@ -50,9 +51,11 @@ class NewsController extends Controller
             'content' => 'required'
         ]);
 
-        $imageName = $request->name . '.' . $request->file('image')->getClientOriginalExtension();
+        $name = str_replace(" ", "-", $request->name);
 
-        $request->file('image')->move( base_path() . '/public/img/news/', $imageName);
+        $imageName = $name . '.' . $request->file('picture')->getClientOriginalExtension();
+
+        $request->file('picture')->move( public_path() . '/img/news/', $imageName);
 
         $path = '/public/img/news/' . $imageName;
 
@@ -128,7 +131,6 @@ class NewsController extends Controller
 
         return view('back.success',['url' => $url, 'response' => 'Congratulations the news as been updated']);
     }
-'/public/img/news/
     /**
      * Remove the specified resource from storage.•••••••••
      *
