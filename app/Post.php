@@ -15,9 +15,9 @@ class Post extends Model
         return $this->belongsTo('App\User');
     }
 
-    public function setPicture_pathAttribute($value){
+    public function getPicturePathAttribute($value){
         $url = url('/');
-        $value = $url . '/' . $value;
-        $this->attributes['picture_path'] = $value;
+        $value = $url . $value;
+        return $value;
     }
 }

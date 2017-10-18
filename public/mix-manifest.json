@@ -2,5 +2,7 @@
     "/js/app.js": "/js/app.js",
     "/css/app.css": "/css/app.css",
     "/js/mainbackEnd.js": "/js/mainbackEnd.js",
-    "/css/mainBack.css": "/css/mainBack.css"
+    "/js/mainFront.js": "/js/mainFront.js",
+    "/css/mainBack.css": "/css/mainBack.css",
+    "/css/mainFront.css": "/css/mainFront.css"
 }

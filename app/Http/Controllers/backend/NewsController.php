@@ -11,6 +11,11 @@ use App\Post;
 
 class NewsController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -57,7 +62,7 @@ class NewsController extends Controller
 
         $request->file('picture')->move( public_path() . '/img/news/', $imageName);
 
-        $path = '/public/img/news/' . $imageName;
+        $path = '/img/news/' . $imageName;
 
         $user = Auth::user();
 

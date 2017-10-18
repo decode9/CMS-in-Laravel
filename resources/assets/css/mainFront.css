@@ -1,0 +1,94 @@
+body{
+    margin: 0px;
+}
+a{
+    text-decoration: none;
+}
+header{
+    height: 100px;
+    width: 100%;
+    position: fixed;
+    background-color: rgb(170, 203, 222);
+}
+
+/**Header Styles**/
+.mainLogoFront{
+    width: 357px;
+    height: 100px;
+    float: left;
+}
+.mainLogoFront img{
+    margin: 3.25px auto;
+}
+.menuFront{
+    float: right;
+    position: relative;
+    top: 60px;
+    right: 15%;
+}
+.menuHeader{
+    list-style: none;
+    width: 354px;
+    padding: 0;
+    margin: 0;
+}
+.menuHeader li{
+    float: left;
+    padding: 0px 10px;
+}
+.userAction{
+    float: right;
+    position: relative;
+    top: 10px;
+    right: -3.4%;
+}
+.menuUser{
+    width: 120px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.menuLogin{
+    width: 130px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.menuLogin li{
+    float: left;
+    padding: 0 10px;
+}
+.menuItem p{
+    margin: 0;
+    float: right;
+}
+.menuItem{
+    cursor: pointer;
+}
+.submenuItem{
+    list-style: none;
+    text-align: center;
+    padding: 0;
+    background-color: rgba(255,255,255,0.7);
+    border-radius: 3px;
+}
+.page{
+    position: relative;
+    top:100px;
+}
+.newsContainer{
+    width: 60%;
+    max-width: 60%;
+    height: 350px;
+    max-height: 350px;
+    position: relative;
+    margin: 0 auto;
+    top: 15px;
+}
+.newsContainer img{
+    max-width: inherit;
+    max-height: inherit;
+    position: relative;
+    margin: 0 auto;
+    display: block;
+}

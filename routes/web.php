@@ -11,10 +11,17 @@
 |
 */
 
-Route::get('/', 'WebController@index')->name('index');
-
-
+//Authentication routes
 Auth::routes();
+
+// FrontEnd Routes
+
+Route::get('/', 'WebController@index')->name('index');
+Route::get('/news', 'frontend\NewsController@index')->name('news.front');
+Route::get('news/show/{id}', 'frontend\NewsController@show')->name('notice.front');
+
+
+
 
 // BACKEND
 Route::get('/home', 'HomeController@index')->name('home');
@@ -28,8 +35,8 @@ Route::post('/users/edit/{id}', 'backend\UserController@update')->name('update.u
 Route::get('/users/delete/{id}', 'backend\UserController@destroy')->name('destroy.user');
 
 //NEWS ADMINISTRATION BACKEND
-Route::get('/news', 'backend\NewsController@index')->name('news');
-Route::get('/news/new', 'backend\NewsController@create')->name('create.news');
+Route::get('/news/admin', "backend\NewsController@index")->name('news');
+Route::get('/news/new', "backend\NewsController@create")->name('create.news');
 Route::post('/news/new', "backend\NewsController@store")->name('store.news');
 Route::get('/news/edit/{id}', 'backend\NewsController@edit')->name('edit.news');
 Route::post('/news/edit/{id}', 'backend\NewsController@update')->name('update.news');

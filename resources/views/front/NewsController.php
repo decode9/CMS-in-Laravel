@@ -5,16 +5,12 @@ namespace App\Http\Controllers\backend;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\User;
+use Illuminate\Support\Facades\Auth;
+use App\Post;
 
 
-class UserController extends Controller
+class NewsController extends Controller
 {
-
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
     /**
      * Display a listing of the resource.
      *
@@ -23,9 +19,9 @@ class UserController extends Controller
     public function index()
     {
         //
-        $users = User::all();
+        $posts = Post::all();
 
-        return view('back.users', ['users' => $users]);
+        return view('back.posts', ['posts' => $posts]);
     }
 
     /**
@@ -37,7 +33,7 @@ class UserController extends Controller
     {
         //
         $edit = false;
-        return view('back.newuser', ['edit' => $edit]);
+        return view('back.newpost', ['edit' => $edit]);
     }
 
     /**
@@ -50,22 +46,34 @@ class UserController extends Controller
     {
         //
         $request->validate([
-            'name' => 'required| max:50',
-            'username' => 'required|unique:users|max:20',
-            'email' => 'required|unique:users|max:50',
-            'password' => 'required|min:8|confirmed'
+            'picture' => 'required|image',
+            'name' => 'required|max:50',
+            'content' => 'required'
         ]);
 
-        $user = new User;
-        $user->name = $request->name;
-        $user->username = $request->username;
-        $user->email = $request->email;
-        $user->password= $request->password;
-        $user->save();
+        $name = str_replace(" ", "-", $request->name);
 
-        $url = url('/') . '/users/new';
+        $imageName = $name . '.' . $request->file('picture')->getClientOriginalExtension();
 
-        return view('back.success',['url' => $url, 'response' => 'Congratulations the user as been created']);
+        $request->file('picture')->move( public_path() . '/img/news/', $imageName);
+
+        $path = '/public/img/news/' . $imageName;
+
+        $user = Auth::user();
+
+        $post = new Post;
+
+        $post->name = $request->name;
+        $post->content = $request->content;
+        $post->picture_path = $path;
+
+        $post->user()->associate($user);
+
+        $post->save();
+
+        $url = url('/') . '/news/new';
+
+        return view('back.success',['url' => $url, 'response' => 'Congratulations the news as been created']);
     }
 
     /**
@@ -88,9 +96,9 @@ class UserController extends Controller
     public function edit($id)
     {
         //
-        $user = User::find($id);
+        $post = Post::find($id);
         $edit = true;
-        return view('back.newuser',['user' => $user, 'edit' => $edit]);
+        return view('back.newpost',['post' => $post, 'edit' => $edit]);
 
     }
 
@@ -110,7 +118,7 @@ class UserController extends Controller
         ]);
 
 
-        $user = User::find($id);
+        $post = Post::find($id);
 
         $user->name = $request->name;
         $user->email = $request->email;
@@ -119,11 +127,10 @@ class UserController extends Controller
         }
         $user->save();
 
-        $url = url('/') . '/users/edit/' . $id;
+        $url = url('/') . '/news';
 
-        return view('back.success',['url' => $url, 'response' => 'Congratulations the user as been updated']);
+        return view('back.success',['url' => $url, 'response' => 'Congratulations the news as been updated']);
     }
-
     /**
      * Remove the specified resource from storage.•••••••••
      *
@@ -133,10 +140,10 @@ class UserController extends Controller
     public function destroy($id)
     {
 
-        $user = User::find($id);
+        $post = Post::find($id);
 
-        $user->delete();
-        $url = url('/') . '/users';
-        return view('back.success',['url' => $url, 'response' => 'Congratulations the user as been deleted']);
+        $post->delete();
+        $url = url('/') . '/news';
+        return view('back.success',['url' => $url, 'response' => 'Congratulations the news as been deleted']);
     }
 }

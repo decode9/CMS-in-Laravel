@@ -21,7 +21,7 @@
                             @endif
                         </div>
                     @if($edit)
-                        <form class="form-horizontal" method="POST" action="{{ route('update.news', $user->id) }}" enctype="multipart/form-data">
+                        <form class="form-horizontal" method="POST" action="{{ route('update.news', $post->id) }}" enctype="multipart/form-data">
                     @else
                         <form class="form-horizontal" method="POST" action="{{ route('store.news') }}" enctype="multipart/form-data">
                     @endif

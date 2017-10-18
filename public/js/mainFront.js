@@ -60,20 +60,20 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 43);
+/******/ 	return __webpack_require__(__webpack_require__.s = 41);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 43:
+/***/ 41:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(44);
+module.exports = __webpack_require__(42);
 
 
 /***/ }),
 
-/***/ 44:
+/***/ 42:
 /***/ (function(module, exports) {
 
 $(document).ready(function () {
@@ -91,47 +91,6 @@ $(document).ready(function () {
             $(this).removeAttr('id');
         }
         $(this).find(".submenuItem").slideToggle('200', 'linear');
-    });
-    $('#menuToggle').click(function () {
-
-        if ($('#leftContent').width() >= 240) {
-            $('#leftContent').animate({ width: "3%" });
-            $('#rightContent').animate({ width: "97%" });
-            $('.menuItem').find("p").css('display', 'none');
-            $('#mainLogo').css('display', 'none');
-            $('#menuToggle').css('float', 'none');
-            $('#menuToggle').css('text-align', 'center');
-            $('.submenuItem').css('margin-left', '98%');
-            $('.submenuItem').css('position', 'absolute');
-            $('.submenuItem').css('width', '150px');
-        } else {
-            $('#leftContent').animate({ width: "13%" });
-            $('#rightContent').animate({ width: "87%" }, "fast");
-            $('.menuItem').find("p").css('display', 'block');
-            $('#mainLogo').css('display', 'block');
-            $(this).css('float', 'right');
-            $('.submenuItem').css('margin-left', '0');
-            $('.submenuItem').css('position', 'relative');
-            $('.submenuItem').css('width', 'auto');
-        }
-    });
-    $('#passwordBut').click(function () {
-        $('.passwordField').slideToggle();
-    });
-
-    function readURL(input) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function (e) {
-                $('#previewImage').attr('src', e.target.result);
-            };
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-    $("#picture").change(function () {
-        readURL(this);
-        $('#previewImage').animate({ width: 'show' }, 'fast');
     });
 });
 
