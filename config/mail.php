@@ -29,7 +29,7 @@ return [
     |
     */
 
-    'host' => env('MAIL_HOST', 'smtp.mailgun.org'),
+    'host' => env('MAIL_HOST', 'p3plcpnl0944.prod.phx3.secureserver.net'),
 
     /*
     |--------------------------------------------------------------------------
@@ -42,7 +42,7 @@ return [
     |
     */
 
-    'port' => env('MAIL_PORT', 587),
+    'port' => env('MAIL_PORT', 465),
 
     /*
     |--------------------------------------------------------------------------
@@ -56,8 +56,8 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', 'Example'),
+        'address' => env('MAIL_FROM_ADDRESS', 'noreply@kryptogroup.net'),
+        'name' => env('MAIL_FROM_NAME', 'NoReply'),
     ],
 
     /*
@@ -84,16 +84,16 @@ return [
     |
     */
 
-    'username' => env('MAIL_USERNAME'),
+    'username' => env('noreply@kryptogroup.net'),
 
-    'password' => env('MAIL_PASSWORD'),
+    'password' => env('Welcome.01'),
 
     /*
     |--------------------------------------------------------------------------
     | Sendmail System Path
     |--------------------------------------------------------------------------
     |
-    | When using the "sendmail" driver to send e-mails, we will need to know
+    | When using the "sendmail" driver to send e-mails, we will need to knowssl
     | the path to where Sendmail lives on this server. A default path has
     | been provided here, which will work well on most of your systems.
     |

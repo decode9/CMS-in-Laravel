@@ -8,14 +8,15 @@ header{
     height: 100px;
     width: 100%;
     position: fixed;
-    background-color: rgb(170, 203, 222);
+    background-color: rgba(255,255,255, 0.9);
+    z-index: 1;
 }
-
+/** TEMPORAL STYLE **/
 /**Header Styles**/
 .mainLogoFront{
     width: 357px;
     height: 100px;
-    float: left;
+    margin: 0 auto;
 }
 .mainLogoFront img{
     margin: 3.25px auto;
@@ -24,7 +25,8 @@ header{
     float: right;
     position: relative;
     top: 60px;
-    right: 15%;
+    right: 30px;
+    display: none;
 }
 .menuHeader{
     list-style: none;
@@ -40,7 +42,7 @@ header{
     float: right;
     position: relative;
     top: 10px;
-    right: -3.4%;
+    left: 315px;
 }
 .menuUser{
     width: 120px;
@@ -72,10 +74,258 @@ header{
     background-color: rgba(255,255,255,0.7);
     border-radius: 3px;
 }
-.page{
+.content{
     position: relative;
     top:100px;
 }
+.firstBanner{
+   background: url(http://kryptogroup.local/img/underconstruc.jpg) no-repeat fixed center;
+   -webkit-background-size: cover;
+   -moz-background-size: cover;
+   -o-background-size: cover;
+   background-size: cover;
+   height: 1000px;
+   width: 100%;
+   text-align: center;
+}
+.firstBanner img{
+    width: 30%;
+    position: relative;
+    top: 160px;
+    display: none;
+}
+
+.secondBanner{
+    background: url(http://kryptogroup.local/img/finance.jpg) no-repeat fixed center;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    height: 700px;
+    width: 100%;
+    text-align: center;
+}
+.secondContainer{
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+.secondBanner h2{
+    font-size: 88px;
+    font-family: sans-serif;
+    font-weight: bold;
+    color: white;
+    width: 900px;
+    position: relative;
+    margin: 0 auto;
+    top: 26%;
+}
+.secondBanner p{
+    font-size: 20px;
+    font-family: sans-serif;
+    font-weight: bold;
+    position: relative;
+    color: white;
+    top: 23%;
+}
+.thirdBanner{
+    height: 700px;
+    width: 100%;
+}
+.thirdContainer{
+    width: 1000px;
+    margin: 0 auto;
+    height: 500px;
+    position: relative;
+    top:110px;
+}
+.textBox{
+    float: right;
+    width: 460px;
+    text-align: center;
+    font-family: sans-serif;
+    color: #141c4c;
+    position: relative;
+    top:30px;
+}
+.textBox h2{
+    font-size: 48px;
+    color: #141c4c;
+}
+.textBox p{
+    line-height: 1.875em;
+    letter-spacing: normal;
+    font-size: 17px;
+}
+.textBox ul{
+    list-style-type: disc;
+    padding-left: 1.3em;
+    list-style-position: inside;
+    line-height: 1.875em;
+}
+
+.fourthContainer{
+    background: url(http://kryptogroup.local/img/blokchain.png) no-repeat fixed center;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    height: 700px;
+    width: 100%;
+    text-align: center;
+}
+.fourthContainer h2{
+    color: #141c4c;
+    font-size: 48px;
+    font-family: sans-serif;
+    margin: 0;
+    position: relative;
+    top: 30px;
+}
+.formContact{
+    position: relative;
+    top: 70px;
+    width: 1000px;
+    margin: 0 auto;
+}
+.contactForm{
+    width: 940px;
+    margin: 0 auto;
+}
+.contactForm input{
+    width: 99.6%;
+    height: 30px;
+    padding: 5px;
+    border: 1px solid #141c4c;
+    color: #141c4c;
+    margin-bottom: 5px;
+    font-size: 16px;
+    font-family: sans-serif;
+    background: rgba(255,255,255,0);
+}
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder {
+  color: #141c4c;
+}
+input:-moz-placeholder,
+textarea:-moz-placeholder {
+  color: #141c4c;
+}
+input::-moz-placeholder,
+textarea::-moz-placeholder {
+  color: #141c4c;
+}
+input:-ms-input-placeholder,
+textarea:-ms-input-placeholder {
+  color: #141c4c;
+}
+.contactForm input[placeholder]{
+    color: #141c4c;
+}
+.contactForm textarea{
+    width: 99.6%;
+    height: 118px;
+    padding: 5px;
+    border: 1px solid #141c4c;
+    color: #141c4c;
+    margin-bottom: 5px;
+    font-size: 16px;
+    font-family: sans-serif;
+    background: rgba(255,255,255,0);
+}
+.formContact button{
+    background-color: rgba(20, 28, 76, 1);
+    color: white;
+    font-size: 16px;
+    font-family: sans-serif;
+    padding: 5px;
+    border: 0;
+    height: 37px;
+    float: right;
+    position: relative;
+    right: 21px;
+    cursor: pointer;
+}
+.response{
+    position: relative;
+    top:120px;
+    width: 100%;
+}
+#success{
+    width: 300px;
+    margin: 0 auto;
+    color: #141c4c;
+    font-family: sans-serif;
+}
+#error{
+    width: 300px;
+    margin: 0 auto;
+    color: #bb1717;
+    font-family: sans-serif;
+}
+@media screen and (max-width: 1020px){
+    .secondBanner h2{
+        width: 700px;
+        font-size: 70px;
+    }
+    .thirdContainer{
+        width: 700px;
+    }
+    .thirdContainer img{
+        width: 350px;
+        top: 90px;
+        position: relative;
+    }
+    .textBox{
+        top:0px;
+        width: 320px;
+    }
+    .formContact{
+        width: 700px;
+    }
+    .contactForm{
+        width: 700px;
+    }
+}
+@media screen and (max-width: 719px){
+    .secondBanner h2{
+        width: 100%;
+        font-size: 60px;
+    }
+    .thirdBanner{
+        height: auto;
+        padding: 20px 0px;
+    }
+    .thirdContainer{
+        top: 0px;
+        width: 100%;
+        height: 100%;
+    }
+    .thirdContainer img{
+        width: auto;
+        height: 400px;
+        float: none;
+        display: block;
+        margin: 0 auto;
+        top:0px;
+    }
+    .textBox{
+        top:0px;
+        width: 90%;
+        padding: 0px 5%;
+        float: none;
+    }
+    .formContact{
+        width: 100%;
+    }
+    .contactForm{
+        width: 90%;
+    }
+    .fourthContainer{
+        width: 100%;
+    }
+}
+/**END TEMPORAL STYLE**/
 .newsContainer{
     width: 60%;
     max-width: 60%;

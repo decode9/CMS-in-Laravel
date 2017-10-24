@@ -17,12 +17,15 @@ Auth::routes();
 // FrontEnd Routes
 
 Route::get('/', 'WebController@index')->name('index');
+
 Route::get('/news', 'frontend\NewsController@index')->name('news.front');
 Route::get('news/show/{id}', 'frontend\NewsController@show')->name('notice.front');
 
+Route::get('/under', function(){
+    return view('front.underconstruction');
+});
 
-
-
+Route::post('/mailcontact', 'Mail\MailController@contactMail')->name('contact.mail');
 // BACKEND
 Route::get('/home', 'HomeController@index')->name('home');
 
