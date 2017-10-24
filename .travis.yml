@@ -4,4 +4,4 @@
       - "7.1"
       - "7.2"
   "os": "linux"
-  "script": "./vendor/bin/phpunit"
+  "script": "vendor/bin/phpunit"
