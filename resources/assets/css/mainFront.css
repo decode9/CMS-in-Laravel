@@ -24,9 +24,8 @@ header{
 .menuFront{
     float: right;
     position: relative;
-    top: 60px;
+    top: -35px;
     right: 30px;
-    display: none;
 }
 .menuHeader{
     list-style: none;
@@ -41,7 +40,7 @@ header{
 .userAction{
     float: right;
     position: relative;
-    top: 10px;
+    top: -90px;
     left: 315px;
 }
 .menuUser{
