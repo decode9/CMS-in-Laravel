@@ -115,6 +115,17 @@ $(document).ready(function () {
             $('.submenuItem').css('width', 'auto');
         }
     });
+    $('#btnDepo').click(function(){
+        box = "<div class='Modal' id='depositModal' style='display:none;'><div class='modalContent' id='modalDeposit'><h3>Deposit</h3><form class='FundForm' id='DepositForm' method='POST' enctype='multipart/form-data'></form></div></div>";
+        $('#rightContent').append(box);
+        $('#DepositForm').append("<label for='currency'>Currency</label><select id='currency' class='form-control' name='currency'><option value='VEF'>Bolivares</option><option value='USD'>Dollar</option><option value='BTC'>Bitcoin</option><option value='ETH'>Ethereum</option><option value='LTC'>LiteCoin</option></select>");
+        $('#DepositForm').append("<label for='amount'>Amount</label><input id='amount' name='amount' type='text' class='form-control' required>");
+        $('#DepositForm').append("<label for='reference'>Reference</label><input id='reference' name='reference' type='text' class='form-control' required>");
+        $('#DepositForm').append("<label for='file'>File</label><input id='file' name='file' type='file' class='custom-file-input' required>");
+
+        $('#depositModal').show();
+
+    });
     $('#passwordBut').click(function () {
         $('.passwordField').slideToggle();
     });
@@ -133,6 +144,98 @@ $(document).ready(function () {
         readURL(this);
         $('#previewImage').animate({ width: 'show' }, 'fast');
     });
+
+    $.extend({
+        xResponse: function(select) {
+            // local var
+            var price = null;
+            // jQuery ajax
+            $.ajax({
+                url: "https://api.coinbase.com/v2/exchange-rates?currency=" + select,
+                type: 'GET',
+                dataType: "json",
+                async: false,
+                success: function(coins) {
+                            price = parseFloat(coins.data.rates["USD"]);
+                    }
+            });
+            // Return the response text
+            return price;
+        }
+    });
+
+    function balanceDeposits(){
+        btcprice = $.xResponse('BTC');
+        ethprice = $.xResponse('ETH');
+        ltcprice = $.xResponse('LTC');
+
+        $.ajax({
+            type: 'GET',
+            datatype: 'json',
+            url: '/funds/transactions',
+            success: function(data){
+
+                box = "<div class='balance'><div id='unconfirmed'><h3>Unconfirmed Balance</h3></div><div id= 'confirmed'><h3>Confirmed Balance</h3></div></div>";
+
+                vefct = data.currencyBalance.Confirmed[0];
+                usdct = data.currencyBalance.Confirmed[1];
+                btcct = data.currencyBalance.Confirmed[2];
+                ethct = data.currencyBalance.Confirmed[3];
+                ltcct = data.currencyBalance.Confirmed[4];
+
+                vefut = data.currencyBalance.Unconfirmed[0];
+                usdut = data.currencyBalance.Unconfirmed[1];
+                btcut = data.currencyBalance.Unconfirmed[2];
+                ethut = data.currencyBalance.Unconfirmed[3];
+                ltcut = data.currencyBalance.Unconfirmed[4];
+
+
+
+                $('#balanceUser').append(box);
+                $('#unconfirmed').append('<p>BsF.'+vefut+'</p><p>$'+usdut+'</p><p>BTC '+btcut+' ~ $'+ (btcut * btcprice).toFixed(2) +'</p><p>LTC '+ltcut+' ~ $'+ (ltcut * ltcprice).toFixed(2) +'</p><p>ETH '+ethut+' ~ $'+ (ethut * ethprice).toFixed(2) +'</p>');
+                $('#confirmed').append('<p>BsF.'+vefct+'</p><p>$'+usdct+'</p><p>BTC '+btcct+' ~ $'+ (btcct * btcprice).toFixed(2) +'</p><p>LTC '+ltcct+' ~ $'+ (ltcct * ltcprice).toFixed(2) +'</p><p>ETH '+ethct+' ~ $'+ (ethct * ethprice).toFixed(2) +'</p>');
+                for( i = 0; i < data.deposit[1].length; i++){
+                    $('#depositsTable').append('<tr><td>'+ Currency(data.deposit[1][i].currency_id) +'</td><td>'+ data.deposit[1][i].amount +'</td><td>'+ data.deposit[1][i].comment +'</td><td>'+ data.deposit[1][i].created_at +'</td><td>No</td><td></td></tr>');
+                }
+                for( i = 0; i < data.deposit[0].length; i++){
+                    $('#depositsTable').append('<tr><td>'+ Currency(data.deposit[0][i].currency_id) +'</td><td>'+ data.deposit[0][i].amount +'</td><td>'+ data.deposit[0][i].comment +'</td><td>'+ data.deposit[0][i].created_at +'</td><td>Yes</td><td>'+ data.deposit[0][i].updated_at + '</td></tr>');
+                }
+
+                for( i = 0; i < data.withdraw[1].length; i++){
+                    $('#depositsTable').append('<tr><td>'+ Currency(data.withdraw[1][i].currency_id) +'</td><td>'+ data.withdraw[1][i].amount +'</td><td>'+ data.withdraw[1][i].comment +'</td><td>'+ data.withdraw[1][i].created_at +'</td><td>No</td><td></td></tr>');
+                }
+                for( i = 0; i < data.withdraw[0].length; i++){
+                    $('#depositsTable').append('<tr><td>'+ Currency(data.withdraw[0][i].currency_id) +'</td><td>'+ data.withdraw[0][i].amount +'</td><td>'+ data.withdraw[0][i].comment +'</td><td>'+ data.withdraw[0][i].created_at +'</td><td>Yes</td><td>'+ data.withdraw[0][i].updated_at + '</td></tr>');
+                }
+
+
+            }
+        })
+    }
+
+
+
+    function Currency(id){
+        switch (id) {
+            case 1:
+                return "VEF";
+                break;
+            case 2:
+                return "USD";
+                break;
+            case 3:
+                return "BTC";
+                break;
+            case 4:
+                return 'LTC';
+                break;
+            case 5:
+                return 'ETH';
+                break;
+        }
+    }
+
+    balanceDeposits();
 });
 
 /***/ })

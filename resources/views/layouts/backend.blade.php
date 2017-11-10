@@ -14,12 +14,14 @@
         <link href="{{ asset('css/app.css') }}" rel="stylesheet">
         <link href="{{ asset('css/mainBack.css') }}" rel="stylesheet">
         <link rel="stylesheet" href="{{ url('/') }}/vendor/font-awesome/css/font-awesome.min.css">
+
+                <script src="{{ asset('js/app.js') }}"></script>
 </head>
 <body>
         <div id="content">
             <div id="leftContent">
                 <div id="menuToggle">
-                    <i class="fa fa-bars"></i>
+                    <i class="fa fa-navicon"></i>
                 </div>
                 <div id="mainLogo">
                     <img src="{{ url('/') }}/img/Logoblanco.png" width="100" alt="" height="auto">
@@ -61,6 +63,8 @@
                                 <a href="{{route('news')}}"><li>List Posts</li></a>
                             </ul>
                         </li>
+                        <a href="{{route('funds')}}"><li class="menuItem menuFunds"><i class="fa fa-money"></i> <p>Funds</p>
+                        </li></a>
                     </ul>
                 </div>
             </div>
@@ -70,7 +74,7 @@
             </div>
         </div>
         <!-- Scripts -->
-        <script src="{{ asset('js/app.js') }}"></script>
+
         <script src="{{ asset('js/mainbackEnd.js') }}"></script>
 </body>
 </html>
