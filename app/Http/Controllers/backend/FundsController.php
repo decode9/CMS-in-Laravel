@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\Fund;
+use App\Currency;
 
 
 class FundsController extends Controller
@@ -117,7 +118,7 @@ class FundsController extends Controller
     public function create()
     {
         //
-        return response()->json(['view' => view('back.deposit')->render(), 'message' => 'Access Granted'], 202);
+
 
     }
 
@@ -133,9 +134,23 @@ class FundsController extends Controller
         $request->validate([
             'currency' => 'required|string',
             'amount' => 'required|max:50',
-            'content' => 'required'
+            'reference' => 'required',
+            'file' =>'required',
         ]);
 
+        $currency = Currency::Where('symbol', '=', $request->currency)->get();
+
+        $name = str_replace(" ", "-", $request->reference);
+        $imageName = $name . '.' . $request->file('file')->getClientOriginalExtension();
+
+        $request->file('file')->move( public_path() . '/files/references/', $imageName);
+
+        $fund = New Fund;
+        $fund->amount = $request->amount;
+        $fund->comment = $request->reference;
+        $fund->associate($currency);
+        $fund->save();
+        return response()->json(['response' => 'Deposit success'], 202);
     }
 
     /**

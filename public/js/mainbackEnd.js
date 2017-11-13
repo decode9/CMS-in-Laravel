@@ -116,20 +116,107 @@ $(document).ready(function () {
         }
     });
     $('#btnDepo').click(function(){
-        box = "<div class='Modal' id='depositModal' style='display:none;'><div class='modalContent' id='modalDeposit'><h3>Deposit</h3><form class='FundForm' id='DepositForm' method='POST' enctype='multipart/form-data'></form></div></div>";
+        box = "<div class='Modal' id='depositModal' style='display:none;'><div class='modalContent' id='modalDeposit'><h3>Deposit</h3><form class='FundForm' id='DepositForm' enctype='multipart/form-data' ></form></div></div>";
         $('#rightContent').append(box);
-        $('#DepositForm').append("<label for='currency'>Currency</label><select id='currency' class='form-control' name='currency'><option value='VEF'>Bolivares</option><option value='USD'>Dollar</option><option value='BTC'>Bitcoin</option><option value='ETH'>Ethereum</option><option value='LTC'>LiteCoin</option></select>");
-        $('#DepositForm').append("<label for='amount'>Amount</label><input id='amount' name='amount' type='text' class='form-control' required>");
-        $('#DepositForm').append("<label for='reference'>Reference</label><input id='reference' name='reference' type='text' class='form-control' required>");
-        $('#DepositForm').append("<label for='file'>File</label><input id='file' name='file' type='file' class='custom-file-input' required>");
-
+        $('#DepositForm').append('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Deposit</strong></div>')
+        $('#DepositForm').append("<div><label for='currency'>Currency</label><select id='currency' class='form-control' name='currency'><option value='VEF'>Bolivares</option><option value='USD'>Dollar</option><option value='BTC'>Bitcoin</option><option value='ETH'>Ethereum</option><option value='LTC'>LiteCoin</option></select></div>");
+        $('#DepositForm').append("<div><label for='amount'>Amount</label><input id='amount' name='amount' type='text' class='form-control' required></div>");
+        $('#DepositForm').append("<div><label for='reference'>Reference</label><input id='reference' name='reference' type='text' class='form-control' required></div>");
+        $('#DepositForm').append("<div><label for='file'>File</label><input id='file' name='file' type='file' class='custom-file-input' required></div>");
+        $('#DepositForm').append("<div id='depoButts'></div>");
+        makeBut = $("<button type='button' name='button' id='depoCont'>Make</button>");
+        addMakeButton(makeBut);
+        $('#depoButts').append(makeBut);
         $('#depositModal').show();
 
     });
+
     $('#passwordBut').click(function () {
         $('.passwordField').slideToggle();
     });
 
+    function addMakeButton(makeBut){
+        makeBut.click(function(e){
+            $.validator.addMethod("letters", function(value, element) {
+                return this.optional(element) || value == value.match(/^[a-zA-Z\s]*$/);
+            });
+            $('#DepositForm').validate({
+                rules: {
+                    amount:{
+                        required: true,
+                        minlength: 3,
+                        number: true,
+                    },
+
+                    reference:{
+                        required: true,
+                        minlength: 3,
+                    },
+                    file:{
+                        required: true,
+                    }
+                },
+                messages:{
+                    amount: "Please introduce only numbers, minimun 3 digits",
+                    reference: 'Please introduce the reference of the deposit',
+                    file: 'Please attach the deposit confirmation file',
+                },
+            })
+            if($('#DepositForm').valid()){
+                alterForm('#DepositForm', true);
+                $('#depoCont').hide();
+                $('.alert').show();
+                confirmBut = $("<button type='button' name='button' id='depoConf'>Confirm</button>");
+                backBut = $("<button type='button' name='button' id='depoBack'>Back</button>");
+                backButton(backBut);
+                confirmButton(confirmBut);
+                $('#depoButts').append(confirmBut);
+                $('#depoButts').append(backBut);
+            }
+        })
+    }
+
+    function alterForm(form, change){
+        $(form + ' input, ' + form +' select').each(function(index){
+            input = $(this);
+            if(change == true){
+                input.attr('disabled', change);
+            }else{
+                input.removeAttr('disabled');
+            }
+
+        })
+    }
+    function backButton(backBut){
+        backBut.click(function(){
+            alterForm('#DepositForm', false);
+            $('#depoConf').remove();
+            $('#depoBack').remove();
+            $('#depoCont').show();
+        })
+    }
+    function confirmButton(confirmBut){
+        confirmBut.click(function(){
+
+                currency = $('#currency').val();
+                reference = $('#reference').val();
+                amount = $('#amount').val();
+                data = new FormData($('#DepositForm'));
+                
+                alert(data);
+                $.ajax({
+                    headers: { 'X-CSRF-Token' : $('meta[name=csrf-token]').attr('content') },
+                    url: '/deposit',
+                    type: 'POST',
+                    dataType: "json",
+                    data: data,
+                    success: function(data){
+                        alert(data.response);
+                    }
+                })
+
+        })
+    }
     function readURL(input) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
@@ -154,7 +241,6 @@ $(document).ready(function () {
                 url: "https://api.coinbase.com/v2/exchange-rates?currency=" + select,
                 type: 'GET',
                 dataType: "json",
-                async: false,
                 success: function(coins) {
                             price = parseFloat(coins.data.rates["USD"]);
                     }

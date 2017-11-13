@@ -74,7 +74,8 @@
             </div>
         </div>
         <!-- Scripts -->
-
+        <script src="{{ url('/') }}/vendor/validator/jquery.validate.js"></script>
         <script src="{{ asset('js/mainbackEnd.js') }}"></script>
+
 </body>
 </html>
