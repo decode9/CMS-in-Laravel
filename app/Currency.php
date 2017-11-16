@@ -7,15 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 class Currency extends Model
 {
     //
+    protected $table = 'currencies';
     public function funds(){
-        $this->hasMany('App\Fund');
+        return $this->hasMany('App\Fund');
     }
 
     public function outFundTrans(){
-        $this->hasMany('App\FundOrder', 'out_currency');
+        return $this->hasMany('App\FundOrder', 'out_currency');
     }
 
     public function inFundTrans(){
-        $this->hasMany('App\FundOrder', 'in_currency');
+        return $this->hasMany('App\FundOrder', 'in_currency');
     }
 }

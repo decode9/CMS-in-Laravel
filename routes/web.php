@@ -54,10 +54,10 @@ Route::get('/news/delete/{id}', 'backend\NewsController@destroy')->name('destroy
 
 Route::get('/funds', "backend\ViewsController@funds")->name('funds');
 Route::get('/funds/transactions', "backend\FundsController@index")->name('transactions.funds');
-Route::get('/deposit', "backend\FundsController@create")->name('deposit.funds');
-Route::post('/deposit', "backend\FundsController@store")->name('store.deposit');
-Route::get('/withdraw', "backend\FundsController@edit")->name('withdraw.funds');
-Route::post('/withdraw', "backend\FundsController@update")->name('update.withdraw');
+Route::post('/deposit', "backend\FundsController@deposits")->name('deposit.funds');
+Route::post('/deposit/create', "backend\FundsController@store")->name('store.deposit');
+Route::post('/withdraw', "backend\FundsController@withdraws")->name('withdraw.funds');
+Route::post('/withdraw/create', "backend\FundsController@update")->name('update.withdraw');
 Route::get('/funds/return', "backend\FundsController@destroy")->name('destroy.order');
 
 //TRANSACTIONS

@@ -14,10 +14,10 @@ class Fund extends Model
     protected $guarded = ['bs_amount', 'dollar_amount', 'btc_amount'];
 
     public function user(){
-        $this->belongsTo('App\User');
+        return $this->belongsTo('App\User', 'user_id');
     }
 
     public function currency(){
-        $this->belongsTo('App\Currency');
+        return $this->belongsTo('App\Currency', 'currency_id');
     }
 }

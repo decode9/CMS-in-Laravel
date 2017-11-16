@@ -6,8 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
-use App\Fund;
 use App\Currency;
+use App\Fund;
+
 
 
 class FundsController extends Controller
@@ -82,12 +83,12 @@ class FundsController extends Controller
         $deposits = Fund::where('amount', '>', '0')->get();
         $withdraws = Fund::where('amount', '<', '0')->get();
 
-        $deposits = $this->confirmationBalance($deposits);
-        $withdraws = $this->confirmationBalance($withdraws);
-        $depositsc = $this->selectCurrency($deposits[0]);
-        $withdrawsc = $this->selectCurrency($withdraws[0]);
-        $depositsuc = $this->selectCurrency($deposits[1]);
-        $withdrawsuc = $this->selectCurrency($withdraws[1]);
+        $depositsa = $this->confirmationBalance($deposits);
+        $withdrawsa = $this->confirmationBalance($withdraws);
+        $depositsc = $this->selectCurrency($depositsa[0]);
+        $withdrawsc = $this->selectCurrency($withdrawsa[0]);
+        $depositsuc = $this->selectCurrency($depositsa[1]);
+        $withdrawsuc = $this->selectCurrency($withdrawsa[1]);
 
         $vefct = $this->countBalance($depositsc['VEF']) + $this->countBalance($withdrawsc['VEF']);
         $vefuct = $this->countBalance($depositsuc['VEF']) + $this->countBalance($withdrawsuc['VEF']);
@@ -106,18 +107,144 @@ class FundsController extends Controller
 
         $currencyBalance = ["Confirmed" => [$vefct, $usdct, $btcct, $ethct, $ltcct] , "Unconfirmed" => [$vefuct, $usduct, $btcuct, $ethuct, $ltcuct]];
 
-        return response()->json(['deposit' => $deposits, 'withdraw' => $withdraws, "currencyBalance" => $currencyBalance], 202);
+        return response()->json(["currencyBalance" => $currencyBalance], 202);
     }
 
+    public function withdraws(Request $request)
+    {
+        $user = Auth::User();
+        $searchValue = $request->searchvalue;
+        $page = $request->page;
+        $resultPage = $request->resultPage;
+        $orderBy = $request->orderBy;
+        $orderDirection = $request->orderDirection;
+        $total = 0;
 
+        //Select Witdraws of the user
+        $query = Fund::Where('amount','<', '0')->where('user_id', $user->id)->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('funds.*', 'symbol');
+        //Search by
+
+        if($searchValue != '')
+        {
+                $query->Where(function($query) use($searchValue){
+                    $query->Where('symbol', 'like', '%'.$searchValue.'%')
+                    ->orWhere('amount', 'like', '%'.$searchValue.'%')
+                    ->orWhere('comment', 'like', '%'.$searchValue.'%')
+                    ->orWhere('funds.created_at', 'like', '%'.$searchValue.'%');
+                });
+        }
+
+        //Order By
+
+        if($orderBy != '')
+        {
+            if($orderDirection != '')
+            {
+                $query->orderBy($orderBy, 'desc');
+            }else{
+                $query->orderBy($orderBy);
+            }
+        }else if($orderDirection != ''){
+            $query->orderBy('funds.created_at', 'desc');
+        }else{
+             $query->orderBy('funds.created_at');
+        }
+
+        if($resultPage == null || $resultPage == 0)
+        {
+            $resultPage = 10;
+        }
+
+        //Get Total of fees
+        $total  =  $query->get()->count();
+
+        if($page > 1)
+        {
+             $query->offset(    ($page -  1)   *    $resultPage);
+        }
+
+
+        $query->limit($resultPage);
+        $deposits  =  $query->get();
+
+        //Get fees by month and year
+
+        return response()->json(['page' => $page, 'result' => $deposits, 'total' => $total,], 202);
+
+
+    }
+    private function generarCodigo($longitud) {
+        $key = '';
+        $pattern = '1234567890';
+        $max = strlen($pattern)-1;
+        for($i=0;$i < $longitud;$i++) $key .= $pattern{mt_rand(0,$max)};
+        return $key;
+    }
     /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function deposits(Request $request)
     {
-        //
+        $user = Auth::User();
+        $searchValue = $request->searchvalue;
+        $page = $request->page;
+        $resultPage = $request->resultPage;
+        $orderBy = $request->orderBy;
+        $orderDirection = $request->orderDirection;
+        $total = 0;
+
+        //Select Deposits of the user
+        $query = Fund::Where('amount','>', '0')->where('user_id', $user->id)->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('funds.*', 'symbol');
+        //Search by
+
+        if($searchValue != '')
+        {
+                $query->Where(function($query) use($searchValue){
+                    $query->Where('symbol', 'like', '%'.$searchValue.'%')
+                    ->orWhere('amount', 'like', '%'.$searchValue.'%')
+                    ->orWhere('comment', 'like', '%'.$searchValue.'%')
+                    ->orWhere('funds.created_at', 'like', '%'.$searchValue.'%');
+                });
+        }
+
+        //Order By
+
+        if($orderBy != '')
+        {
+            if($orderDirection != '')
+            {
+                $query->orderBy($orderBy, 'desc');
+            }else{
+                $query->orderBy($orderBy);
+            }
+        }else if($orderDirection != ''){
+            $query->orderBy('funds.created_at', 'desc');
+        }else{
+             $query->orderBy('funds.created_at');
+        }
+
+        if($resultPage == null || $resultPage == 0)
+        {
+            $resultPage = 10;
+        }
+
+        //Get Total of fees
+        $total  =  $query->get()->count();
+
+        if($page > 1)
+        {
+             $query->offset(    ($page -  1)   *    $resultPage);
+        }
+
+
+        $query->limit($resultPage);
+        $deposits  =  $query->get();
+
+        //Get fees by month and year
+
+        return response()->json(['page' => $page, 'result' => $deposits, 'total' => $total,], 202);
 
 
     }
@@ -128,6 +255,7 @@ class FundsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+
     public function store(Request $request)
     {
         //
@@ -138,8 +266,8 @@ class FundsController extends Controller
             'file' =>'required',
         ]);
 
-        $currency = Currency::Where('symbol', '=', $request->currency)->get();
-
+        $currency = Currency::Where('symbol', $request->currency)->first();
+        $user = Auth::User();
         $name = str_replace(" ", "-", $request->reference);
         $imageName = $name . '.' . $request->file('file')->getClientOriginalExtension();
 
@@ -148,9 +276,11 @@ class FundsController extends Controller
         $fund = New Fund;
         $fund->amount = $request->amount;
         $fund->comment = $request->reference;
-        $fund->associate($currency);
+        $fund->currency()->associate($currency);
+        $fund->user()->associate($user);
         $fund->save();
-        return response()->json(['response' => 'Deposit success'], 202);
+
+        return response()->json(['response' => 'Deposit success', 'currency' => $currency->id], 202);
     }
 
     /**
@@ -194,19 +324,6 @@ class FundsController extends Controller
             'email' => 'required|max:50'
         ]);
 
-
-        $post = Post::find($id);
-
-        $user->name = $request->name;
-        $user->email = $request->email;
-        if(isset($request->password)){
-            $user->password= $request->password;
-        }
-        $user->save();
-
-        $url = url('/') . '/news';
-
-        return view('back.success',['url' => $url, 'response' => 'Congratulations the news as been updated']);
     }
     /**
      * Remove the specified resource from storage.•••••••••

@@ -25,28 +25,36 @@ body{
         width: 50%;
         text-align: center;
     }
-    .depositOp{
-        width: 100%;
-        height: auto;
-    }
-    .depositOp table{
-        width: 95%;
+    #table_deposit{
+        width: 90%;
         margin: 0 auto;
     }
-    .depositOp th{
+    #table_deposit th{
         text-align: center;
     }
-    .withdrawOp{
-        width: 100%;
-        height: auto;
-        margin-top: 50px;
+    .pagination{
+        margin: 0 !important;
+        cursor: pointer;
     }
-    .withdrawOp table{
-        width: 95%;
+    #deposit_page{
+        text-align: left !important;
+    }
+    #table_deposit_pagination{
+        text-align: right !important;
+    }
+
+    #table_withdraw{
+        width: 90%;
         margin: 0 auto;
     }
-    .withdrawOp th{
+    #table_withdraw th{
         text-align: center;
+    }
+    #withdraw_page{
+        text-align: left !important;
+    }
+    #table_withdraw_pagination{
+        text-align: right !important;
     }
 
     .modal{
@@ -74,6 +82,19 @@ body{
         text-align: center;
         width: 100%;
     }
+    .close {
+        color: #aaaaaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
+    }
 </style>
 @section('content')
     <div class="fundContainer">
@@ -91,41 +112,90 @@ body{
 
 
     <div class="fundsOperations">
-        <div class="depositOp">
-            <table>
-                <thead>
+        <div class="tab-pane active" id="list">
+            <table id="table_deposit" class="table table-responsive table-striped table-hover">
+                <thead class="thead-default">
                     <tr>
-                        <th colspan="6">Deposits</th>
+                        <th colspan="4">Deposits</th>
+                        <th colspan="3"><div class="col-lg-12">
+                            <form id="form_deposit_search" class="form_search">
+                                <div class="input-group">
+                                    <input id="search_deposit_value" type="text" class="form-control" placeholder="Search Deposit">
+                                    <span class="input-group-btn">
+                                        <button type="submit" class="btn btn-default" value="Go!"><i id="search_icon" class="fa fa-search" aria-hidden="true"></i></button>
+                                    </span>
+                                </div><!-- /input-group -->
+                            </form>
+                        </div><!-- /.col-lg-6 --></th>
+                    </tr>
+                    <tr>
+                        <th id="table_deposit_header_currency" style="cursor: pointer;">Currency</th>
+                        <th id="table_deposit_header_amount" style="cursor: pointer;">Amount</th>
+                        <th id="table_deposit_header_reference" style="cursor: pointer;">Reference</th>
+                        <th id="table_deposit_header_date" style="cursor: pointer;">Date</th>
+                        <th id="table_deposit_header_confirmed" style="cursor: pointer;">Confirmed</th>
+                        <th id="table_deposit_header_confirm_date" style="cursor: pointer;">Confirm Date</th>
+                        <th>Options</th>
                     </tr>
                 </thead>
-                <tbody id="depositsTable">
+                <tfoot>
                     <tr>
-                        <td>Currency</td>
-                        <td>Amount</td>
-                        <td>Reference</td>
-                        <td>Date</td>
-                        <td>Confirmed</td>
-                        <td>Confirm Date</td>
+                        <th colspan="3" id="deposit_page">
+                            <select id="result_deposit_page">
+                                <option value="5">5</option>
+                                <option value="10" selected="selected" >10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                            </select>
+                        </th>
+                        <th id="table_deposit_pagination" colspan="4"></th>
                     </tr>
+                </tfoot>
+                <tbody id="table_deposit_content">
                 </tbody>
             </table>
         </div>
-        <div class="withdrawOp">
-            <table>
-                <thead>
+
+        <div class="tab-pane active" id="list">
+            <table id="table_withdraw" class="table table-responsive table-striped table-hover">
+                <thead class="thead-default">
                     <tr>
-                        <th colspan="6">withdraws</th>
+                        <th colspan="4">Withdraws</th>
+                        <th colspan="3"><div class="col-lg-12">
+                            <form id="form_withdraw_search" class="form_search">
+                                <div class="input-group">
+                                    <input id="search_withdraw_value" type="text" class="form-control" placeholder="Search Withdraw">
+                                    <span class="input-group-btn">
+                                        <button type="submit" class="btn btn-default" value="Go!"><i id="search_icon" class="fa fa-search" aria-hidden="true"></i></button>
+                                    </span>
+                                </div><!-- /input-group -->
+                            </form>
+                        </div><!-- /.col-lg-6 --></th>
+                    </tr>
+                    <tr>
+                        <th id="table_withdraw_header_currency" style="cursor: pointer;">Currency</th>
+                        <th id="table_withdraw_header_amount" style="cursor: pointer;">Amount</th>
+                        <th id="table_withdraw_header_reference" style="cursor: pointer;">Reference</th>
+                        <th id="table_withdraw_header_date" style="cursor: pointer;">Date</th>
+                        <th id="table_withdraw_header_confirmed" style="cursor: pointer;">Confirmed</th>
+                        <th id="table_withdraw_header_confirm_date" style="cursor: pointer;">Confirm Date</th>
+                        <th>Options</th>
                     </tr>
                 </thead>
-                <tbody id="withdrawsTable">
+                <tfoot>
                     <tr>
-                        <td>Currency</td>
-                        <td>Amount</td>
-                        <td>Reference</td>
-                        <td>Date</td>
-                        <td>Confirmed</td>
-                        <td>Confirm Date</td>
+                        <th colspan="3" id="withdraw_page">
+                            <select id="result_withdraw_page">
+                                <option value="5">5</option>
+                                <option value="10" selected="selected" >10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                            </select>
+                        </th>
+                        <th id="table_withdraw_pagination" colspan="4"></th>
                     </tr>
+                </tfoot>
+                <tbody id="table_withdraw_content">
                 </tbody>
             </table>
         </div>

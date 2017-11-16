@@ -125,7 +125,10 @@ $(document).ready(function () {
         $('#DepositForm').append("<div><label for='file'>File</label><input id='file' name='file' type='file' class='custom-file-input' required></div>");
         $('#DepositForm').append("<div id='depoButts'></div>");
         makeBut = $("<button type='button' name='button' id='depoCont'>Make</button>");
-        addMakeButton(makeBut);
+        clsbut = $("<span class='close'>&times;</span>");
+        addMakedButton(makeBut);
+        closeButton(clsbut, '#depositModal');
+        $('#modalDeposit').prepend(clsbut);
         $('#depoButts').append(makeBut);
         $('#depositModal').show();
 
@@ -135,40 +138,97 @@ $(document).ready(function () {
         $('.passwordField').slideToggle();
     });
 
-    function addMakeButton(makeBut){
-        makeBut.click(function(e){
-            $.validator.addMethod("letters", function(value, element) {
-                return this.optional(element) || value == value.match(/^[a-zA-Z\s]*$/);
-            });
-            $('#DepositForm').validate({
-                rules: {
-                    amount:{
-                        required: true,
-                        minlength: 3,
-                        number: true,
-                    },
+    function closeButton(clsbut, modal){
+        clsbut.click(function(){
+                $(modal).remove();
+        });
+    }
+    $('#btnWith').click(function(){
+        box = "<div class='Modal' id='withdrawModal' style='display:none;'><div class='modalContent' id='modalWithdraw'><h3>Withdraw</h3><form class='FundForm' id='WithdrawForm' enctype='multipart/form-data' ></form></div></div>";
+        $('#rightContent').append(box);
+        $('#WithdrawForm').append('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Withdraw</strong></div>')
+        $('#WithdrawForm').append("<div><label for='currency'>Currency</label><select id='currency' class='form-control' name='currency'><option value='VEF'>Bolivares</option><option value='USD'>Dollar</option><option value='BTC'>Bitcoin</option><option value='ETH'>Ethereum</option><option value='LTC'>LiteCoin</option></select></div>");
+        $('#WithdrawForm').append("<div><label for='amount'>Amount</label><input id='amount' name='amount' type='text' class='form-control' required></div>");
+        $('#WithdrawForm').append("<div><label for='account'>Account</label><input id='account' name='account' type='text' class='form-control' required></div>");
+        $('#WithdrawForm').append("<div id='withButts'></div>");
+        makeBut = $("<button type='button' name='button' id='withCont'>Make</button>");
+        clsbut = $("<span class='close'>&times;</span>");
+        addMakewButton(makeBut);
+        closeButton(clsbut, '#withdrawModal');
+        $('#modalWithdraw').prepend(clsbut);
+        $('#withButts').append(makeBut);
+        $('#withdrawModal').show();
 
-                    reference:{
-                        required: true,
-                        minlength: 3,
-                    },
-                    file:{
-                        required: true,
-                    }
-                },
-                messages:{
-                    amount: "Please introduce only numbers, minimun 3 digits",
-                    reference: 'Please introduce the reference of the deposit',
-                    file: 'Please attach the deposit confirmation file',
-                },
-            })
+    });
+    $.validator.addMethod("letters", function(value, element) {
+        return this.optional(element) || value == value.match(/^[a-zA-Z\s]*$/);
+    });
+    $('#WithdrawForm').validate({
+        rules: {
+            amount:{
+                required: true,
+                minlength: 3,
+                number: true,
+            },
+
+            account:{
+                required: true,
+            },
+        },
+        messages:{
+            amount: "Please introduce only numbers, minimun 3 digits",
+            account: 'Please introduce the account of the withdraw',
+            file: 'Please attach the deposit confirmation file',
+        },
+    })
+    function addMakewButton(makeBut){
+        makeBut.click(function(e){
+            if($('#WithdrawForm').valid()){
+                alterForm('#WithdrawForm', true);
+                $('#depoCont').hide();
+                $('.alert').show();
+                confirmBut = $("<button type='button' name='button' id='withConf'>Confirm</button>");
+                backBut = $("<button type='button' name='button' id='withBack'>Back</button>");
+                backButton(backBut, '#WithdrawForm', 'with');
+                confirmButton(confirmBut);
+                $('#withButts').append(confirmBut);
+                $('#withButts').append(backBut);
+            }
+        })
+    }
+    $('#DepositForm').validate({
+        rules: {
+            amount:{
+                required: true,
+                minlength: 3,
+                number: true,
+            },
+
+            reference:{
+                required: true,
+                minlength: 3,
+            },
+            file:{
+                required: true,
+            }
+        },
+        messages:{
+            amount: "Please introduce only numbers, minimun 3 digits",
+            reference: 'Please introduce the reference of the deposit',
+            file: 'Please attach the deposit confirmation file',
+        },
+    })
+    function addMakedButton(makeBut){
+        makeBut.click(function(e){
+
+
             if($('#DepositForm').valid()){
                 alterForm('#DepositForm', true);
                 $('#depoCont').hide();
                 $('.alert').show();
                 confirmBut = $("<button type='button' name='button' id='depoConf'>Confirm</button>");
                 backBut = $("<button type='button' name='button' id='depoBack'>Back</button>");
-                backButton(backBut);
+                backButton(backBut, '#DepositForm', 'depo');
                 confirmButton(confirmBut);
                 $('#depoButts').append(confirmBut);
                 $('#depoButts').append(backBut);
@@ -187,29 +247,37 @@ $(document).ready(function () {
 
         })
     }
-    function backButton(backBut){
+    function backButton(backBut, form, target){
         backBut.click(function(){
-            alterForm('#DepositForm', false);
-            $('#depoConf').remove();
-            $('#depoBack').remove();
-            $('#depoCont').show();
+            alterForm(form, false);
+            $('#'+target+'Conf').remove();
+            $('#'+target+'Back').remove();
+            $('#'+target+'Cont').show();
         })
     }
-    function confirmButton(confirmBut){
+    function confirmdButton(confirmBut){
         confirmBut.click(function(){
 
                 currency = $('#currency').val();
                 reference = $('#reference').val();
                 amount = $('#amount').val();
-                data = new FormData($('#DepositForm'));
-                
-                alert(data);
+                data = new FormData();
+
+                data.append('currency', currency);
+                data.append('amount', amount);
+                data.append('reference', reference);
+                data.append('file', $('#file')[0].files[0]);
+                alert(currency);
                 $.ajax({
+
                     headers: { 'X-CSRF-Token' : $('meta[name=csrf-token]').attr('content') },
                     url: '/deposit',
                     type: 'POST',
                     dataType: "json",
                     data: data,
+                    cache: false,
+                contentType: false,
+	               processData: false,
                     success: function(data){
                         alert(data.response);
                     }
@@ -232,29 +300,59 @@ $(document).ready(function () {
         $('#previewImage').animate({ width: 'show' }, 'fast');
     });
 
+    function currencyPrice(select,callback){
+        $.ajax({
+            url: "https://api.coinbase.com/v2/exchange-rates?currency=" + select,
+            type: 'GET',
+            dataType: "json",
+            success: function(coins) {
+                        callback(parseFloat(coins.data.rates["USD"]));
+                }
+        });
+    }
+
     $.extend({
         xResponse: function(select) {
-            // local var
-            var price = null;
             // jQuery ajax
+            var prices = null;
             $.ajax({
                 url: "https://api.coinbase.com/v2/exchange-rates?currency=" + select,
                 type: 'GET',
                 dataType: "json",
+                async: false,
                 success: function(coins) {
-                            price = parseFloat(coins.data.rates["USD"]);
+                            prices = parseFloat(coins.data.rates["USD"]);
                     }
             });
             // Return the response text
-            return price;
+            return prices;
         }
     });
+    var formatNumber = {
+        separador: ".", // separador para los miles
+        sepDecimal: ',', // separador para los decimales
+        formatear:function (num){
+            num +='';
+            var splitStr = num.split('.');
+            var splitLeft = splitStr[0];
+            var splitRight = splitStr.length > 1 ? this.sepDecimal + splitStr[1] : '';
+            var regx = /(\d+)(\d{3})/;
+            while (regx.test(splitLeft)) {
+                splitLeft = splitLeft.replace(regx, '$1' + this.separador + '$2');
+            }
+            return this.simbol + splitLeft +splitRight;
+        },
+        num:function(num, simbol){
+            this.simbol = simbol ||'';
+            return this.formatear(num);
+        }
+    }
 
-    function balanceDeposits(){
+    function balances(){
+
         btcprice = $.xResponse('BTC');
         ethprice = $.xResponse('ETH');
         ltcprice = $.xResponse('LTC');
-
         $.ajax({
             type: 'GET',
             datatype: 'json',
@@ -278,23 +376,8 @@ $(document).ready(function () {
 
 
                 $('#balanceUser').append(box);
-                $('#unconfirmed').append('<p>BsF.'+vefut+'</p><p>$'+usdut+'</p><p>BTC '+btcut+' ~ $'+ (btcut * btcprice).toFixed(2) +'</p><p>LTC '+ltcut+' ~ $'+ (ltcut * ltcprice).toFixed(2) +'</p><p>ETH '+ethut+' ~ $'+ (ethut * ethprice).toFixed(2) +'</p>');
-                $('#confirmed').append('<p>BsF.'+vefct+'</p><p>$'+usdct+'</p><p>BTC '+btcct+' ~ $'+ (btcct * btcprice).toFixed(2) +'</p><p>LTC '+ltcct+' ~ $'+ (ltcct * ltcprice).toFixed(2) +'</p><p>ETH '+ethct+' ~ $'+ (ethct * ethprice).toFixed(2) +'</p>');
-                for( i = 0; i < data.deposit[1].length; i++){
-                    $('#depositsTable').append('<tr><td>'+ Currency(data.deposit[1][i].currency_id) +'</td><td>'+ data.deposit[1][i].amount +'</td><td>'+ data.deposit[1][i].comment +'</td><td>'+ data.deposit[1][i].created_at +'</td><td>No</td><td></td></tr>');
-                }
-                for( i = 0; i < data.deposit[0].length; i++){
-                    $('#depositsTable').append('<tr><td>'+ Currency(data.deposit[0][i].currency_id) +'</td><td>'+ data.deposit[0][i].amount +'</td><td>'+ data.deposit[0][i].comment +'</td><td>'+ data.deposit[0][i].created_at +'</td><td>Yes</td><td>'+ data.deposit[0][i].updated_at + '</td></tr>');
-                }
-
-                for( i = 0; i < data.withdraw[1].length; i++){
-                    $('#depositsTable').append('<tr><td>'+ Currency(data.withdraw[1][i].currency_id) +'</td><td>'+ data.withdraw[1][i].amount +'</td><td>'+ data.withdraw[1][i].comment +'</td><td>'+ data.withdraw[1][i].created_at +'</td><td>No</td><td></td></tr>');
-                }
-                for( i = 0; i < data.withdraw[0].length; i++){
-                    $('#depositsTable').append('<tr><td>'+ Currency(data.withdraw[0][i].currency_id) +'</td><td>'+ data.withdraw[0][i].amount +'</td><td>'+ data.withdraw[0][i].comment +'</td><td>'+ data.withdraw[0][i].created_at +'</td><td>Yes</td><td>'+ data.withdraw[0][i].updated_at + '</td></tr>');
-                }
-
-
+                $('#unconfirmed').append('<p>BsF. '+formatNumber.num(vefut)+'</p><p>$ '+formatNumber.num(usdut)+'</p><p>BTC '+formatNumber.num(btcut)+' ~ $ '+ formatNumber.num((btcut * btcprice).toFixed(2)) +'</p><p>LTC '+formatNumber.num(ltcut)+' ~ $ '+ formatNumber.num((ltcut * ltcprice).toFixed(2)) +'</p><p>ETH '+formatNumber.num(ethut)+' ~ $ '+ formatNumber.num((ethut * ethprice).toFixed(2)) +'</p>');
+                $('#confirmed').append('<p>BsF. '+formatNumber.num(vefct)+'</p><p>$ '+formatNumber.num(usdct)+'</p><p>BTC '+formatNumber.num(btcct)+' ~ $ '+ formatNumber.num((btcct * btcprice).toFixed(2)) +'</p><p>LTC '+formatNumber.num(ltcct)+' ~ $ '+ formatNumber.num((ltcct * ltcprice).toFixed(2)) +'</p><p>ETH '+formatNumber.num(ethct)+' ~ $ '+ formatNumber.num((ethct * ethprice).toFixed(2)) +'</p>');
             }
         })
     }
@@ -320,8 +403,321 @@ $(document).ready(function () {
                 break;
         }
     }
+    function active(act){
+        if(act){
+            return 'Yes';
+        }else{
+            return 'No';
+        }
+    }
+    function updated(vari){
+        if(vari.active){
+            return vari.updated_at;
+        }else{
+            return '';
+        }
+    }
 
-    balanceDeposits();
+    /*Search Deposit Table*/
+
+    $('#table_deposit_header_currency').click(function (e) {
+      orderTableDepositBy('currencies.symbol');
+    });
+
+     $('#table_deposit_header_amount').click(function (e) {
+      orderTableDepositBy('amount');
+    });
+
+    $('#table_deposit_header_reference').click(function (e) {
+      orderTableDepositBy('comment');
+    });
+    $('#table_deposit_header_date').click(function (e) {
+      orderTableDepositBy('funds.created_at');
+    });
+    $('#table_deposit_header_confirmed').click(function (e) {
+      orderTableDepositBy('active');
+    });
+    $('#table_deposit_header_confirm_date').click(function (e) {
+      orderTableDepositBy('funds.updated_at');
+    });
+
+    var orderDepositBy = "";
+    var orderDepositDirection = "";
+    var seachDepositValue = "";
+
+    $( "#form_deposit_search" ).submit(function(e){
+        e.preventDefault();
+        //DESC
+        searchDepositValue = $( "#search_deposit_value" ).val();
+        searchDeposit(1);
+    });
+
+    function orderTableDepositBy(by){
+        if(orderDepositBy === by){
+            if(orderDepositDirection === ""){
+                orderDepositDirection = "DESC";
+            }else{
+                orderDepositDirection = "";
+            }
+        }else{
+            orderDepositBy = by;
+            orderDepositDirection = "";
+        }
+        searchDeposit(1);
+    }
+
+    //Get Deposit Data
+
+    function searchDeposit(page){
+        resultPage =  $( "#result_deposit_page" ).val();
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            url: "/deposit",
+            type: 'post',
+            data: { searchvalue : searchDepositValue, page : page, orderBy :orderDepositBy, orderDirection: orderDepositDirection,    resultPage: resultPage } ,
+            success: function (data) {
+                //Inicio
+                var deposits = data.result;
+                if(deposits.length == 0){
+                    $('#table_withdraw_content').append('<tr><td colspan="7">None</td></tr>');
+                }else{
+                // Put the data into the element you care about.
+                $("#table_deposit_content").html("");
+                for(i=0;i<  deposits.length;i++)
+                {
+                    var deposit = deposits[i];
+                    // we have to make in steps to add the onclick event
+                    var rowResult = $( '<tr></tr>');
+                    var colvalue_1 = $( '<td class="col-sm-12 col-md-2">'+  Currency(deposit.currency_id) +'</td>');
+                    var colvalue_2 = $( '<td class="col-sm-12 col-md-2">'+ formatNumber.num( deposit.amount ) +'</td>');
+                    var colvalue_3 = $( '<td class="col-sm-12 col-md-2">'+  deposit.comment  +'</td>');
+                    var colvalue_4 = $( '<td class="col-sm-12 col-md-2">'+  deposit.created_at  +'</td>');
+                    var colvalue_5 = $( '<td class="col-sm-12 col-md-2">'+  active(deposit.active)  +'</td>');
+                    var colvalue_6 = $( '<td class="col-sm-12 col-md-2">'+  updated(deposit)  +'</td>');
+
+                    var colvalue_7 = $( '<td class="col-sm-12 col-md-2"></td>');
+
+                    rowResult.append(colvalue_1);
+                    rowResult.append(colvalue_2);
+                    rowResult.append(colvalue_3);
+                    rowResult.append(colvalue_4);
+                    rowResult.append(colvalue_5);
+                    rowResult.append(colvalue_6);
+                    rowResult.append(colvalue_7);
+                    $("#table_deposit_content").append(rowResult);
+                }
+                $("#table_deposit_pagination").html("");
+                page = parseInt(data.page);
+                var total = data.total;
+                var resultPage =  $( "#result_deposit_page" ).val();
+                var totalPages = Math.ceil(total / resultPage);
+                if(page === 1){
+                    maxPage = page + 2;
+                    totalPages = (maxPage < totalPages) ?  maxPage: totalPages;
+                    var pageList = $( '<ul class="pagination"></ul>');
+                    for(i = page ; i <= totalPages; i++){
+                        pagebutton = $( '<li class="page_Deposit">'+ i +'</li>');
+                        pageList.append(pagebutton);
+                        addPageButton(pagebutton);
+                    }
+                    $("#table_deposit_pagination").append(pageList);
+                }else if(page === totalPages){
+                    page = page - 2;
+                    if(page < 1){
+                        page = 1;
+                    }
+                    totalPages = ( page + 2 < totalPages) ?  (page + 2): totalPages;
+                    var pageList = $( '<ul class="pagination"></ul>');
+                    for(i = page ; i <= totalPages; i++){
+                        pagebutton = $( '<li class="page_Deposit">'+ i +'</li>');
+                        pageList.append(pagebutton);
+                        addPageButton(pagebutton);
+                    }
+                    $("#table_deposit_pagination").append(pageList);
+                }else{
+                    page = page - 2;
+                    if(page < 1){
+                        page = 1;
+                    }
+                    totalPages = ( page + 4 < totalPages) ?  (page + 2): totalPages;
+                    var pageList = $( '<ul class="pagination"></ul>');
+                    for(i = page ; i <= totalPages; i++){
+                        pagebutton = $( '<li class="page_Deposit">'+ i +'</li>');
+                        pageList.append(pagebutton);
+                        addPageButton(pagebutton);
+                    }
+
+                    $("#table_deposit_pagination").append(pageList);
+                }
+                }
+            },
+            // Fin
+            error: function (error) {
+                ReadError(error);
+            }
+        });
+    }
+    function addPageButton(pagebutton){
+        pagebutton.click(function(){
+            page = $(this).text();
+            searchDeposit(page);
+        })
+    }
+
+    /*Search Withdraws Table*/
+
+    $('#table_withdraw_header_currency').click(function (e) {
+      orderTableWithdrawBy('currencies.symbol');
+    });
+
+     $('#table_withdraw_header_amount').click(function (e) {
+      orderTableWithdrawBy('amount');
+    });
+
+    $('#table_withdraw_header_reference').click(function (e) {
+      orderTableWithdrawBy('comment');
+    });
+    $('#table_withdraw_header_date').click(function (e) {
+      orderTableWithdrawBy('funds.created_at');
+    });
+    $('#table_withdraw_header_confirmed').click(function (e) {
+      orderTableWithdrawBy('active');
+    });
+    $('#table_withdraw_header_confirm_date').click(function (e) {
+      orderTableWithdrawBy('funds.updated_at');
+    });
+
+    var orderWithdrawBy = "";
+    var orderWithdrawDirection = "";
+    var seachWithdrawValue = "";
+
+    $( "#form_withdraw_search" ).submit(function(e){
+        e.preventDefault();
+        //DESC
+        searchWithdrawValue = $( "#search_withdraw_value" ).val();
+        searchWithdraw(1);
+    });
+
+    function orderTableWithdrawBy(by){
+        if(orderWithdrawBy === by){
+            if(orderWithdrawDirection === ""){
+                orderWithdrawDirection = "DESC";
+            }else{
+                orderWithdrawDirection = "";
+            }
+        }else{
+            orderWithdrawBy = by;
+            orderWithdrawDirection = "";
+        }
+        searchWithdraw(1);
+    }
+
+    //Get Withdraw Data
+
+    function searchWithdraw(page){
+        resultPage =  $( "#result_withdraw_page" ).val();
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            url: "/withdraw",
+            type: 'post',
+            data: { searchvalue : searchWithdrawValue, page : page, orderBy :orderWithdrawBy, orderDirection: orderWithdrawDirection,    resultPage: resultPage } ,
+            success: function (data) {
+                //Inicio
+
+                var withdraws = data.result;
+                if(withdraws.length == 0){
+                    $('#table_withdraw_content').append('<tr><td colspan="7">None</td></tr>');
+                }else{
+                    $("#table_withdraw_content").html("");
+                    for(i=0;i<  withdraws.length;i++)
+                    {
+                        var withdraw = withdraws[i];
+                        // we have to make in steps to add the onclick event
+                        var rowResult = $( '<tr></tr>');
+                        var colvalue_1 = $( '<td class="col-sm-12 col-md-2">'+  Currency(withdraw.currency_id) +'</td>');
+                        var colvalue_2 = $( '<td class="col-sm-12 col-md-2">'+ formatNumber.num( withdraw.amount ) +'</td>');
+                        var colvalue_3 = $( '<td class="col-sm-12 col-md-2">'+  withdraw.comment  +'</td>');
+                        var colvalue_4 = $( '<td class="col-sm-12 col-md-2">'+  withdraw.created_at  +'</td>');
+                        var colvalue_5 = $( '<td class="col-sm-12 col-md-2">'+  active(withdraw.active)  +'</td>');
+                        var colvalue_6 = $( '<td class="col-sm-12 col-md-2">'+  updated(withdraw)  +'</td>');
+
+                        var colvalue_7 = $( '<td class="col-sm-12 col-md-2"></td>');
+
+                        rowResult.append(colvalue_1);
+                        rowResult.append(colvalue_2);
+                        rowResult.append(colvalue_3);
+                        rowResult.append(colvalue_4);
+                        rowResult.append(colvalue_5);
+                        rowResult.append(colvalue_6);
+                        rowResult.append(colvalue_7);
+                        $("#table_withdraw_content").append(rowResult);
+                    }
+                    $("#table_withdraw_pagination").html("");
+                    page = parseInt(data.page);
+                    var total = data.total;
+                    var resultPage =  $( "#result_withdraw_page" ).val();
+                    var totalPages = Math.ceil(total / resultPage);
+                    if(page === 1){
+                        maxPage = page + 2;
+                        totalPages = (maxPage < totalPages) ?  maxPage: totalPages;
+                        var pageList = $( '<ul class="pagination"></ul>');
+                        for(i = page ; i <= totalPages; i++){
+                            pagebutton = $( '<li class="page_withdraw">'+ i +'</li>');
+                            pageList.append(pagebutton);
+                            addPageButton(pagebutton);
+                        }
+                        $("#table_withdraw_pagination").append(pageList);
+                    }else if(page === totalPages){
+                        page = page - 2;
+                        if(page < 1){
+                            page = 1;
+                        }
+                        totalPages = ( page + 2 < totalPages) ?  (page + 2): totalPages;
+                        var pageList = $( '<ul class="pagination"></ul>');
+                        for(i = page ; i <= totalPages; i++){
+                            pagebutton = $( '<li class="page_Withdraw">'+ i +'</li>');
+                            pageList.append(pagebutton);
+                            addPageButton(pagebutton);
+                        }
+                        $("#table_withdraw_pagination").append(pageList);
+                    }else{
+                        page = page - 2;
+                        if(page < 1){
+                            page = 1;
+                        }
+                        totalPages = ( page + 4 < totalPages) ?  (page + 2): totalPages;
+                        var pageList = $( '<ul class="pagination"></ul>');
+                        for(i = page ; i <= totalPages; i++){
+                            pagebutton = $( '<li class="page_Withdraw">'+ i +'</li>');
+                            pageList.append(pagebutton);
+                            addPagewButton(pagebutton);
+                        }
+
+                        $("#table_withdraw_pagination").append(pageList);
+                    }
+                }
+                // Put the data into the element you care about.
+
+            },
+            // Fin
+            error: function (error) {
+                ReadError(error);
+            }
+        });
+    }
+    function addPagewButton(pagebutton){
+        pagebutton.click(function(){
+            page = $(this).text();
+            searchWithdraw(page);
+        })
+    }
+    $('#form_deposit_search').trigger("submit");
+    $('#form_withdraw_search').trigger("submit");
+    balances();
 });
 
 /***/ })
