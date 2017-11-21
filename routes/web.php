@@ -60,4 +60,9 @@ Route::post('/withdraw', "backend\FundsController@withdraws")->name('withdraw.fu
 Route::post('/withdraw/create', "backend\FundsController@update")->name('update.withdraw');
 Route::get('/funds/return', "backend\FundsController@destroy")->name('destroy.order');
 
+//Accounts
+
+Route::post('/account', "backend\AccountController@index")->name('account.list');
+Route::post('/account/create', "backend\AccountController@store")->name('account.create');
+
 //TRANSACTIONS

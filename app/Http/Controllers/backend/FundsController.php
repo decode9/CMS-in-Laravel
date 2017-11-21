@@ -173,13 +173,7 @@ class FundsController extends Controller
 
 
     }
-    private function generarCodigo($longitud) {
-        $key = '';
-        $pattern = '1234567890';
-        $max = strlen($pattern)-1;
-        for($i=0;$i < $longitud;$i++) $key .= $pattern{mt_rand(0,$max)};
-        return $key;
-    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -303,9 +297,6 @@ class FundsController extends Controller
     public function edit($id)
     {
         //
-        $post = Post::find($id);
-        $edit = true;
-        return view('back.newpost',['post' => $post, 'edit' => $edit]);
 
     }
 
@@ -316,13 +307,44 @@ class FundsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+
+     private function generate($longitud) {
+         $key = '';
+         $pattern = '1234567890';
+         $max = strlen($pattern)-1;
+         for($i=0;$i < $longitud;$i++) $key .= $pattern{mt_rand(0,$max)};
+         return $key;
+     }
+
+    public function update(Request $request)
     {
         //
         $request->validate([
-            'name' => 'required| max:50',
-            'email' => 'required|max:50'
+            'currency' => 'required',
+            'amount' => 'required| min:03',
+            'accountId' => 'required'
         ]);
+
+        $currency = Currency::Where('symbol', $request->currency)->first();
+        $user = Auth::User();
+
+        $key = '';
+        $pattern = '1234567890';
+        $max = strlen($pattern)-1;
+        for($i=0;$i < 7;$i++) $key .= $pattern{mt_rand(0,$max)};
+
+        $amount = floatval($request->amount);
+        $reference = $key;
+        $fund = New Fund;
+        $fund->amount = abs($amount);
+        $fund->comment = $reference;
+        $fund->currency()->associate($currency);
+        $fund->user()->associate($user);
+        $fund->account()->associate($request->accountId);
+        $fund->save();
+
+        return response()->json(['response' => 'Withdraw success'], 202);
+
 
     }
     /**

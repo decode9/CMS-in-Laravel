@@ -56,7 +56,14 @@ body{
     #table_withdraw_pagination{
         text-align: right !important;
     }
-
+    #addcount{
+        float: right;
+position: relative;
+top: -30px;
+    }
+    #account{
+        width: 90%;
+    }
     .modal{
         display: none; /* Hidden by default */
         position: fixed; /* Stay in place */
@@ -71,7 +78,10 @@ body{
     }
     .modalContent {
         background-color: #fefefe;
-        margin: 15% auto; /* 15% from the top and centered */
+        margin: 0;
+        position: fixed;
+        left: 33%;
+        top: 30%;
         padding: 20px;
         border: 1px solid #888;
         width: 700px;

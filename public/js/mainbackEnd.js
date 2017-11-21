@@ -77,6 +77,8 @@ module.exports = __webpack_require__(44);
 /***/ (function(module, exports) {
 
 $(document).ready(function () {
+
+    /*Menu Functions*/
     $('.menuItem').click(function () {
         if ($('.menuItem').is('#open')) {
             if (!$(this).is('#open')) {
@@ -115,24 +117,10 @@ $(document).ready(function () {
             $('.submenuItem').css('width', 'auto');
         }
     });
-    $('#btnDepo').click(function(){
-        box = "<div class='Modal' id='depositModal' style='display:none;'><div class='modalContent' id='modalDeposit'><h3>Deposit</h3><form class='FundForm' id='DepositForm' enctype='multipart/form-data' ></form></div></div>";
-        $('#rightContent').append(box);
-        $('#DepositForm').append('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Deposit</strong></div>')
-        $('#DepositForm').append("<div><label for='currency'>Currency</label><select id='currency' class='form-control' name='currency'><option value='VEF'>Bolivares</option><option value='USD'>Dollar</option><option value='BTC'>Bitcoin</option><option value='ETH'>Ethereum</option><option value='LTC'>LiteCoin</option></select></div>");
-        $('#DepositForm').append("<div><label for='amount'>Amount</label><input id='amount' name='amount' type='text' class='form-control' required></div>");
-        $('#DepositForm').append("<div><label for='reference'>Reference</label><input id='reference' name='reference' type='text' class='form-control' required></div>");
-        $('#DepositForm').append("<div><label for='file'>File</label><input id='file' name='file' type='file' class='custom-file-input' required></div>");
-        $('#DepositForm').append("<div id='depoButts'></div>");
-        makeBut = $("<button type='button' name='button' id='depoCont'>Make</button>");
-        clsbut = $("<span class='close'>&times;</span>");
-        addMakedButton(makeBut);
-        closeButton(clsbut, '#depositModal');
-        $('#modalDeposit').prepend(clsbut);
-        $('#depoButts').append(makeBut);
-        $('#depositModal').show();
 
-    });
+    /*END menu Functions*/
+
+    /*Generics Functions*/
 
     $('#passwordBut').click(function () {
         $('.passwordField').slideToggle();
@@ -142,98 +130,6 @@ $(document).ready(function () {
         clsbut.click(function(){
                 $(modal).remove();
         });
-    }
-    $('#btnWith').click(function(){
-        box = "<div class='Modal' id='withdrawModal' style='display:none;'><div class='modalContent' id='modalWithdraw'><h3>Withdraw</h3><form class='FundForm' id='WithdrawForm' enctype='multipart/form-data' ></form></div></div>";
-        $('#rightContent').append(box);
-        $('#WithdrawForm').append('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Withdraw</strong></div>')
-        $('#WithdrawForm').append("<div><label for='currency'>Currency</label><select id='currency' class='form-control' name='currency'><option value='VEF'>Bolivares</option><option value='USD'>Dollar</option><option value='BTC'>Bitcoin</option><option value='ETH'>Ethereum</option><option value='LTC'>LiteCoin</option></select></div>");
-        $('#WithdrawForm').append("<div><label for='amount'>Amount</label><input id='amount' name='amount' type='text' class='form-control' required></div>");
-        $('#WithdrawForm').append("<div><label for='account'>Account</label><input id='account' name='account' type='text' class='form-control' required></div>");
-        $('#WithdrawForm').append("<div id='withButts'></div>");
-        makeBut = $("<button type='button' name='button' id='withCont'>Make</button>");
-        clsbut = $("<span class='close'>&times;</span>");
-        addMakewButton(makeBut);
-        closeButton(clsbut, '#withdrawModal');
-        $('#modalWithdraw').prepend(clsbut);
-        $('#withButts').append(makeBut);
-        $('#withdrawModal').show();
-
-    });
-    $.validator.addMethod("letters", function(value, element) {
-        return this.optional(element) || value == value.match(/^[a-zA-Z\s]*$/);
-    });
-    $('#WithdrawForm').validate({
-        rules: {
-            amount:{
-                required: true,
-                minlength: 3,
-                number: true,
-            },
-
-            account:{
-                required: true,
-            },
-        },
-        messages:{
-            amount: "Please introduce only numbers, minimun 3 digits",
-            account: 'Please introduce the account of the withdraw',
-            file: 'Please attach the deposit confirmation file',
-        },
-    })
-    function addMakewButton(makeBut){
-        makeBut.click(function(e){
-            if($('#WithdrawForm').valid()){
-                alterForm('#WithdrawForm', true);
-                $('#depoCont').hide();
-                $('.alert').show();
-                confirmBut = $("<button type='button' name='button' id='withConf'>Confirm</button>");
-                backBut = $("<button type='button' name='button' id='withBack'>Back</button>");
-                backButton(backBut, '#WithdrawForm', 'with');
-                confirmButton(confirmBut);
-                $('#withButts').append(confirmBut);
-                $('#withButts').append(backBut);
-            }
-        })
-    }
-    $('#DepositForm').validate({
-        rules: {
-            amount:{
-                required: true,
-                minlength: 3,
-                number: true,
-            },
-
-            reference:{
-                required: true,
-                minlength: 3,
-            },
-            file:{
-                required: true,
-            }
-        },
-        messages:{
-            amount: "Please introduce only numbers, minimun 3 digits",
-            reference: 'Please introduce the reference of the deposit',
-            file: 'Please attach the deposit confirmation file',
-        },
-    })
-    function addMakedButton(makeBut){
-        makeBut.click(function(e){
-
-
-            if($('#DepositForm').valid()){
-                alterForm('#DepositForm', true);
-                $('#depoCont').hide();
-                $('.alert').show();
-                confirmBut = $("<button type='button' name='button' id='depoConf'>Confirm</button>");
-                backBut = $("<button type='button' name='button' id='depoBack'>Back</button>");
-                backButton(backBut, '#DepositForm', 'depo');
-                confirmButton(confirmBut);
-                $('#depoButts').append(confirmBut);
-                $('#depoButts').append(backBut);
-            }
-        })
     }
 
     function alterForm(form, change){
@@ -247,6 +143,7 @@ $(document).ready(function () {
 
         })
     }
+
     function backButton(backBut, form, target){
         backBut.click(function(){
             alterForm(form, false);
@@ -255,36 +152,7 @@ $(document).ready(function () {
             $('#'+target+'Cont').show();
         })
     }
-    function confirmdButton(confirmBut){
-        confirmBut.click(function(){
 
-                currency = $('#currency').val();
-                reference = $('#reference').val();
-                amount = $('#amount').val();
-                data = new FormData();
-
-                data.append('currency', currency);
-                data.append('amount', amount);
-                data.append('reference', reference);
-                data.append('file', $('#file')[0].files[0]);
-                alert(currency);
-                $.ajax({
-
-                    headers: { 'X-CSRF-Token' : $('meta[name=csrf-token]').attr('content') },
-                    url: '/deposit',
-                    type: 'POST',
-                    dataType: "json",
-                    data: data,
-                    cache: false,
-                contentType: false,
-	               processData: false,
-                    success: function(data){
-                        alert(data.response);
-                    }
-                })
-
-        })
-    }
     function readURL(input) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
@@ -328,6 +196,7 @@ $(document).ready(function () {
             return prices;
         }
     });
+
     var formatNumber = {
         separador: ".", // separador para los miles
         sepDecimal: ',', // separador para los decimales
@@ -347,6 +216,49 @@ $(document).ready(function () {
             return this.formatear(num);
         }
     }
+
+    function Currency(id){
+        switch (id) {
+            case 1:
+                return "VEF";
+                break;
+            case 2:
+                return "USD";
+                break;
+            case 3:
+                return "BTC";
+                break;
+            case 4:
+                return 'LTC';
+                break;
+            case 5:
+                return 'ETH';
+                break;
+        }
+    }
+    function active(act){
+        if(act){
+            return 'Yes';
+        }else{
+            return 'No';
+        }
+    }
+    function updated(vari){
+        if(vari.active){
+            return vari.updated_at;
+        }else{
+            return '';
+        }
+    }
+
+    function closeModal(modal){
+        $(modal).remove();
+    }
+    /*END Generics Functions*/
+
+    /*Funds Page*/
+
+    /*Funds Balances*/
 
     function balances(){
 
@@ -382,41 +294,9 @@ $(document).ready(function () {
         })
     }
 
+    /*END Funds Balance*/
 
 
-    function Currency(id){
-        switch (id) {
-            case 1:
-                return "VEF";
-                break;
-            case 2:
-                return "USD";
-                break;
-            case 3:
-                return "BTC";
-                break;
-            case 4:
-                return 'LTC';
-                break;
-            case 5:
-                return 'ETH';
-                break;
-        }
-    }
-    function active(act){
-        if(act){
-            return 'Yes';
-        }else{
-            return 'No';
-        }
-    }
-    function updated(vari){
-        if(vari.active){
-            return vari.updated_at;
-        }else{
-            return '';
-        }
-    }
 
     /*Search Deposit Table*/
 
@@ -481,6 +361,7 @@ $(document).ready(function () {
                 //Inicio
                 var deposits = data.result;
                 if(deposits.length == 0){
+                    $("#table_withdraw_content").html("");
                     $('#table_withdraw_content').append('<tr><td colspan="7">None</td></tr>');
                 }else{
                 // Put the data into the element you care about.
@@ -490,7 +371,7 @@ $(document).ready(function () {
                     var deposit = deposits[i];
                     // we have to make in steps to add the onclick event
                     var rowResult = $( '<tr></tr>');
-                    var colvalue_1 = $( '<td class="col-sm-12 col-md-2">'+  Currency(deposit.currency_id) +'</td>');
+                    var colvalue_1 = $( '<td class="col-sm-12 col-md-2">'+  deposit.symbol +'</td>');
                     var colvalue_2 = $( '<td class="col-sm-12 col-md-2">'+ formatNumber.num( deposit.amount ) +'</td>');
                     var colvalue_3 = $( '<td class="col-sm-12 col-md-2">'+  deposit.comment  +'</td>');
                     var colvalue_4 = $( '<td class="col-sm-12 col-md-2">'+  deposit.created_at  +'</td>');
@@ -566,6 +447,97 @@ $(document).ready(function () {
         })
     }
 
+    /*Deposit Form*/
+
+    $('#btnDepo').click(function(){
+        box = "<div class='Modal' id='depositModal' style='display:none;'><div class='modalContent' id='modalDeposit'><h3>Deposit</h3><form class='FundForm' id='DepositForm' enctype='multipart/form-data' ></form></div></div>";
+        $('#rightContent').append(box);
+        $('#DepositForm').append('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Deposit</strong></div>')
+        $('#DepositForm').append("<div><label for='currency'>Currency</label><select id='currency' class='form-control' name='currency'><option value='VEF'>Bolivares</option><option value='USD'>Dollar</option><option value='BTC'>Bitcoin</option><option value='ETH'>Ethereum</option><option value='LTC'>LiteCoin</option></select></div>");
+        $('#DepositForm').append("<div><label for='amount'>Amount</label><input id='amount' name='amount' type='text' class='form-control' required></div>");
+        $('#DepositForm').append("<div><label for='reference'>Reference</label><input id='reference' name='reference' type='text' class='form-control' required></div>");
+        $('#DepositForm').append("<div><label for='file'>File</label><input id='file' name='file' type='file' class='custom-file-input' required></div>");
+        $('#DepositForm').append("<div id='depoButts'></div>");
+        makeBut = $("<button type='button' name='button' id='depoCont'>Make</button>");
+        clsbut = $("<span class='close'>&times;</span>");
+        addMakedButton(makeBut);
+        closeButton(clsbut, '#depositModal');
+        $('#modalDeposit').prepend(clsbut);
+        $('#depoButts').append(makeBut);
+        $('#depositModal').show();
+
+    });
+
+    function addMakedButton(makeBut){
+        makeBut.click(function(e){
+            $('#DepositForm').validate({
+                rules: {
+                    amount:{
+                        required: true,
+                        minlength: 3,
+                        number: true,
+                    },
+
+                    reference:{
+                        required: true,
+                        minlength: 3,
+                    },
+                    file:{
+                        required: true,
+                    }
+                },
+                messages:{
+                    amount: "Please introduce only numbers, minimun 3 digits",
+                    reference: 'Please introduce the reference of the deposit',
+                    file: 'Please attach the deposit confirmation file',
+                },
+            })
+
+            if($('#DepositForm').valid()){
+                alterForm('#DepositForm', true);
+                $('#depoCont').hide();
+                $('.alert').show();
+                confirmBut = $("<button type='button' name='button' id='depoConf'>Confirm</button>");
+                backBut = $("<button type='button' name='button' id='depoBack'>Back</button>");
+                backButton(backBut, '#DepositForm', 'depo');
+                confirmButton(confirmBut);
+                $('#depoButts').append(confirmBut);
+                $('#depoButts').append(backBut);
+            }
+        })
+    }
+
+    function confirmdButton(confirmBut){
+        confirmBut.click(function(){
+
+                currency = $('#currency').val();
+                reference = $('#reference').val();
+                amount = $('#amount').val();
+                data = new FormData();
+
+                data.append('currency', currency);
+                data.append('amount', amount);
+                data.append('reference', reference);
+                data.append('file', $('#file')[0].files[0]);
+                alert(currency);
+                $.ajax({
+
+                    headers: { 'X-CSRF-Token' : $('meta[name=csrf-token]').attr('content') },
+                    url: '/deposit/create',
+                    type: 'POST',
+                    dataType: "json",
+                    data: data,
+                    cache: false,
+                contentType: false,
+	               processData: false,
+                    success: function(data){
+                        alert(data.response);
+                    }
+                })
+
+        })
+    }
+
     /*Search Withdraws Table*/
 
     $('#table_withdraw_header_currency').click(function (e) {
@@ -630,6 +602,7 @@ $(document).ready(function () {
 
                 var withdraws = data.result;
                 if(withdraws.length == 0){
+                    $("#table_withdraw_content").html("");
                     $('#table_withdraw_content').append('<tr><td colspan="7">None</td></tr>');
                 }else{
                     $("#table_withdraw_content").html("");
@@ -638,7 +611,7 @@ $(document).ready(function () {
                         var withdraw = withdraws[i];
                         // we have to make in steps to add the onclick event
                         var rowResult = $( '<tr></tr>');
-                        var colvalue_1 = $( '<td class="col-sm-12 col-md-2">'+  Currency(withdraw.currency_id) +'</td>');
+                        var colvalue_1 = $( '<td class="col-sm-12 col-md-2">'+  withdraw.symbol +'</td>');
                         var colvalue_2 = $( '<td class="col-sm-12 col-md-2">'+ formatNumber.num( withdraw.amount ) +'</td>');
                         var colvalue_3 = $( '<td class="col-sm-12 col-md-2">'+  withdraw.comment  +'</td>');
                         var colvalue_4 = $( '<td class="col-sm-12 col-md-2">'+  withdraw.created_at  +'</td>');
@@ -709,15 +682,365 @@ $(document).ready(function () {
             }
         });
     }
+
     function addPagewButton(pagebutton){
         pagebutton.click(function(){
             page = $(this).text();
             searchWithdraw(page);
         })
     }
+
+    /*Withdraw Form*/
+
+    $('#btnWith').click(function(){
+        box = "<div class='Modal' id='withdrawModal' style='display:none;'><div class='modalContent' id='modalWithdraw'><h3>Withdraw</h3><form class='FundForm' id='WithdrawForm' enctype='multipart/form-data' ></form></div></div>";
+        $('#rightContent').append(box);
+        $('#WithdrawForm').append('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Withdraw</strong></div>');
+        $('#WithdrawForm').append("<div><label for='currency'>Currency</label><select id='currency' class='form-control' name='currency'><option value='VEF'>Bolivares</option><option value='USD'>Dollar</option><option value='BTC'>Bitcoin</option><option value='ETH'>Ethereum</option><option value='LTC'>LiteCoin</option></select></div>");
+        $('#WithdrawForm').append("<div><label for='amount'>Amount</label><input id='amount' name='amount' type='number' class='form-control' required></div>");
+        $('#WithdrawForm').append("<div ><input id='accountId' name='accountId' type='text' class='form-control' style='display:none;' required disabled></div>");
+        $('#WithdrawForm').append("<div id='acc'><label for='account'>Account</label><input id='account' name='account' type='text' class='form-control' required disabled></div>");
+        $('#WithdrawForm').append("<div id='withButts'></div>");
+        accountbut = $("<button type='button' name='addcount' id='addcount'>+</button>");
+        makeBut = $("<button type='button' name='button' id='withCont'>Make</button>");
+        clsbut = $("<span class='close'>&times;</span>");
+        addMakewButton(makeBut);
+        addAccount(accountbut);
+        closeButton(clsbut, '#withdrawModal');
+        $('#acc').append(accountbut);
+        $('#modalWithdraw').prepend(clsbut);
+        $('#withButts').append(makeBut);
+        $('#withdrawModal').show();
+
+    });
+
+    function addMakewButton(makeBut){
+        $('#WithdrawForm').validate({
+            rules: {
+                amount:{
+                    required: true,
+                    minlength: 3,
+                    number: true,
+                },
+
+                account:{
+                    required: true,
+                },
+            },
+                messages:{
+                    amount: "Please introduce only numbers, minimun 3 digits",
+                    account: 'Please introduce the account of the withdraw',
+                },
+
+        });
+        makeBut.click(function(e){
+            if($('#WithdrawForm').valid()){
+                alterForm('#WithdrawForm', true);
+                $('#withCont').hide();
+                $('.alert').show();
+                confirmBut = $("<button type='button' name='button' id='withConf'>Confirm</button>");
+                backBut = $("<button type='button' name='button' id='withBack'>Back</button>");
+                backButton(backBut, '#WithdrawForm', 'with');
+                confirmwButton(confirmBut);
+                $('#withButts').append(confirmBut);
+                $('#withButts').append(backBut);
+
+            }
+        })
+    }
+
+    function confirmwButton(confirmBut){
+        confirmBut.click(function(){
+
+                currency = $('#currency').val();
+                amount = $('#amount').val();
+                accountId = $('#accountId').val();
+                $.ajax({
+                    headers: { 'X-CSRF-Token' : $('meta[name=csrf-token]').attr('content') },
+                    url: '/withdraw/create',
+                    type: 'POST',
+                    dataType: "json",
+                    data: {currency:currency, amount:amount, accountId:accountId},
+                    success: function(data){
+                        closeModal('#withdrawModal');
+                        $('#form_withdraw_search').trigger("submit");
+                    }
+                })
+
+        })
+    }
+
+    /*Search Accounts Table*/
+    function addTableManager(){
+        $('#table_account_header_type').click(function (e) {
+          orderTableAccountBy('type');
+        });
+
+         $('#table_account_header_entity').click(function (e) {
+          orderTableAccountBy('entity');
+        });
+
+        $('#table_account_header_address').click(function (e) {
+          orderTableAccountBy('address');
+        });
+        var orderAccountBy = "";
+        var orderAccountDirection = "";
+        var seachAccountValue = "";
+
+        $( "#form_account_search" ).submit(function(e){
+            e.preventDefault();
+            //DESC
+            searchAccountValue = $( "#search_account_value" ).val();
+            searchAccount(1);
+        });
+
+        function orderTableAccountBy(by){
+            if(orderAccountBy === by){
+                if(orderAccountDirection === ""){
+                    orderAccountDirection = "DESC";
+                }else{
+                    orderAccountDirection = "";
+                }
+            }else{
+                orderAccountBy = by;
+                orderAccountDirection = "";
+            }
+            searchAccount(1);
+        }
+        //Get Account Data
+
+        function searchAccount(page){
+            resultPage =  $( "#result_account_page" ).val();
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url: "/account",
+                type: 'post',
+                data: { searchvalue : searchAccountValue, page : page, orderBy :orderAccountBy, orderDirection: orderAccountDirection,    resultPage: resultPage } ,
+                success: function (data) {
+                    //Inicio
+
+                    var accounts = data.result;
+                    if(accounts.length == 0){
+                        $('#table_account_content').append('<tr><td colspan="4">None</td></tr>');
+                    }else{
+                        $("#table_account_content").html("");
+                        for(i=0;i<  accounts.length;i++)
+                        {
+                            var account = accounts[i];
+                            // we have to make in steps to add the onclick event
+                            var rowResult = $( '<tr></tr>');
+                            var colvalue_1 = $( '<td class="col-sm-12 col-md-2">'+  account.type +'</td>');
+                            var colvalue_2 = $( '<td class="col-sm-12 col-md-2">'+ account.entity +'</td>');
+                            var colvalue_3 = $( '<td class="col-sm-12 col-md-2">'+  account.address  +'</td>');
+                            var colvalue_4 = $( '<td class="col-sm-12 col-md-2"></td>');
+                            var selectbut = $("<button type='button' name='button' id='accSelect'>Select</button>");
+                            selectAccount(account.id, account.address, selectbut);
+                            colvalue_4.append(selectbut);
+                            rowResult.append(colvalue_1);
+                            rowResult.append(colvalue_2);
+                            rowResult.append(colvalue_3);
+                            rowResult.append(colvalue_4);
+
+                            $("#table_account_content").append(rowResult);
+                        }
+                        $("#table_account_pagination").html("");
+                        page = parseInt(data.page);
+                        var total = data.total;
+                        var resultPage =  $( "#result_account_page" ).val();
+                        var totalPages = Math.ceil(total / resultPage);
+                        if(page === 1){
+                            maxPage = page + 2;
+                            totalPages = (maxPage < totalPages) ?  maxPage: totalPages;
+                            var pageList = $( '<ul class="pagination"></ul>');
+                            for(i = page ; i <= totalPages; i++){
+                                pagebutton = $( '<li class="page_account">'+ i +'</li>');
+                                pageList.append(pagebutton);
+                                addPageButton(pagebutton);
+                            }
+                            $("#table_account_pagination").append(pageList);
+                        }else if(page === totalPages){
+                            page = page - 2;
+                            if(page < 1){
+                                page = 1;
+                            }
+                            totalPages = ( page + 2 < totalPages) ?  (page + 2): totalPages;
+                            var pageList = $( '<ul class="pagination"></ul>');
+                            for(i = page ; i <= totalPages; i++){
+                                pagebutton = $( '<li class="page_account">'+ i +'</li>');
+                                pageList.append(pagebutton);
+                                addPageButton(pagebutton);
+                            }
+                            $("#table_account_pagination").append(pageList);
+                        }else{
+                            page = page - 2;
+                            if(page < 1){
+                                page = 1;
+                            }
+                            totalPages = ( page + 4 < totalPages) ?  (page + 2): totalPages;
+                            var pageList = $( '<ul class="pagination"></ul>');
+                            for(i = page ; i <= totalPages; i++){
+                                pagebutton = $( '<li class="page_account">'+ i +'</li>');
+                                pageList.append(pagebutton);
+                                addPageaButton(pagebutton);
+                            }
+
+                            $("#table_account_pagination").append(pageList);
+                        }
+                    }
+                    // Put the data into the element you care about.
+
+                },
+                // Fin
+                error: function (error) {
+                    ReadError(error);
+                }
+            });
+        }
+        function addPageaButton(pagebutton){
+            pagebutton.click(function(){
+                page = $(this).text();
+                searchAccount(page);
+            })
+        }
+        $('#form_account_search').trigger("submit");
+
+        function selectAccount(id, address, butslect){
+            butslect.click(function(){
+                $('#accountId').val(id);
+                $('#account').val(address);
+                closeModal('#modalAccount');
+            })
+        }
+    }
+
+    /*Account Management*/
+
+    function addAccount(butaccount){
+        butaccount.click(function(){
+            box = $("<div class='modalContent' id='modalAccount'><h3>Accounts</h3></div>");
+            table = $('<table id="table_account" class="table table-responsive table-striped table-hover">');
+            thead = $('<thead class="thead-default"></thead>');
+            row1 = $('<tr><th colspan="2">Accounts</th><th colspan="2"><div class="col-lg-12"><form id="form_account_search" class="form_search"><div class="input-group"><input id="search_account_value" type="text" class="form-control" placeholder="Search Account"><span class="input-group-btn"><button type="submit" class="btn btn-default" value="Go!"><i id="search_icon" class="fa fa-search" aria-hidden="true"></i></button></span></div><!-- /input-group --></form></div><!-- /.col-lg-6 --></th></tr>');
+            row2 = $('<tr><th id="table_account_header_type" style="cursor: pointer;">Type</th><th id="table_account_header_entity" style="cursor: pointer;">Entity</th><th id="table_account_header_address" style="cursor: pointer;">Address</th><th>Options</th></tr>');
+            tfoot = $('<tfoot><tr><th colspan="2" id="account_page"><select id="result_account_page"><option value="5" selected="selected">5</option><option value="10"  >10</option><option value="20">20</option><option value="50">50</option></select></th><th id="table_account_pagination" colspan="2"></th></tr></tfoot>');
+            tbody = $('<tbody id="table_account_content"></tbody>');
+            clsbut = $("<span class='close'>&times;</span>");
+            createacc = $("<button type='button' name='button' id='createacc'>Create</button>");
+            closeButton(clsbut, '#modalAccount');
+            createAccount(createacc);
+            thead.append(row1);
+            thead.append(row2);
+            table.append(thead);
+            table.append(tfoot);
+            table.append(tbody);
+            box.append(table);
+            $('.Modal').append(box);
+            $('#modalAccount').append(createacc);
+            $('#modalAccount').prepend(clsbut);
+            addTableManager();
+        });
+    };
+
+
+    function createAccount(createacc){
+        createacc.click(function(){
+            box = $("<div class='modalContent' id='modalCreateAccount'><h3>Accounts</h3><form class='FundForm' id='AccountForm' enctype='multipart/form-data' ></form></div>");
+            alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Withdraw</strong></div>');
+            select1 = $("<div><label for='type'>Type</label><select id='type' class='form-control' name='type'><option value='bank'>Bank Account</option><option value='crypto'>CryptoCurrency</option></select></div>");
+            input1 = $("<div id='entyCont'><label for='entity'>Entity</label><input id='entity' name='entity' type='text' class='form-control' required></div>");
+            input2 = $("<div><label for='address'>Address</label><input id='address' name='address' type='text' class='form-control' required></div>");
+            $('.Modal').append(box);
+            $('#AccountForm').append(alert);
+            $('#AccountForm').append(select1);
+            $('#AccountForm').append(input1);
+            $('#AccountForm').append(input2);
+            $('#AccountForm').append("<div id='accButts'></div>");
+            clsbut = $("<span class='close'>&times;</span>");
+            closeButton(clsbut, '#modalCreateAccount');
+            makeBut = $("<button type='button' name='button' id='accCont'>Make</button>");
+            addMakeaButton(makeBut);
+            $('#modalCreateAccount').prepend(clsbut);
+            $('#accButts').append(makeBut);
+            changeEntity();
+        });
+    }
+    function changeEntity(){
+        $('#type').change(function(){
+            selection = $('#type').val();
+            if(selection == 'bank'){
+                $('#entyCont').empty();
+                $('#entyCont').append("<label for='entity'>Entity</label><input id='entity' name='entity' type='text' class='form-control' required>");
+            }else if(selection == 'crypto'){
+                $('#entyCont').empty();
+                $('#entyCont').append("<label for='entity'>Entity</label><select id='entity' class='form-control' name='entity'><option value='BTC'>BTC</option><option value='LTC'>LTC</option><option value='ETH'>ETH</option></select>");
+            }
+        })
+    }
+    function addMakeaButton(makeBut){
+        $('#AccountForm').validate({
+            rules: {
+                entity:{
+                    required: true,
+                    minlength: 3,
+
+                },
+                account:{
+                    required: true,
+                    minlength: 8,
+                },
+            },
+                messages:{
+                    entity: "Please introduce the entity of the account",
+                    account: 'Please introduce the account of the withdraw',
+                },
+
+        });
+        makeBut.click(function(e){
+            if($('#AccountForm').valid()){
+                alterForm('#AccountForm', true);
+                $('#accCont').hide();
+                $('.alert').show();
+                confirmBut = $("<button type='button' name='button' id='accConf'>Confirm</button>");
+                backBut = $("<button type='button' name='button' id='accBack'>Back</button>");
+                backButton(backBut, '#AccountForm', 'acc');
+                confirmaButton(confirmBut);
+                $('#accButts').append(confirmBut);
+                $('#accButts').append(backBut);
+
+            }
+        })
+    }
+
+    function confirmaButton(confirmBut){
+        confirmBut.click(function(){
+
+                type = $('#type').val();
+                entity = $('#entity').val();
+                address = $('#address').val();
+
+                $.ajax({
+
+                    headers: { 'X-CSRF-Token' : $('meta[name=csrf-token]').attr('content') },
+                    url: '/account/create',
+                    type: 'POST',
+                    dataType: "json",
+                    data: {type: type, entity: entity, address: address},
+                    success: function(data){
+                        addTableManager();
+                        closeModal('#modalCreateAccount');
+                    }
+                })
+
+        })
+    }
+
     $('#form_deposit_search').trigger("submit");
     $('#form_withdraw_search').trigger("submit");
     balances();
+
+    /*END Funds Page*/
 });
 
 /***/ })
