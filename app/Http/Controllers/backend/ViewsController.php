@@ -23,4 +23,7 @@ class ViewsController extends Controller
     public function funds(){
         return view('back.funds');
     }
+    public function orders(){
+        return view('back.orders');
+    }
 }

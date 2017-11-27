@@ -64,6 +64,9 @@ top: -30px;
     #account{
         width: 90%;
     }
+    .pages{
+        margin: 0 2px;
+    }
     .modal{
         display: none; /* Hidden by default */
         position: fixed; /* Stay in place */
@@ -85,6 +88,8 @@ top: -30px;
         padding: 20px;
         border: 1px solid #888;
         width: 700px;
+        box-shadow: 0px 0px 14px 1px black;
+        border-radius: 10px;
     }
     .fundAction{
         height: 50px;
@@ -109,9 +114,7 @@ top: -30px;
 @section('content')
     <div class="fundContainer">
         <div class="userBalance" id="balanceUser">
-            <div class="titleBalance">
-                <h3>Balance</h3>
-            </div>
+            
 
         </div>
         <div class="fundAction">

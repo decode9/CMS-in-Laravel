@@ -58,7 +58,14 @@ Route::post('/deposit', "backend\FundsController@deposits")->name('deposit.funds
 Route::post('/deposit/create', "backend\FundsController@store")->name('store.deposit');
 Route::post('/withdraw', "backend\FundsController@withdraws")->name('withdraw.funds');
 Route::post('/withdraw/create', "backend\FundsController@update")->name('update.withdraw');
-Route::get('/funds/return', "backend\FundsController@destroy")->name('destroy.order');
+Route::get('/funds/return', "backend\FundsController@destroy")->name('destroy.funds');
+
+//Orders
+
+Route::get('/orders', "backend\ViewsController@orders")->name('orders');
+Route::post('/orders/btc', "backend\OrdersController@btcOrders")->name('orders.btc');
+Route::post('/orders/btc/buy', "backend\OrdersController@btcBuy")->name('buy.btc');
+Route::post('/orders/btc/sell', "backend\OrdersController@btcSell")->name('sell.btc');
 
 //Accounts
 

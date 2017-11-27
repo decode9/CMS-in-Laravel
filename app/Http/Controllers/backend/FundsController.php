@@ -169,7 +169,7 @@ class FundsController extends Controller
 
         //Get fees by month and year
 
-        return response()->json(['page' => $page, 'result' => $deposits, 'total' => $total,], 202);
+        return response()->json(['page' => $page, 'result' => $deposits, 'total' => $total, 'user' => $user->name], 202);
 
 
     }
@@ -202,7 +202,6 @@ class FundsController extends Controller
                     ->orWhere('funds.created_at', 'like', '%'.$searchValue.'%');
                 });
         }
-
         //Order By
 
         if($orderBy != '')
@@ -214,9 +213,9 @@ class FundsController extends Controller
                 $query->orderBy($orderBy);
             }
         }else if($orderDirection != ''){
-            $query->orderBy('funds.created_at', 'desc');
+            $query->orderBy('funds.created_at');
         }else{
-             $query->orderBy('funds.created_at');
+             $query->orderBy('funds.created_at', 'desc');
         }
 
         if($resultPage == null || $resultPage == 0)
@@ -238,7 +237,7 @@ class FundsController extends Controller
 
         //Get fees by month and year
 
-        return response()->json(['page' => $page, 'result' => $deposits, 'total' => $total,], 202);
+        return response()->json(['page' => $page, 'result' => $deposits, 'total' => $total, 'user' => $user->name], 202);
 
 
     }
@@ -274,7 +273,7 @@ class FundsController extends Controller
         $fund->user()->associate($user);
         $fund->save();
 
-        return response()->json(['response' => 'Deposit success', 'currency' => $currency->id], 202);
+        return response()->json(['message' => 'Your Deposit #'. $fund->comment .' was processed successfully', 'deposit' => $fund, 'user' => $user->name, 'symbol' => $currency->symbol], 202);
     }
 
     /**
@@ -316,6 +315,7 @@ class FundsController extends Controller
          return $key;
      }
 
+
     public function update(Request $request)
     {
         //
@@ -333,18 +333,17 @@ class FundsController extends Controller
         $max = strlen($pattern)-1;
         for($i=0;$i < 7;$i++) $key .= $pattern{mt_rand(0,$max)};
 
-        $amount = floatval($request->amount);
+
         $reference = $key;
         $fund = New Fund;
-        $fund->amount = abs($amount);
+        $fund->amount = $request->amount;
         $fund->comment = $reference;
         $fund->currency()->associate($currency);
         $fund->user()->associate($user);
         $fund->account()->associate($request->accountId);
         $fund->save();
 
-        return response()->json(['response' => 'Withdraw success'], 202);
-
+        return response()->json(['message' => 'Your Withdraw #'. $fund->comment .' was processed successfully', 'withdraw' => $fund, 'user' => $user->name, 'symbol' => $currency->symbol], 202);
 
     }
     /**
@@ -356,10 +355,5 @@ class FundsController extends Controller
     public function destroy($id)
     {
 
-        $post = Post::find($id);
-
-        $post->delete();
-        $url = url('/') . '/news';
-        return view('back.success',['url' => $url, 'response' => 'Congratulations the news as been deleted']);
     }
 }

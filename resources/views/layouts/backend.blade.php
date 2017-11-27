@@ -62,8 +62,10 @@
                                 <a href="{{route('create.news')}}"><li>Create Post</li></a>
                                 <a href="{{route('news')}}"><li>List Posts</li></a>
                             </ul>
-                        </li>
-                        <a href="{{route('funds')}}"><li class="menuItem menuFunds"><i class="fa fa-money"></i> <p>Funds</p>
+                        <a href="{{route('funds')}}"><li class="menuItem menuFunds">
+                            <i class="fa fa-money"></i><p>Funds</p>
+                        </li></a>
+                        <a href="{{route('orders')}}"><li class="menuItem menuFunds"><i class="fa fa-list"></i> <p>Orders</p>
                         </li></a>
                     </ul>
                 </div>

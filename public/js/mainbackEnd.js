@@ -217,6 +217,13 @@ $(document).ready(function () {
         }
     }
 
+    function formatInput(input){
+        input.change(function(){
+            value = $(this).val();
+            val = formatNumber.num(value);
+            $(this).val(val);
+        })
+    }
     function Currency(id){
         switch (id) {
             case 1:
@@ -254,6 +261,35 @@ $(document).ready(function () {
     function closeModal(modal){
         $(modal).remove();
     }
+
+    function opModalPrint(message, data, symbol, user, type){
+        modal = "<div class='Modal' id='opModal' style='display:none;'><div class='modalContent' id='modalop'><h3>Success</h3><p>"+message+"</p></div></div>";
+        var printbut = $("<button type='button' name='button' id='opPrint'>Receipt</button>");
+        printRecipient(user, data, symbol, type, printbut);
+        clsbut = $("<span class='close'>&times;</span>");
+        closeButton(clsbut, '#opModal');
+        $('#rightContent').append(modal);
+        $('#modalop').prepend(clsbut);
+        $('#modalop').append(printbut);
+        $('#opModal').show();
+
+    }
+
+    function printRecipient(user, data, symbol, type , printbut ){
+        printbut.click(function(){
+            if(type == "deposit"){
+                table = "<table style='width: 300px; text-align: center; border: 1px solid black; vertical-align: middle; margin: 0 auto' ><thead><tr><td><img src='/img/Logoblanco.png' width='100px'/></td><td><h2>Deposit Receipt</h2></td></tr></thead><tbody ><tr><td style='padding: 10px 0px;' >Currency</td><td style='padding: 10px 0px;'>" + symbol + "</td></tr><tr><td style='padding: 10px 0px;'>Amount</td><td style='padding: 10px 0px;'>" + formatNumber.num(data.amount) + "</td></tr><tr><td style='padding: 10px 0px;'>Reference</td><td style='padding: 10px 0px;'>"+data.comment+"</td></tr><tr><td style='padding: 10px 0px;'>From</td><td style='padding: 10px 0px;'>"+user+"</td></tr><tr><td style='padding: 10px 0px;'>To</td><td style='padding: 10px 0px;'>Krypto Group</td></tr></tbody></table>";
+            }else{
+                table = "<table style='width: 300px; text-align: center; border: 1px solid black; vertical-align: middle; margin: 0 auto' ><thead><tr><td><img src='/img/Logoblanco.png' width='100px'/></td><td><h2>Withdraw Receipt</h2></td></tr></thead><tbody ><tr><td style='padding: 10px 0px;' >Currency</td><td style='padding: 10px 0px;'>" + symbol + "</td></tr><tr><td style='padding: 10px 0px;'>Amount</td><td style='padding: 10px 0px;'>" + formatNumber.num(data.amount) + "</td></tr><tr><td style='padding: 10px 0px;'>Reference</td><td style='padding: 10px 0px;'>"+data.comment+"</td></tr><tr><td style='padding: 10px 0px;'>From</td><td style='padding: 10px 0px;'>Krypto Group</td></tr><tr><td style='padding: 10px 0px;'>To</td><td style='padding: 10px 0px;'>"+user+"</td></tr></tbody></table>";
+            }
+
+
+            newWin= window.open("");
+            newWin.document.write(table);
+            newWin.print();
+            newWin.close();
+        })
+    }
     /*END Generics Functions*/
 
     /*Funds Page*/
@@ -271,7 +307,7 @@ $(document).ready(function () {
             url: '/funds/transactions',
             success: function(data){
 
-                box = "<div class='balance'><div id='unconfirmed'><h3>Unconfirmed Balance</h3></div><div id= 'confirmed'><h3>Confirmed Balance</h3></div></div>";
+                box = "<div class='titleBalance'><h3>Balance</h3></div><div class='balance'><div id='unconfirmed'><h3>Unconfirmed Balance</h3></div><div id= 'confirmed'><h3>Confirmed Balance</h3></div></div>";
 
                 vefct = data.currencyBalance.Confirmed[0];
                 usdct = data.currencyBalance.Confirmed[1];
@@ -286,10 +322,10 @@ $(document).ready(function () {
                 ltcut = data.currencyBalance.Unconfirmed[4];
 
 
-
+                $('#balanceUser').html("");
                 $('#balanceUser').append(box);
-                $('#unconfirmed').append('<p>BsF. '+formatNumber.num(vefut)+'</p><p>$ '+formatNumber.num(usdut)+'</p><p>BTC '+formatNumber.num(btcut)+' ~ $ '+ formatNumber.num((btcut * btcprice).toFixed(2)) +'</p><p>LTC '+formatNumber.num(ltcut)+' ~ $ '+ formatNumber.num((ltcut * ltcprice).toFixed(2)) +'</p><p>ETH '+formatNumber.num(ethut)+' ~ $ '+ formatNumber.num((ethut * ethprice).toFixed(2)) +'</p>');
-                $('#confirmed').append('<p>BsF. '+formatNumber.num(vefct)+'</p><p>$ '+formatNumber.num(usdct)+'</p><p>BTC '+formatNumber.num(btcct)+' ~ $ '+ formatNumber.num((btcct * btcprice).toFixed(2)) +'</p><p>LTC '+formatNumber.num(ltcct)+' ~ $ '+ formatNumber.num((ltcct * ltcprice).toFixed(2)) +'</p><p>ETH '+formatNumber.num(ethct)+' ~ $ '+ formatNumber.num((ethct * ethprice).toFixed(2)) +'</p>');
+                $('#unconfirmed').append('<p id="VEFUT">BsF. '+formatNumber.num(vefut)+'</p><p id="USDUT">$ '+formatNumber.num(usdut)+'</p><p id="BTCUT">BTC '+formatNumber.num(btcut)+' ~ $ '+ formatNumber.num((btcut * btcprice).toFixed(2)) +'</p><p id="LTCUT">LTC '+formatNumber.num(ltcut)+' ~ $ '+ formatNumber.num((ltcut * ltcprice).toFixed(2)) +'</p><p id="ETHUT">ETH '+formatNumber.num(ethut)+' ~ $ '+ formatNumber.num((ethut * ethprice).toFixed(2)) +'</p>');
+                $('#confirmed').append('<pid="VEFCT">BsF. '+formatNumber.num(vefct)+'</p><p id="USDCT">$ '+formatNumber.num(usdct)+'</p><p id="BTCCT">BTC '+formatNumber.num(btcct)+' ~ $ '+ formatNumber.num((btcct * btcprice).toFixed(2)) +'</p><p id="LTCCT">LTC '+formatNumber.num(ltcct)+' ~ $ '+ formatNumber.num((ltcct * ltcprice).toFixed(2)) +'</p><p id="ETHCT">ETH '+formatNumber.num(ethct)+' ~ $ '+ formatNumber.num((ethct * ethprice).toFixed(2)) +'</p>');
             }
         })
     }
@@ -360,8 +396,10 @@ $(document).ready(function () {
             success: function (data) {
                 //Inicio
                 var deposits = data.result;
+                var user = data.user;
                 if(deposits.length == 0){
                     $("#table_withdraw_content").html("");
+
                     $('#table_withdraw_content').append('<tr><td colspan="7">None</td></tr>');
                 }else{
                 // Put the data into the element you care about.
@@ -379,7 +417,9 @@ $(document).ready(function () {
                     var colvalue_6 = $( '<td class="col-sm-12 col-md-2">'+  updated(deposit)  +'</td>');
 
                     var colvalue_7 = $( '<td class="col-sm-12 col-md-2"></td>');
-
+                    var printbut = $("<button type='button' name='button' id='depoPrint'>Receipt</button>");
+                    printRecipient(user, deposit, deposit.symbol , 'deposit', printbut);
+                    colvalue_7.append(printbut);
                     rowResult.append(colvalue_1);
                     rowResult.append(colvalue_2);
                     rowResult.append(colvalue_3);
@@ -399,7 +439,7 @@ $(document).ready(function () {
                     totalPages = (maxPage < totalPages) ?  maxPage: totalPages;
                     var pageList = $( '<ul class="pagination"></ul>');
                     for(i = page ; i <= totalPages; i++){
-                        pagebutton = $( '<li class="page_Deposit">'+ i +'</li>');
+                        pagebutton = $( '<li class="page_Deposit pages">'+ i +'</li>');
                         pageList.append(pagebutton);
                         addPageButton(pagebutton);
                     }
@@ -412,7 +452,7 @@ $(document).ready(function () {
                     totalPages = ( page + 2 < totalPages) ?  (page + 2): totalPages;
                     var pageList = $( '<ul class="pagination"></ul>');
                     for(i = page ; i <= totalPages; i++){
-                        pagebutton = $( '<li class="page_Deposit">'+ i +'</li>');
+                        pagebutton = $( '<li class="page_Deposit pages">'+ i +'</li>');
                         pageList.append(pagebutton);
                         addPageButton(pagebutton);
                     }
@@ -425,7 +465,7 @@ $(document).ready(function () {
                     totalPages = ( page + 4 < totalPages) ?  (page + 2): totalPages;
                     var pageList = $( '<ul class="pagination"></ul>');
                     for(i = page ; i <= totalPages; i++){
-                        pagebutton = $( '<li class="page_Deposit">'+ i +'</li>');
+                        pagebutton = $( '<li class="page_Deposit pages">'+ i +'</li>');
                         pageList.append(pagebutton);
                         addPageButton(pagebutton);
                     }
@@ -447,6 +487,9 @@ $(document).ready(function () {
         })
     }
 
+    $('#result_deposit_page').change(function(){
+        $('#form_deposit_search').trigger("submit");
+    })
     /*Deposit Form*/
 
     $('#btnDepo').click(function(){
@@ -454,7 +497,10 @@ $(document).ready(function () {
         $('#rightContent').append(box);
         $('#DepositForm').append('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Deposit</strong></div>')
         $('#DepositForm').append("<div><label for='currency'>Currency</label><select id='currency' class='form-control' name='currency'><option value='VEF'>Bolivares</option><option value='USD'>Dollar</option><option value='BTC'>Bitcoin</option><option value='ETH'>Ethereum</option><option value='LTC'>LiteCoin</option></select></div>");
-        $('#DepositForm').append("<div><label for='amount'>Amount</label><input id='amount' name='amount' type='text' class='form-control' required></div>");
+        $('#DepositForm').append("<div id='amountD'><label for='amount'>Amount</label></div>");
+        input = $("<input id='amount' name='amount' type='text' class='form-control' required>");
+        formatInput(input);
+        $('#amountD').append(input);
         $('#DepositForm').append("<div><label for='reference'>Reference</label><input id='reference' name='reference' type='text' class='form-control' required></div>");
         $('#DepositForm').append("<div><label for='file'>File</label><input id='file' name='file' type='file' class='custom-file-input' required></div>");
         $('#DepositForm').append("<div id='depoButts'></div>");
@@ -469,13 +515,17 @@ $(document).ready(function () {
     });
 
     function addMakedButton(makeBut){
+
         makeBut.click(function(e){
+            jQuery.validator.addMethod("amount", function(value, element) {
+                    return this.optional(element) || /^(\d{1}\.)?(\d+\.?)+(,\d{2})?$/i.test(value);
+                });
             $('#DepositForm').validate({
                 rules: {
                     amount:{
                         required: true,
-                        minlength: 3,
-                        number: true,
+                        minlength: 1,
+                        amount: true,
                     },
 
                     reference:{
@@ -487,7 +537,7 @@ $(document).ready(function () {
                     }
                 },
                 messages:{
-                    amount: "Please introduce only numbers, minimun 3 digits",
+                    amount: "Please introduce a valid amount, minimun 3 digits",
                     reference: 'Please introduce the reference of the deposit',
                     file: 'Please attach the deposit confirmation file',
                 },
@@ -500,7 +550,7 @@ $(document).ready(function () {
                 confirmBut = $("<button type='button' name='button' id='depoConf'>Confirm</button>");
                 backBut = $("<button type='button' name='button' id='depoBack'>Back</button>");
                 backButton(backBut, '#DepositForm', 'depo');
-                confirmButton(confirmBut);
+                confirmdButton(confirmBut);
                 $('#depoButts').append(confirmBut);
                 $('#depoButts').append(backBut);
             }
@@ -512,14 +562,14 @@ $(document).ready(function () {
 
                 currency = $('#currency').val();
                 reference = $('#reference').val();
-                amount = $('#amount').val();
+                amount = $('#amount').val().replace(/\./g, '');
+                amount = amount.replace(/,/g, '.');
                 data = new FormData();
 
                 data.append('currency', currency);
                 data.append('amount', amount);
                 data.append('reference', reference);
                 data.append('file', $('#file')[0].files[0]);
-                alert(currency);
                 $.ajax({
 
                     headers: { 'X-CSRF-Token' : $('meta[name=csrf-token]').attr('content') },
@@ -528,10 +578,17 @@ $(document).ready(function () {
                     dataType: "json",
                     data: data,
                     cache: false,
-                contentType: false,
-	               processData: false,
+                    contentType: false,
+	                processData: false,
                     success: function(data){
-                        alert(data.response);
+                        closeModal('#depositModal');
+                        $('#form_deposit_search').trigger("submit");
+                        balances();
+                        message = data.message;
+                        deposit = data.deposit;
+                        user = data.user;
+                        symbol = data.symbol;
+                        opModalPrint(message, deposit, symbol, user, 'deposit');
                     }
                 })
 
@@ -599,7 +656,7 @@ $(document).ready(function () {
             data: { searchvalue : searchWithdrawValue, page : page, orderBy :orderWithdrawBy, orderDirection: orderWithdrawDirection,    resultPage: resultPage } ,
             success: function (data) {
                 //Inicio
-
+                var user = data.user;
                 var withdraws = data.result;
                 if(withdraws.length == 0){
                     $("#table_withdraw_content").html("");
@@ -619,7 +676,9 @@ $(document).ready(function () {
                         var colvalue_6 = $( '<td class="col-sm-12 col-md-2">'+  updated(withdraw)  +'</td>');
 
                         var colvalue_7 = $( '<td class="col-sm-12 col-md-2"></td>');
-
+                        var printbut = $("<button type='button' name='button' id='withPrint'>Receipt</button>");
+                        printRecipient(user, withdraw, withdraw.symbol , 'withdraw', printbut);
+                        colvalue_7.append(printbut);
                         rowResult.append(colvalue_1);
                         rowResult.append(colvalue_2);
                         rowResult.append(colvalue_3);
@@ -639,7 +698,7 @@ $(document).ready(function () {
                         totalPages = (maxPage < totalPages) ?  maxPage: totalPages;
                         var pageList = $( '<ul class="pagination"></ul>');
                         for(i = page ; i <= totalPages; i++){
-                            pagebutton = $( '<li class="page_withdraw">'+ i +'</li>');
+                            pagebutton = $( '<li class="page_withdraw pages">'+ i +'</li>');
                             pageList.append(pagebutton);
                             addPageButton(pagebutton);
                         }
@@ -652,7 +711,7 @@ $(document).ready(function () {
                         totalPages = ( page + 2 < totalPages) ?  (page + 2): totalPages;
                         var pageList = $( '<ul class="pagination"></ul>');
                         for(i = page ; i <= totalPages; i++){
-                            pagebutton = $( '<li class="page_Withdraw">'+ i +'</li>');
+                            pagebutton = $( '<li class="page_Withdraw pages">'+ i +'</li>');
                             pageList.append(pagebutton);
                             addPageButton(pagebutton);
                         }
@@ -665,7 +724,7 @@ $(document).ready(function () {
                         totalPages = ( page + 4 < totalPages) ?  (page + 2): totalPages;
                         var pageList = $( '<ul class="pagination"></ul>');
                         for(i = page ; i <= totalPages; i++){
-                            pagebutton = $( '<li class="page_Withdraw">'+ i +'</li>');
+                            pagebutton = $( '<li class="page_Withdraw pages">'+ i +'</li>');
                             pageList.append(pagebutton);
                             addPagewButton(pagebutton);
                         }
@@ -690,6 +749,9 @@ $(document).ready(function () {
         })
     }
 
+    $('#result_withdraw_page').change(function(){
+        $('#form_withdraw_search').trigger("submit");
+    })
     /*Withdraw Form*/
 
     $('#btnWith').click(function(){
@@ -697,7 +759,10 @@ $(document).ready(function () {
         $('#rightContent').append(box);
         $('#WithdrawForm').append('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Withdraw</strong></div>');
         $('#WithdrawForm').append("<div><label for='currency'>Currency</label><select id='currency' class='form-control' name='currency'><option value='VEF'>Bolivares</option><option value='USD'>Dollar</option><option value='BTC'>Bitcoin</option><option value='ETH'>Ethereum</option><option value='LTC'>LiteCoin</option></select></div>");
-        $('#WithdrawForm').append("<div><label for='amount'>Amount</label><input id='amount' name='amount' type='number' class='form-control' required></div>");
+        $('#WithdrawForm').append("<div id='amountW'><label for='amount'>Amount</label></div>");
+        input = $("<input id='amount' name='amount' type='text' class='form-control' required>");
+        formatInput(input);
+        $('#amountW').append(input);
         $('#WithdrawForm').append("<div ><input id='accountId' name='accountId' type='text' class='form-control' style='display:none;' required disabled></div>");
         $('#WithdrawForm').append("<div id='acc'><label for='account'>Account</label><input id='account' name='account' type='text' class='form-control' required disabled></div>");
         $('#WithdrawForm').append("<div id='withButts'></div>");
@@ -715,12 +780,15 @@ $(document).ready(function () {
     });
 
     function addMakewButton(makeBut){
+        jQuery.validator.addMethod("amount", function(value, element) {
+                return this.optional(element) || /^(\d{1}\.)?(\d+\.?)+(,\d{2})?$/i.test(value);
+            });
         $('#WithdrawForm').validate({
             rules: {
                 amount:{
                     required: true,
-                    minlength: 3,
-                    number: true,
+                    minlength: 1,
+                    amount: true,
                 },
 
                 account:{
@@ -728,23 +796,34 @@ $(document).ready(function () {
                 },
             },
                 messages:{
-                    amount: "Please introduce only numbers, minimun 3 digits",
+                    amount: "Please introduce only numbers, minimun 1 digits",
                     account: 'Please introduce the account of the withdraw',
                 },
 
         });
+
         makeBut.click(function(e){
             if($('#WithdrawForm').valid()){
-                alterForm('#WithdrawForm', true);
-                $('#withCont').hide();
-                $('.alert').show();
-                confirmBut = $("<button type='button' name='button' id='withConf'>Confirm</button>");
-                backBut = $("<button type='button' name='button' id='withBack'>Back</button>");
-                backButton(backBut, '#WithdrawForm', 'with');
-                confirmwButton(confirmBut);
-                $('#withButts').append(confirmBut);
-                $('#withButts').append(backBut);
-
+                amount = $('#amount').val();
+                currency = $('#currency').val();
+                balance = $( '#'+currency+'CT').val();
+                if(amount > balance){
+                    $('.alert').empty();
+                    $('.alert').removeClass('alert-success');
+                    $('.alert').addClass('alert-danger');
+                    $('.alert').append('<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>You dont have enough funds, please tried with a smaller amount</strong>');
+                    $('.alert').show();
+                }else{
+                    alterForm('#WithdrawForm', true);
+                    $('#withCont').hide();
+                    $('.alert').show();
+                    confirmBut = $("<button type='button' name='button' id='withConf'>Confirm</button>");
+                    backBut = $("<button type='button' name='button' id='withBack'>Back</button>");
+                    backButton(backBut, '#WithdrawForm', 'with');
+                    confirmwButton(confirmBut);
+                    $('#withButts').append(confirmBut);
+                    $('#withButts').append(backBut);
+                }
             }
         })
     }
@@ -753,8 +832,11 @@ $(document).ready(function () {
         confirmBut.click(function(){
 
                 currency = $('#currency').val();
-                amount = $('#amount').val();
+                amount = $('#amount').val().replace(/\./g, '');
+                amount = amount.replace(/,/g, '.');
+                amount = parseInt($('#amount').val()) * -1;
                 accountId = $('#accountId').val();
+
                 $.ajax({
                     headers: { 'X-CSRF-Token' : $('meta[name=csrf-token]').attr('content') },
                     url: '/withdraw/create',
@@ -764,6 +846,12 @@ $(document).ready(function () {
                     success: function(data){
                         closeModal('#withdrawModal');
                         $('#form_withdraw_search').trigger("submit");
+                        balances();
+                        message = data.message;
+                        deposit = data.withdraw;
+                        user = data.user;
+                        symbol = data.symbol;
+                        opModalPrint(message, deposit, symbol, user, 'withdraw');
                     }
                 })
 
@@ -836,7 +924,7 @@ $(document).ready(function () {
                             var colvalue_3 = $( '<td class="col-sm-12 col-md-2">'+  account.address  +'</td>');
                             var colvalue_4 = $( '<td class="col-sm-12 col-md-2"></td>');
                             var selectbut = $("<button type='button' name='button' id='accSelect'>Select</button>");
-                            selectAccount(account.id, account.address, selectbut);
+                            selectAccount(account.type ,account.id, account.address, selectbut);
                             colvalue_4.append(selectbut);
                             rowResult.append(colvalue_1);
                             rowResult.append(colvalue_2);
@@ -855,7 +943,7 @@ $(document).ready(function () {
                             totalPages = (maxPage < totalPages) ?  maxPage: totalPages;
                             var pageList = $( '<ul class="pagination"></ul>');
                             for(i = page ; i <= totalPages; i++){
-                                pagebutton = $( '<li class="page_account">'+ i +'</li>');
+                                pagebutton = $( '<li class="page_account pages">'+ i +'</li>');
                                 pageList.append(pagebutton);
                                 addPageButton(pagebutton);
                             }
@@ -868,7 +956,7 @@ $(document).ready(function () {
                             totalPages = ( page + 2 < totalPages) ?  (page + 2): totalPages;
                             var pageList = $( '<ul class="pagination"></ul>');
                             for(i = page ; i <= totalPages; i++){
-                                pagebutton = $( '<li class="page_account">'+ i +'</li>');
+                                pagebutton = $( '<li class="page_account pages">'+ i +'</li>');
                                 pageList.append(pagebutton);
                                 addPageButton(pagebutton);
                             }
@@ -881,7 +969,7 @@ $(document).ready(function () {
                             totalPages = ( page + 4 < totalPages) ?  (page + 2): totalPages;
                             var pageList = $( '<ul class="pagination"></ul>');
                             for(i = page ; i <= totalPages; i++){
-                                pagebutton = $( '<li class="page_account">'+ i +'</li>');
+                                pagebutton = $( '<li class="page_account pages">'+ i +'</li>');
                                 pageList.append(pagebutton);
                                 addPageaButton(pagebutton);
                             }
@@ -906,11 +994,37 @@ $(document).ready(function () {
         }
         $('#form_account_search').trigger("submit");
 
-        function selectAccount(id, address, butslect){
+        function selectAccount(type, id, address, butslect){
+
+
+
             butslect.click(function(){
-                $('#accountId').val(id);
-                $('#account').val(address);
-                closeModal('#modalAccount');
+                currency = $('#currency').val();
+                if(currency == 'BTC' || currency == 'LTC' || currency == 'ETH'){
+                    if(type !== 'crypto'){
+                        $('.alert-account').empty();
+                        $('.alert-account').addClass('alert-danger');
+                        $('.alert-account').append('<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please only select a ' + currency + ' Address</strong>');
+                        $('.alert-account').show();
+                    }else{
+                        $('#accountId').val(id);
+                        $('#account').val(address);
+                        closeModal('#modalAccount');
+                    }
+                }else if(currency == 'VEF' || currency == 'USD'){
+                    if(type !== 'bank'){
+                        $('.alert-account').empty();
+                        $('.alert-account').css('background-color', 'red');
+                        $('.alert-account').append('<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please only select a ' + currency + ' Account</strong>');
+                        $('.alert-account').show();
+                    }else{
+                        $('#accountId').val(id);
+                        $('#account').val(address);
+                        closeModal('#modalAccount');
+                    }
+                }
+
+
             })
         }
     }
@@ -919,7 +1033,7 @@ $(document).ready(function () {
 
     function addAccount(butaccount){
         butaccount.click(function(){
-            box = $("<div class='modalContent' id='modalAccount'><h3>Accounts</h3></div>");
+            box = $('<div class="modalContent" id="modalAccount"><h3>Accounts</h3><div class="alert-account alert" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a></div></div>');
             table = $('<table id="table_account" class="table table-responsive table-striped table-hover">');
             thead = $('<thead class="thead-default"></thead>');
             row1 = $('<tr><th colspan="2">Accounts</th><th colspan="2"><div class="col-lg-12"><form id="form_account_search" class="form_search"><div class="input-group"><input id="search_account_value" type="text" class="form-control" placeholder="Search Account"><span class="input-group-btn"><button type="submit" class="btn btn-default" value="Go!"><i id="search_icon" class="fa fa-search" aria-hidden="true"></i></button></span></div><!-- /input-group --></form></div><!-- /.col-lg-6 --></th></tr>');
@@ -983,7 +1097,7 @@ $(document).ready(function () {
             rules: {
                 entity:{
                     required: true,
-                    minlength: 3,
+                    minlength: 2,
 
                 },
                 account:{
