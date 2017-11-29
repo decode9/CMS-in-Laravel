@@ -37,5 +37,17 @@ class OrdersController extends Controller
         return response()->json(['result' => $funds], 202);
     }
 
-    
+    public function buy(Request $request){
+
+        $request->validate([
+            'currency' => 'required',
+            'amount' => 'required|min:01',
+            'buy' => 'required'
+        ]);
+
+        $order = New FundOrder;
+
+
+
+    }
 }
