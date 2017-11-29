@@ -121,166 +121,38 @@ top: -30px;
         margin: 0 auto;
         height: 300px;
     }
+    .makeOrder{
+        width: 902px;
+        height: 350px;
+        margin: 0 auto;
+        margin-bottom: 50px;
+        border: 1px solid black;
+    }
+    .selectMakeOrder{
+        width: fit-content;
+        float: right;
+        position: absolute;
+        border: 1px solid black;
+        margin-top: 49px;
+        border-top: 0px;
+    }
+    .makeOrderbtn{
+        border: none;
+        background-color: white;
+        float: left;
+    }
+    .selectbtn{
+        background-color: #bfbfbf;
+        color: white;
+    }
 </style>
 @section('content')
     <div class="orderscontent">
-        <div class="orders ordersBTC">
-            <div class="orderBox" id="buyBTC">
-                <div class="titleOrder">
-                    <h3>Buy BTC</h3>
-                    <p>Available <span id="available-btcBuy"></span></p>
-                </div>
-                <form class="OrderForm" id="btcBuyForm">
-                    <div>
-                        <label for="currency">Currency</label>
-                        <select id="currency" class="form-control" name="currency">
-                            <option value="VEF">Bolivares</option>
-                            <option value="USD">Dollar</option>
-                            <option value="ETH">Ethereum</option>
-                            <option value="LTC">LiteCoin</option>
-                        </select>
-                    </div>
-                    <div id="amountD">
-                        <label for="amount">Amount</label>
-                        <input id="amount" name="amount" type="text" class="form-control" required="">
-                    </div>
-                    <div id="depoButts">
-                        <button type="button" name="button" id="maxCubtcBuy">Max</button>
-                        <button type="button" name="button" id="btcBuy">Buy</button>
-                    </div>
-                </form>
-            </div>
-            <div class="orderBox" id="sellBTC">
-                <div class="titleOrder">
-                    <h3>Sell BTC</h3>
-                    <p>Available <span id="available-btcSell"></span></p>
-                </div>
-                <form class="OrderForm" id="btcSellForm">
-                    <div id="amountD">
-                        <label for="amount">BTC Amount</label>
-                        <input id="amount" name="amount" type="text" class="form-control" required="">
-                    </div>
-                    <div>
-                        <label for="currency">Currency</label>
-                        <select id="currency" class="form-control" name="currency">
-                            <option value="VEF">Bolivares</option>
-                            <option value="USD">Dollar</option>
-                            <option value="ETH">Ethereum</option>
-                            <option value="LTC">LiteCoin</option>
-                        </select>
-                    </div>
-
-                    <div id="depoButts">
-                        <button type="button" name="button" id="MaxCubtcSell">Max</button>
-                        <button type="button" name="button" id="btcSell">Sell</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <div class="orders ordersETH">
-            <div class="orderBox" id="buyETH">
-                <div class="titleOrder">
-                    <h3>Buy ETH</h3>
-                    <p>Available <span id="available-ethBuy"></span></p>
-                </div>
-                <form class="OrderForm" id="ethBuyForm">
-                    <div>
-                        <label for="currency">Currency</label>
-                        <select id="currency" class="form-control" name="currency">
-                            <option value="VEF">Bolivares</option>
-                            <option value="USD">Dollar</option>
-                            <option value="BTC">Bitcoin</option>
-                            <option value="LTC">LiteCoin</option>
-                        </select>
-                    </div>
-                    <div id="amountD">
-                        <label for="amount">Amount</label>
-                        <input id="amount" name="amount" type="text" class="form-control" required="">
-                    </div>
-                    <div id="depoButts">
-                        <button type="button" name="button" id="maxCuethBuy">Max</button>
-                        <button type="button" name="button" id="ethBuy">Buy</button>
-                    </div>
-                </form>
-            </div>
-            <div class="orderBox" id="sellETH">
-                <div class="titleOrder">
-                    <h3>Sell ETH</h3>
-                    <p>Available <span id="available-ethSell"></span></p>
-                </div>
-                <form class="OrderForm" id="ethSellForm">
-                    <div id="amountD">
-                        <label for="amount">ETH Amount</label>
-                        <input id="amount" name="amount" type="text" class="form-control" required="">
-                    </div>
-                    <div>
-                        <label for="currency">Currency</label>
-                        <select id="currency" class="form-control" name="currency">
-                            <option value="VEF">Bolivares</option>
-                            <option value="USD">Dollar</option>
-                            <option value="BTC">Bitcoin</option>
-                            <option value="LTC">LiteCoin</option>
-                        </select>
-                    </div>
-
-                    <div id="depoButts">
-                        <button type="button" name="button" id="MaxCuethSell">Max</button>
-                        <button type="button" name="button" id="ethSell">Sell</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <div class="orders ordersLTC">
-            <div class="orderBox" id="buyLTC">
-                <div class="titleOrder">
-                    <h3>Buy LTC</h3>
-                    <p>Available <span id="available-ltcBuy"></span></p>
-                </div>
-                <form class="OrderForm" id="ltcBuyForm">
-                    <div>
-                        <label for="currency">Currency</label>
-                        <select id="currency" class="form-control" name="currency">
-                            <option value="VEF">Bolivares</option>
-                            <option value="USD">Dollar</option>
-                            <option value="BTC">Bitcoin</option>
-                            <option value="ETH">Ethereum</option>
-                        </select>
-                    </div>
-                    <div id="amountD">
-                        <label for="amount">Amount</label>
-                        <input id="amount" name="amount" type="text" class="form-control" required="">
-                    </div>
-                    <div id="depoButts">
-                        <button type="button" name="button" id="maxCultcBuy">Max</button>
-                        <button type="button" name="button" id="ltcBuy">Buy</button>
-                    </div>
-                </form>
-            </div>
-            <div class="orderBox" id="sellLTC">
-                <div class="titleOrder">
-                    <h3>Sell LTC</h3>
-                    <p>Available <span id="available-ltcSell"></span></p>
-                </div>
-                <form class="OrderForm" id="ltcSellForm">
-                    <div id="amountD">
-                        <label for="amount">LTC Amount</label>
-                        <input id="amount" name="amount" type="text" class="form-control" required="">
-                    </div>
-                    <div>
-                        <label for="currency">Currency</label>
-                        <select id="currency" class="form-control" name="currency">
-                            <option value="VEF">Bolivares</option>
-                            <option value="USD">Dollar</option>
-                            <option value="BTC">Bitcoin</option>
-                            <option value="ETH">Ethereum</option>
-                        </select>
-                    </div>
-
-                    <div id="depoButts">
-                        <button type="button" name="button" id="MaxCultcSell">Max</button>
-                        <button type="button" name="button" id="ltcSell">Sell</button>
-                    </div>
-                </form>
+        <div class="makeOrder">
+            <div class="selectMakeOrder">
+                <button class="makeOrderbtn" id="btnBTC" type="button" name="button">BTC</button>
+                <button class="makeOrderbtn" id="btnETH" type="button" name="button">ETH</button>
+                <button class="makeOrderbtn" id="btnLTC" type="button" name="button">LTC</button>
             </div>
         </div>
         <div class="tab-pane active" id="list">

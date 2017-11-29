@@ -11,7 +11,7 @@ class Fund extends Model
     use SoftDeletes;
 
     protected $dates = ['deleted_at'];
-    protected $guarded = ['bs_amount', 'dollar_amount', 'btc_amount'];
+    protected $guarded = ['amount', 'amount', 'amount'];
 
     public function user(){
         return $this->belongsTo('App\User', 'user_id');

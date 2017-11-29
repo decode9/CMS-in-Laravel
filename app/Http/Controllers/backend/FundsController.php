@@ -321,7 +321,7 @@ class FundsController extends Controller
         //
         $request->validate([
             'currency' => 'required',
-            'amount' => 'required| min:03',
+            'amount' => 'required| min:01',
             'accountId' => 'required'
         ]);
 

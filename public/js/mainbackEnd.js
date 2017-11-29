@@ -1155,6 +1155,103 @@ $(document).ready(function () {
     balances();
 
     /*END Funds Page*/
+
+    /*Orders Page*/
+
+    function selectCurrencyOrder(button, currency){
+        $(button).click(function(){
+
+            $('.selectbtn').removeClass('selectbtn');
+            $(this).addClass('selectbtn');
+
+            $('.orders').remove();
+            box = $('<div class="orders"></div>');
+
+            buy = $('<div class="orderBox" id="buy"><div class="titleOrder"><h3>Buy '+ currency +'</h3><p>Available <span id="availableBuy"></span></p></div></div>');
+            buyform = $('<form class="OrderForm" id="BuyForm"></form>');
+
+            switch (currency) {
+                case 'BTC':
+                    buyselect = $('<div><label for="currency">Currency</label><select id="currencyBuy" class="form-control" name="currencybuy"><option value="VEF" selected>Bolivares</option><option value="USD">Dollar</option><option value="ETH">Ethereum</option><option value="LTC">Litecoin</option></select></div>');
+                    sellselect = $('<div><label for="currency">Currency</label><select id="currencySell" class="form-control" name="currencysell"><option value="VEF" selected>Bolivares</option><option value="USD">Dollar</option><option value="ETH">Ethereum</option><option value="LTC">LiteCoin</option></select></div><div id="sellButts"><button type="button" name="button" id="MaxCuSell">Max</button><button type="button" name="button" id="Sell">Sell</button></div>');
+                    break;
+                case 'ETH':
+                    buyselect = $('<div><label for="currency">Currency</label><select id="currencyBuy" class="form-control" name="currency"><option value="VEF" selected>Bolivares</option><option value="USD">Dollar</option><option value="BTC">Bitcoin</option><option value="LTC">Litecoin</option></select></div>');
+                    sellselect = $('<div><label for="currency">Currency</label><select id="currencySell" class="form-control" name="currencysell"><option value="VEF" selected>Bolivares</option><option value="USD">Dollar</option><option value="BTC">Bitcoin</option><option value="LTC">LiteCoin</option></select></div><div id="sellButts"><button type="button" name="button" id="MaxCuSell">Max</button><button type="button" name="button" id="Sell">Sell</button></div>');
+                    break;
+                case 'LTC':
+                    buyselect = $('<div><label for="currency">Currency</label><select id="currencyBuy" class="form-control" name="currency"><option value="VEF" selected>Bolivares</option><option value="USD">Dollar</option><option value="BTC">Bitcoin</option><option value="ETH">Ethereum</option></select></div>');
+                    sellselect = $('<div><label for="currency">Currency</label><select id="currencySell" class="form-control" name="currencysell"><option value="VEF" selected>Bolivares</option><option value="USD">Dollar</option><option value="BTC">Bitcoin</option><option value="ETH">Ethereum</option></select></div><div id="sellButts"><button type="button" name="button" id="MaxCuSell">Max</button><button type="button" name="button" id="Sell">Sell</button></div>');
+                    break;
+            }
+
+            buyinput = $('<div id="amountD"><label for="amount">Amount</label><input id="amount" name="amount" type="text" class="form-control" required></div><div id="buyButts"><button type="button" name="button" id="maxCuBuy">Max</button><button type="button" name="button" id="buy">Buy</button></div>');
+
+            buyform.append(buyselect);
+            buyform.append(buyinput);
+            buy.append(buyform);
+
+
+            sell = $('<div class="orderBox" id="sell"><div class="titleOrder"><h3>Sell '+ currency +'</h3><p>Available <span id="availableSell"></span></p></div></div>');
+
+            sellform = $('<form class="OrderForm" id="btcSellForm"></form>');
+
+            sellinput = $('<div id="amountD"><label for="amount">'+ currency +' Amount</label><input id="amount" name="amount" type="text" class="form-control" required=""></div>');
+
+            sellform.append(sellinput);
+            sellform.append(sellselect);
+            sell.append(sellform);
+
+            box.append(buy);
+            box.append(sell);
+            $('.makeOrder').prepend(box);
+            availableBalance('#currencyBuy', '#availableBuy', '');
+            availableBalance('', '#availableSell', currency);
+            $('#currencyBuy').trigger('change');
+        });
+    }
+
+    function availableBalance(selection, target, currency){
+        if(selection !== ''){
+            $(selection).on('change', function(){
+                currency = $(this).val();
+                $.ajax({
+                    headers: { 'X-CSRF-Token' : $('meta[name=csrf-token]').attr('content') },
+                    url: '/orders/balance',
+                    type: 'POST',
+                    dataType: "json",
+                    data: {currency: currency},
+                    success: function(data){
+                        value = formatNumber.num(data.result) + ' ' + currency;
+                        $(target).html(value);
+                    }
+                })
+            })
+        }else if(currency !== ''){
+            $.ajax({
+                headers: { 'X-CSRF-Token' : $('meta[name=csrf-token]').attr('content') },
+                url: '/orders/balance',
+                type: 'POST',
+                dataType: "json",
+                data: {currency: currency},
+                success: function(data){
+                    value = formatNumber.num(data.result) + ' ' + currency;
+                    $(target).html(value);
+                }
+            })
+        }
+
+    }
+
+    function selectMaxvalue(){
+
+    }
+
+
+    selectCurrencyOrder('#btnBTC', 'BTC');
+    selectCurrencyOrder('#btnETH', 'ETH');
+    selectCurrencyOrder('#btnLTC', 'LTC');
+    $('#btnBTC').trigger('click');
 });
 
 /***/ })
