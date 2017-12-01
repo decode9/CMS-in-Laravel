@@ -162,9 +162,9 @@ top: -30px;
                         <th colspan="4">Orders</th>
                         <th colspan="3">
                             <div class="col-lg-12">
-                                <form id="form_orders_search" class="form_search">
+                                <form id="form_order_search" class="form_search">
                                     <div class="input-group">
-                                        <input id="search_orders_value" type="text" class="form-control" placeholder="Search Order">
+                                        <input id="search_order_value" type="text" class="form-control" placeholder="Search Order">
                                         <span class="input-group-btn">
                                             <button type="submit" class="btn btn-default" value="Go!"><i id="search_icon" class="fa fa-search" aria-hidden="true"></i></button>
                                         </span>
@@ -180,10 +180,9 @@ top: -30px;
                         <th id="table_order_header_fee" style="cursor: pointer;">Fee</th>
                         <th id="table_order_header_currency_in" style="cursor: pointer;">Currency In</th>
                         <th id="table_order_header_amount_in" style="cursor: pointer;">Amount In</th>
-                        <th id="table_order_header_date" style="cursor: pointer;">Date</th>
                         <th id="table_order_header_reference" style="cursor: pointer;">Reference</th>
+                        <th id="table_order_header_date" style="cursor: pointer;">Date</th>
                         <th id="table_order_header_confirmed" style="cursor: pointer;">Confirmed</th>
-                        <th id="table_order_header_confirm_date" style="cursor: pointer;">Confirm Date</th>
                         <th>Options</th>
                     </tr>
                 </thead>

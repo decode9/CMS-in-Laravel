@@ -15,6 +15,7 @@ class CreateFundOrdersTable extends Migration
     {
         Schema::create('fund_orders', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('user_id')->unsigned();
             $table->integer('out_currency')->unsigned();
             $table->double('out_amount', 15, 8);
             $table->double('rate', 8, 5);
@@ -23,6 +24,10 @@ class CreateFundOrdersTable extends Migration
             $table->double('in_amount', 15, 8);
             $table->timestamps();
             $table->softDeletes();
+
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('out_currency')->references('id')->on('currencies');
+            $table->foreign('in_currency')->references('id')->on('currencies');
         });
     }
 
@@ -33,6 +38,11 @@ class CreateFundOrdersTable extends Migration
      */
     public function down()
     {
+        Schema::table('funds_orders', function($table){
+            $table->dropForeign('funds_orders_user_id_foreign');
+            $table->dropForeign('funds_orders_out_currency_foreign');
+            $table->dropForeign('funds_orders_in_currency_foreign');
+        });
         Schema::dropIfExists('fund_orders');
     }
 }

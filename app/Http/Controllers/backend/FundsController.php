@@ -121,7 +121,7 @@ class FundsController extends Controller
         $total = 0;
 
         //Select Witdraws of the user
-        $query = Fund::Where('amount','<', '0')->where('user_id', $user->id)->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('funds.*', 'symbol');
+        $query = Fund::Where('amount','<', '0')->where('type', 'withdraw')->where('user_id', $user->id)->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('funds.*', 'symbol');
         //Search by
 
         if($searchValue != '')
@@ -190,7 +190,7 @@ class FundsController extends Controller
         $total = 0;
 
         //Select Deposits of the user
-        $query = Fund::Where('amount','>', '0')->where('user_id', $user->id)->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('funds.*', 'symbol');
+        $query = Fund::Where('amount','>', '0')->where('type', 'deposit')->where('user_id', $user->id)->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('funds.*', 'symbol');
         //Search by
 
         if($searchValue != '')
@@ -265,10 +265,11 @@ class FundsController extends Controller
         $imageName = $name . '.' . $request->file('file')->getClientOriginalExtension();
 
         $request->file('file')->move( public_path() . '/files/references/', $imageName);
-
+        $type = "deposit";
         $fund = New Fund;
         $fund->amount = $request->amount;
         $fund->comment = $request->reference;
+        $fund->type = $type;
         $fund->currency()->associate($currency);
         $fund->user()->associate($user);
         $fund->save();
@@ -333,11 +334,13 @@ class FundsController extends Controller
         $max = strlen($pattern)-1;
         for($i=0;$i < 7;$i++) $key .= $pattern{mt_rand(0,$max)};
 
+        $type = "withdraw";
 
         $reference = $key;
         $fund = New Fund;
         $fund->amount = $request->amount;
         $fund->comment = $reference;
+        $fund->type = $type;
         $fund->currency()->associate($currency);
         $fund->user()->associate($user);
         $fund->account()->associate($request->accountId);

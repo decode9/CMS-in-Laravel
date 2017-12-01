@@ -64,8 +64,7 @@ Route::get('/funds/return', "backend\FundsController@destroy")->name('destroy.fu
 
 Route::get('/orders', "backend\ViewsController@orders")->name('orders');
 Route::post('/orders', "backend\OrdersController@orders")->name('orders.list');
-Route::post('/orders/buy', "backend\OrdersController@buy")->name('orders.buy');
-Route::post('/orders/sell', "backend\OrdersController@sell")->name('orders.sell');
+Route::post('/orders/buySell', "backend\OrdersController@buySell")->name('orders.buySell');
 Route::post('/orders/balance', "backend\OrdersController@balance")->name('orders.balance');
 //Accounts
 
