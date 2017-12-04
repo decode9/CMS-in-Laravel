@@ -66,6 +66,12 @@ Route::get('/orders', "backend\ViewsController@orders")->name('orders');
 Route::post('/orders', "backend\OrdersController@orders")->name('orders.list');
 Route::post('/orders/buySell', "backend\OrdersController@buySell")->name('orders.buySell');
 Route::post('/orders/balance', "backend\OrdersController@balance")->name('orders.balance');
+
+//Clients
+
+Route::get('/clients', "backend\ViewsController@clients")->name('clients');
+Route::post('/clients/data', "backend\OrdersController@orders")->name('clients.list');
+
 //Accounts
 
 Route::post('/account', "backend\AccountController@index")->name('account.list');

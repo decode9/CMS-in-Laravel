@@ -67,6 +67,8 @@
                         </li></a>
                         <a href="{{route('orders')}}"><li class="menuItem menuFunds"><i class="fa fa-list"></i> <p>Orders</p>
                         </li></a>
+                        <a href="{{route('clients')}}"><li class="menuItem menuFunds"><i class="fa fa-address-book"></i> <p>Clients</p>
+                        </li></a>
                     </ul>
                 </div>
             </div>
