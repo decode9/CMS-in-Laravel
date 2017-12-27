@@ -36,8 +36,10 @@ class ClientsController extends Controller
          $total = 0;
 
          //Select Deposits of the user
-         $query = FundOrder::Where('user_id', $user);
-         $query2 = FundOrder::Where('user_id', $user);
+
+
+         $query = FundOrder::Where('user_id', $user)->where('type', 'outOrder')->where('type', 'inOrder');
+         $query2 = FundOrder::Where('user_id', $user)->where('type', 'outOrder')->where('type', 'inOrder');
          //Search by
 
          if($searchValue != '')
@@ -115,19 +117,20 @@ class ClientsController extends Controller
          $orderDirection = $request->orderDirection;
          $total = 0;
 
-         //Select Deposits of the user
-         $query = Fund::Where('user_id', $user)->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('symbol')->;
+         //Select Witdraws of the user
+         $query = Fund::where('type', 'deposit')->where('user_id', $user->id)->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('funds.*', 'symbol');
          //Search by
 
          if($searchValue != '')
          {
                  $query->Where(function($query) use($searchValue){
-                     $query->Where('amount', 'like', '%'.$searchValue.'%')
-                     ->orWhere('symbol', 'like', '%'.$searchValue.'%')
-                     ->orWhere('reference', 'like', '%'.$searchValue.'%')
+                     $query->Where('symbol', 'like', '%'.$searchValue.'%')
+                     ->orWhere('amount', 'like', '%'.$searchValue.'%')
+                     ->orWhere('comment', 'like', '%'.$searchValue.'%')
                      ->orWhere('funds.created_at', 'like', '%'.$searchValue.'%');
                  });
          }
+
          //Order By
 
          if($orderBy != '')
@@ -139,9 +142,9 @@ class ClientsController extends Controller
                  $query->orderBy($orderBy);
              }
          }else if($orderDirection != ''){
-             $query->orderBy('funds.created_at');
+             $query->orderBy('funds.created_at', 'desc');
          }else{
-              $query->orderBy('funds.created_at', 'desc');
+              $query->orderBy('funds.created_at');
          }
 
          if($resultPage == null || $resultPage == 0)
@@ -151,6 +154,7 @@ class ClientsController extends Controller
 
          //Get Total of fees
          $total  =  $query->get()->count();
+
          if($page > 1)
          {
               $query->offset(    ($page -  1)   *    $resultPage);
@@ -158,15 +162,76 @@ class ClientsController extends Controller
 
 
          $query->limit($resultPage);
-         $query2->limit($resultPage);
-
-
-         $cdeposit  =  $query->get();
+         $deposits  =  $query->get();
 
          //Get fees by month and year
 
-         return response()->json(['page' => $page, 'result' => $cdeposit, 'total' => $total, 'user' => $user->name], 202);
+         return response()->json(['page' => $page, 'result' => $deposits, 'total' => $total, 'user' => $user->name], 202);
      }
+
+     public function clientsWithdraw(Request $request){
+
+         $user = $request->user_id;
+         $searchValue = $request->searchvalue;
+         $page = $request->page;
+         $resultPage = $request->resultPage;
+         $orderBy = $request->orderBy;
+         $orderDirection = $request->orderDirection;
+         $total = 0;
+
+         //Select Witdraws of the user
+         $query = Fund::Where('amount','<', '0')->where('type', 'withdraw')->where('user_id', $user->id)->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('funds.*', 'symbol');
+         //Search by
+
+         if($searchValue != '')
+         {
+                 $query->Where(function($query) use($searchValue){
+                     $query->Where('symbol', 'like', '%'.$searchValue.'%')
+                     ->orWhere('amount', 'like', '%'.$searchValue.'%')
+                     ->orWhere('comment', 'like', '%'.$searchValue.'%')
+                     ->orWhere('funds.created_at', 'like', '%'.$searchValue.'%');
+                 });
+         }
+
+         //Order By
+
+         if($orderBy != '')
+         {
+             if($orderDirection != '')
+             {
+                 $query->orderBy($orderBy, 'desc');
+             }else{
+                 $query->orderBy($orderBy);
+             }
+         }else if($orderDirection != ''){
+             $query->orderBy('funds.created_at', 'desc');
+         }else{
+              $query->orderBy('funds.created_at');
+         }
+
+         if($resultPage == null || $resultPage == 0)
+         {
+             $resultPage = 10;
+         }
+
+         //Get Total of fees
+         $total  =  $query->get()->count();
+
+         if($page > 1)
+         {
+              $query->offset(    ($page -  1)   *    $resultPage);
+         }
+
+
+         $query->limit($resultPage);
+         $deposits  =  $query->get();
+
+         //Get fees by month and year
+
+         return response()->json(['page' => $page, 'result' => $deposits, 'total' => $total, 'user' => $user->name], 202);
+     }
+
+
      private function generate($longitud) {
          $key = '';
          $pattern = '1234567890';
@@ -175,90 +240,4 @@ class ClientsController extends Controller
          return $key;
      }
 
-    public function balance(Request $request){
-        $request->validate([
-            'currency' => 'required',
-        ]);
-        $currency = $request->currency;
-        $funds = Fund::whereHas('currency', function($query) use($currency){
-            $query->where('symbol', $currency);
-        })->sum("amount");
-
-        return response()->json(['result' => $funds], 202);
-    }
-
-    public function buySell(Request $request){
-
-        $request->validate([
-            'currency' => 'required',
-            'amount' => 'required|min:01',
-            'type' => 'required',
-            'alt' => 'required',
-        ]);
-
-        $user = Auth::user();
-
-        $currency = $request->currency;
-        $alt = $request->alt;
-        $amount = $request->amount;
-        $outer = Currency::Where('symbol', $request->currency)->first();
-        $inner = Currency::Where('symbol', $request->alt)->first();
-
-        $reference = $this->generate(7);
-
-        $order = New FundOrder;
-        if($request->type == 'buy'){
-            $funds = Fund::whereHas('currency', function($query) use($currency){
-                $query->where('symbol', $currency);
-            })->sum("amount");
-            if($funds > $request->amount){
-                $order->out_amount = $request->amount;
-                $fund = New Fund;
-                $fund->amount = $request->amount * -1;
-                $fund->comment = $reference;
-                $fund->type = "orderOut";
-                $fund->user()->associate($user);
-                $fund->currency()->associate($outer);
-            }else{
-                return response()->json(['error' => 'You don\'t have enough funds'], 403);
-            }
-            $order->fee = 0;
-            $order->rate = 0;
-            $order->fee = 0;
-            $order->in_amount = 0;
-            $order->reference = $reference;
-            $order->outCurrencyOrder()->associate($outer);
-            $order->inCurrencyOrder()->associate($inner);
-            $order->user()->associate($user);
-
-        }else if($request->type == 'sell'){
-            $funds = Fund::whereHas('currency', function($query) use($alt){
-                $query->where('symbol', $alt);
-            })->sum("amount");
-            if($funds > $request->amount){
-                $order->out_amount = $request->amount;
-                $fund = New Fund;
-                $fund->amount = $request->amount * -1;
-                $fund->comment = $reference;
-                $fund->type = "orderOut";
-                $fund->user()->associate($user);
-                $fund->currency()->associate($inner);
-            }else{
-                return response()->json(['error' => 'You don\'t have enough funds'], 403);
-            }
-            $order->fee = 0;
-            $order->rate = 0;
-            $order->fee = 0;
-            $order->in_amount = 0;
-            $order->reference = $reference;
-            $order->outCurrencyOrder()->associate($inner);
-            $order->inCurrencyOrder()->associate($outer);
-            $order->user()->associate($user);
-        }
-
-        $order->save();
-        $fund->save();
-
-        return response()->json(['message' => 'Your order #'. $reference .' was place with success'], 202);
-    }
 }
