@@ -1526,11 +1526,16 @@ $(document).ready(function () {
     $('#result_order_page').change(function(){
         $('#form_order_search').trigger("submit");
     })
+
     $('#form_order_search').trigger("submit");
     selectCurrencyOrder('#btnBTC', 'BTC');
     selectCurrencyOrder('#btnETH', 'ETH');
     selectCurrencyOrder('#btnLTC', 'LTC');
     $('#btnBTC').trigger('click');
+
+    function clientList(){
+        
+    }
 });
 
 /***/ })

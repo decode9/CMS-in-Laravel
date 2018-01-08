@@ -25,6 +25,10 @@ class ClientsController extends Controller
      * @return \Illuminate\Http\Response
      */
 
+     public function clientList(Request $request){
+
+     }
+
      public function clientsOrders(Request $request){
 
          $user = $request->user_id;
