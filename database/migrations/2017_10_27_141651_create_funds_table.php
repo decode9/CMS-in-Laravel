@@ -25,7 +25,7 @@ class CreateFundsTable extends Migration
             $table->timestamps();
             $table->softDeletes();
             $table->string('comment');
-            $table->string('account_id')->nullable();
+            $table->integer('account_id')->unsigned()->nullable();
 
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('currency_id')->references('id')->on('currencies');
