@@ -59,6 +59,8 @@ class RoleCredentialData extends Migration
         $roleMiningSup->code = "050";
         $roleMiningSup->description = "This role grant Access for Supervisors";
         $roleMiningSup->save();
+
+        
     }
 
     /**
