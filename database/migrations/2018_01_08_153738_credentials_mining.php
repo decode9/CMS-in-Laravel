@@ -22,9 +22,8 @@ class CredentialsMining extends Migration
                 ['name' => 'Edit Mining', 'code' => '0303', 'description' => 'Grant permition to  edit mining', 'belongs' => 'Clients'],
                 ['name' => 'Delete Mining', 'code' => '0304', 'description' => 'Grant permition to delete mining', 'belongs' => 'Clients'],
                 ['name' => 'Verify Mining', 'code' => '0305', 'description' => 'Grant permition to verify mining', 'belongs' => 'Clients'],
-                ['name' => 'Invite Mining', 'code' => '0306', 'description' => 'Grant permition to invite mining', 'belongs' => 'Clients'],
-                ['name' => 'Block Mining', 'code' => '0307', 'description' => 'Grant permition to block mining', 'belongs' => 'Clients'],
-                ['name' => 'Unblock Mining', 'code' => '0308', 'description' => 'Grant permition to unblock mining', 'belongs' => 'Clients'],
+                ['name' => 'Block Mining', 'code' => '0306', 'description' => 'Grant permition to block mining', 'belongs' => 'Clients'],
+                ['name' => 'Unblock Mining', 'code' => '0307', 'description' => 'Grant permition to unblock mining', 'belongs' => 'Clients'],
             ]);
     }
 

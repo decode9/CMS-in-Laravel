@@ -22,9 +22,8 @@ class CredentialsFunds extends Migration
                 ['name' => 'Edit Funds', 'code' => '0153', 'description' => 'Grant permition to  edit funds', 'belongs' => 'Funds'],
                 ['name' => 'Delete Funds', 'code' => '0154', 'description' => 'Grant permition to delete funds', 'belongs' => 'Funds'],
                 ['name' => 'Verify Funds', 'code' => '0155', 'description' => 'Grant permition to verify funds', 'belongs' => 'Funds'],
-                ['name' => 'Invite Funds', 'code' => '0156', 'description' => 'Grant permition to invite funds', 'belongs' => 'Funds'],
-                ['name' => 'Block Funds', 'code' => '0157', 'description' => 'Grant permition to block funds', 'belongs' => 'Funds'],
-                ['name' => 'Unblock Funds', 'code' => '0158', 'description' => 'Grant permition to unblock funds', 'belongs' => 'Funds'],
+                ['name' => 'Block Funds', 'code' => '0156', 'description' => 'Grant permition to block funds', 'belongs' => 'Funds'],
+                ['name' => 'Unblock Funds', 'code' => '0157', 'description' => 'Grant permition to unblock funds', 'belongs' => 'Funds'],
             ]);
     }
 

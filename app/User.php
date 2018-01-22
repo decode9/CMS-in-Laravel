@@ -34,11 +34,15 @@ class User extends Authenticatable
     public function roles(){
         return $this->belongsToMany('App\Role');
     }
+
     public function accounts(){
         return $this->hasMany('App\Account');
     }
 
     public function funds(){
         return $this->hasMany('App\Fund');
+    }
+    public function getRole(){
+        return $this->roles()->get();
     }
 }

@@ -22,7 +22,6 @@ class CredentialsOrders extends Migration
                 ['name' => 'Edit Orders', 'code' => '0203', 'description' => 'Grant permition to  edit orders', 'belongs' => 'Orders'],
                 ['name' => 'Delete Orders', 'code' => '0204', 'description' => 'Grant permition to delete orders', 'belongs' => 'Orders'],
                 ['name' => 'Verify Orders', 'code' => '0205', 'description' => 'Grant permition to verify orders', 'belongs' => 'Orders'],
-                ['name' => 'Invite Orders', 'code' => '0206', 'description' => 'Grant permition to invite orders', 'belongs' => 'Orders'],
                 ['name' => 'Block Orders', 'code' => '0207', 'description' => 'Grant permition to block orders', 'belongs' => 'Orders'],
                 ['name' => 'Unblock Orders', 'code' => '0208', 'description' => 'Grant permition to unblock orders', 'belongs' => 'Orders'],
             ]);

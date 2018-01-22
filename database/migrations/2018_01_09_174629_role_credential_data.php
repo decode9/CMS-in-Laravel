@@ -60,7 +60,31 @@ class RoleCredentialData extends Migration
         $roleMiningSup->description = "This role grant Access for Supervisors";
         $roleMiningSup->save();
 
-        
+        $credentials = Credential::all();
+
+        foreach($credentials as $credential){
+
+            $roleAdmin->credentials()->attach($credential);
+
+            if(intval($credential->code) >= 150 && intval($credential->code) <= 299){
+                $roleTrader->credentials()->attach($credential);
+            }
+
+            if(intval($credential->code) >= 250 && intval($credential->code) <= 349){
+                $roleMiningSup->credentials()->attach($credential);
+            }
+
+            if((intval($credential->code) >= 150 && intval($credential->code) <= 152) || (intval($credential->code) >= 200 && intval($credential->code) <= 202) ){
+                $roleClientTr->credentials()->attach($credential);
+            }
+
+            if((intval($credential->code) >= 300 && intval($credential->code) <= 301)){
+                $roleClientMn->credentials()->attach($credential);
+            }
+
+
+
+        }
     }
 
     /**
