@@ -31,24 +31,32 @@ class PermisionUser
             return response()->json(['error' => 'Access Denied 2'], 404);
         }
         $denied = false;
-        if(is_array($role)){
-            foreach ($role as $r) {
-                foreach ($r->credentials()->get() as $credential) {
+        if($permition == 0){
+            $denied = true;
+        }else{
+            if(is_array($role)){
+                foreach ($role as $r) {
+                    foreach ($r->credentials()->get() as $credential) {
+                        if($credential->code == $permition){
+                            $denied = true;
+                        }
+                    }
+                }
+            }else{
+                foreach ($role->credentials()->get() as $credential) {
                     if($credential->code == $permition){
                         $denied = true;
                     }
                 }
             }
-        }else{
-            foreach ($role->credentials()->get() as $credential) {
-                if($credential->code == $permition){
-                    $denied = true;
-                }
-            }
         }
+
+
         if(!$denied){
-            return response()->json(['error' => 'Access Denied 4'], 404);
+            return response()->json(['error' => 'Access Denied 3'], 404);
         }
+
+        $request->attributes->add(['roles' => $roles]);
 
         return $next($request);
     }
