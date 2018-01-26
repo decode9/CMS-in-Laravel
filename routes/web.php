@@ -34,12 +34,12 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 //USER ADMINISTRATION BACKEND
 
-Route::get('/users', 'backend\UserController@index')->name('users');
-Route::get('/users/new', 'backend\UserController@create')->name('create.user');
-Route::post('/users/new', "backend\UserController@store")->name('store.user');
-Route::get('/users/edit/{id}', 'backend\UserController@edit')->name('edit.user');
-Route::post('/users/edit/{id}', 'backend\UserController@update')->name('update.user');
-Route::post('/users/delete/{id}', 'backend\UserController@destroy')->name('destroy.user');
+Route::get('/users', 'backend\UserController@index')->name('users')->middleware('auth.per:0100');
+Route::get('/users/new', 'backend\UserController@create')->name('create.user')->middleware('auth.per:0100');
+Route::post('/users/new', "backend\UserController@store")->name('store.user')->middleware('auth.per:0100');
+Route::get('/users/edit/{id}', 'backend\UserController@edit')->name('edit.user')->middleware('auth.per:0100');
+Route::post('/users/edit/{id}', 'backend\UserController@update')->name('update.user')->middleware('auth.per:0100');
+Route::post('/users/delete/{id}', 'backend\UserController@destroy')->name('destroy.user')->middleware('auth.per:0100');
 
 //NEWS ADMINISTRATION BACKEND
 
@@ -52,29 +52,29 @@ Route::get('/news/delete/{id}', 'backend\NewsController@destroy')->name('destroy
 
 //FUNDS
 
-Route::get('/funds', "backend\ViewsController@funds")->name('funds');
-Route::get('/funds/transactions', "backend\FundsController@index")->name('transactions.funds');
-Route::post('/deposit', "backend\FundsController@deposits")->name('deposit.funds');
-Route::post('/deposit/create', "backend\FundsController@store")->name('store.deposit');
-Route::post('/withdraw', "backend\FundsController@withdraws")->name('withdraw.funds');
-Route::post('/withdraw/create', "backend\FundsController@update")->name('update.withdraw');
-Route::get('/funds/return', "backend\FundsController@destroy")->name('destroy.funds');
+Route::get('/funds', "backend\ViewsController@funds")->name('funds')->middleware('auth.per:0150');
+Route::get('/funds/transactions', "backend\FundsController@index")->name('transactions.funds')->middleware('auth.per:0150');
+Route::post('/deposit', "backend\FundsController@deposits")->name('deposit.funds')->middleware('auth.per:0151');
+Route::post('/deposit/create', "backend\FundsController@store")->name('store.deposit')->middleware('auth.per:0152');
+Route::post('/withdraw', "backend\FundsController@withdraws")->name('withdraw.funds')->middleware('auth.per:0151');
+Route::post('/withdraw/create', "backend\FundsController@update")->name('update.withdraw')->middleware('auth.per:0153');
+Route::get('/funds/return', "backend\FundsController@destroy")->name('destroy.funds')->middleware('auth.per:0154');
 
 //Orders
 
-Route::get('/orders', "backend\ViewsController@orders")->name('orders');
-Route::post('/orders', "backend\OrdersController@orders")->name('orders.list');
-Route::post('/orders/buySell', "backend\OrdersController@buySell")->name('orders.buySell');
-Route::post('/orders/balance', "backend\OrdersController@balance")->name('orders.balance');
+Route::get('/orders', "backend\ViewsController@orders")->name('orders')->middleware('auth.per:0200');
+Route::post('/orders', "backend\OrdersController@orders")->name('orders.list')->middleware('auth.per:0201');
+Route::post('/orders/buySell', "backend\OrdersController@buySell")->name('orders.buySell')->middleware('auth.per:0202');
+Route::post('/orders/balance', "backend\OrdersController@balance")->name('orders.balance')->middleware('auth.per:0202');
 
 //Clients
 
-Route::get('/clients', "backend\ViewsController@clients")->name('clients');
-Route::post('/clients/data', "backend\OrdersController@orders")->name('clients.list');
+Route::get('/clients', "backend\ViewsController@clients")->name('clients')->middleware('auth.per:0250');
+Route::post('/clients/data', "backend\OrdersController@orders")->name('clients.list')->middleware('auth.per:0251');
 
 //Accounts
 
-Route::post('/account', "backend\AccountController@index")->name('account.list');
-Route::post('/account/create', "backend\AccountController@store")->name('account.create');
+Route::post('/account', "backend\AccountController@index")->name('account.list')->middleware('auth.per:0151');
+Route::post('/account/create', "backend\AccountController@store")->name('account.create')->middleware('auth.per:0152');
 
 //TRANSACTIONS

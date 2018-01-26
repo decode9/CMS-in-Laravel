@@ -21,6 +21,9 @@ class ViewsController extends Controller
      */
 
     public function funds(){
+        $user = Auth::User();
+        $role = $user->getRole();
+        return $role;
         return view('back.funds');
     }
     public function orders(){

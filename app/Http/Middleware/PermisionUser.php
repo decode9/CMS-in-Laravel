@@ -20,13 +20,12 @@ class PermisionUser
      */
     public function handle($request, Closure $next, $permition)
     {
-        $user = $request->get('user');
-        if($user == null || $user == 0){
+        $user = Auth::user();
+        if($user == null){
             return response()->json(['error' => 'Access Denied 1'], 404);
         }
 
         $role = $user->getRole();
-
         if(!$role){
             return response()->json(['error' => 'Access Denied 2'], 404);
         }
@@ -34,7 +33,6 @@ class PermisionUser
         if($permition == 0){
             $denied = true;
         }else{
-            if(is_array($role)){
                 foreach ($role as $r) {
                     foreach ($r->credentials()->get() as $credential) {
                         if($credential->code == $permition){
@@ -42,13 +40,6 @@ class PermisionUser
                         }
                     }
                 }
-            }else{
-                foreach ($role->credentials()->get() as $credential) {
-                    if($credential->code == $permition){
-                        $denied = true;
-                    }
-                }
-            }
         }
 
 
@@ -56,7 +47,7 @@ class PermisionUser
             return response()->json(['error' => 'Access Denied 3'], 404);
         }
 
-        $request->attributes->add(['roles' => $roles]);
+        $request->attributes->add(['role' => $role]);
 
         return $next($request);
     }
