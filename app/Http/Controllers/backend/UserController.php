@@ -5,6 +5,7 @@ namespace App\Http\Controllers\backend;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Auth;
 use App\User;
 
 
@@ -20,12 +21,69 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-        $users = User::all();
 
-        return view('back.users', ['users' => $users]);
+            $user = Auth::User();
+            $searchValue = $request->searchvalue;
+            $page = $request->page;
+            $resultPage = $request->resultPage;
+            $orderBy = $request->orderBy;
+            $orderDirection = $request->orderDirection;
+            $total = 0;
+
+            //Select Users
+            $query = User::WhereNotIn('id', [$user->id]);
+
+            //Search by
+
+            if($searchValue != '')
+            {
+                    $query->Where(function($query) use($searchValue){
+                        $query->Where('name', 'like', '%'.$searchValue.'%')
+                        ->orWhere('username', 'like', '%'.$searchValue.'%')
+                        ->orWhere('email', 'like', '%'.$searchValue.'%')
+                        ->orWhere('created_at', 'like', '%'.$searchValue.'%')
+                        ->orWhere('updated_at', 'like', '%'.$searchValue.'%');
+                    });
+
+            }
+            //Order By
+
+            if($orderBy != '')
+            {
+                if($orderDirection != '')
+                {
+                    $query->orderBy($orderBy, 'desc');
+                }else{
+                    $query->orderBy($orderBy);
+                }
+            }else if($orderDirection != ''){
+                $query->orderBy('created_at');
+            }else{
+                 $query->orderBy('created_at', 'desc');
+            }
+
+            if($resultPage == null || $resultPage == 0)
+            {
+                $resultPage = 10;
+            }
+
+            //Get Total of fees
+            $total  =  $query->get()->count();
+            if($page > 1)
+            {
+                 $query->offset(    ($page -  1)   *    $resultPage);
+            }
+
+
+            $query->limit($resultPage);
+
+            $users  =  $query->get();
+
+            //Get fees by month and year
+
+            return response()->json(['page' => $page, 'result' => $users,'total' => $total], 202);
     }
 
     /**

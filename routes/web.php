@@ -34,12 +34,9 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 //USER ADMINISTRATION BACKEND
 
-Route::get('/users', 'backend\UserController@index')->name('users')->middleware('auth.per:0100');
-Route::get('/users/new', 'backend\UserController@create')->name('create.user')->middleware('auth.per:0100');
-Route::post('/users/new', "backend\UserController@store")->name('store.user')->middleware('auth.per:0100');
-Route::get('/users/edit/{id}', 'backend\UserController@edit')->name('edit.user')->middleware('auth.per:0100');
-Route::post('/users/edit/{id}', 'backend\UserController@update')->name('update.user')->middleware('auth.per:0100');
-Route::post('/users/delete/{id}', 'backend\UserController@destroy')->name('destroy.user')->middleware('auth.per:0100');
+Route::get('/users', 'backend\ViewsController@users')->name('users')->middleware('auth.per:0100');
+Route::post('/users', 'backend\UserController@index')->name('users.list')->middleware('auth.per:0100');
+
 
 //NEWS ADMINISTRATION BACKEND
 

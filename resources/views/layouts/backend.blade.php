@@ -51,12 +51,7 @@
                 </div>
                 <div id="menuBack">
                     <ul class="menuAction">
-                        <li class="menuItem menuUser"><i class="fa fa-address-book"></i> <p>Users</p>
-                            <ul class="submenuItem" style ="display: none;">
-                                <a href="{{route('create.user')}}"><li>Create User</li></a>
-                                <a href="{{route('users')}}"><li>List Users</li></a>
-                            </ul>
-                        </li>
+                        <a href="{{route('users')}}"><li class="menuItem menuUser"><i class="fa fa-address-book"></i> <p>Users</p></li></a>
                         <li class="menuItem menuPost"><i class="fa fa-pencil-square-o "></i> <p>Posts</p>
                             <ul class="submenuItem" style ="display: none;">
                                 <a href="{{route('create.news')}}"><li>Create Post</li></a>

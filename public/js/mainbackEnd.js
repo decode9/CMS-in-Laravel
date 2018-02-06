@@ -621,7 +621,7 @@ $(document).ready(function () {
 
     var orderWithdrawBy = "";
     var orderWithdrawDirection = "";
-    var seachWithdrawValue = "";
+    var searchWithdrawValue = "";
 
     $( "#form_withdraw_search" ).submit(function(e){
         e.preventDefault();
@@ -1533,9 +1533,163 @@ $(document).ready(function () {
     selectCurrencyOrder('#btnLTC', 'LTC');
     $('#btnBTC').trigger('click');
 
-    function clientList(){
-        
+    /*Search User Table*/
+
+    $('#table_user_header_name').click(function (e) {
+      orderTableUserBy('name');
+    });
+
+     $('#table_user_header_username').click(function (e) {
+      orderTableUserBy('username');
+    });
+
+    $('#table_user_header_email').click(function (e) {
+      orderTableUserBy('email');
+    });
+    $('#table_user_header_date').click(function (e) {
+      orderTableUserBy('created_at');
+    });
+    $('#table_user_header_update').click(function (e) {
+      orderTableUserBy('updated_at');
+    });
+    $('#table_user_header_roles').click(function (e) {
+      orderTableUserBy('');
+    });
+
+    var orderUserBy = "";
+    var orderUserDirection = "";
+    var searchUserValue = "";
+
+    $( "#form_user_search" ).submit(function(e){
+        e.preventDefault();
+        //DESC
+        searchUserValue = $( "#search_user_value" ).val();
+        searchUser(1);
+    });
+
+    function orderTableUserBy(by){
+        if(orderUserBy === by){
+            if(orderUserDirection === ""){
+                orderUserDirection = "DESC";
+            }else{
+                orderUserDirection = "";
+            }
+        }else{
+            orderUserBy = by;
+            orderUserDirection = "";
+        }
+        searchUser(1);
     }
+
+    //Get Withdraw Data
+
+    function searchUser(page){
+        resultPage =  $( "#result_user_page" ).val();
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            url: "/users",
+            type: 'post',
+            data: { searchvalue : searchUserValue, page : page, orderBy :orderUserBy, orderDirection: orderUserDirection,    resultPage: resultPage } ,
+            success: function (data) {
+                //Inicio
+                var users = data.result;
+
+                if(users.length == 0){
+                    $("#table_user_content").html("");
+                    $('#table_user_content').append('<tr><td colspan="7">None</td></tr>');
+                }else{
+                    $("#table_user_content").html("");
+                    for(i=0;i < users.length;i++)
+                    {
+                        var user = users[i];
+                        // we have to make in steps to add the onclick event
+                        var rowResult = $( '<tr></tr>');
+                        var colvalue_1 = $( '<td class="col-sm-12 col-md-2">'+  user.name +'</td>');
+                        var colvalue_2 = $( '<td class="col-sm-12 col-md-2">'+ user.username +'</td>');
+                        var colvalue_3 = $( '<td class="col-sm-12 col-md-2">'+  user.email  +'</td>');
+                        var colvalue_4 = $( '<td class="col-sm-12 col-md-2">'+  +'</td>');
+                        var colvalue_5 = $( '<td class="col-sm-12 col-md-2">'+  user.created_at  +'</td>');
+                        var colvalue_6 = $( '<td class="col-sm-12 col-md-2">'+  user.updated_at  +'</td>');
+                        var colvalue_7 = $( '<td class="col-sm-12 col-md-2"></td>');
+
+                        rowResult.append(colvalue_1);
+                        rowResult.append(colvalue_2);
+                        rowResult.append(colvalue_3);
+                        rowResult.append(colvalue_4);
+                        rowResult.append(colvalue_5);
+                        rowResult.append(colvalue_6);
+                        rowResult.append(colvalue_7);
+                        $("#table_user_content").append(rowResult);
+                    }
+                    $("#table_user_pagination").html("");
+
+                    page = parseInt(data.page);
+                    var total = data.total;
+                    var resultPage =  $( "#result_user_page" ).val();
+                    var totalPages = Math.ceil(total / resultPage);
+                    if(page === 1){
+                        maxPage = page + 2;
+                        totalPages = (maxPage < totalPages) ?  maxPage: totalPages;
+                        var pageList = $( '<ul class="pagination"></ul>');
+                        for(i = page ; i <= totalPages; i++){
+                            pagebutton = $( '<li class="page_user pages">'+ i +'</li>');
+                            pageList.append(pagebutton);
+                            addPageUButton(pagebutton);
+                        }
+                        $("#table_user_pagination").append(pageList);
+                    }else if(page === totalPages){
+                        page = page - 2;
+                        if(page < 1){
+                            page = 1;
+                        }
+                        totalPages = ( page + 2 < totalPages) ?  (page + 2): totalPages;
+                        var pageList = $( '<ul class="pagination"></ul>');
+                        for(i = page ; i <= totalPages; i++){
+                            pagebutton = $( '<li class="page_user pages">'+ i +'</li>');
+                            pageList.append(pagebutton);
+                            addPageUButton(pagebutton);
+                        }
+                        $("#table_user_pagination").append(pageList);
+                    }else{
+                        page = page - 2;
+                        if(page < 1){
+                            page = 1;
+                        }
+                        totalPages = ( page + 4 < totalPages) ?  (page + 2): totalPages;
+                        var pageList = $( '<ul class="pagination"></ul>');
+                        for(i = page ; i <= totalPages; i++){
+                            pagebutton = $( '<li class="page_user pages">'+ i +'</li>');
+                            pageList.append(pagebutton);
+                            addPageUButton(pagebutton);
+                        }
+
+                        $("#table_user_pagination").append(pageList);
+                    }
+                }
+                // Put the data into the element you care about.
+
+            },
+            // Fin
+            error: function (error) {
+                ReadError(error);
+            }
+        });
+    }
+
+    function addPageUButton(pagebutton){
+        pagebutton.click(function(){
+            page = $(this).text();
+            searchUser(page);
+        })
+    }
+
+    $('#result_user_page').change(function(){
+        $('#form_user_search').trigger("submit");
+    })
+
+    $('#form_user_search').trigger("submit");
 });
 
 /***/ })

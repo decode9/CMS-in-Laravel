@@ -16,6 +16,7 @@ class RoleCredentialData extends Migration
     public function up()
     {
         //
+
         $roleB = new Role;
         $roleB->name = "Basic User";
         $roleB->slug = "Basic";
@@ -31,6 +32,8 @@ class RoleCredentialData extends Migration
         $roleAdmin->code = "901";
         $roleAdmin->description = "This role will grant all access";
         $roleAdmin->save();
+
+
 
         $roleTrader = new Role;
         $roleTrader->name = "Trader User";
@@ -81,8 +84,6 @@ class RoleCredentialData extends Migration
             if((intval($credential->code) >= 300 && intval($credential->code) <= 301)){
                 $roleClientMn->credentials()->attach($credential);
             }
-
-
 
         }
     }

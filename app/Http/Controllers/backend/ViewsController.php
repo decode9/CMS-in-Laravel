@@ -19,11 +19,10 @@ class ViewsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-
+     public function users(){
+         return view('back.users');
+     }
     public function funds(){
-        $user = Auth::User();
-        $role = $user->getRole();
-        return $role;
         return view('back.funds');
     }
     public function orders(){
