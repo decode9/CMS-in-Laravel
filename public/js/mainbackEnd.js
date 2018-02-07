@@ -1690,6 +1690,93 @@ $(document).ready(function () {
     })
 
     $('#form_user_search').trigger("submit");
+
+    $('.btn-create').click(function(){
+        box = $("<div class='Modal' id='userModal' style='display:none;'><div class='modalContent' id='modalCreateUser'><h3>New User</h3><form class='UserForm' id='UserForm' enctype='multipart/form-data' ></form></div></div>");
+        alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Withdraw</strong></div>');
+        inputN = $('<div><label for="name">Name<label></div><div><input id="name" name="name" type="text" class="form-control" placeholder="Name" required></div>');
+        inputL = $('<div><label for="lastname">Last Name<label></div><div><input id="name" name="lastname" type="text" class="form-control" placeholder="Last Name" required></div>');
+        inputE = $('<div><label for="email">Email<label></div><div><input id="email" name="email" type="text" class="form-control" placeholder="Email" required></div>');
+        inputP = $('<div><label for="password">Password<label></div><div><input id="password" name="password" type="text" class="form-control" placeholder="Password" required></div>');
+        selectR = $('<div><label for="role" >Role<label><div id="role" style="height:fit-content;" class="form-control" name="role"></div>');
+        selectC = $('<div class="clientselect" style="display:none;"><div><label for="role" >Role<label></div><div><select id="client" class="form-control" name="client"></select></div>');
+
+        $('#rightContent').append(box);
+        $('#UserForm').append(alert);
+        $('#UserForm').append(inputN);
+        $('#UserForm').append(inputL);
+        $('#UserForm').append(inputE);
+        $('#UserForm').append(inputP);
+        $('#UserForm').append(selectR);
+        $('#UserForm').append(selectC);
+
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            url: "/users/roles",
+            type: 'post',
+            datatype: 'json',
+            success: function (data) {
+                //Inicio
+                roles = data.data;
+                for(i=0;i < roles.length;i++)
+                {
+                    var role = roles[i];
+                    $('#role').append('<div class="checkRoles checkbox-inline" title="'+ role.description +'"><label class="RoleLabel" ><input class="roles" type="checkbox"  name="roles" value="'+ role.id +'"/>'+ role.name + '</label></div>');
+                }
+            },
+            // Fin
+            error: function (error) {
+                ReadError(error);
+            }
+        })
+        $('.roleLabel').click(function(){
+            if($(this).hasClass() == 'selected'){
+                $(this).removeClass('selected');
+                $('.clientselect').hide();
+            }else{
+                role = $(this).val();
+                $(this).addClass('selected');
+                if(role == 3 || role == 4){
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        url: "/users/clients",
+                        type: 'post',
+                        data: {role: role},
+                        datatype: 'json',
+                        success: function (data) {
+                            //Inicio
+                            clients = data.data;
+                            for(i=0;i < clients.length;i++)
+                            {
+                                var client = clients[i];
+                                $('#client').append('<option id="clients" value="'+ client.id +'">' +client.name+'</option>');
+                                $('.clientselect').show();
+                            }
+                        },
+                        // Fin
+                        error: function (error) {
+                            ReadError(error);
+                        }
+                    })
+                }
+            }
+
+        });
+        $('#UserForm').append("<div id='userButts'></div>");
+        clsbut = $("<span class='close'>&times;</span>");
+        closeButton(clsbut, '.Modal');
+        makeBut = $("<button type='button' name='button' id='userCont'>Make</button>");
+
+        $('#modalCreateUser').prepend(clsbut);
+        $('#userButts').append(makeBut);
+        $('.Modal').css('display', 'block');
+    });
+
+
 });
 
 /***/ })

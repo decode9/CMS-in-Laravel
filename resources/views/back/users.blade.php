@@ -145,6 +145,9 @@ top: -30px;
         background-color: #bfbfbf;
         color: white;
     }
+    .checkRoles{
+        padding: 7px;
+    }
 </style>
 @section('content')
     <div class="userscontent">
@@ -154,7 +157,7 @@ top: -30px;
                     <thead class="thead-default">
                         <tr>
                             <th colspan="4">Users</th>
-                            <th colspan="3"><div class="col-lg-12">
+                            <th colspan="2"><div class="col-lg-12">
                                 <form id="form_user_search" class="form_search">
                                     <div class="input-group">
                                         <input id="search_user_value" type="text" class="form-control" placeholder="Search User">
@@ -164,6 +167,7 @@ top: -30px;
                                     </div><!-- /input-group -->
                                 </form>
                             </div><!-- /.col-lg-6 --></th>
+                            <th colspan="1" style="text-align:center; vertical-align:middle;"><button type="button" class="btn btn-default btn-create" value="Go!"><i id="new_icon" class="fa fa-user" aria-hidden="true"> Create User</i></button></th>
                         </tr>
                         <tr>
                             <th id="table_user_header_name" style="cursor: pointer;">Name</th>

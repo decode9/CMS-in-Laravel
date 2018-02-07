@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\User;
-
+use App\Role;
 
 class UserController extends Controller
 {
@@ -34,7 +34,6 @@ class UserController extends Controller
 
             //Select Users
             $query = User::WhereNotIn('id', [$user->id]);
-
             //Search by
 
             if($searchValue != '')
@@ -81,9 +80,14 @@ class UserController extends Controller
 
             $users  =  $query->get();
 
+            $roles = [];
+            foreach($users as $user){
+                $role = $user->roles()->get();
+                array_push($roles, $role);
+            }
             //Get fees by month and year
 
-            return response()->json(['page' => $page, 'result' => $users,'total' => $total], 202);
+            return response()->json(['page' => $page, 'result' => $users,'total' => $total, 'roles' => $roles], 202);
     }
 
     /**
@@ -91,13 +95,22 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function userRoles()
     {
-        //
-        $edit = false;
-        return view('back.newuser', ['edit' => $edit]);
+        $roles = Role::All();
+
+        return response()->json(['data' => $roles], 202);
     }
 
+    public function userClients(Request $request){
+        $rolid = $request->role;
+
+        $role = Role::find($rolid);
+
+        $user = $role->users();
+
+        return response()->json(['data' => $user], 202);
+    }
     /**
      * Store a newly created resource in storage.
      *
@@ -111,7 +124,9 @@ class UserController extends Controller
             'name' => 'required| max:50',
             'username' => 'required|unique:users|max:20',
             'email' => 'required|unique:users|max:50',
-            'password' => 'required|min:8|confirmed'
+            'password' => 'required|min:8|confirmed',
+            'roles' => 'required',
+
         ]);
 
         $user = new User;
