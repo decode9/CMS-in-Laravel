@@ -1695,11 +1695,11 @@ $(document).ready(function () {
         box = $("<div class='Modal' id='userModal' style='display:none;'><div class='modalContent' id='modalCreateUser'><h3>New User</h3><form class='UserForm' id='UserForm' enctype='multipart/form-data' ></form></div></div>");
         alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Withdraw</strong></div>');
         inputN = $('<div><label for="name">Name<label></div><div><input id="name" name="name" type="text" class="form-control" placeholder="Name" required></div>');
-        inputL = $('<div><label for="lastname">Last Name<label></div><div><input id="name" name="lastname" type="text" class="form-control" placeholder="Last Name" required></div>');
+        inputL = $('<div><label for="lastname">Last Name<label></div><div><input id="lastname" name="lastname" type="text" class="form-control" placeholder="Last Name" required></div>');
         inputE = $('<div><label for="email">Email<label></div><div><input id="email" name="email" type="text" class="form-control" placeholder="Email" required></div>');
         inputP = $('<div><label for="password">Password<label></div><div><input id="password" name="password" type="text" class="form-control" placeholder="Password" required></div>');
-        selectR = $('<div><label for="role" >Role<label><div id="role" style="height:fit-content;" class="form-control" name="role"></div>');
-        selectC = $('<div class="clientselect" style="display:none;"><div><label for="role" >Role<label></div><div><select id="client" class="form-control" name="client"></select></div>');
+        selectR = $('<div><label for="role" >Role<label><div id="roles" style="height:fit-content;" class="form-control"></div>');
+        selectC = $('<div id="clientBox" style="display:none;"><div><label for="selectc" >Client<label></div><div><select id="client" class="form-control" name="selectc"></select></div>');
 
         $('#rightContent').append(box);
         $('#UserForm').append(alert);
@@ -1723,7 +1723,13 @@ $(document).ready(function () {
                 for(i=0;i < roles.length;i++)
                 {
                     var role = roles[i];
-                    $('#role').append('<div class="checkRoles checkbox-inline" title="'+ role.description +'"><label class="RoleLabel" ><input class="roles" type="checkbox"  name="roles" value="'+ role.id +'"/>'+ role.name + '</label></div>');
+                    var label = $('<label id="labelr'+i+'" class="RoleLabel" >'+ role.name + '</label>');
+                    var input = $('<input class="roles" type="checkbox" id="role" name="role" value="'+ role.id +'"/>');
+                    $('#role').append('<div class="checkRoles'+i+' checkbox-inline" title="'+ role.description +'"></div>');
+                    userClient(label);
+                    $('.checkRoles'+i).append(label);
+                    $('#labelr'+i).prepend(input);
+
                 }
             },
             // Fin
@@ -1731,12 +1737,25 @@ $(document).ready(function () {
                 ReadError(error);
             }
         })
-        $('.roleLabel').click(function(){
+
+        $('#UserForm').append("<div id='userButts'></div>");
+        clsbut = $("<span class='close'>&times;</span>");
+        closeButton(clsbut, '.Modal');
+        makeBut = $("<button type='button' name='button' id='userCont'>Make</button>");
+        addMakeuserButton(makeBut);
+        $('#modalCreateUser').prepend(clsbut);
+        $('#userButts').append(makeBut);
+        $('.Modal').css('display', 'block');
+    });
+
+    function userClient(location){
+        location.click(function(){
             if($(this).hasClass() == 'selected'){
                 $(this).removeClass('selected');
-                $('.clientselect').hide();
+                $('#clientBox').hide();
             }else{
-                role = $(this).val();
+                role = $(this).find('input').val();
+                console.log(role);
                 $(this).addClass('selected');
                 if(role == 3 || role == 4){
                     $.ajax({
@@ -1754,7 +1773,7 @@ $(document).ready(function () {
                             {
                                 var client = clients[i];
                                 $('#client').append('<option id="clients" value="'+ client.id +'">' +client.name+'</option>');
-                                $('.clientselect').show();
+                                $('.clientBox').show();
                             }
                         },
                         // Fin
@@ -1766,16 +1785,67 @@ $(document).ready(function () {
             }
 
         });
-        $('#UserForm').append("<div id='userButts'></div>");
-        clsbut = $("<span class='close'>&times;</span>");
-        closeButton(clsbut, '.Modal');
-        makeBut = $("<button type='button' name='button' id='userCont'>Make</button>");
+    }
 
-        $('#modalCreateUser').prepend(clsbut);
-        $('#userButts').append(makeBut);
-        $('.Modal').css('display', 'block');
-    });
+    function addMakeuserButton(makeBut){
+        jQuery.validator.addMethod("lettersonly", function(value, element) {
+            return this.optional(element) || /^[a-z\s]+$/i.test(value);
+        }, "Only alphabetical characters");
+        jQuery.validator.addMethod("username", function(value, element) {
+            return this.optional(element) || /^[a-z\s\d]+$/i.test(value);
+        }, "Only alphabetical characters and numbers");
+        jQuery.validator.addMethod("password", function(value, element) {
+            return this.optional(element) || /^(?=(?:.*\d){1})(?=(?:.*[A-Z]){1})(?=(?:.*[a-z]){1})\S{6,}$/i.test(value);
+        }, "please introduce at least one capital letter, lower letter, and number, minimun 6 characters");
+        $('#UserForm').validate({
+            rules: {
+                name:{
+                    required: true,
+                    minlength: 2,
+                    lettersonly: true,
+                },
+                lastname:{
+                    required: true,
+                    minlength: 2,
+                    lettersonly: true,
+                },
+                username:{
+                    required: true,
+                    minlength: 4,
+                    username: true,
+                },
+                email:{
+                    required: true,
+                    email: true,
+                },
+                password:{
+                    required:true,
+                    password:true,
+                },
+                role:{
+                    required: true,
+                },
+            },
+                messages:{
+                    role: 'Please select at least one role',
+                },
 
+        });
+        makeBut.click(function(e){
+            if($('#UserForm').valid()){
+                alterForm('#AccountForm', true);
+                $('#accCont').hide();
+                $('.alert').show();
+                confirmBut = $("<button type='button' name='button' id='accConf'>Confirm</button>");
+                backBut = $("<button type='button' name='button' id='accBack'>Back</button>");
+                backButton(backBut, '#AccountForm', 'acc');
+                confirmaButton(confirmBut);
+                $('#accButts').append(confirmBut);
+                $('#accButts').append(backBut);
+
+            }
+        })
+    }
 
 });
 
