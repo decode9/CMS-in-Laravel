@@ -148,6 +148,14 @@ top: -30px;
     .checkRoles{
         padding: 7px;
     }
+    #userButts{
+        position: relative;
+        top: 20px;
+    }
+    #role-error{
+        position: fixed;
+        margin-top: 60px;
+    }
 </style>
 @section('content')
     <div class="userscontent">

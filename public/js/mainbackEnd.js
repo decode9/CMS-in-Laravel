@@ -1696,8 +1696,9 @@ $(document).ready(function () {
         alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Withdraw</strong></div>');
         inputN = $('<div><label for="name">Name<label></div><div><input id="name" name="name" type="text" class="form-control" placeholder="Name" required></div>');
         inputL = $('<div><label for="lastname">Last Name<label></div><div><input id="lastname" name="lastname" type="text" class="form-control" placeholder="Last Name" required></div>');
+        inputU = $('<div><label for="username">Username<label></div><div><input id="username" name="username" type="text" class="form-control" placeholder="Username" required></div>');
         inputE = $('<div><label for="email">Email<label></div><div><input id="email" name="email" type="text" class="form-control" placeholder="Email" required></div>');
-        inputP = $('<div><label for="password">Password<label></div><div><input id="password" name="password" type="text" class="form-control" placeholder="Password" required></div>');
+        inputP = $('<div><label for="password">Password<label></div><div><input id="password" name="password" type="password" class="form-control" placeholder="Password" required></div>');
         selectR = $('<div><label for="role" >Role<label><div id="roles" style="height:fit-content;" class="form-control"></div>');
         selectC = $('<div id="clientBox" style="display:none;"><div><label for="selectc" >Client<label></div><div><select id="client" class="form-control" name="selectc"></select></div>');
 
@@ -1705,6 +1706,7 @@ $(document).ready(function () {
         $('#UserForm').append(alert);
         $('#UserForm').append(inputN);
         $('#UserForm').append(inputL);
+        $('#UserForm').append(inputU);
         $('#UserForm').append(inputE);
         $('#UserForm').append(inputP);
         $('#UserForm').append(selectR);
@@ -1724,9 +1726,9 @@ $(document).ready(function () {
                 {
                     var role = roles[i];
                     var label = $('<label id="labelr'+i+'" class="RoleLabel" >'+ role.name + '</label>');
-                    var input = $('<input class="roles" type="checkbox" id="role" name="role" value="'+ role.id +'"/>');
-                    $('#role').append('<div class="checkRoles'+i+' checkbox-inline" title="'+ role.description +'"></div>');
-                    userClient(label);
+                    var input = $('<input class="roles" type="checkbox" name="role" value="'+ role.id +'"/>');
+                    $('#roles').append('<div class="checkRoles'+i+' checkbox-inline" title="'+ role.description +'"></div>');
+                    userClient(input);
                     $('.checkRoles'+i).append(label);
                     $('#labelr'+i).prepend(input);
 
@@ -1750,21 +1752,22 @@ $(document).ready(function () {
 
     function userClient(location){
         location.click(function(){
-            if($(this).hasClass() == 'selected'){
+            if($(this).hasClass('selected')){
                 $(this).removeClass('selected');
                 $('#clientBox').hide();
             }else{
-                role = $(this).find('input').val();
-                console.log(role);
+                role = $(this).val();
                 $(this).addClass('selected');
-                if(role == 3 || role == 4){
+                if(role == 4 || role == 5){
+                    var rtoken = 0;
+                    (role==4) ? rtoken = 3 : rtoken = 6;
                     $.ajax({
                         headers: {
                             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                         },
                         url: "/users/clients",
                         type: 'post',
-                        data: {role: role},
+                        data: {role: rtoken},
                         datatype: 'json',
                         success: function (data) {
                             //Inicio
@@ -1772,7 +1775,7 @@ $(document).ready(function () {
                             for(i=0;i < clients.length;i++)
                             {
                                 var client = clients[i];
-                                $('#client').append('<option id="clients" value="'+ client.id +'">' +client.name+'</option>');
+                                $('#client').append('<option class="clients" value="'+ client.id +'">' +client.name+'</option>');
                                 $('.clientBox').show();
                             }
                         },
@@ -1833,18 +1836,47 @@ $(document).ready(function () {
         });
         makeBut.click(function(e){
             if($('#UserForm').valid()){
-                alterForm('#AccountForm', true);
-                $('#accCont').hide();
+                alterForm('#UserForm', true);
+                $('#userCont').hide();
                 $('.alert').show();
-                confirmBut = $("<button type='button' name='button' id='accConf'>Confirm</button>");
-                backBut = $("<button type='button' name='button' id='accBack'>Back</button>");
-                backButton(backBut, '#AccountForm', 'acc');
-                confirmaButton(confirmBut);
-                $('#accButts').append(confirmBut);
-                $('#accButts').append(backBut);
+                confirmBut = $("<button type='button' name='button' id='userConf'>Confirm</button>");
+                backBut = $("<button type='button' name='button' id='userBack'>Back</button>");
+                backButton(backBut, '#UserForm', 'user');
+                confirmuserButton(confirmBut);
+                $('#userButts').append(confirmBut);
+                $('#userButts').append(backBut);
 
             }
         })
+        function confirmuserButton(confirmBut){
+            confirmBut.click(function(){
+
+                    name = $('#name').val();
+                    lastname = $('#lastname').val();
+                    username = $('#username').val();
+                    email = $('#email').val();
+                    password = $('#password').val();
+                    var role = [];
+                    $('input[name="role"]').each(function(){
+                        if($(this).is(':checked')){
+                            role.push($(this).val());
+                        }
+                    });
+
+                    $.ajax({
+
+                        headers: { 'X-CSRF-Token' : $('meta[name=csrf-token]').attr('content') },
+                        url: '/user/create',
+                        type: 'POST',
+                        dataType: "json",
+                        data: {name: name, lastname: lastname, username: username, email:email, password:password, roles:role},
+                        success: function(data){
+                            $('#form_user_search').trigger("submit");
+                            closeModal('#modalCreateUser');
+                        }
+                    })
+            })
+        }
     }
 
 });

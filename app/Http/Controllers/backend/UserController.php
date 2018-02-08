@@ -122,6 +122,7 @@ class UserController extends Controller
         //
         $request->validate([
             'name' => 'required| max:50',
+            'lastname' => 'required| max:50',
             'username' => 'required|unique:users|max:20',
             'email' => 'required|unique:users|max:50',
             'password' => 'required|min:8|confirmed',
@@ -134,11 +135,14 @@ class UserController extends Controller
         $user->username = $request->username;
         $user->email = $request->email;
         $user->password= $request->password;
+        $roles = $request->roles;
+        foreach($roles as $role){
+            $user->attach($role);
+        }
+
         $user->save();
 
-        $url = url('/') . '/users/new';
-
-        return view('back.success',['url' => $url, 'response' => 'Congratulations the user as been created']);
+        return response()->json();
     }
 
     /**
