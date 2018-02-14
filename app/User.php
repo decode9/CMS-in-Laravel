@@ -45,4 +45,8 @@ class User extends Authenticatable
     public function getRole(){
         return $this->roles()->get();
     }
+
+    public function clients(){
+        return $this->hasMany('App\User', 'user_client', 'user_id', 'client_id');
+    }
 }

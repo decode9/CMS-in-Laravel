@@ -137,7 +137,11 @@ class UserController extends Controller
         $user->password= $request->password;
         $roles = $request->roles;
         foreach($roles as $role){
-            $user->attach($role);
+            $user->roles()->attach($role);
+        }
+        if(isset($request->client)){
+            $client = $request->client;
+            $user->clients()->attach($client);
         }
 
         $user->save();
