@@ -37,6 +37,7 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/users', 'backend\ViewsController@users')->name('users')->middleware('auth.per:0100');
 Route::post('/users', 'backend\UserController@index')->name('users.list')->middleware('auth.per:0100');
 Route::post('/users/create', 'backend\UserController@store')->name('users.create')->middleware('auth.per:0100');
+Route::post('/users/update', 'backend\UserController@update')->name('users.update')->middleware('auth.per:0100');
 Route::post('/users/roles', 'backend\UserController@userRoles')->name('users.roles')->middleware('auth.per:0100');
 Route::post('/users/clients', 'backend\UserController@userClients')->name('users.clients')->middleware('auth.per:0100');
 //NEWS ADMINISTRATION BACKEND

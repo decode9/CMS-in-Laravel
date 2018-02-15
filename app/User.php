@@ -42,11 +42,13 @@ class User extends Authenticatable
     public function funds(){
         return $this->hasMany('App\Fund');
     }
+    public function clients(){
+        return $this->belongsToMany('App\User', 'user_client', 'user_id', 'client_id');
+    }
+
     public function getRole(){
         return $this->roles()->get();
     }
 
-    public function clients(){
-        return $this->hasMany('App\User', 'user_client', 'user_id', 'client_id');
-    }
+
 }

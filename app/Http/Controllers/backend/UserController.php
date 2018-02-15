@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\User;
 use App\Role;
 
@@ -103,11 +104,12 @@ class UserController extends Controller
     }
 
     public function userClients(Request $request){
+
         $rolid = $request->role;
 
         $role = Role::find($rolid);
 
-        $user = $role->users();
+        $user = $role->users()->get();
 
         return response()->json(['data' => $user], 202);
     }
@@ -130,12 +132,23 @@ class UserController extends Controller
 
         ]);
 
+        $name = $request->name;
+        $lastname = $request->lastname;
+        $username = strtolower($request->username);
+        $email = strtolower($request->email);
+        $password = bcrypt($request->password);
+        $roles = $request->roles;
+
+        $fullname = ucfirst(strtolower($name)) . " " . ucfirst(strtolower($lastname));
+
         $user = new User;
-        $user->name = $request->name;
+        $user->name = $fullname;
         $user->username = $request->username;
         $user->email = $request->email;
         $user->password= $request->password;
-        $roles = $request->roles;
+        $user->save();
+
+
         foreach($roles as $role){
             $user->roles()->attach($role);
         }
@@ -144,35 +157,12 @@ class UserController extends Controller
             $user->clients()->attach($client);
         }
 
-        $user->save();
-
-        return response()->json();
+        return response()->json(['message' => "success"], 202);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-        $user = User::find($id);
-        $edit = true;
-        return view('back.newuser',['user' => $user, 'edit' => $edit]);
-
     }
 
     /**
@@ -187,22 +177,51 @@ class UserController extends Controller
         //
         $request->validate([
             'name' => 'required| max:50',
-            'email' => 'required|max:50'
+            'lastname' => 'required| max:50',
+            'username' => 'required|unique:users|max:20',
+            'email' => 'required|unique:users|max:50',
+            'password' => 'min:8|confirmed',
+            'roles' => 'required',
+
         ]);
+        
+        $id = $request->id;
+        $name = $request->name;
+        $lastname = $request->lastname;
+        $username = strtolower($request->username);
+        $email = strtolower($request->email);
+        $password = bcrypt($request->password);
+        $roles = $request->roles;
 
+        $fullname = ucfirst(strtolower($name)) . " " . ucfirst(strtolower($lastname));
 
-        $user = User::find($id);
+        $user = User::Find($id);
 
-        $user->name = $request->name;
+        $user->name = $fullname;
+        $user->username = $request->username;
         $user->email = $request->email;
-        if(isset($request->password)){
-            $user->password= $request->password;
-        }
+        $user->password= $request->password;
         $user->save();
 
-        $url = url('/') . '/users/edit/' . $id;
+        $rols = $User->roles()->get();
+        foreach($roles as $role){
+            foreach($rols as $rol){
+                if($rol->id != $role){
+                    $user->roles()->attach($role);
+                }
+            }
+        }
+        if(isset($request->client)){
+            $clients = $User->clients()->get();
+            $client = $request->client;
+            foreach($clients as $c){
+                if($c->id != $client){
+                    $user->clients()->attach($client);
+                }
+            }
+        }
 
-        return view('back.success',['url' => $url, 'response' => 'Congratulations the user as been updated']);
+        return response()->json(['message' => "success"], 202);
     }
 
     /**

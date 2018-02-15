@@ -14,11 +14,11 @@ class Currencies extends Migration
     public function up()
     {
         DB::table('currencies')->insert([
-                ['name' => 'Bolivar Fuerte', 'symbol' => 'VEF'],
-                ['name' => 'Dollar', 'symbol' => 'USD'],
-                ['name' => 'Bitcoin', 'symbol' => 'BTC'],
-                ['name' => 'Litecoin', 'symbol' => 'LTC'],
-                ['name' => 'Ethereum', 'symbol' => 'ETH'],
+                ['name' => 'Bolivar Fuerte', 'symbol' => 'VEF', 'type' => 'currency'],
+                ['name' => 'Dollar', 'symbol' => 'USD', 'type' => 'currency'],
+                ['name' => 'Bitcoin', 'symbol' => 'BTC', 'type' => 'Digital Coin'],
+                ['name' => 'Litecoin', 'symbol' => 'LTC', 'type' => 'Digital Coin'],
+                ['name' => 'Ethereum', 'symbol' => 'ETH', 'type' => 'Digital Coin'],
             ]);
     }
 
