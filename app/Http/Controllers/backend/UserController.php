@@ -172,7 +172,7 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
         //
         $request->validate([
@@ -184,7 +184,7 @@ class UserController extends Controller
             'roles' => 'required',
 
         ]);
-        
+
         $id = $request->id;
         $name = $request->name;
         $lastname = $request->lastname;
@@ -230,13 +230,30 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-
+        $id = $request->id;
         $user = User::find($id);
+        $user->roles()->detach();
+        $user->clients()->detach();
+        $funds = $user->funds()->get();
+        if($funds){
+            foreach($funds as $fund){
+                $fd = App\Fund::find($fund->id);
+                    $fd->delete();
+            }
+        }
+
+        $accounts = $user->accounts()->get();
+        if($accounts){
+            foreach($accounts as $account){
+                $ac = App\Fund::find($account->id);
+                    $ac->delete();
+            }
+        }
 
         $user->delete();
-        $url = url('/') . '/users';
-        return view('back.success',['url' => $url, 'response' => 'Congratulations the user as been deleted']);
+
+        return response()->json(['message' => "success"], 202);
     }
 }

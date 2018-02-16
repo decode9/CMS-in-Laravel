@@ -1617,11 +1617,14 @@ $(document).ready(function () {
                             colvalue_4.append(rol.name + '<br/>');
                         }
                         editBut = $('<button type="button" id="editBut">Edit</button>');
+                        delBut = $('<button type="button" id="delBut">Delete</button>');
                         addEditUserClick(editBut, user, role);
+                        addMakeDuserButton(delBut, user);
                         var colvalue_5 = $( '<td class="col-sm-12 col-md-2">'+  user.created_at  +'</td>');
                         var colvalue_6 = $( '<td class="col-sm-12 col-md-2">'+  user.updated_at  +'</td>');
                         var colvalue_7 = $( '<td class="col-sm-12 col-md-2"></td>');
                         colvalue_7.append(editBut);
+                        colvalue_7.append(delBut);
                         rowResult.append(colvalue_1);
                         rowResult.append(colvalue_2);
                         rowResult.append(colvalue_3);
@@ -2062,6 +2065,7 @@ $(document).ready(function () {
                     password = $('#password').val();
                     confirm = $('#passwordConf').val();
                     client = $('#client').val();
+                    id = $('#id').val();
                     var role = [];
                     $('input[name="role"]').each(function(){
                         if($(this).is(':checked')){
@@ -2075,7 +2079,7 @@ $(document).ready(function () {
                         url: '/users/update',
                         type: 'POST',
                         dataType: "json",
-                        data: {name: name, lastname: lastname, username: username, email:email, password:password, password_confirmation:confirm, roles:role, client:client},
+                        data: {id: id,name: name, lastname: lastname, username: username, email:email, password:password, password_confirmation:confirm, roles:role, client:client},
                         success: function(data){
                             $('#form_user_search').trigger("submit");
                             closeModal('.Modal');
@@ -2084,6 +2088,459 @@ $(document).ready(function () {
             })
         }
 
+        function addMakeDuserButton(delButt, user){
+            delButt.click(function(){
+                box = $("<div class='Modal' id='userDModal' style='display:none;'><div class='modalContent' id='modalDeleteUser'><h3>Delete User</h3><form class='UserForm' id='UserForm' enctype='multipart/form-data' ></form></div></div>");
+                alert = $('<div class="alert alert-warning" ><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Are You Sure for delete '+ user.name +' user?</strong></div>');
+                inputI = $('<input id="id" name="id" style="display: none;" type="text" class="form-control" value="'+ user.id +'" required>');
+
+                $('#rightContent').append(box);
+                $('#UserForm').append(alert);
+                $('#UserForm').append(inputI);
+
+                $('#UserForm').append("<div id='userButts'></div>");
+                clsbut = $("<span class='close'>&times;</span>");
+                closeButton(clsbut, '.Modal');
+                makeBut = $("<button type='button' name='button' id='userCont'>Delete</button>");
+                peBut = $("<button type='button' name='button' id='userPass'>Back</button>");
+                closeButton(peBut, '.Modal');
+                DeleteUserButton(makeBut);
+                $('#modalDeleteUser').prepend(clsbut);
+                $('#userButts').append(makeBut);
+                $('#userButts').append(peBut);
+                $('.Modal').css('display', 'block');
+            })
+        }
+
+        function DeleteUserButton(delButt){
+            delButt.click(function(){
+                id = $('#id').val();
+
+                $.ajax({
+
+                    headers: { 'X-CSRF-Token' : $('meta[name=csrf-token]').attr('content') },
+                    url: '/users/delete',
+                    type: 'POST',
+                    dataType: "json",
+                    data: {id: id},
+                    success: function(data){
+                        $('#form_user_search').trigger("submit");
+                        closeModal('.Modal');
+                    }
+                });
+            });
+        }
+
+        /*Search Currencies Table*/
+
+        $('#table_currency_header_name').click(function (e) {
+          orderTableCurrencyBy('name');
+        });
+
+         $('#table_currency_header_symbol').click(function (e) {
+          orderTableCurrencyBy('symbol');
+        });
+
+        $('#table_currency_header_type').click(function (e) {
+          orderTableCurrencyBy('type');
+        });
+
+        $('#table_currency_header_date').click(function (e) {
+          orderTableCurrencyBy('created_at');
+        });
+        $('#table_currency_header_update').click(function (e) {
+          orderTableCurrencyBy('updated_at');
+        });
+
+        var orderCurrencyBy = "";
+        var orderCurrencyDirection = "";
+        var searchCurrencyValue = "";
+
+        $( "#form_currency_search" ).submit(function(e){
+            e.preventDefault();
+            //DESC
+            searchCurrencyValue = $( "#search_currency_value" ).val();
+            searchCurrency(1);
+        });
+
+        function orderTableCurrencyBy(by){
+            if(orderCurrencyBy === by){
+                if(orderCurrencyDirection === ""){
+                    orderCurrencyDirection = "DESC";
+                }else{
+                    orderCurrencyDirection = "";
+                }
+            }else{
+                orderCurrencyBy = by;
+                orderCurrencyDirection = "";
+            }
+            searchCurrency(1);
+        }
+
+        //Get Withdraw Data
+
+        function searchCurrency(page){
+            resultPage =  $( "#result_currency_page" ).val();
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url: "/currencies",
+                type: 'post',
+                data: { searchvalue : searchCurrencyValue, page : page, orderBy :orderCurrencyBy, orderDirection: orderCurrencyDirection, resultPage: resultPage } ,
+                success: function (data) {
+                    //Inicio
+                    var currencies = data.result;
+                    if(currencies.length == 0){
+                        $("#table_currency_content").html("");
+                        $('#table_currency_content').append('<tr><td colspan="6">None</td></tr>');
+                    }else{
+                        $("#table_currency_content").html("");
+                        for(i=0;i < currencies.length;i++)
+                        {
+                            var currency = currencies[i];
+                            // we have to make in steps to add the onclick event
+                            var rowResult = $( '<tr></tr>');
+                            var colvalue_1 = $( '<td class="col-sm-12 col-md-2">'+ currency.name +'</td>');
+                            var colvalue_2 = $( '<td class="col-sm-12 col-md-2">'+ currency.symbol +'</td>');
+                            var colvalue_3 = $( '<td class="col-sm-12 col-md-2">'+  currency.type +'</td>');
+
+                            editBut = $('<button type="button" id="editBut">Edit</button>');
+                            delBut = $('<button type="button" id="delBut">Delete</button>');
+                            addEditCurrencyClick(editBut, currency);
+                            addMakeDcurrencyButton(delBut, currency);
+                            var colvalue_4 = $( '<td class="col-sm-12 col-md-2">'+  currency.created_at  +'</td>');
+                            var colvalue_5 = $( '<td class="col-sm-12 col-md-2">'+ currency.updated_at  +'</td>');
+                            var colvalue_6 = $( '<td class="col-sm-12 col-md-2"></td>');
+                            colvalue_6.append(editBut);
+                            colvalue_6.append(delBut);
+                            rowResult.append(colvalue_1);
+                            rowResult.append(colvalue_2);
+                            rowResult.append(colvalue_3);
+                            rowResult.append(colvalue_4);
+                            rowResult.append(colvalue_5);
+                            rowResult.append(colvalue_6);
+                            $("#table_currency_content").append(rowResult);
+                        }
+                        $("#table_currency_pagination").html("");
+
+                        page = parseInt(data.page);
+                        var total = data.total;
+                        var resultPage =  $( "#result_currency_page" ).val();
+                        var totalPages = Math.ceil(total / resultPage);
+                        if(page === 1){
+                            maxPage = page + 2;
+                            totalPages = (maxPage < totalPages) ?  maxPage: totalPages;
+                            var pageList = $( '<ul class="pagination"></ul>');
+                            for(i = page ; i <= totalPages; i++){
+                                pagebutton = $( '<li class="page_currency pages">'+ i +'</li>');
+                                pageList.append(pagebutton);
+                                addPageCButton(pagebutton);
+                            }
+                            $("#table_currency_pagination").append(pageList);
+                        }else if(page === totalPages){
+                            page = page - 2;
+                            if(page < 1){
+                                page = 1;
+                            }
+                            totalPages = ( page + 2 < totalPages) ?  (page + 2): totalPages;
+                            var pageList = $( '<ul class="pagination"></ul>');
+                            for(i = page ; i <= totalPages; i++){
+                                pagebutton = $( '<li class="page_currency pages">'+ i +'</li>');
+                                pageList.append(pagebutton);
+                                addPageCButton(pagebutton);
+                            }
+                            $("#table_currency_pagination").append(pageList);
+                        }else{
+                            page = page - 2;
+                            if(page < 1){
+                                page = 1;
+                            }
+                            totalPages = ( page + 4 < totalPages) ?  (page + 2): totalPages;
+                            var pageList = $( '<ul class="pagination"></ul>');
+                            for(i = page ; i <= totalPages; i++){
+                                pagebutton = $( '<li class="page_currency pages">'+ i +'</li>');
+                                pageList.append(pagebutton);
+                                addPageCButton(pagebutton);
+                            }
+
+                            $("#table_currency_pagination").append(pageList);
+                        }
+                    }
+                    // Put the data into the element you care about.
+
+                },
+                // Fin
+                error: function (error) {
+                    ReadError(error);
+                }
+            });
+        }
+
+        function addPageCButton(pagebutton){
+            pagebutton.click(function(){
+                page = $(this).text();
+                searchCurrency(page);
+            })
+        }
+
+        $('#result_currency_page').change(function(){
+            $('#form_currency_search').trigger("submit");
+        })
+
+        $('#form_currency_search').trigger("submit");
+
+        $('.btn-create-Cu').click(function(){
+
+            box = $("<div class='Modal' id='currencyModal' style='display:none;'><div class='modalContent' id='modalCreateCurrency'><h3>New Currency</h3><form class='CurrencyForm' id='CurrencyForm' enctype='multipart/form-data' ></form></div></div>");
+            alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Currency</strong></div>');
+            inputN = $('<div><label for="name">Name<label></div><div><input id="name" name="name" type="text" class="form-control" placeholder="Name" required></div>');
+            inputS = $('<div><label for="symbol">Symbol<label></div><div><input id="symbol" name="symbol" type="text" class="form-control" placeholder="Symbol" required></div>');
+            selectT = $('<div><label for="type">Type<label></div><div><select id="type" class="form-control" name="selectt"></select></div>');
+
+            types = ['Currency', 'Digital Coin', 'Token'];
+
+
+            $('#rightContent').append(box);
+            $('#CurrencyForm').append(alert);
+            $('#CurrencyForm').append(inputN);
+            $('#CurrencyForm').append(inputS);
+            $('#CurrencyForm').append(selectT);
+
+            for(i = 0; i < types.length; i++){
+                type = types[i];
+                option = $('<option value="'+type+'">'+type+'</option>');
+                $('#type').append(option);
+            }
+
+
+            $('#CurrencyForm').append("<div id='currnButts'></div>");
+            clsbut = $("<span class='close'>&times;</span>");
+            closeButton(clsbut, '.Modal');
+            makeBut = $("<button type='button' name='button' id='currnCont'>Make</button>");
+            addMakeCurrencyButton(makeBut);
+            $('#modalCreateCurrency').prepend(clsbut);
+            $('#currnButts').append(makeBut);
+            $('.Modal').css('display', 'block');
+        });
+
+        function addMakeCurrencyButton(makeBut){
+            jQuery.validator.addMethod("lettersonly", function(value, element) {
+                return this.optional(element) || /^[a-z\S]+$/i.test(value);
+            }, "Only alphabetical characters");
+
+            $('#CurrencyForm').validate({
+                rules: {
+                    name:{
+                        required: true,
+                        minlength: 2,
+                        lettersonly: true,
+                    },
+                    symbol:{
+                        required: true,
+                        minlength: 3,
+                        maxlength: 3,
+                        lettersonly: true,
+                    },
+                    type:{
+                        required: true,
+                    },
+
+                },
+                    messages:{
+                        type: 'Please select one Type',
+                    },
+
+            });
+            makeBut.click(function(e){
+                if($('#CurrencyForm').valid()){
+                    alterForm('#CurrencyForm', true);
+                    $('#currnCont').hide();
+                    $('.alert').show();
+                    confirmBut = $("<button type='button' name='button' id='currnConf'>Confirm</button>");
+                    backBut = $("<button type='button' name='button' id='currnBack'>Back</button>");
+                    backButton(backBut, '#CurrencyForm', 'currn');
+                    confirmcurrencyButton(confirmBut);
+                    $('#currnButts').append(confirmBut);
+                    $('#currnButts').append(backBut);
+
+                }
+            })
+
+        }
+
+        function confirmcurrencyButton(confirmBut){
+            confirmBut.click(function(){
+
+                    name = $('#name').val();
+                    symbol = $('#symbol').val();
+                    type = $('#type').val();
+
+                    $.ajax({
+
+                        headers: { 'X-CSRF-Token' : $('meta[name=csrf-token]').attr('content') },
+                        url: '/currencies/create',
+                        type: 'POST',
+                        dataType: "json",
+                        data: {name: name, symbol: symbol, type: type},
+                        success: function(data){
+                            $('#form_currency_search').trigger("submit");
+                            closeModal('.Modal');
+                        }
+                    })
+            })
+        }
+        function addEditCurrencyClick(buttonEdit, currency){
+            buttonEdit.click(function (){
+
+                box = $("<div class='Modal' id='currencyModal' style='display:none;'><div class='modalContent' id='modalUpdateCurrency'><h3>Update Currency</h3><form class='CurrencyForm' id='CurrencyForm' enctype='multipart/form-data' ></form></div></div>");
+                alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Currency</strong></div>');
+                inputI = $('<input id="id" name="id" style="display: none;" type="text" class="form-control" value="'+ currency.id +'" required>');
+                inputN = $('<div><label for="name">Name<label></div><div><input id="name" name="name" type="text" class="form-control" placeholder="Name" value="'+ currency.name +'"  required></div>');
+                inputS = $('<div><label for="symbol">Symbol<label></div><div><input id="symbol" name="symbol" type="text" class="form-control" placeholder="Symbol" value="'+ currency.symbol +'"  required ></div>');
+                selectT = $('<div><label for="type">Type<label></div><div><select id="type" class="form-control" name="selectt"></select></div>');
+
+                types = ['Currency', 'Digital Coin', 'Token'];
+
+
+
+                $('#rightContent').append(box);
+                $('#CurrencyForm').append(alert);
+                $('#CurrencyForm').append(inputI);
+                $('#CurrencyForm').append(inputN);
+                $('#CurrencyForm').append(inputS);
+                $('#CurrencyForm').append(selectT);
+
+                for(i = 0; i < types.length; i++){
+                    type = types[i];
+                    if(currency.type == type){
+                        option = $('<option value="'+type+'" selected="selected">'+type+'</option>');
+                    }else{
+                        option = $('<option value="'+type+'">'+type+'</option>');
+                    }
+                    $('#type').append(option);
+                }
+
+                $('#CurrencyForm').append("<div id='currnButts'></div>");
+                clsbut = $("<span class='close'>&times;</span>");
+                closeButton(clsbut, '.Modal');
+                makeBut = $("<button type='button' name='button' id='currnCont'>Make</button>");
+                addMakeEcurrencyButton(makeBut);
+                $('#modalUpdateCurrency').prepend(clsbut);
+                $('#currnButts').append(makeBut);
+                $('.Modal').css('display', 'block');
+
+            });
+        }
+
+        function addMakeEcurrencyButton(makeBut){
+            jQuery.validator.addMethod("lettersonly", function(value, element) {
+                return this.optional(element) || /^[a-z\S]+$/i.test(value);
+            }, "Only alphabetical characters");
+
+            $('#CurrencyForm').validate({
+                rules: {
+                    name:{
+                        required: true,
+                        minlength: 2,
+                        lettersonly: true,
+                    },
+                    symbol:{
+                        required: true,
+                        minlength: 2,
+                        lettersonly: true,
+                    },
+                    type:{
+                        required: true,
+                    },
+
+                },
+                    messages:{
+                        type: 'Please select one Type',
+                    },
+
+            });
+            makeBut.click(function(e){
+                if($('#CurrencyForm').valid()){
+                    alterForm('#CurrencyForm', true);
+                    $('#currnCont').hide();
+                    $('.alert').show();
+                    confirmBut = $("<button type='button' name='button' id='currnConf'>Confirm</button>");
+                    backBut = $("<button type='button' name='button' id='currnBack'>Back</button>");
+                    backButton(backBut, '#CurrencyForm', 'currn');
+                    confirmEcurrencyButton(confirmBut);
+                    $('#currnButts').append(confirmBut);
+                    $('#currnButts').append(backBut);
+
+                }
+            })
+        }
+            function confirmEcurrencyButton(confirmBut){
+                confirmBut.click(function(){
+
+                    id = $('#id').val();
+                    name = $('#name').val();
+                    symbol = $('#symbol').val();
+                    type = $('#type').val();
+
+                    $.ajax({
+
+                        headers: { 'X-CSRF-Token' : $('meta[name=csrf-token]').attr('content') },
+                        url: '/currencies/update',
+                        type: 'POST',
+                        dataType: "json",
+                        data: {id: id, name: name, symbol: symbol, type: type},
+                        success: function(data){
+                            $('#form_currency_search').trigger("submit");
+                            closeModal('.Modal');
+                        }
+                    })
+
+                })
+            }
+
+            function addMakeDcurrencyButton(delButt, currency){
+                delButt.click(function(){
+                    box = $("<div class='Modal' id='userDModal' style='display:none;'><div class='modalContent' id='modalDeleteCurrency'><h3>Delete Currency</h3><form class='CurrencyForm' id='CurrencyForm' enctype='multipart/form-data' ></form></div></div>");
+                    alert = $('<div class="alert alert-warning" ><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Are You Sure for delete '+ currency.name +' currency?</strong></div>');
+                    inputI = $('<input id="id" name="id" style="display: none;" type="text" class="form-control" value="'+ currency.id +'" required>');
+
+                    $('#rightContent').append(box);
+                    $('#CurrencyForm').append(alert);
+                    $('#CurrencyForm').append(inputI);
+
+                    $('#CurrencyForm').append("<div id='currnButts'></div>");
+                    clsbut = $("<span class='close'>&times;</span>");
+                    closeButton(clsbut, '.Modal');
+                    makeBut = $("<button type='button' name='button' id='currnCont'>Delete</button>");
+                    peBut = $("<button type='button' name='button' id='currnPass'>Back</button>");
+                    closeButton(peBut, '.Modal');
+                    DeleteCurrencyButton(makeBut);
+                    $('#modalDeleteCurrency').prepend(clsbut);
+                    $('#currnButts').append(makeBut);
+                    $('#currnButts').append(peBut);
+                    $('.Modal').css('display', 'block');
+                })
+            }
+
+            function DeleteCurrencyButton(delButt){
+                delButt.click(function(){
+                    id = $('#id').val();
+
+                    $.ajax({
+
+                        headers: { 'X-CSRF-Token' : $('meta[name=csrf-token]').attr('content') },
+                        url: '/currencies/delete',
+                        type: 'POST',
+                        dataType: "json",
+                        data: {id: id},
+                        success: function(data){
+                            $('#form_currency_search').trigger("submit");
+                            closeModal('.Modal');
+                        }
+                    });
+                });
+            }
 });
 
 /***/ })

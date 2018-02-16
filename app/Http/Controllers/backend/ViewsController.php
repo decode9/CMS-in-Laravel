@@ -22,6 +22,9 @@ class ViewsController extends Controller
      public function users(){
          return view('back.users');
      }
+     public function currencies(){
+         return view('back.currencies');
+     }
     public function funds(){
         return view('back.funds');
     }

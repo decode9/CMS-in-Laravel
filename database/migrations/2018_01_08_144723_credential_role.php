@@ -34,9 +34,9 @@ class CredentialRole extends Migration
     {
         //
         Schema::table('credential_role', function($table){
-            $table->dropForeign('role_credential_credential_id_foreign');
-            $table->dropForeign('role_credential_role_id_foreign');
+            $table->dropForeign('credential_role_credential_id_foreign');
+            $table->dropForeign('credential_role_role_id_foreign');
         });
-        Schema::dropIfExists('role_credential');
+        Schema::dropIfExists('credential_role');
     }
 }

@@ -33,9 +33,10 @@ class UserClient extends Migration
     public function down()
     {
         //
-        Schema::table('role_user', function($table){
-            $table->dropForeign('user_client_user_id_foreign');
+        Schema::table('user_client', function($table){
             $table->dropForeign('user_client_client_id_foreign');
+            $table->dropForeign('user_client_user_id_foreign');
         });
+        Schema::dropIfExists('user_client');
     }
 }

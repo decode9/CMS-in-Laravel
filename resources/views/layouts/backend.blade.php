@@ -60,9 +60,11 @@
                         <a href="{{route('funds')}}"><li class="menuItem menuFunds">
                             <i class="fa fa-money"></i><p>Funds</p>
                         </li></a>
-                        <a href="{{route('orders')}}"><li class="menuItem menuFunds"><i class="fa fa-list"></i> <p>Orders</p>
+                        <a href="{{route('orders')}}"><li class="menuItem menuOrders"><i class="fa fa-list"></i> <p>Orders</p>
                         </li></a>
-                        <a href="{{route('clients')}}"><li class="menuItem menuFunds"><i class="fa fa-address-book"></i> <p>Clients</p>
+                        <a href="{{route('clients')}}"><li class="menuItem menuClients"><i class="fa fa-address-book"></i> <p>Clients</p>
+                        </li></a>
+                        <a href="{{route('currencies')}}"><li class="menuItem menuCurrencies"><i class="fa fa-money"></i> <p>Currencies</p>
                         </li></a>
                     </ul>
                 </div>
