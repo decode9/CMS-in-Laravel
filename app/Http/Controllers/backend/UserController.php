@@ -17,6 +17,7 @@ class UserController extends Controller
     {
         $this->middleware('auth');
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -92,9 +93,7 @@ class UserController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
+     * Take All roles for users
      */
     public function userRoles()
     {
@@ -102,6 +101,10 @@ class UserController extends Controller
 
         return response()->json(['data' => $roles], 202);
     }
+
+    /**
+     * Take Manager Users for Clients
+     */
 
     public function userClients(Request $request){
 
@@ -113,12 +116,14 @@ class UserController extends Controller
 
         return response()->json(['data' => $user], 202);
     }
+
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+
     public function store(Request $request)
     {
         //
@@ -172,6 +177,7 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
     public function update(Request $request)
     {
         //
@@ -182,7 +188,6 @@ class UserController extends Controller
             'email' => 'required|unique:users|max:50',
             'password' => 'min:8|confirmed',
             'roles' => 'required',
-
         ]);
 
         $id = $request->id;
@@ -204,6 +209,9 @@ class UserController extends Controller
         $user->save();
 
         $rols = $User->roles()->get();
+
+        $user->roles()->detach();
+
         foreach($roles as $role){
             foreach($rols as $rol){
                 if($rol->id != $role){
@@ -211,6 +219,9 @@ class UserController extends Controller
                 }
             }
         }
+
+        $user->clients()->detach();
+
         if(isset($request->client)){
             $clients = $User->clients()->get();
             $client = $request->client;
@@ -236,7 +247,9 @@ class UserController extends Controller
         $user = User::find($id);
         $user->roles()->detach();
         $user->clients()->detach();
+
         $funds = $user->funds()->get();
+
         if($funds){
             foreach($funds as $fund){
                 $fd = App\Fund::find($fund->id);
@@ -245,6 +258,7 @@ class UserController extends Controller
         }
 
         $accounts = $user->accounts()->get();
+
         if($accounts){
             foreach($accounts as $account){
                 $ac = App\Fund::find($account->id);

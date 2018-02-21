@@ -165,7 +165,7 @@ top: -30px;
                     <thead class="thead-default">
                         <tr>
                             <th colspan="3">Currencies</th>
-                            <th colspan="2"><div class="col-lg-12">
+                            <th colspan="3"><div class="col-lg-12">
                                 <form id="form_currency_search" class="form_search">
                                     <div class="input-group">
                                         <input id="search_currency_value" type="text" class="form-control" placeholder="Search Currency">
@@ -181,6 +181,7 @@ top: -30px;
                             <th id="table_currency_header_name" style="cursor: pointer;">Name</th>
                             <th id="table_currency_header_symbol" style="cursor: pointer;">Symbol</th>
                             <th id="table_currency_header_type" style="cursor: pointer;">Type</th>
+                            <th id="table_currency_header_type" style="cursor: pointer;">Value</th>
                             <th id="table_currency_header_date" style="cursor: pointer;">Created</th>
                             <th id="table_currency_header_update" style="cursor: pointer;">Last Modified</th>
                             <th>Options</th>
@@ -196,7 +197,7 @@ top: -30px;
                                     <option value="50">50</option>
                                 </select>
                             </th>
-                            <th id="table_currency_pagination" colspan="3"></th>
+                            <th id="table_currency_pagination" colspan="4"></th>
                         </tr>
                     </tfoot>
                     <tbody id="table_currency_content">

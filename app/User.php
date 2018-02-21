@@ -50,5 +50,17 @@ class User extends Authenticatable
         return $this->roles()->get();
     }
 
+    public function getCredential($creN){
+        $roles = $this->roles()->get();
+        foreach($roles as $role){
+            $credentials = $role->credentials()->get();
+            foreach($credentials as $credential){
+                if($credential->code == $creN){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
 }

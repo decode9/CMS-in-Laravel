@@ -97,26 +97,30 @@ class CurrenciesController extends Controller
             'name' => 'required| max:20',
             'symbol' => 'required| max:3',
             'type' => 'required|max:20',
-
+            'value' => 'required|max:20'
         ]);
 
         $name = ucfirst(strtolower($request->name));;
         $symbol = strtoupper($request->symbol);
         $type = $request->type;
+        $value = $request->value;
 
         $currency = new Currency;
         $currency->name = $name;
         $currency->symbol = $symbol;
         $currency->type = $type;
-
+        $currency->value = $value;
         $currency->save();
 
         return response()->json(['message' => "success"], 202);
     }
 
-    public function show($id)
+    public function show(Request $request)
     {
         //
+        $currency = App\Currency::All();
+
+        return response()->json(['message' => "success", 'result' => $currency], 202);
     }
 
     /**

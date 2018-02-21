@@ -51,21 +51,31 @@
                 </div>
                 <div id="menuBack">
                     <ul class="menuAction">
+                        @if(Auth::User()->getCredential(100))
                         <a href="{{route('users')}}"><li class="menuItem menuUser"><i class="fa fa-address-book"></i> <p>Users</p></li></a>
+                        @endif
+                        @if(Auth::User()->getCredential(150))
+                        <a href="{{route('currencies')}}"><li class="menuItem menuCurrencies"><i class="fa fa-money"></i> <p>Currencies</p></li></a>
+                        @endif
+                        @if(Auth::User()->getCredential(150))
+                        <a href="{{route('funds')}}"><li class="menuItem menuFunds">
+                            <i class="fa fa-money"></i><p>Funds</p>
+                        </li></a>
+                        @endif
+                        @if(Auth::User()->getCredential(200))
+                        <a href="{{route('orders')}}"><li class="menuItem menuOrders"><i class="fa fa-list"></i> <p>Orders</p>
+                        </li></a>
+                        @endif
+                        @if(Auth::User()->getCredential(250))
+                        <a href="{{route('clients')}}"><li class="menuItem menuClients"><i class="fa fa-address-book"></i> <p>Clients</p>
+                        </li></a>
+                        @endif
                         <li class="menuItem menuPost"><i class="fa fa-pencil-square-o "></i> <p>Posts</p>
                             <ul class="submenuItem" style ="display: none;">
                                 <a href="{{route('create.news')}}"><li>Create Post</li></a>
                                 <a href="{{route('news')}}"><li>List Posts</li></a>
                             </ul>
-                        <a href="{{route('funds')}}"><li class="menuItem menuFunds">
-                            <i class="fa fa-money"></i><p>Funds</p>
-                        </li></a>
-                        <a href="{{route('orders')}}"><li class="menuItem menuOrders"><i class="fa fa-list"></i> <p>Orders</p>
-                        </li></a>
-                        <a href="{{route('clients')}}"><li class="menuItem menuClients"><i class="fa fa-address-book"></i> <p>Clients</p>
-                        </li></a>
-                        <a href="{{route('currencies')}}"><li class="menuItem menuCurrencies"><i class="fa fa-money"></i> <p>Currencies</p>
-                        </li></a>
+                        </li>
                     </ul>
                 </div>
             </div>

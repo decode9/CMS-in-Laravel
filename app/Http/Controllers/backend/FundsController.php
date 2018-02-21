@@ -77,37 +77,49 @@ class FundsController extends Controller
          }
          return $count;
      }
+
+     public function currencies(Request $request)
+     {
+         $currency = App\Currency::All();
+
+         return response()->json(['message' => "success", 'result' => $currency], 202);
+     }
+
     public function index()
     {
         //
-        $deposits = Fund::where('amount', '>', '0')->get();
-        $withdraws = Fund::where('amount', '<', '0')->get();
+        $user = Auth::User();
+        $deposits = Fund::where('amount', '>', '0')->where('funds.type', 'deposit')->where('user_id', $user->id)->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('funds.amount', 'funds.active', 'symbol', 'value', 'currencies.type')->get();
+        $withdraws = Fund::where('amount', '<', '0')->where('funds.type', 'withdraw')->where('user_id', $user->id)->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('funds.amount', 'symbol', 'value', 'currencies.type')->get();
 
-        $depositsa = $this->confirmationBalance($deposits);
-        $withdrawsa = $this->confirmationBalance($withdraws);
-        $depositsc = $this->selectCurrency($depositsa[0]);
-        $withdrawsc = $this->selectCurrency($withdrawsa[0]);
-        $depositsuc = $this->selectCurrency($depositsa[1]);
-        $withdrawsuc = $this->selectCurrency($withdrawsa[1]);
+        $currencies = array();
+        $currencies['BTC'] = 0;
+        $type = [];
+        $amount = [];
+        $sum['BTC'] = 0;
+        foreach($deposits as $deposit){
+            foreach($currencies as $key => $value){
+                if($key != $deposit->symbol){
+                    $currencies[$deposit->symbol] = 0 ;
+                    $sum[$deposit->symbol] = 0 ;
+                }
 
-        $vefct = $this->countBalance($depositsc['VEF']) + $this->countBalance($withdrawsc['VEF']);
-        $vefuct = $this->countBalance($depositsuc['VEF']) + $this->countBalance($withdrawsuc['VEF']);
+            }
+            if($deposit->active){
+                foreach($currencies as $key => $value){
+                    if($key == $deposit->symbol){
+                        foreach($sum as $k => $v){
+                            if($k == $key){
+                                $sum[$key] = $v + $deposit->amount;
+                            }
+                        }
+                        $currencies[$key] = $sum[$key];
+                    }
+                }
+            }
+        }
 
-        $usdct = $this->countBalance($depositsc['USD']) + $this->countBalance($withdrawsc['USD']);
-        $usduct = $this->countBalance($depositsuc['USD']) + $this->countBalance($withdrawsuc['USD']);
-
-        $btcct = $this->countBalance($depositsc['BTC']) + $this->countBalance($withdrawsc['BTC']);
-        $btcuct = $this->countBalance($depositsuc['BTC']) + $this->countBalance($withdrawsuc['BTC']);
-
-        $ethct = $this->countBalance($depositsc['ETH']) + $this->countBalance($withdrawsc['ETH']);
-        $ethuct = $this->countBalance($depositsuc['ETH']) + $this->countBalance($withdrawsuc['ETH']);
-
-        $ltcct = $this->countBalance($depositsc['LTC']) + $this->countBalance($withdrawsc['LTC']);
-        $ltcuct = $this->countBalance($depositsuc['LTC']) + $this->countBalance($withdrawsuc['LTC']);
-
-        $currencyBalance = ["Confirmed" => [$vefct, $usdct, $btcct, $ethct, $ltcct] , "Unconfirmed" => [$vefuct, $usduct, $btcuct, $ethuct, $ltcuct]];
-
-        return response()->json(["currencyBalance" => $currencyBalance], 202);
+        return response()->json(['deposits' => $currencies, 'deposit' => $deposits ], 202);
     }
 
     public function withdraws(Request $request)
@@ -121,7 +133,7 @@ class FundsController extends Controller
         $total = 0;
 
         //Select Witdraws of the user
-        $query = Fund::Where('amount','<', '0')->where('type', 'withdraw')->where('user_id', $user->id)->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('funds.*', 'symbol');
+        $query = Fund::Where('amount','<', '0')->where('funds.type', 'withdraw')->where('user_id', $user->id)->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('funds.*', 'symbol');
         //Search by
 
         if($searchValue != '')
@@ -190,7 +202,7 @@ class FundsController extends Controller
         $total = 0;
 
         //Select Deposits of the user
-        $query = Fund::Where('amount','>', '0')->where('type', 'deposit')->where('user_id', $user->id)->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('funds.*', 'symbol');
+        $query = Fund::Where('amount','>', '0')->where('funds.type', 'deposit')->where('user_id', $user->id)->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('funds.*', 'symbol');
         //Search by
 
         if($searchValue != '')
