@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\User;
 use App\Role;
+use App\Currency;
+use App\Balance;
 
 class UserController extends Controller
 {
@@ -144,6 +146,8 @@ class UserController extends Controller
         $password = bcrypt($request->password);
         $roles = $request->roles;
 
+        $currencies = Currency::All();
+
         $fullname = ucfirst(strtolower($name)) . " " . ucfirst(strtolower($lastname));
 
         $user = new User;
@@ -153,6 +157,15 @@ class UserController extends Controller
         $user->password= $request->password;
         $user->save();
 
+
+        foreach($currencies as $currency){
+                $balance = New Balance;
+                $balance->amount = 0;
+                $balance->type = 'fund';
+                $balance->save();
+                $balance->associate($currency);
+                $balance->associate($user);
+        }
 
         foreach($roles as $role){
             $user->roles()->attach($role);

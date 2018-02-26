@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\Currency;
+use App\User;
+use App\Balance;
 
 class CurrenciesController extends Controller
 {
@@ -105,12 +107,23 @@ class CurrenciesController extends Controller
         $type = $request->type;
         $value = $request->value;
 
+        $users = User::All();
+
         $currency = new Currency;
         $currency->name = $name;
         $currency->symbol = $symbol;
         $currency->type = $type;
         $currency->value = $value;
         $currency->save();
+
+        foreach($users as $user){
+            $balance = new Balance;
+            $balance->amount = 0;
+            $balance->type = 'fund';
+            $balance->save();
+            $balance->associate($user);
+            $balance->associate($currency);
+        }
 
         return response()->json(['message' => "success"], 202);
     }

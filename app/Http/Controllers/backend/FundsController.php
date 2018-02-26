@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\Currency;
 use App\Fund;
+use App\Balance;
 
 
 
@@ -31,6 +32,204 @@ class FundsController extends Controller
          return response()->json(['message' => "success", 'result' => $currency], 202);
      }
 
+     public function indexCurrency(Request $request){
+
+         $user = Auth::User();
+         $searchValue = $request->searchvalue;
+         $page = $request->page;
+         $resultPage = $request->resultPage;
+         $orderBy = $request->orderBy;
+         $orderDirection = $request->orderDirection;
+         $total = 0;
+
+         //Select Witdraws of the user
+         $query = Balance::Where('balances.type', 'fund')->where('user_id', $user->id)->where('currencies.type', 'currency')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type');
+         //Search by
+
+         if($searchValue != '')
+         {
+                 $query->Where(function($query) use($searchValue){
+                     $query->Where('symbol', 'like', '%'.$searchValue.'%')
+                     ->orWhere('amount', 'like', '%'.$searchValue.'%')
+                     ->orWhere('value', 'like', '%'.$searchValue.'%')
+                     ->orWhere('balances.created_at', 'like', '%'.$searchValue.'%');
+                 });
+         }
+
+         //Order By
+
+         if($orderBy != '')
+         {
+             if($orderDirection != '')
+             {
+                 $query->orderBy($orderBy, 'desc');
+             }else{
+                 $query->orderBy($orderBy);
+             }
+         }else if($orderDirection != ''){
+             $query->orderBy('balances.created_at', 'desc');
+         }else{
+              $query->orderBy('balances.created_at');
+         }
+
+         if($resultPage == null || $resultPage == 0)
+         {
+             $resultPage = 10;
+         }
+
+         //Get Total of fees
+         $total  =  $query->get()->count();
+
+         if($page > 1)
+         {
+              $query->offset(    ($page -  1)   *    $resultPage);
+         }
+
+
+         $query->limit($resultPage);
+         $balancesCurrency  =  $query->get();
+
+         foreach($balancesCurrency as $balance){
+             if($balance->symbol == "VEF"){
+                 $json = file_get_contents('https://s3.amazonaws.com/dolartoday/data.json');
+                 $data = json_decode($json);
+                 $balance->value = $data->USD->dolartoday;
+             }
+         }
+
+         return response()->json(['page' => $page, 'result' => $balancesCurrency, 'total' => $total, 'user' => $user->name], 202);
+     }
+
+     public function indexCrypto(Request $request){
+
+         $user = Auth::User();
+         $searchValue = $request->searchvalue;
+         $page = $request->page;
+         $resultPage = $request->resultPage;
+         $orderBy = $request->orderBy;
+         $orderDirection = $request->orderDirection;
+         $total = 0;
+
+         //Select Witdraws of the user
+         $query = Balance::Where('balances.type', 'fund')->where('user_id', $user->id)->where('currencies.type', 'Cryptocurrency')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'name', 'symbol', 'value', 'currencies.type');
+         //Search by
+
+         if($searchValue != '')
+         {
+                 $query->Where(function($query) use($searchValue){
+                     $query->Where('symbol', 'like', '%'.$searchValue.'%')
+                     ->orWhere('amount', 'like', '%'.$searchValue.'%')
+                     ->orWhere('value', 'like', '%'.$searchValue.'%')
+                     ->orWhere('balances.created_at', 'like', '%'.$searchValue.'%');
+                 });
+         }
+
+         //Order By
+
+         if($orderBy != '')
+         {
+             if($orderDirection != '')
+             {
+                 $query->orderBy($orderBy, 'desc');
+             }else{
+                 $query->orderBy($orderBy);
+             }
+         }else if($orderDirection != ''){
+             $query->orderBy('balances.created_at', 'desc');
+         }else{
+              $query->orderBy('balances.created_at');
+         }
+
+         if($resultPage == null || $resultPage == 0)
+         {
+             $resultPage = 10;
+         }
+
+         //Get Total of fees
+         $total  =  $query->get()->count();
+
+         if($page > 1)
+         {
+              $query->offset(    ($page -  1)   *    $resultPage);
+         }
+
+
+         $query->limit($resultPage);
+         $balancesCurrency  =  $query->get();
+
+         foreach($balancesCurrency as $balance){
+             if($balance->value == "coinmarketcap"){
+                 $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $balance->name);
+                 $data = json_decode($json);
+                 $balance->value = $data[0]->price_usd;
+             }
+         }
+         //Get fees by month and year
+
+         return response()->json(['page' => $page, 'result' => $balancesCurrency, 'total' => $total, 'user' => $user->name], 202);
+     }
+
+     public function indexToken(Request $request){
+
+         $user = Auth::User();
+         $searchValue = $request->searchvalue;
+         $page = $request->page;
+         $resultPage = $request->resultPage;
+         $orderBy = $request->orderBy;
+         $orderDirection = $request->orderDirection;
+         $total = 0;
+
+         //Select Withdraws of the user
+         $query = Balance::Where('balances.type', 'fund')->where('user_id', $user->id)->where('currencies.type', 'Token')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type');
+         //Search by
+
+         if($searchValue != '')
+         {
+                 $query->Where(function($query) use($searchValue){
+                     $query->Where('symbol', 'like', '%'.$searchValue.'%')
+                     ->orWhere('amount', 'like', '%'.$searchValue.'%')
+                     ->orWhere('value', 'like', '%'.$searchValue.'%')
+                     ->orWhere('balances.created_at', 'like', '%'.$searchValue.'%');
+                 });
+         }
+
+         //Order By
+
+         if($orderBy != '')
+         {
+             if($orderDirection != '')
+             {
+                 $query->orderBy($orderBy, 'desc');
+             }else{
+                 $query->orderBy($orderBy);
+             }
+         }else if($orderDirection != ''){
+             $query->orderBy('balances.created_at', 'desc');
+         }else{
+              $query->orderBy('balances.created_at');
+         }
+
+         if($resultPage == null || $resultPage == 0)
+         {
+             $resultPage = 10;
+         }
+
+         //Get Total of fees
+         $total  =  $query->get()->count();
+
+         if($page > 1)
+         {
+              $query->offset(    ($page -  1)   *    $resultPage);
+         }
+
+
+         $query->limit($resultPage);
+         $balancesCurrency  =  $query->get();
+
+         //Get fees by month and year
+
+         return response()->json(['page' => $page, 'result' => $balancesCurrency, 'total' => $total, 'user' => $user->name], 202);
+     }
     public function index()
     {
         //

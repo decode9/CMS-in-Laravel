@@ -19,4 +19,8 @@ class Currency extends Model
     public function inFundTrans(){
         return $this->hasMany('App\FundOrder', 'in_currency');
     }
+
+    public function balances(){
+        return $this->hasMany('App\Balance');
+    }
 }

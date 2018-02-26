@@ -60,7 +60,9 @@ Route::get('/news/delete/{id}', 'backend\NewsController@destroy')->name('destroy
 //FUNDS
 
 Route::get('/funds', "backend\ViewsController@funds")->name('funds')->middleware('auth.per:0150');
-Route::get('/funds/transactions', "backend\FundsController@index")->name('transactions.funds')->middleware('auth.per:0150');
+Route::post('/funds/currency', "backend\FundsController@indexCurrency")->name('currency.funds')->middleware('auth.per:0150');
+Route::post('/funds/crypto', "backend\FundsController@indexCrypto")->name('crypto.funds')->middleware('auth.per:0150');
+Route::post('/funds/token', "backend\FundsController@indexToken")->name('crypto.funds')->middleware('auth.per:0150');
 Route::post('/deposit', "backend\FundsController@deposits")->name('deposit.funds')->middleware('auth.per:0151');
 Route::post('/deposit/create', "backend\FundsController@store")->name('store.deposit')->middleware('auth.per:0152');
 Route::post('/withdraw', "backend\FundsController@withdraws")->name('withdraw.funds')->middleware('auth.per:0151');

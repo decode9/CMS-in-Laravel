@@ -11,7 +11,7 @@ class Account extends Model
         return $this->belongsTo('App\User');
     }
 
-    public function Funds(){
-        return $this->hasMany('App\Funds');
+    public function balances(){
+        return $this->hasMany('App\Balances');
     }
 }

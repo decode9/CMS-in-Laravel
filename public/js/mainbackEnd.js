@@ -1496,46 +1496,390 @@ $(document).ready(function () {
     if (pathname.toString() == '/funds') {
 
         /*Funds Balances*/
-        var balances = function balances() {
 
-            btcprice = $.xResponse('BTC');
-            ethprice = $.xResponse('ETH');
-            ltcprice = $.xResponse('LTC');
+        /*Search Balances Currency Table*/
+
+        var orderTableBalanceCurrencyBy = function orderTableBalanceCurrencyBy(by) {
+            if (orderBalanceCurrencyBy === by) {
+                if (orderBalanceCurrencyDirection === "") {
+                    orderBalanceCurrencyDirection = "DESC";
+                } else {
+                    orderBalanceCurrencyDirection = "";
+                }
+            } else {
+                orderBalanceCurrencyBy = by;
+                orderBalanceCurrencyDirection = "";
+            }
+            searchBalanceCurrency(1);
+        };
+
+        //Get Balance Currency Data
+
+        var searchBalanceCurrency = function searchBalanceCurrency(page) {
+
+            resultPage = $("#result_balance_currency_page").val();
 
             $.ajax({
-                type: 'GET',
-                datatype: 'json',
-                url: '/funds/transactions',
-                success: function(data){
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url: "/funds/currency",
+                type: 'post',
+                data: { searchvalue: searchBalanceCurrencyValue, page: page, orderBy: orderBalanceCurrencyBy, orderDirection: orderBalanceCurrencyDirection, resultPage: resultPage },
+                success: function success(data) {
+                    //Inicio
+                    var balances = data.result;
 
-                    box = "<div class='titleBalance'><h3>Balance</h3></div><div class='balance'><div id='unconfirmed'><h3>Unconfirmed Balance</h3></div><div id= 'confirmed'><h3>Confirmed Balance</h3></div></div>";
-                    var funds = data.result;
-                    trow = $('<tr></tr>');
-                    for (var type in funds.active) {
-                      if(type == 'currency'){
-                        types = eval('funds.active.'+type);
-                        for(var symbol in types){
-                          currencies = eval('funds.active.'+type+'.' + symbol);
-                          total = $('<td>'+symbol+'</td><td>'+currencies[0]+'</td>');
-                          trow.append(total);
+                    if (balances.length == 0) {
+                        $("#table_balance_currency_content").html("");
+                        $('#table_balance_currency_content').append('<tr><td colspan="3">None</td></tr>');
+                    } else {
+                        // Put the data into the element you care about.
+                        $("#table_balance_currency_content").html("");
+
+                        for (i = 0; i < balances.length; i++) {
+                            var balance = balances[i];
+
+                            // we have to make in steps to add the onclick event
+                            var rowResult = $('<tr></tr>');
+                            var colvalue_1 = $('<td class="col-sm-12 col-md-2">' + balance.symbol + '</td>');
+                            var colvalue_2 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount) + '</td>');
+                            if(balance.symbol == 'VEF'){
+                                var colvalue_3 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount / balance.value) + '</td>');
+                            }else{
+                                var colvalue_3 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount * balance.value) + '</td>');
+                            }
+
+
+                            rowResult.append(colvalue_1);
+                            rowResult.append(colvalue_2);
+                            rowResult.append(colvalue_3);
+
+
+                            $("#table_balance_currency_content").append(rowResult);
                         }
-                      }
-                    }
-                    for (var type in funds.active) {
-                      if(type == 'Cryptocurrency'){
-                        types = eval('funds.active.'+type);
-                        for(var symbol in types){
-                          currencies = eval('funds.active.'+type+'.' + symbol);
-                          total = $('<td>'+symbol+'</td><td>'+currencies[0]+'</td>');
-                          trow.append(total);
-                          $('table_balance_content').append(trow);
+
+                        $("#table_balance_currency_pagination").html("");
+
+                        page = parseInt(data.page);
+                        var total = data.total;
+                        var resultPage = $("#result_balance_currency_page").val();
+                        var totalPages = Math.ceil(total / resultPage);
+
+                        if (page === 1) {
+                            maxPage = page + 2;
+                            totalPages = maxPage < totalPages ? maxPage : totalPages;
+                            var pageList = $('<ul class="pagination"></ul>');
+
+                            for (i = page; i <= totalPages; i++) {
+                                pagebutton = $('<li class="page_balance_currency pages">' + i + '</li>');
+                                pageList.append(pagebutton);
+                                _addPageBCButton(pagebutton);
+                            }
+
+                            $("#table_balance_currency_pagination").append(pageList);
+                        } else if (page === totalPages) {
+                            page = page - 2;
+
+                            if (page < 1) {
+                                page = 1;
+                            }
+
+                            totalPages = page + 2 < totalPages ? page + 2 : totalPages;
+                            var pageList = $('<ul class="pagination"></ul>');
+
+                            for (i = page; i <= totalPages; i++) {
+                                pagebutton = $('<li class="page_balance_currency pages">' + i + '</li>');
+                                pageList.append(pagebutton);
+                                _addPageBCButton(pagebutton);
+                            }
+
+                            $("#table_balance_currency_pagination").append(pageList);
+                        } else {
+                            page = page - 2;
+
+                            if (page < 1) {
+                                page = 1;
+                            }
+
+                            totalPages = page + 4 < totalPages ? page + 2 : totalPages;
+                            var pageList = $('<ul class="pagination"></ul>');
+
+                            for (i = page; i <= totalPages; i++) {
+                                pagebutton = $('<li class="page_balance_currency pages">' + i + '</li>');
+                                pageList.append(pagebutton);
+                                _addPageBCButton(pagebutton);
+                            }
+
+                            $("#table_balance_currency_pagination").append(pageList);
                         }
-                      }
                     }
+                },
+                // Fin
+                error: function error(_error6) {
+                    ReadError(_error6);
                 }
-
-            })
+            });
         };
+
+        var _addPageBCButton = function _addPageBCButton(pagebutton) {
+            pagebutton.click(function () {
+                page = $(this).text();
+                searchBalanceCurrency(page);
+            });
+        };
+
+        var orderTableBalanceCryptoBy = function orderTableBalanceCryptoBy(by) {
+            if (orderBalanceCryptoBy === by) {
+                if (orderBalanceCryptoDirection === "") {
+                    orderBalanceCryptoDirection = "DESC";
+                } else {
+                    orderBalanceCryptoDirection = "";
+                }
+            } else {
+                orderBalanceCryptoBy = by;
+                orderBalanceCryptoDirection = "";
+            }
+            searchBalanceCrypto(1);
+        };
+
+        //Get Balance Currency Data
+
+        var searchBalanceCrypto = function searchBalanceCrypto(page) {
+
+            resultPage = $("#result_balance_crypto_page").val();
+
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url: "/funds/crypto",
+                type: 'post',
+                data: { searchvalue: searchBalanceCryptoValue, page: page, orderBy: orderBalanceCryptoBy, orderDirection: orderBalanceCryptoDirection, resultPage: resultPage },
+                success: function success(data) {
+                    //Inicio
+                    var balances = data.result;
+
+                    if (balances.length == 0) {
+                        $("#table_balance_crypto_content").html("");
+                        $('#table_balance_crypto_content').append('<tr><td colspan="3">None</td></tr>');
+                    } else {
+                        // Put the data into the element you care about.
+                        $("#table_balance_crypto_content").html("");
+
+                        for (i = 0; i < balances.length; i++) {
+                            var balance = balances[i];
+
+                            // we have to make in steps to add the onclick event
+                            var rowResult = $('<tr></tr>');
+                            var colvalue_1 = $('<td class="col-sm-12 col-md-2">' + balance.symbol + '</td>');
+                            var colvalue_2 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount) + '</td>');
+                            var colvalue_3 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount * balance.value) + '</td>');
+
+                            rowResult.append(colvalue_1);
+                            rowResult.append(colvalue_2);
+                            rowResult.append(colvalue_3);
+
+
+                            $("#table_balance_crypto_content").append(rowResult);
+                        }
+
+                        $("#table_balance_crypto_pagination").html("");
+
+                        page = parseInt(data.page);
+                        var total = data.total;
+                        var resultPage = $("#result_balance_crypto_page").val();
+                        var totalPages = Math.ceil(total / resultPage);
+
+                        if (page === 1) {
+                            maxPage = page + 2;
+                            totalPages = maxPage < totalPages ? maxPage : totalPages;
+                            var pageList = $('<ul class="pagination"></ul>');
+
+                            for (i = page; i <= totalPages; i++) {
+                                pagebutton = $('<li class="page_balance_crypto pages">' + i + '</li>');
+                                pageList.append(pagebutton);
+                                _addPageBCRButton(pagebutton);
+                            }
+
+                            $("#table_balance_crypto_pagination").append(pageList);
+                        } else if (page === totalPages) {
+                            page = page - 2;
+
+                            if (page < 1) {
+                                page = 1;
+                            }
+
+                            totalPages = page + 2 < totalPages ? page + 2 : totalPages;
+                            var pageList = $('<ul class="pagination"></ul>');
+
+                            for (i = page; i <= totalPages; i++) {
+                                pagebutton = $('<li class="page_balance_crypto pages">' + i + '</li>');
+                                pageList.append(pagebutton);
+                                _addPageBCRButton(pagebutton);
+                            }
+
+                            $("#table_balance_crypto_pagination").append(pageList);
+                        } else {
+                            page = page - 2;
+
+                            if (page < 1) {
+                                page = 1;
+                            }
+
+                            totalPages = page + 4 < totalPages ? page + 2 : totalPages;
+                            var pageList = $('<ul class="pagination"></ul>');
+
+                            for (i = page; i <= totalPages; i++) {
+                                pagebutton = $('<li class="page_balance_crypto pages">' + i + '</li>');
+                                pageList.append(pagebutton);
+                                _addPageBCRButton(pagebutton);
+                            }
+
+                            $("#table_balance_crypto_pagination").append(pageList);
+                        }
+                    }
+                },
+                // Fin
+                error: function error(_error6) {
+                    ReadError(_error6);
+                }
+            });
+        };
+
+        var _addPageBCRButton = function _addPageBCRButton(pagebutton) {
+            pagebutton.click(function () {
+                page = $(this).text();
+                searchBalanceCrypto(page);
+            });
+        };
+
+        var orderTableBalanceTokenBy = function orderTableBalanceTokenBy(by) {
+            if (orderBalanceTokenBy === by) {
+                if (orderBalanceTokenDirection === "") {
+                    orderBalanceTokenDirection = "DESC";
+                } else {
+                    orderBalanceTokenDirection = "";
+                }
+            } else {
+                orderBalanceTokenBy = by;
+                orderBalanceTokenDirection = "";
+            }
+            searchBalanceToken(1);
+        };
+
+        //Get Balance Currency Data
+
+        var searchBalanceToken = function searchBalanceToken(page) {
+
+            resultPage = $("#result_balance_token_page").val();
+
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url: "/funds/token",
+                type: 'post',
+                data: { searchvalue: searchBalanceTokenValue, page: page, orderBy: orderBalanceTokenBy, orderDirection: orderBalanceTokenDirection, resultPage: resultPage },
+                success: function success(data) {
+                    //Inicio
+                    var balances = data.result;
+
+                    if (balances.length == 0) {
+                        $("#table_balance_token_content").html("");
+                        $('#table_balance_token_content').append('<tr><td colspan="3">None</td></tr>');
+                    } else {
+                        // Put the data into the element you care about.
+                        $("#table_balance_token_content").html("");
+
+                        for (i = 0; i < balances.length; i++) {
+                            var balance = balances[i];
+
+                            // we have to make in steps to add the onclick event
+                            var rowResult = $('<tr></tr>');
+                            var colvalue_1 = $('<td class="col-sm-12 col-md-2">' + balance.symbol + '</td>');
+                            var colvalue_2 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount) + '</td>');
+                            var colvalue_3 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount * balance.value) + '</td>');
+
+                            rowResult.append(colvalue_1);
+                            rowResult.append(colvalue_2);
+                            rowResult.append(colvalue_3);
+
+
+                            $("#table_balance_token_content").append(rowResult);
+                        }
+
+                        $("#table_balance_token_pagination").html("");
+
+                        page = parseInt(data.page);
+                        var total = data.total;
+                        var resultPage = $("#result_balance_token_page").val();
+                        var totalPages = Math.ceil(total / resultPage);
+
+                        if (page === 1) {
+                            maxPage = page + 2;
+                            totalPages = maxPage < totalPages ? maxPage : totalPages;
+                            var pageList = $('<ul class="pagination"></ul>');
+
+                            for (i = page; i <= totalPages; i++) {
+                                pagebutton = $('<li class="page_balance_token pages">' + i + '</li>');
+                                pageList.append(pagebutton);
+                                _addPageTButton(pagebutton);
+                            }
+
+                            $("#table_balance_token_pagination").append(pageList);
+                        } else if (page === totalPages) {
+                            page = page - 2;
+
+                            if (page < 1) {
+                                page = 1;
+                            }
+
+                            totalPages = page + 2 < totalPages ? page + 2 : totalPages;
+                            var pageList = $('<ul class="pagination"></ul>');
+
+                            for (i = page; i <= totalPages; i++) {
+                                pagebutton = $('<li class="page_balance_token pages">' + i + '</li>');
+                                pageList.append(pagebutton);
+                                _addPageTButton(pagebutton);
+                            }
+
+                            $("#table_balance_token_pagination").append(pageList);
+                        } else {
+                            page = page - 2;
+
+                            if (page < 1) {
+                                page = 1;
+                            }
+
+                            totalPages = page + 4 < totalPages ? page + 2 : totalPages;
+                            var pageList = $('<ul class="pagination"></ul>');
+
+                            for (i = page; i <= totalPages; i++) {
+                                pagebutton = $('<li class="page_balance_token pages">' + i + '</li>');
+                                pageList.append(pagebutton);
+                                _addPageTButton(pagebutton);
+                            }
+
+                            $("#table_balance_token_pagination").append(pageList);
+                        }
+                    }
+                },
+                // Fin
+                error: function error(_error6) {
+                    ReadError(_error6);
+                }
+            });
+        };
+
+        var _addPageTButton = function _addPageTButton(pagebutton) {
+            pagebutton.click(function () {
+                page = $(this).text();
+                searchBalanceToken(page);
+            });
+        };
+
+        /*End Funds Balances*/
 
         /*Search Deposit Table*/
 
@@ -1761,18 +2105,6 @@ $(document).ready(function () {
         };
 
         /*Search Withdraws Table*/
-
-        $('#table_account_header_type').click(function (e) {
-            orderTableAccountBy('type');
-        });
-
-        $('#table_account_header_entity').click(function (e) {
-            orderTableAccountBy('entity');
-        });
-
-        $('#table_account_header_address').click(function (e) {
-            orderTableAccountBy('address');
-        });
 
         var orderTableWithdrawBy = function orderTableWithdrawBy(by) {
             if (orderWithdrawBy === by) {
@@ -2306,6 +2638,75 @@ $(document).ready(function () {
             });
         };
 
+        $('#table_balance_currency_header_symbol').click(function (e) {
+            orderTableBalanceCurrencyBy('currencies.symbol');
+        });
+
+        $('#table_balance_currency_header_amount').click(function (e) {
+            orderTableBalanceCurrencyBy('amount');
+        });
+
+        $('#table_balance_currency_header_equivalent').click(function (e) {
+            orderTableBalanceCurrencyBy('value');
+        });
+
+        var orderBalanceCurrencyBy = "";
+        var orderBalanceCurrencyDirection = "";
+        var searchBalanceCurrencyValue = "";
+
+        $("#form_balance_currency_search").submit(function (e) {
+            e.preventDefault();
+            //DESC
+            searchBalanceCurrencyValue = $("#search_balance_currency_value").val();
+            searchBalanceCurrency(1);
+        });
+
+        $('#table_balance_crypto_header_symbol').click(function (e) {
+            orderTableBalanceCryptoBy('currencies.symbol');
+        });
+
+        $('#table_balance_crypto_header_amount').click(function (e) {
+            orderTableBalanceCryptoBy('amount');
+        });
+
+        $('#table_balance_crypto_header_equivalent').click(function (e) {
+            orderTableBalanceCryptoBy('value');
+        });
+
+        var orderBalanceCryptoBy = "";
+        var orderBalanceCryptoDirection = "";
+        var searchBalanceCryptoValue = "";
+
+        $("#form_balance_crypto_search").submit(function (e) {
+            e.preventDefault();
+            //DESC
+            searchBalanceCryptoValue = $("#search_balance_crypto_value").val();
+            searchBalanceCrypto(1);
+        });
+
+        $('#table_balance_token_header_symbol').click(function (e) {
+            orderTableBalanceTokenBy('currencies.symbol');
+        });
+
+        $('#table_balance_token_header_amount').click(function (e) {
+            orderTableBalanceTokenBy('amount');
+        });
+
+        $('#table_balance_token_header_equivalent').click(function (e) {
+            orderTableBalanceTokenBy('value');
+        });
+
+        var orderBalanceTokenBy = "";
+        var orderBalanceTokenDirection = "";
+        var searchBalanceTokenValue = "";
+
+        $("#form_balance_token_search").submit(function (e) {
+            e.preventDefault();
+            //DESC
+            searchBalanceTokenValue = $("#search_balance_token_value").val();
+            searchBalanceToken(1);
+        });
+
         $('#table_deposit_header_currency').click(function (e) {
             orderTableDepositBy('currencies.symbol');
         });
@@ -2440,6 +2841,15 @@ $(document).ready(function () {
 
         ;
 
+        $('#result_balance_currency_page').change(function () {
+            $('#form_balance_currency_search').trigger("submit");
+        });
+        $('#result_balance_crypto_page').change(function () {
+            $('#form_balance_crypto_search').trigger("submit");
+        });
+        $('#result_balance_token_page').change(function () {
+            $('#form_balance_token_search').trigger("submit");
+        });
         $('#result_deposit_page').change(function () {
             $('#form_deposit_search').trigger("submit");
         });
@@ -2447,9 +2857,11 @@ $(document).ready(function () {
             $('#form_withdraw_search').trigger("submit");
         });
 
+        $('#form_balance_currency_search').trigger("submit");
+        $('#form_balance_crypto_search').trigger("submit");
+        $('#form_balance_token_search').trigger("submit");
         $('#form_deposit_search').trigger("submit");
         $('#form_withdraw_search').trigger("submit");
-        balances();
     }
 
     /* End Funds Functions */

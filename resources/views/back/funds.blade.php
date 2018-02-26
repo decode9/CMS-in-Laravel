@@ -155,15 +155,15 @@ top: -30px;
                         <tr>
                             <th id="table_balance_currency_header_symbol" style="cursor: pointer;">Symbol</th>
                             <th id="table_balance_currency_header_amount" style="cursor: pointer;">Amount</th>
-                            <th id="table_balance_currency_header_Equivalent" style="cursor: pointer;">USD Equivalent</th>
+                            <th id="table_balance_currency_header_equivalent" style="cursor: pointer;">USD Equivalent</th>
                         </tr>
                     </thead>
                     <tfoot>
                         <tr>
                             <th colspan="1" id="balance_currency_page">
                                 <select id="result_balance_currency_page">
-                                    <option value="5">5</option>
-                                    <option value="10" selected="selected" >10</option>
+                                    <option value="5" selected="selected">5</option>
+                                    <option value="10">10</option>
                                     <option value="20">20</option>
                                     <option value="50">50</option>
                                 </select>
@@ -178,14 +178,14 @@ top: -30px;
           </div>
           <div class="currenciesTable">
             <div class="tab-pane active" id="list">
-                <table id="table_balance_cryptocurrency" class="table table-responsive table-striped table-hover">
+                <table id="table_balance_crypto" class="table table-responsive table-striped table-hover">
                     <thead class="thead-default">
                         <tr>
                           <th colspan="1">CryptoCurrencies</th>
                           <th colspan="2"><div class="col-lg-12">
-                              <form id="form_balance_cryptocurrency_search" class="form_search">
+                              <form id="form_balance_crypto_search" class="form_search">
                                   <div class="input-group">
-                                      <input id="search_balance_currency_value" type="text" class="form-control" placeholder="Search CryptoCurrency">
+                                      <input id="search_balance_crypto_value" type="text" class="form-control" placeholder="Search CryptoCurrency">
                                       <span class="input-group-btn">
                                           <button type="submit" class="btn btn-default" value="Go!"><i id="search_icon" class="fa fa-search" aria-hidden="true"></i></button>
                                       </span>
@@ -194,25 +194,25 @@ top: -30px;
                           </div><!-- /.col-lg-6 --></th>
                         </tr>
                         <tr>
-                            <th id="table_balance_cryptocurrency_header_symbol" style="cursor: pointer;">Symbol</th>
-                            <th id="table_balance_cryptocurrency_header_amount" style="cursor: pointer;">Amount</th>
-                            <th id="table_balance_cryptocurrency_header_Equivalent" style="cursor: pointer;">USD Equivalent</th>
+                            <th id="table_balance_crypto_header_symbol" style="cursor: pointer;">Symbol</th>
+                            <th id="table_balance_crypto_header_amount" style="cursor: pointer;">Amount</th>
+                            <th id="table_balance_crypto_header_Equivalent" style="cursor: pointer;">USD Equivalent</th>
                         </tr>
                     </thead>
                     <tfoot>
                         <tr>
-                            <th colspan="1" id="balance_cryptocurrency_page">
-                                <select id="result_balance_cryptocurrency_page">
-                                    <option value="5">5</option>
-                                    <option value="10" selected="selected" >10</option>
+                            <th colspan="1" id="balance_crypto_page">
+                                <select id="result_balance_crypto_page">
+                                    <option value="5" selected="selected">5</option>
+                                    <option value="10">10</option>
                                     <option value="20">20</option>
                                     <option value="50">50</option>
                                 </select>
                             </th>
-                            <th id="table_balance_cryptocurrency_pagination" colspan="2"></th>
+                            <th id="table_balance_crypto_pagination" colspan="2"></th>
                         </tr>
                     </tfoot>
-                    <tbody id="table_balance_cryptocurrency_content">
+                    <tbody id="table_balance_crypto_content">
                     </tbody>
                 </table>
             </div>
@@ -244,8 +244,8 @@ top: -30px;
                         <tr>
                             <th colspan="1" id="balance_token_page">
                                 <select id="result_balance_token_page">
-                                    <option value="5">5</option>
-                                    <option value="10" selected="selected" >10</option>
+                                    <option value="5" selected="selected">5</option>
+                                    <option value="10">10</option>
                                     <option value="20">20</option>
                                     <option value="50">50</option>
                                 </select>
