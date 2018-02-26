@@ -1506,32 +1506,38 @@ $(document).ready(function () {
                 type: 'GET',
                 datatype: 'json',
                 url: '/funds/transactions',
-                success: function success(data) {
+                success: function(data){
 
                     box = "<div class='titleBalance'><h3>Balance</h3></div><div class='balance'><div id='unconfirmed'><h3>Unconfirmed Balance</h3></div><div id= 'confirmed'><h3>Confirmed Balance</h3></div></div>";
-
-                    vefct = data.currencyBalance.Confirmed[0];
-                    usdct = data.currencyBalance.Confirmed[1];
-                    btcct = data.currencyBalance.Confirmed[2];
-                    ethct = data.currencyBalance.Confirmed[3];
-                    ltcct = data.currencyBalance.Confirmed[4];
-
-                    vefut = data.currencyBalance.Unconfirmed[0];
-                    usdut = data.currencyBalance.Unconfirmed[1];
-                    btcut = data.currencyBalance.Unconfirmed[2];
-                    ethut = data.currencyBalance.Unconfirmed[3];
-                    ltcut = data.currencyBalance.Unconfirmed[4];
-
-                    $('#balanceUser').html("");
-                    $('#balanceUser').append(box);
-                    $('#unconfirmed').append('<p id="VEFUT">BsF. ' + formatNumber.num(vefut) + '</p><p id="USDUT">$ ' + formatNumber.num(usdut) + '</p><p id="BTCUT">BTC ' + formatNumber.num(btcut) + ' ~ $ ' + formatNumber.num((btcut * btcprice).toFixed(2)) + '</p><p id="LTCUT">LTC ' + formatNumber.num(ltcut) + ' ~ $ ' + formatNumber.num((ltcut * ltcprice).toFixed(2)) + '</p><p id="ETHUT">ETH ' + formatNumber.num(ethut) + ' ~ $ ' + formatNumber.num((ethut * ethprice).toFixed(2)) + '</p>');
-                    $('#confirmed').append('<pid="VEFCT">BsF. ' + formatNumber.num(vefct) + '</p><p id="USDCT">$ ' + formatNumber.num(usdct) + '</p><p id="BTCCT">BTC ' + formatNumber.num(btcct) + ' ~ $ ' + formatNumber.num((btcct * btcprice).toFixed(2)) + '</p><p id="LTCCT">LTC ' + formatNumber.num(ltcct) + ' ~ $ ' + formatNumber.num((ltcct * ltcprice).toFixed(2)) + '</p><p id="ETHCT">ETH ' + formatNumber.num(ethct) + ' ~ $ ' + formatNumber.num((ethct * ethprice).toFixed(2)) + '</p>');
+                    var funds = data.result;
+                    trow = $('<tr></tr>');
+                    for (var type in funds.active) {
+                      if(type == 'currency'){
+                        types = eval('funds.active.'+type);
+                        for(var symbol in types){
+                          currencies = eval('funds.active.'+type+'.' + symbol);
+                          total = $('<td>'+symbol+'</td><td>'+currencies[0]+'</td>');
+                          trow.append(total);
+                        }
+                      }
+                    }
+                    for (var type in funds.active) {
+                      if(type == 'Cryptocurrency'){
+                        types = eval('funds.active.'+type);
+                        for(var symbol in types){
+                          currencies = eval('funds.active.'+type+'.' + symbol);
+                          total = $('<td>'+symbol+'</td><td>'+currencies[0]+'</td>');
+                          trow.append(total);
+                          $('table_balance_content').append(trow);
+                        }
+                      }
+                    }
                 }
-            });
+
+            })
         };
 
         /*Search Deposit Table*/
-
 
         var orderTableDepositBy = function orderTableDepositBy(by) {
             if (orderDepositBy === by) {
@@ -1755,6 +1761,18 @@ $(document).ready(function () {
         };
 
         /*Search Withdraws Table*/
+
+        $('#table_account_header_type').click(function (e) {
+            orderTableAccountBy('type');
+        });
+
+        $('#table_account_header_entity').click(function (e) {
+            orderTableAccountBy('entity');
+        });
+
+        $('#table_account_header_address').click(function (e) {
+            orderTableAccountBy('address');
+        });
 
         var orderTableWithdrawBy = function orderTableWithdrawBy(by) {
             if (orderWithdrawBy === by) {

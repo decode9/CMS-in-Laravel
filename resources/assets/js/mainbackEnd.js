@@ -1413,23 +1413,26 @@ $(document).ready(function(){
         function balances(){
 
             $.ajax({
-
-            })
-
-            $.ajax({
                 type: 'GET',
                 datatype: 'json',
                 url: '/funds/transactions',
                 success: function(data){
 
                     box = "<div class='titleBalance'><h3>Balance</h3></div><div class='balance'><div id='unconfirmed'><h3>Unconfirmed Balance</h3></div><div id= 'confirmed'><h3>Confirmed Balance</h3></div></div>";
-
-
+                    var funds = data.result;
 
                     $('#balanceUser').html("");
                     $('#balanceUser').append(box);
-                    $('#unconfirmed').append('<p id="VEFUT">BsF. '+formatNumber.num(vefut)+'</p><p id="USDUT">$ '+formatNumber.num(usdut)+'</p><p id="BTCUT">BTC '+formatNumber.num(btcut)+' ~ $ '+ formatNumber.num((btcut * btcprice).toFixed(2)) +'</p><p id="LTCUT">LTC '+formatNumber.num(ltcut)+' ~ $ '+ formatNumber.num((ltcut * ltcprice).toFixed(2)) +'</p><p id="ETHUT">ETH '+formatNumber.num(ethut)+' ~ $ '+ formatNumber.num((ethut * ethprice).toFixed(2)) +'</p>');
-                    $('#confirmed').append('<pid="VEFCT">BsF. '+formatNumber.num(vefct)+'</p><p id="USDCT">$ '+formatNumber.num(usdct)+'</p><p id="BTCCT">BTC '+formatNumber.num(btcct)+' ~ $ '+ formatNumber.num((btcct * btcprice).toFixed(2)) +'</p><p id="LTCCT">LTC '+formatNumber.num(ltcct)+' ~ $ '+ formatNumber.num((ltcct * ltcprice).toFixed(2)) +'</p><p id="ETHCT">ETH '+formatNumber.num(ethct)+' ~ $ '+ formatNumber.num((ethct * ethprice).toFixed(2)) +'</p>');
+                    for (var type in funds.active) {
+                      if(type == 'Cryptocurrency'){
+                        types = eval('funds.active.'+type);
+                        for(var symbol in types){
+                          currencies = eval('funds.active.'+type+'.' + symbol);
+                            total = $('<div><p>'+symbol+'</p> <p>'+currencies[0]+'</p></div>');
+                            $('#confirmed').append(total);
+                          }
+                        }
+                      }
                 }
             })
         }

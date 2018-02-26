@@ -38,10 +38,10 @@ class CreateFundOrdersTable extends Migration
      */
     public function down()
     {
-        Schema::table('funds_orders', function($table){
-            $table->dropForeign('funds_orders_user_id_foreign');
-            $table->dropForeign('funds_orders_out_currency_foreign');
-            $table->dropForeign('funds_orders_in_currency_foreign');
+        Schema::table('fund_orders', function($table){
+            $table->dropForeign('fund_orders_user_id_foreign');
+            $table->dropForeign('fund_orders_out_currency_foreign');
+            $table->dropForeign('fund_orders_in_currency_foreign');
         });
         Schema::dropIfExists('fund_orders');
     }

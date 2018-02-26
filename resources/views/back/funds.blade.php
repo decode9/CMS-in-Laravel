@@ -4,8 +4,8 @@ body{
     font-family: sans-serif !important;
 }
     .fundContainer{
-        height: 250px;
-        width: 600px;
+        height: fit-content;
+        width: 90%;
         margin: 0 auto;
     }
     .titleBalance{
@@ -110,11 +110,154 @@ top: -30px;
         text-decoration: none;
         cursor: pointer;
     }
+    .currenciesTable{
+      border-left: 1px solid;
+      border-right: 1px solid;
+      width: 33%;
+      height: fit-content;
+      margin: 0 auto;
+      position: relative;
+      display: block;
+      float: left;
+    }
+    .currenciesTable table{
+      text-align: center;
+      font-size: 12px;
+    }
+    .currenciesTable input{
+      font-size: 10px;
+    }
 </style>
 @section('content')
     <div class="fundContainer">
         <div class="userBalance" id="balanceUser">
-            
+          <h3>Balance</h3>
+          <div class="balanceTotal">
+            <p>Total USD: <span id="usdtotal"></span> / BTC: <span id="btctotal"></span></p>
+          </div>
+          <div class="currenciesTable">
+            <div class="tab-pane active" id="list">
+                <table id="table_balance_currency" class="table table-responsive table-striped table-hover">
+                    <thead class="thead-default">
+                        <tr>
+                          <th colspan="1">Currencies</th>
+                          <th colspan="2"><div class="col-lg-12">
+                              <form id="form_balance_currency_search" class="form_search">
+                                  <div class="input-group">
+                                      <input id="search_balance_currency_value" type="text" class="form-control" placeholder="Search Currency">
+                                      <span class="input-group-btn">
+                                          <button type="submit" class="btn btn-default" value="Go!"><i id="search_icon" class="fa fa-search" aria-hidden="true"></i></button>
+                                      </span>
+                                  </div><!-- /input-group -->
+                              </form>
+                          </div><!-- /.col-lg-6 --></th>
+                        </tr>
+                        <tr>
+                            <th id="table_balance_currency_header_symbol" style="cursor: pointer;">Symbol</th>
+                            <th id="table_balance_currency_header_amount" style="cursor: pointer;">Amount</th>
+                            <th id="table_balance_currency_header_Equivalent" style="cursor: pointer;">USD Equivalent</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th colspan="1" id="balance_currency_page">
+                                <select id="result_balance_currency_page">
+                                    <option value="5">5</option>
+                                    <option value="10" selected="selected" >10</option>
+                                    <option value="20">20</option>
+                                    <option value="50">50</option>
+                                </select>
+                            </th>
+                            <th id="table_balance_currency_pagination" colspan="2"></th>
+                        </tr>
+                    </tfoot>
+                    <tbody id="table_balance_currency_content">
+                    </tbody>
+                </table>
+            </div>
+          </div>
+          <div class="currenciesTable">
+            <div class="tab-pane active" id="list">
+                <table id="table_balance_cryptocurrency" class="table table-responsive table-striped table-hover">
+                    <thead class="thead-default">
+                        <tr>
+                          <th colspan="1">CryptoCurrencies</th>
+                          <th colspan="2"><div class="col-lg-12">
+                              <form id="form_balance_cryptocurrency_search" class="form_search">
+                                  <div class="input-group">
+                                      <input id="search_balance_currency_value" type="text" class="form-control" placeholder="Search CryptoCurrency">
+                                      <span class="input-group-btn">
+                                          <button type="submit" class="btn btn-default" value="Go!"><i id="search_icon" class="fa fa-search" aria-hidden="true"></i></button>
+                                      </span>
+                                  </div><!-- /input-group -->
+                              </form>
+                          </div><!-- /.col-lg-6 --></th>
+                        </tr>
+                        <tr>
+                            <th id="table_balance_cryptocurrency_header_symbol" style="cursor: pointer;">Symbol</th>
+                            <th id="table_balance_cryptocurrency_header_amount" style="cursor: pointer;">Amount</th>
+                            <th id="table_balance_cryptocurrency_header_Equivalent" style="cursor: pointer;">USD Equivalent</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th colspan="1" id="balance_cryptocurrency_page">
+                                <select id="result_balance_cryptocurrency_page">
+                                    <option value="5">5</option>
+                                    <option value="10" selected="selected" >10</option>
+                                    <option value="20">20</option>
+                                    <option value="50">50</option>
+                                </select>
+                            </th>
+                            <th id="table_balance_cryptocurrency_pagination" colspan="2"></th>
+                        </tr>
+                    </tfoot>
+                    <tbody id="table_balance_cryptocurrency_content">
+                    </tbody>
+                </table>
+            </div>
+          </div>
+          <div class="currenciesTable">
+            <div class="tab-pane active" id="list">
+                <table id="table_balance_token" class="table table-responsive table-striped table-hover">
+                    <thead class="thead-default">
+                        <tr>
+                          <th colspan="1">Token</th>
+                          <th colspan="2"><div class="col-lg-12">
+                              <form id="form_balance_token_search" class="form_search">
+                                  <div class="input-group">
+                                      <input id="search_balance_token_value" type="text" class="form-control" placeholder="Search Token">
+                                      <span class="input-group-btn">
+                                          <button type="submit" class="btn btn-default" value="Go!"><i id="search_icon" class="fa fa-search" aria-hidden="true"></i></button>
+                                      </span>
+                                  </div><!-- /input-group -->
+                              </form>
+                          </div><!-- /.col-lg-6 --></th>
+                        </tr>
+                        <tr>
+                            <th id="table_balance_token_header_symbol" style="cursor: pointer;">Symbol</th>
+                            <th id="table_balance_token_header_amount" style="cursor: pointer;">Amount</th>
+                            <th id="table_balance_token_header_Equivalent" style="cursor: pointer;">USD Equivalent</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th colspan="1" id="balance_token_page">
+                                <select id="result_balance_token_page">
+                                    <option value="5">5</option>
+                                    <option value="10" selected="selected" >10</option>
+                                    <option value="20">20</option>
+                                    <option value="50">50</option>
+                                </select>
+                            </th>
+                            <th id="table_balance_token_pagination" colspan="2"></th>
+                        </tr>
+                    </tfoot>
+                    <tbody id="table_balance_token_content">
+                    </tbody>
+                </table>
+            </div>
+          </div>
 
         </div>
         <div class="fundAction">

@@ -85,3 +85,7 @@ Route::post('/account', "backend\AccountController@index")->name('account.list')
 Route::post('/account/create', "backend\AccountController@store")->name('account.create')->middleware('auth.per:0152');
 
 //TRANSACTIONS
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');

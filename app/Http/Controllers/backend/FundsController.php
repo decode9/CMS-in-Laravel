@@ -24,63 +24,9 @@ class FundsController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-     private function confirmationBalance($blc){
-         $conblc = [];
-         $unconblc = [];
-         foreach($blc as $bl){
-             if($bl->active == true){
-                 array_push($conblc, $bl);
-             }else{
-                 array_push($unconblc, $bl);
-             }
-         }
-         $content = [$conblc, $unconblc];
-         return $content;
-     }
-
-
-     private function selectCurrency($blc){
-         $vef = [];
-         $usd = [];
-         $btc = [];
-         $ltc = [];
-         $eth = [];
-
-         foreach ($blc as $bl) {
-                 switch ($bl->currency_id) {
-                     case 1:
-                         array_push($vef, $bl);
-                         break;
-                     case 2:
-                         array_push($usd, $bl);
-                         break;
-                     case 3:
-                         array_push($btc, $bl);
-                         break;
-                     case 5:
-                         array_push($eth, $bl);
-                         break;
-                     case 4:
-                         array_push($ltc, $bl);
-                         break;
-                 }
-             }
-
-             $content = ['VEF' => $vef, 'USD' => $usd, 'BTC' => $btc, 'ETH' => $eth, 'LTC' => $ltc];
-             return $content;
-     }
-
-     private function countBalance($blc){
-         $count = 0;
-         foreach($blc as $bl){
-             $count += $bl->amount;
-         }
-         return $count;
-     }
-
      public function currencies(Request $request)
      {
-         $currency = App\Currency::All();
+         $currency = Currency::All();
 
          return response()->json(['message' => "success", 'result' => $currency], 202);
      }
@@ -89,37 +35,54 @@ class FundsController extends Controller
     {
         //
         $user = Auth::User();
-        $deposits = Fund::where('amount', '>', '0')->where('funds.type', 'deposit')->where('user_id', $user->id)->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('funds.amount', 'funds.active', 'symbol', 'value', 'currencies.type')->get();
-        $withdraws = Fund::where('amount', '<', '0')->where('funds.type', 'withdraw')->where('user_id', $user->id)->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('funds.amount', 'symbol', 'value', 'currencies.type')->get();
+        $deposits = Fund::where('user_id', $user->id)->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('funds.amount', 'funds.active', 'symbol', 'value', 'currencies.type')->get();
+        $currency = Currency::select('symbol', 'type', 'value')->get();
 
-        $currencies = array();
-        $currencies['BTC'] = 0;
-        $type = [];
-        $amount = [];
+        $total['active']['Cryptocurrency']['BTC'] = [0, 'value'];
         $sum['BTC'] = 0;
-        foreach($deposits as $deposit){
-            foreach($currencies as $key => $value){
-                if($key != $deposit->symbol){
-                    $currencies[$deposit->symbol] = 0 ;
-                    $sum[$deposit->symbol] = 0 ;
-                }
 
-            }
+        foreach($currency as $c){
+          $total['active'][$c->type][$c->symbol][0] = 0;
+          $total['active'][$c->type][$c->symbol][1] = $c->value;
+
+          $sum[$c->symbol] = 0;
+        }
+
+        foreach($deposits as $deposit){
             if($deposit->active){
-                foreach($currencies as $key => $value){
-                    if($key == $deposit->symbol){
-                        foreach($sum as $k => $v){
-                            if($k == $key){
-                                $sum[$key] = $v + $deposit->amount;
-                            }
+              foreach($total as $active => $type){
+                foreach($type as $type => $currency){
+                  foreach($currency as $symbol => $valor){
+                    if($symbol == $deposit->symbol){
+                      foreach($sum as $k => $v){
+                        if($k == $symbol){
+                          $sum[$symbol] = $v + $deposit->amount;
                         }
-                        $currencies[$key] = $sum[$key];
+                        $total['active'][$type][$symbol][0] = $sum[$symbol];
+                      }
                     }
+                  }
                 }
+              }
+            }else{
+              foreach($total as $active => $type){
+                foreach($type as $type => $currency){
+                  foreach($currency as $symbol => $valor){
+                    if($symbol == $deposit->symbol){
+                      foreach($sum as $k => $v){
+                        if($k == $symbol){
+                          $sum[$symbol] = $v + $deposit->amount;
+                        }
+                        $total['unactive'][$type][$symbol][0] = $sum[$symbol];
+                      }
+                    }
+                  }
+                }
+              }
             }
         }
 
-        return response()->json(['deposits' => $currencies, 'deposit' => $deposits ], 202);
+        return response()->json(['result' => $total ], 202);
     }
 
     public function withdraws(Request $request)
