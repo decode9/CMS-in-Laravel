@@ -22,10 +22,12 @@ class CreateFundsTable extends Migration
             $table->boolean('active')->default(0);
             $table->string('comment');
             $table->string('type');
+            $table->integer('account_id')->unsigned()->nullable();
             $table->timestamps();
             $table->softDeletes();
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('currency_id')->references('id')->on('currencies');
+            $table->foreign('account_id')->references('id')->on('accounts');
         });
     }
 
@@ -39,6 +41,7 @@ class CreateFundsTable extends Migration
         Schema::table('funds', function($table){
             $table->dropForeign('funds_user_id_foreign');
             $table->dropForeign('funds_currency_id_foreign');
+            $table->dropForeign('funds_account_id_foreign');
         });
         Schema::dropIfExists('funds');
     }

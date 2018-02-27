@@ -60,20 +60,20 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 45);
+/******/ 	return __webpack_require__(__webpack_require__.s = 43);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 45:
+/***/ 43:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(46);
+module.exports = __webpack_require__(44);
 
 
 /***/ }),
 
-/***/ 46:
+/***/ 44:
 /***/ (function(module, exports) {
 
 /*****************************************************************/
@@ -1005,7 +1005,7 @@ $(document).ready(function () {
                             var colvalue_1 = $('<td class="col-sm-12 col-md-2">' + currency.name + '</td>');
                             var colvalue_2 = $('<td class="col-sm-12 col-md-2">' + currency.symbol + '</td>');
                             var colvalue_3 = $('<td class="col-sm-12 col-md-2">' + currency.type + '</td>');
-                            var colvalue_4 = $('<td class="col-sm-12 col-md-2">' + currency.value + '</td>');
+                            var colvalue_4 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(currency.value) + '</td>');
                             var colvalue_5 = $('<td class="col-sm-12 col-md-2">' + currency.created_at + '</td>');
                             var colvalue_6 = $('<td class="col-sm-12 col-md-2">' + currency.updated_at + '</td>');
                             var colvalue_7 = $('<td class="col-sm-12 col-md-2"></td>');
@@ -1095,7 +1095,7 @@ $(document).ready(function () {
             $(checkbox).click(function () {
                 if (!$(this).hasClass('selected')) {
                     var value = $('<select id="value" class="form-control" name="selectv"></select>');
-                    var types = ['coinmarketcap '];
+                    var types = ['coinmarketcap'];
                     for (i = 0; i < types.length; i++) {
                         var type = types[i];
                         option = $('<option value="' + type + '">' + type + '</option>');
@@ -1177,7 +1177,10 @@ $(document).ready(function () {
                 symbol = $('#symbol').val();
                 type = $('#type').val();
                 value = $('#value').val();
-
+                if (value != 'coinmarketcap') {
+                    value = value.replace(/,/g, '.');
+                    value = parseFloat(value) * -1;
+                }
                 $.ajax({
                     headers: { 'X-CSRF-Token': $('meta[name=csrf-token]').attr('content') },
                     url: '/currencies/create',
@@ -1207,7 +1210,7 @@ $(document).ready(function () {
                 inputA = $('<div><label for="value">Value<label></div><div id="valuechange"><input id="value" name="value" type="text" class="form-control" placeholder="Value" value="' + currency.value + '" required></div>');
                 inputC = '<div class="checkbox-inline" title="Change between manual value or an API value"><label id="labelch" ><input class="changevalue" id="valuechanges" type="checkbox" name="chnge" value=""/> Change value selection</label></div>';
 
-                types = ['Currency', 'Digital Coin', 'Token'];
+                types = ['Currency', 'Cryptocurrency', 'Token'];
 
                 $('#rightContent').append(box);
                 $('#CurrencyForm').append(alert);
@@ -1334,6 +1337,11 @@ $(document).ready(function () {
                 symbol = $('#symbol').val();
                 type = $('#type').val();
                 value = $('#value').val();
+                if (value != 'coinmarketcap') {
+                    value = value.replace(/,/g, '.');
+                    value = parseFloat(value);
+                }
+                console.log(value);
 
                 $.ajax({
                     headers: { 'X-CSRF-Token': $('meta[name=csrf-token]').attr('content') },
@@ -1451,7 +1459,7 @@ $(document).ready(function () {
             inputA = $('<div><label for="value">Value<label></div><div id="valuechange"><input id="value" name="value" type="text" class="form-control" placeholder="Value" required></div>');
             inputC = '<div class="checkbox-inline" title="Change between manual value or an API value"><label id="labelch" ><input class="changevalue" id="valuechanges" type="checkbox" name="chnge" value=""/> Change value selection</label></div>';
 
-            types = ['Currency', 'Digital Coin', 'Token'];
+            types = ['Currency', 'Cryptocurrency', 'Token'];
 
             $('#rightContent').append(box);
             $('#CurrencyForm').append(alert);
@@ -1496,7 +1504,6 @@ $(document).ready(function () {
     if (pathname.toString() == '/funds') {
 
         /*Funds Balances*/
-
         /*Search Balances Currency Table*/
 
         var orderTableBalanceCurrencyBy = function orderTableBalanceCurrencyBy(by) {
@@ -1544,17 +1551,15 @@ $(document).ready(function () {
                             var rowResult = $('<tr></tr>');
                             var colvalue_1 = $('<td class="col-sm-12 col-md-2">' + balance.symbol + '</td>');
                             var colvalue_2 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount) + '</td>');
-                            if(balance.symbol == 'VEF'){
+                            if (balance.symbol == 'VEF') {
                                 var colvalue_3 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount / balance.value) + '</td>');
-                            }else{
+                            } else {
                                 var colvalue_3 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount * balance.value) + '</td>');
                             }
-
 
                             rowResult.append(colvalue_1);
                             rowResult.append(colvalue_2);
                             rowResult.append(colvalue_3);
-
 
                             $("#table_balance_currency_content").append(rowResult);
                         }
@@ -1574,7 +1579,7 @@ $(document).ready(function () {
                             for (i = page; i <= totalPages; i++) {
                                 pagebutton = $('<li class="page_balance_currency pages">' + i + '</li>');
                                 pageList.append(pagebutton);
-                                _addPageBCButton(pagebutton);
+                                addPageBCButton(pagebutton);
                             }
 
                             $("#table_balance_currency_pagination").append(pageList);
@@ -1591,7 +1596,7 @@ $(document).ready(function () {
                             for (i = page; i <= totalPages; i++) {
                                 pagebutton = $('<li class="page_balance_currency pages">' + i + '</li>');
                                 pageList.append(pagebutton);
-                                _addPageBCButton(pagebutton);
+                                addPageBCButton(pagebutton);
                             }
 
                             $("#table_balance_currency_pagination").append(pageList);
@@ -1608,7 +1613,7 @@ $(document).ready(function () {
                             for (i = page; i <= totalPages; i++) {
                                 pagebutton = $('<li class="page_balance_currency pages">' + i + '</li>');
                                 pageList.append(pagebutton);
-                                _addPageBCButton(pagebutton);
+                                addPageBCButton(pagebutton);
                             }
 
                             $("#table_balance_currency_pagination").append(pageList);
@@ -1622,7 +1627,7 @@ $(document).ready(function () {
             });
         };
 
-        var _addPageBCButton = function _addPageBCButton(pagebutton) {
+        var addPageBCButton = function addPageBCButton(pagebutton) {
             pagebutton.click(function () {
                 page = $(this).text();
                 searchBalanceCurrency(page);
@@ -1680,7 +1685,6 @@ $(document).ready(function () {
                             rowResult.append(colvalue_2);
                             rowResult.append(colvalue_3);
 
-
                             $("#table_balance_crypto_content").append(rowResult);
                         }
 
@@ -1699,7 +1703,7 @@ $(document).ready(function () {
                             for (i = page; i <= totalPages; i++) {
                                 pagebutton = $('<li class="page_balance_crypto pages">' + i + '</li>');
                                 pageList.append(pagebutton);
-                                _addPageBCRButton(pagebutton);
+                                addPageBCRButton(pagebutton);
                             }
 
                             $("#table_balance_crypto_pagination").append(pageList);
@@ -1716,7 +1720,7 @@ $(document).ready(function () {
                             for (i = page; i <= totalPages; i++) {
                                 pagebutton = $('<li class="page_balance_crypto pages">' + i + '</li>');
                                 pageList.append(pagebutton);
-                                _addPageBCRButton(pagebutton);
+                                addPageBCRButton(pagebutton);
                             }
 
                             $("#table_balance_crypto_pagination").append(pageList);
@@ -1733,7 +1737,7 @@ $(document).ready(function () {
                             for (i = page; i <= totalPages; i++) {
                                 pagebutton = $('<li class="page_balance_crypto pages">' + i + '</li>');
                                 pageList.append(pagebutton);
-                                _addPageBCRButton(pagebutton);
+                                addPageBCRButton(pagebutton);
                             }
 
                             $("#table_balance_crypto_pagination").append(pageList);
@@ -1747,7 +1751,7 @@ $(document).ready(function () {
             });
         };
 
-        var _addPageBCRButton = function _addPageBCRButton(pagebutton) {
+        var addPageBCRButton = function addPageBCRButton(pagebutton) {
             pagebutton.click(function () {
                 page = $(this).text();
                 searchBalanceCrypto(page);
@@ -1805,7 +1809,6 @@ $(document).ready(function () {
                             rowResult.append(colvalue_2);
                             rowResult.append(colvalue_3);
 
-
                             $("#table_balance_token_content").append(rowResult);
                         }
 
@@ -1824,7 +1827,7 @@ $(document).ready(function () {
                             for (i = page; i <= totalPages; i++) {
                                 pagebutton = $('<li class="page_balance_token pages">' + i + '</li>');
                                 pageList.append(pagebutton);
-                                _addPageTButton(pagebutton);
+                                addPageTButton(pagebutton);
                             }
 
                             $("#table_balance_token_pagination").append(pageList);
@@ -1841,7 +1844,7 @@ $(document).ready(function () {
                             for (i = page; i <= totalPages; i++) {
                                 pagebutton = $('<li class="page_balance_token pages">' + i + '</li>');
                                 pageList.append(pagebutton);
-                                _addPageTButton(pagebutton);
+                                addPageTButton(pagebutton);
                             }
 
                             $("#table_balance_token_pagination").append(pageList);
@@ -1858,7 +1861,7 @@ $(document).ready(function () {
                             for (i = page; i <= totalPages; i++) {
                                 pagebutton = $('<li class="page_balance_token pages">' + i + '</li>');
                                 pageList.append(pagebutton);
-                                _addPageTButton(pagebutton);
+                                addPageTButton(pagebutton);
                             }
 
                             $("#table_balance_token_pagination").append(pageList);
@@ -1872,16 +1875,12 @@ $(document).ready(function () {
             });
         };
 
-        var _addPageTButton = function _addPageTButton(pagebutton) {
+        var addPageTButton = function addPageTButton(pagebutton) {
             pagebutton.click(function () {
                 page = $(this).text();
                 searchBalanceToken(page);
             });
         };
-
-        /*End Funds Balances*/
-
-        /*Search Deposit Table*/
 
         var orderTableDepositBy = function orderTableDepositBy(by) {
             if (orderDepositBy === by) {
@@ -2009,8 +2008,8 @@ $(document).ready(function () {
                     }
                 },
                 // Fin
-                error: function error(_error6) {
-                    ReadError(_error6);
+                error: function error(_error7) {
+                    ReadError(_error7);
                 }
             });
         };
@@ -2231,8 +2230,8 @@ $(document).ready(function () {
                     // Put the data into the element you care about.
                 },
                 // Fin
-                error: function error(_error7) {
-                    ReadError(_error7);
+                error: function error(_error8) {
+                    ReadError(_error8);
                 }
             });
         };
@@ -2464,8 +2463,8 @@ $(document).ready(function () {
                         // Put the data into the element you care about.
                     },
                     // Fin
-                    error: function error(_error8) {
-                        ReadError(_error8);
+                    error: function error(_error9) {
+                        ReadError(_error9);
                     }
                 });
             }
@@ -2638,75 +2637,21 @@ $(document).ready(function () {
             });
         };
 
-        $('#table_balance_currency_header_symbol').click(function (e) {
-            orderTableBalanceCurrencyBy('currencies.symbol');
-        });
+        ;;
 
-        $('#table_balance_currency_header_amount').click(function (e) {
-            orderTableBalanceCurrencyBy('amount');
-        });
+        ;
 
-        $('#table_balance_currency_header_equivalent').click(function (e) {
-            orderTableBalanceCurrencyBy('value');
-        });
+        ;;
 
-        var orderBalanceCurrencyBy = "";
-        var orderBalanceCurrencyDirection = "";
-        var searchBalanceCurrencyValue = "";
+        ;
 
-        $("#form_balance_currency_search").submit(function (e) {
-            e.preventDefault();
-            //DESC
-            searchBalanceCurrencyValue = $("#search_balance_currency_value").val();
-            searchBalanceCurrency(1);
-        });
+        ;;
 
-        $('#table_balance_crypto_header_symbol').click(function (e) {
-            orderTableBalanceCryptoBy('currencies.symbol');
-        });
+        ;
 
-        $('#table_balance_crypto_header_amount').click(function (e) {
-            orderTableBalanceCryptoBy('amount');
-        });
+        /*End Funds Balances*/
 
-        $('#table_balance_crypto_header_equivalent').click(function (e) {
-            orderTableBalanceCryptoBy('value');
-        });
-
-        var orderBalanceCryptoBy = "";
-        var orderBalanceCryptoDirection = "";
-        var searchBalanceCryptoValue = "";
-
-        $("#form_balance_crypto_search").submit(function (e) {
-            e.preventDefault();
-            //DESC
-            searchBalanceCryptoValue = $("#search_balance_crypto_value").val();
-            searchBalanceCrypto(1);
-        });
-
-        $('#table_balance_token_header_symbol').click(function (e) {
-            orderTableBalanceTokenBy('currencies.symbol');
-        });
-
-        $('#table_balance_token_header_amount').click(function (e) {
-            orderTableBalanceTokenBy('amount');
-        });
-
-        $('#table_balance_token_header_equivalent').click(function (e) {
-            orderTableBalanceTokenBy('value');
-        });
-
-        var orderBalanceTokenBy = "";
-        var orderBalanceTokenDirection = "";
-        var searchBalanceTokenValue = "";
-
-        $("#form_balance_token_search").submit(function (e) {
-            e.preventDefault();
-            //DESC
-            searchBalanceTokenValue = $("#search_balance_token_value").val();
-            searchBalanceToken(1);
-        });
-
+        /*Search Deposit Table*/
         $('#table_deposit_header_currency').click(function (e) {
             orderTableDepositBy('currencies.symbol');
         });
@@ -2841,6 +2786,75 @@ $(document).ready(function () {
 
         ;
 
+        $('#table_balance_currency_header_symbol').click(function (e) {
+            orderTableBalanceCurrencyBy('currencies.symbol');
+        });
+
+        $('#table_balance_currency_header_amount').click(function (e) {
+            orderTableBalanceCurrencyBy('amount');
+        });
+
+        $('#table_balance_currency_header_equivalent').click(function (e) {
+            orderTableBalanceCurrencyBy('value');
+        });
+
+        var orderBalanceCurrencyBy = "";
+        var orderBalanceCurrencyDirection = "";
+        var searchBalanceCurrencyValue = "";
+
+        $("#form_balance_currency_search").submit(function (e) {
+            e.preventDefault();
+            //DESC
+            searchBalanceCurrencyValue = $("#search_balance_currency_value").val();
+            searchBalanceCurrency(1);
+        });
+
+        $('#table_balance_crypto_header_symbol').click(function (e) {
+            orderTableBalanceCryptoBy('currencies.symbol');
+        });
+
+        $('#table_balance_crypto_header_amount').click(function (e) {
+            orderTableBalanceCryptoBy('amount');
+        });
+
+        $('#table_balance_crypto_header_equivalent').click(function (e) {
+            orderTableBalanceCryptoBy('value');
+        });
+
+        var orderBalanceCryptoBy = "";
+        var orderBalanceCryptoDirection = "";
+        var searchBalanceCryptoValue = "";
+
+        $("#form_balance_crypto_search").submit(function (e) {
+            e.preventDefault();
+            //DESC
+            searchBalanceCryptoValue = $("#search_balance_crypto_value").val();
+            searchBalanceCrypto(1);
+        });
+
+        $('#table_balance_token_header_symbol').click(function (e) {
+            orderTableBalanceTokenBy('currencies.symbol');
+        });
+
+        $('#table_balance_token_header_amount').click(function (e) {
+            orderTableBalanceTokenBy('amount');
+        });
+
+        $('#table_balance_token_header_equivalent').click(function (e) {
+            orderTableBalanceTokenBy('value');
+        });
+
+        var orderBalanceTokenBy = "";
+        var orderBalanceTokenDirection = "";
+        var searchBalanceTokenValue = "";
+
+        $("#form_balance_token_search").submit(function (e) {
+            e.preventDefault();
+            //DESC
+            searchBalanceTokenValue = $("#search_balance_token_value").val();
+            searchBalanceToken(1);
+        });
+
         $('#result_balance_currency_page').change(function () {
             $('#form_balance_currency_search').trigger("submit");
         });
@@ -2865,6 +2879,723 @@ $(document).ready(function () {
     }
 
     /* End Funds Functions */
+
+    /* Begin Client Functions */
+
+    if (pathname.toString() == '/clients') {
+        var orderTableClientBy = function orderTableClientBy(by) {
+            if (orderClientBy === by) {
+                if (orderClientDirection === "") {
+                    orderClientDirection = "DESC";
+                } else {
+                    orderClientDirection = "";
+                }
+            } else {
+                orderClientBy = by;
+                orderClientDirection = "";
+            }
+            searchClient(1);
+        };
+
+        //Get Client Data
+
+        var searchClient = function searchClient(page) {
+
+            resultPage = $("#result_client_page").val();
+
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url: "/clients/list",
+                type: 'post',
+                data: { searchvalue: searchClientValue, page: page, orderBy: orderClientBy, orderDirection: orderClientDirection, resultPage: resultPage },
+                success: function success(data) {
+                    //Inicio
+                    var clients = data.result;
+
+                    if (clients.length == 0) {
+                        $("#table_client_content").html("");
+                        $('#table_client_content').append('<tr><td colspan="3">None</td></tr>');
+                    } else {
+                        // Put the data into the element you care about.
+                        $("#table_client_content").html("");
+
+                        for (i = 0; i < clients.length; i++) {
+                            var client = clients[i];
+
+                            // we have to make in steps to add the onclick event
+                            var rowResult = $('<tr></tr>');
+                            var colvalue_1 = $('<td class="col-sm-12 col-md-2">' + client.name + '</td>');
+                            var colvalue_2 = $('<td class="col-sm-12 col-md-2">' + client.email + '</td>');
+                            var colvalue_3 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(client.amount) + '</td>');
+                            var colvalue_4 = $('<td class="col-sm-12 col-md-2"></td>');
+                            var buttonS = $('<button type="button">Select Client</button>');
+                            var buttonI = $('<button type="button">Initial Investment</button>');
+                            selectClient(buttonS, client.id);
+                            initialInvest(buttonI, client);
+
+                            colvalue_4.append(buttonS);
+                            colvalue_4.append(buttonI);
+
+                            rowResult.append(colvalue_1);
+                            rowResult.append(colvalue_2);
+                            rowResult.append(colvalue_3);
+                            rowResult.append(colvalue_4);
+                            $("#table_client_content").append(rowResult);
+                        }
+
+                        $("#table_client_pagination").html("");
+
+                        page = parseInt(data.page);
+                        var total = data.total;
+                        var resultPage = $("#result_client_page").val();
+                        var totalPages = Math.ceil(total / resultPage);
+
+                        if (page === 1) {
+                            maxPage = page + 2;
+                            totalPages = maxPage < totalPages ? maxPage : totalPages;
+                            var pageList = $('<ul class="pagination"></ul>');
+
+                            for (i = page; i <= totalPages; i++) {
+                                pagebutton = $('<li class="page_client pages">' + i + '</li>');
+                                pageList.append(pagebutton);
+                                addPageCLButton(pagebutton);
+                            }
+
+                            $("#table_client_pagination").append(pageList);
+                        } else if (page === totalPages) {
+                            page = page - 2;
+
+                            if (page < 1) {
+                                page = 1;
+                            }
+
+                            totalPages = page + 2 < totalPages ? page + 2 : totalPages;
+                            var pageList = $('<ul class="pagination"></ul>');
+
+                            for (i = page; i <= totalPages; i++) {
+                                pagebutton = $('<li class="page_client pages">' + i + '</li>');
+                                pageList.append(pagebutton);
+                                addPageCLButton(pagebutton);
+                            }
+
+                            $("#table_client_pagination").append(pageList);
+                        } else {
+                            page = page - 2;
+
+                            if (page < 1) {
+                                page = 1;
+                            }
+
+                            totalPages = page + 4 < totalPages ? page + 2 : totalPages;
+                            var pageList = $('<ul class="pagination"></ul>');
+
+                            for (i = page; i <= totalPages; i++) {
+                                pagebutton = $('<li class="page_client pages">' + i + '</li>');
+                                pageList.append(pagebutton);
+                                addPageCLButton(pagebutton);
+                            }
+
+                            $("#table_client_pagination").append(pageList);
+                        }
+                    }
+                },
+                // Fin
+                error: function error(error) {
+                    ReadError(error);
+                }
+            });
+        };
+
+        var addPageCLButton = function addPageCLButton(pagebutton) {
+            pagebutton.click(function () {
+                page = $(this).text();
+                searchClient(page);
+            });
+        };
+
+        var selectClient = function selectClient(button, id) {
+            button.click(function () {
+                /*Funds Balances*/
+                /*Search Balances Currency Table*/
+
+                function orderTableBalanceCurrencyBy(by) {
+                    if (orderBalanceCurrencyBy === by) {
+                        if (orderBalanceCurrencyDirection === "") {
+                            orderBalanceCurrencyDirection = "DESC";
+                        } else {
+                            orderBalanceCurrencyDirection = "";
+                        }
+                    } else {
+                        orderBalanceCurrencyBy = by;
+                        orderBalanceCurrencyDirection = "";
+                    }
+                    searchBalanceCurrency(1);
+                };
+
+                //Get Balance Currency Data
+
+                function searchBalanceCurrency(page) {
+
+                    resultPage = $("#result_balance_currency_page").val();
+
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        url: "/clients/currency",
+                        type: 'post',
+                        data: { id: id, searchvalue: searchBalanceCurrencyValue, page: page, orderBy: orderBalanceCurrencyBy, orderDirection: orderBalanceCurrencyDirection, resultPage: resultPage },
+                        success: function success(data) {
+                            //Inicio
+                            var balances = data.result;
+
+                            if (balances.length == 0) {
+                                $("#table_balance_currency_content").html("");
+                                $('#table_balance_currency_content').append('<tr><td colspan="3">None</td></tr>');
+                            } else {
+                                // Put the data into the element you care about.
+                                $("#table_balance_currency_content").html("");
+
+                                for (i = 0; i < balances.length; i++) {
+                                    var balance = balances[i];
+
+                                    // we have to make in steps to add the onclick event
+                                    var rowResult = $('<tr></tr>');
+                                    var colvalue_1 = $('<td class="col-sm-12 col-md-2">' + balance.symbol + '</td>');
+                                    var colvalue_2 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount) + '</td>');
+                                    if (balance.symbol == 'VEF') {
+                                        var colvalue_3 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount / balance.value) + '</td>');
+                                    } else {
+                                        var colvalue_3 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount * balance.value) + '</td>');
+                                    }
+
+                                    rowResult.append(colvalue_1);
+                                    rowResult.append(colvalue_2);
+                                    rowResult.append(colvalue_3);
+
+                                    $("#table_balance_currency_content").append(rowResult);
+                                }
+
+                                $("#table_balance_currency_pagination").html("");
+
+                                page = parseInt(data.page);
+                                var total = data.total;
+                                var resultPage = $("#result_balance_currency_page").val();
+                                var totalPages = Math.ceil(total / resultPage);
+
+                                if (page === 1) {
+                                    maxPage = page + 2;
+                                    totalPages = maxPage < totalPages ? maxPage : totalPages;
+                                    var pageList = $('<ul class="pagination"></ul>');
+
+                                    for (i = page; i <= totalPages; i++) {
+                                        pagebutton = $('<li class="page_balance_currency pages">' + i + '</li>');
+                                        pageList.append(pagebutton);
+                                        addPageBCButton(pagebutton);
+                                    }
+
+                                    $("#table_balance_currency_pagination").append(pageList);
+                                } else if (page === totalPages) {
+                                    page = page - 2;
+
+                                    if (page < 1) {
+                                        page = 1;
+                                    }
+
+                                    totalPages = page + 2 < totalPages ? page + 2 : totalPages;
+                                    var pageList = $('<ul class="pagination"></ul>');
+
+                                    for (i = page; i <= totalPages; i++) {
+                                        pagebutton = $('<li class="page_balance_currency pages">' + i + '</li>');
+                                        pageList.append(pagebutton);
+                                        addPageBCButton(pagebutton);
+                                    }
+
+                                    $("#table_balance_currency_pagination").append(pageList);
+                                } else {
+                                    page = page - 2;
+
+                                    if (page < 1) {
+                                        page = 1;
+                                    }
+
+                                    totalPages = page + 4 < totalPages ? page + 2 : totalPages;
+                                    var pageList = $('<ul class="pagination"></ul>');
+
+                                    for (i = page; i <= totalPages; i++) {
+                                        pagebutton = $('<li class="page_balance_currency pages">' + i + '</li>');
+                                        pageList.append(pagebutton);
+                                        addPageBCButton(pagebutton);
+                                    }
+
+                                    $("#table_balance_currency_pagination").append(pageList);
+                                }
+                            }
+                        },
+                        // Fin
+                        error: function error(_error6) {
+                            ReadError(_error6);
+                        }
+                    });
+                };
+
+                function addPageBCButton(pagebutton) {
+                    pagebutton.click(function () {
+                        page = $(this).text();
+                        searchBalanceCurrency(page);
+                    });
+                };
+
+                function orderTableBalanceCryptoBy(by) {
+                    if (orderBalanceCryptoBy === by) {
+                        if (orderBalanceCryptoDirection === "") {
+                            orderBalanceCryptoDirection = "DESC";
+                        } else {
+                            orderBalanceCryptoDirection = "";
+                        }
+                    } else {
+                        orderBalanceCryptoBy = by;
+                        orderBalanceCryptoDirection = "";
+                    }
+                    searchBalanceCrypto(1);
+                };
+
+                //Get Balance Currency Data
+
+                function searchBalanceCrypto(page) {
+
+                    resultPage = $("#result_balance_crypto_page").val();
+
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        url: "/clients/crypto",
+                        type: 'post',
+                        data: { id: id, searchvalue: searchBalanceCryptoValue, page: page, orderBy: orderBalanceCryptoBy, orderDirection: orderBalanceCryptoDirection, resultPage: resultPage },
+                        success: function success(data) {
+                            //Inicio
+                            var balances = data.result;
+
+                            if (balances.length == 0) {
+                                $("#table_balance_crypto_content").html("");
+                                $('#table_balance_crypto_content').append('<tr><td colspan="3">None</td></tr>');
+                            } else {
+                                // Put the data into the element you care about.
+                                $("#table_balance_crypto_content").html("");
+
+                                for (i = 0; i < balances.length; i++) {
+                                    var balance = balances[i];
+
+                                    // we have to make in steps to add the onclick event
+                                    var rowResult = $('<tr></tr>');
+                                    var colvalue_1 = $('<td class="col-sm-12 col-md-2">' + balance.symbol + '</td>');
+                                    var colvalue_2 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount) + '</td>');
+                                    var colvalue_3 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount * balance.value) + '</td>');
+
+                                    rowResult.append(colvalue_1);
+                                    rowResult.append(colvalue_2);
+                                    rowResult.append(colvalue_3);
+
+                                    $("#table_balance_crypto_content").append(rowResult);
+                                }
+
+                                $("#table_balance_crypto_pagination").html("");
+
+                                page = parseInt(data.page);
+                                var total = data.total;
+                                var resultPage = $("#result_balance_crypto_page").val();
+                                var totalPages = Math.ceil(total / resultPage);
+
+                                if (page === 1) {
+                                    maxPage = page + 2;
+                                    totalPages = maxPage < totalPages ? maxPage : totalPages;
+                                    var pageList = $('<ul class="pagination"></ul>');
+
+                                    for (i = page; i <= totalPages; i++) {
+                                        pagebutton = $('<li class="page_balance_crypto pages">' + i + '</li>');
+                                        pageList.append(pagebutton);
+                                        addPageBCRButton(pagebutton);
+                                    }
+
+                                    $("#table_balance_crypto_pagination").append(pageList);
+                                } else if (page === totalPages) {
+                                    page = page - 2;
+
+                                    if (page < 1) {
+                                        page = 1;
+                                    }
+
+                                    totalPages = page + 2 < totalPages ? page + 2 : totalPages;
+                                    var pageList = $('<ul class="pagination"></ul>');
+
+                                    for (i = page; i <= totalPages; i++) {
+                                        pagebutton = $('<li class="page_balance_crypto pages">' + i + '</li>');
+                                        pageList.append(pagebutton);
+                                        addPageBCRButton(pagebutton);
+                                    }
+
+                                    $("#table_balance_crypto_pagination").append(pageList);
+                                } else {
+                                    page = page - 2;
+
+                                    if (page < 1) {
+                                        page = 1;
+                                    }
+
+                                    totalPages = page + 4 < totalPages ? page + 2 : totalPages;
+                                    var pageList = $('<ul class="pagination"></ul>');
+
+                                    for (i = page; i <= totalPages; i++) {
+                                        pagebutton = $('<li class="page_balance_crypto pages">' + i + '</li>');
+                                        pageList.append(pagebutton);
+                                        addPageBCRButton(pagebutton);
+                                    }
+
+                                    $("#table_balance_crypto_pagination").append(pageList);
+                                }
+                            }
+                        },
+                        // Fin
+                        error: function error(_error6) {
+                            ReadError(_error6);
+                        }
+                    });
+                };
+
+                function addPageBCRButton(pagebutton) {
+                    pagebutton.click(function () {
+                        page = $(this).text();
+                        searchBalanceCrypto(page);
+                    });
+                };
+
+                function orderTableBalanceTokenBy(by) {
+                    if (orderBalanceTokenBy === by) {
+                        if (orderBalanceTokenDirection === "") {
+                            orderBalanceTokenDirection = "DESC";
+                        } else {
+                            orderBalanceTokenDirection = "";
+                        }
+                    } else {
+                        orderBalanceTokenBy = by;
+                        orderBalanceTokenDirection = "";
+                    }
+                    searchBalanceToken(1);
+                };
+
+                //Get Balance Currency Data
+
+                function searchBalanceToken(page) {
+
+                    resultPage = $("#result_balance_token_page").val();
+
+                    $.ajax({
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                        },
+                        url: "/clients/token",
+                        type: 'post',
+                        data: { id: id, searchvalue: searchBalanceTokenValue, page: page, orderBy: orderBalanceTokenBy, orderDirection: orderBalanceTokenDirection, resultPage: resultPage },
+                        success: function success(data) {
+                            //Inicio
+                            var balances = data.result;
+
+                            if (balances.length == 0) {
+                                $("#table_balance_token_content").html("");
+                                $('#table_balance_token_content').append('<tr><td colspan="3">None</td></tr>');
+                            } else {
+                                // Put the data into the element you care about.
+                                $("#table_balance_token_content").html("");
+
+                                for (i = 0; i < balances.length; i++) {
+                                    var balance = balances[i];
+
+                                    // we have to make in steps to add the onclick event
+                                    var rowResult = $('<tr></tr>');
+                                    var colvalue_1 = $('<td class="col-sm-12 col-md-2">' + balance.symbol + '</td>');
+                                    var colvalue_2 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount) + '</td>');
+                                    var colvalue_3 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount * balance.value) + '</td>');
+
+                                    rowResult.append(colvalue_1);
+                                    rowResult.append(colvalue_2);
+                                    rowResult.append(colvalue_3);
+
+                                    $("#table_balance_token_content").append(rowResult);
+                                }
+
+                                $("#table_balance_token_pagination").html("");
+
+                                page = parseInt(data.page);
+                                var total = data.total;
+                                var resultPage = $("#result_balance_token_page").val();
+                                var totalPages = Math.ceil(total / resultPage);
+
+                                if (page === 1) {
+                                    maxPage = page + 2;
+                                    totalPages = maxPage < totalPages ? maxPage : totalPages;
+                                    var pageList = $('<ul class="pagination"></ul>');
+
+                                    for (i = page; i <= totalPages; i++) {
+                                        pagebutton = $('<li class="page_balance_token pages">' + i + '</li>');
+                                        pageList.append(pagebutton);
+                                        addPageTButton(pagebutton);
+                                    }
+
+                                    $("#table_balance_token_pagination").append(pageList);
+                                } else if (page === totalPages) {
+                                    page = page - 2;
+
+                                    if (page < 1) {
+                                        page = 1;
+                                    }
+
+                                    totalPages = page + 2 < totalPages ? page + 2 : totalPages;
+                                    var pageList = $('<ul class="pagination"></ul>');
+
+                                    for (i = page; i <= totalPages; i++) {
+                                        pagebutton = $('<li class="page_balance_token pages">' + i + '</li>');
+                                        pageList.append(pagebutton);
+                                        addPageTButton(pagebutton);
+                                    }
+
+                                    $("#table_balance_token_pagination").append(pageList);
+                                } else {
+                                    page = page - 2;
+
+                                    if (page < 1) {
+                                        page = 1;
+                                    }
+
+                                    totalPages = page + 4 < totalPages ? page + 2 : totalPages;
+                                    var pageList = $('<ul class="pagination"></ul>');
+
+                                    for (i = page; i <= totalPages; i++) {
+                                        pagebutton = $('<li class="page_balance_token pages">' + i + '</li>');
+                                        pageList.append(pagebutton);
+                                        addPageTButton(pagebutton);
+                                    }
+
+                                    $("#table_balance_token_pagination").append(pageList);
+                                }
+                            }
+                        },
+                        // Fin
+                        error: function error(_error6) {
+                            ReadError(_error6);
+                        }
+                    });
+                };
+
+                function addPageTButton(pagebutton) {
+                    pagebutton.click(function () {
+                        page = $(this).text();
+                        searchBalanceToken(page);
+                    });
+                };
+
+                $('#table_balance_currency_header_symbol').click(function (e) {
+                    orderTableBalanceCurrencyBy('currencies.symbol');
+                });
+
+                $('#table_balance_currency_header_amount').click(function (e) {
+                    orderTableBalanceCurrencyBy('amount');
+                });
+
+                $('#table_balance_currency_header_equivalent').click(function (e) {
+                    orderTableBalanceCurrencyBy('value');
+                });
+
+                var orderBalanceCurrencyBy = "";
+                var orderBalanceCurrencyDirection = "";
+                var searchBalanceCurrencyValue = "";
+
+                $("#form_balance_currency_search").submit(function (e) {
+                    e.preventDefault();
+                    //DESC
+                    searchBalanceCurrencyValue = $("#search_balance_currency_value").val();
+                    searchBalanceCurrency(1);
+                });
+
+                $('#table_balance_crypto_header_symbol').click(function (e) {
+                    orderTableBalanceCryptoBy('currencies.symbol');
+                });
+
+                $('#table_balance_crypto_header_amount').click(function (e) {
+                    orderTableBalanceCryptoBy('amount');
+                });
+
+                $('#table_balance_crypto_header_equivalent').click(function (e) {
+                    orderTableBalanceCryptoBy('value');
+                });
+
+                var orderBalanceCryptoBy = "";
+                var orderBalanceCryptoDirection = "";
+                var searchBalanceCryptoValue = "";
+
+                $("#form_balance_crypto_search").submit(function (e) {
+                    e.preventDefault();
+                    //DESC
+                    searchBalanceCryptoValue = $("#search_balance_crypto_value").val();
+                    searchBalanceCrypto(1);
+                });
+
+                $('#table_balance_token_header_symbol').click(function (e) {
+                    orderTableBalanceTokenBy('currencies.symbol');
+                });
+
+                $('#table_balance_token_header_amount').click(function (e) {
+                    orderTableBalanceTokenBy('amount');
+                });
+
+                $('#table_balance_token_header_equivalent').click(function (e) {
+                    orderTableBalanceTokenBy('value');
+                });
+
+                var orderBalanceTokenBy = "";
+                var orderBalanceTokenDirection = "";
+                var searchBalanceTokenValue = "";
+
+                $("#form_balance_token_search").submit(function (e) {
+                    e.preventDefault();
+                    //DESC
+                    searchBalanceTokenValue = $("#search_balance_token_value").val();
+                    searchBalanceToken(1);
+                });
+
+                $('#result_balance_currency_page').change(function () {
+                    $('#form_balance_currency_search').trigger("submit");
+                });
+                $('#result_balance_crypto_page').change(function () {
+                    $('#form_balance_crypto_search').trigger("submit");
+                });
+                $('#result_balance_token_page').change(function () {
+                    $('#form_balance_token_search').trigger("submit");
+                });
+
+                $('#form_balance_currency_search').trigger("submit");
+                $('#form_balance_crypto_search').trigger("submit");
+                $('#form_balance_token_search').trigger("submit");
+                /*End Funds Balances*/
+            });
+        };
+
+        var initialInvest = function initialInvest(button, user) {
+            button.click(function () {
+
+                box = $("<div class='Modal' id='initalModal' style='display:none;'><div class='modalContent' id='modalCreateInitial'><h3>Initial Invest for " + user.name + "</h3><form class='InitialForm' id='InitialForm' enctype='multipart/form-data' ></form></div></div>");
+                alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Initial Fund Invest</strong></div>');
+                inputN = $('<div><label for="inital">Initial Invest USD<label></div><div><input id="initial" name="initial" type="text" class="form-control" placeholder="Initial Invest" required></div>');
+
+                $('#rightContent').append(box);
+                $('#InitialForm').append(alert);
+                $('#InitialForm').append(inputN);
+
+                $('#InitialForm').append("<div id='iniButts'></div>");
+
+                clsbut = $("<span class='close'>&times;</span>");
+                closeButton(clsbut, '.Modal');
+
+                makeBut = $("<button type='button' name='button' id='iniCont'>Make</button>");
+                addMakeiButton(makeBut);
+
+                $('#modalCreateInitial').prepend(clsbut);
+                $('#iniButts').append(makeBut);
+
+                formatInput("#initial");
+                $('.Modal').css('display', 'block');
+            });
+            function addMakeiButton(makeBut) {
+                makeBut.click(function (e) {
+
+                    jQuery.validator.addMethod("amount", function (value, element) {
+                        return this.optional(element) || /^(\d{1}\.)?(\d+\.?)+(,\d{2})?$/i.test(value);
+                    });
+
+                    $('#InitialForm').validate({
+                        rules: {
+                            initial: {
+                                required: true,
+                                minlength: 1,
+                                amount: true
+                            }
+                        },
+                        messages: {
+                            amount: "Please introduce a valid amount, minimun 3 digits"
+                        }
+                    });
+
+                    if ($('#InitialForm').valid()) {
+                        alterForm('#InitialForm', true);
+                        $('#iniCont').hide();
+                        $('.alert').show();
+
+                        confirmBut = $("<button type='button' name='button' id='iniConf'>Confirm</button>");
+                        backBut = $("<button type='button' name='button' id='iniBack'>Back</button>");
+                        backButton(backBut, '#InitialForm', 'ini');
+                        confirmiButton(confirmBut);
+
+                        $('#iniButts').append(confirmBut);
+                        $('#iniButts').append(backBut);
+                    }
+                });
+            }
+
+            function confirmiButton(confirmBut) {
+                confirmBut.click(function () {
+                    amount = $('#initial').val().replace(/\./g, '');
+                    amount = amount.replace(/,/g, '.');
+
+                    $.ajax({
+                        headers: { 'X-CSRF-Token': $('meta[name=csrf-token]').attr('content') },
+                        url: '/clients/initials',
+                        type: 'POST',
+                        dataType: "json",
+                        data: { amount: amount, id: user.id },
+                        success: function success(data) {
+                            closeModal('.Modal');
+                            $('#form_client_search').trigger("submit");
+                        }
+                    });
+                });
+            }
+        };
+
+        /*Search Client Table*/
+
+        $('#table_client_header_name').click(function (e) {
+            orderTableClientBy('name');
+        });
+
+        $('#table_client_header_email').click(function (e) {
+            orderTableClientBy('email');
+        });
+
+        var orderClientBy = "";
+        var orderClientDirection = "";
+        var searchClientValue = "";
+
+        ;;
+
+        ;
+
+        $("#form_client_search").submit(function (e) {
+            e.preventDefault();
+            //DESC
+            searchClientValue = $("#search_client_value").val();
+            searchClient(1);
+        });
+
+        $('#result_client_page').change(function () {
+            $('#form_client_search').trigger("submit");
+        });
+
+        $('#form_client_search').trigger("submit");
+    }
+
+    /* End Client Functions */
 
     /* Begin Orders Functions */
 
@@ -3182,8 +3913,8 @@ $(document).ready(function () {
                     // Put the data into the element you care about.
                 },
                 // Fin
-                error: function error(_error9) {
-                    ReadError(_error9);
+                error: function error(_error10) {
+                    ReadError(_error10);
                 }
             });
         };

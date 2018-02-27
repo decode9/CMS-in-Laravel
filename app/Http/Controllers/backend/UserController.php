@@ -162,9 +162,9 @@ class UserController extends Controller
                 $balance = New Balance;
                 $balance->amount = 0;
                 $balance->type = 'fund';
-                $balance->save();
                 $balance->associate($currency);
                 $balance->associate($user);
+                $balance->save();
         }
 
         foreach($roles as $role){
@@ -197,9 +197,9 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required| max:50',
             'lastname' => 'required| max:50',
-            'username' => 'required|unique:users|max:20',
-            'email' => 'required|unique:users|max:50',
-            'password' => 'min:8|confirmed',
+            'username' => 'required|max:20',
+            'email' => 'required|max:50',
+            'password' => 'confirmed',
             'roles' => 'required',
         ]);
 
@@ -208,7 +208,9 @@ class UserController extends Controller
         $lastname = $request->lastname;
         $username = strtolower($request->username);
         $email = strtolower($request->email);
-        $password = bcrypt($request->password);
+        if($request->password != ''){
+            $password = bcrypt($request->password);
+        }
         $roles = $request->roles;
 
         $fullname = ucfirst(strtolower($name)) . " " . ucfirst(strtolower($lastname));
@@ -218,10 +220,12 @@ class UserController extends Controller
         $user->name = $fullname;
         $user->username = $request->username;
         $user->email = $request->email;
-        $user->password= $request->password;
+        if($request->password != ''){
+            $user->password= $request->password;
+        }
         $user->save();
 
-        $rols = $User->roles()->get();
+        $rols = $user->roles()->get();
 
         $user->roles()->detach();
 
@@ -236,7 +240,7 @@ class UserController extends Controller
         $user->clients()->detach();
 
         if(isset($request->client)){
-            $clients = $User->clients()->get();
+            $clients = $user->clients()->get();
             $client = $request->client;
             foreach($clients as $c){
                 if($c->id != $client){

@@ -43,7 +43,7 @@ class FundsController extends Controller
          $total = 0;
 
          //Select Witdraws of the user
-         $query = Balance::Where('balances.type', 'fund')->where('user_id', $user->id)->where('currencies.type', 'currency')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type');
+         $query = Balance::Where('balances.type', 'fund')->where('currencies.type', 'currency')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type');
          //Search by
 
          if($searchValue != '')
@@ -111,7 +111,7 @@ class FundsController extends Controller
          $total = 0;
 
          //Select Witdraws of the user
-         $query = Balance::Where('balances.type', 'fund')->where('user_id', $user->id)->where('currencies.type', 'Cryptocurrency')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'name', 'symbol', 'value', 'currencies.type');
+         $query = Balance::Where('balances.type', 'fund')->where('currencies.type', 'Cryptocurrency')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'name', 'symbol', 'value', 'currencies.type');
          //Search by
 
          if($searchValue != '')
@@ -180,7 +180,7 @@ class FundsController extends Controller
          $total = 0;
 
          //Select Withdraws of the user
-         $query = Balance::Where('balances.type', 'fund')->where('user_id', $user->id)->where('currencies.type', 'Token')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type');
+         $query = Balance::Where('balances.type', 'fund')->where('currencies.type', 'Token')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type');
          //Search by
 
          if($searchValue != '')
@@ -230,59 +230,6 @@ class FundsController extends Controller
 
          return response()->json(['page' => $page, 'result' => $balancesCurrency, 'total' => $total, 'user' => $user->name], 202);
      }
-    public function index()
-    {
-        //
-        $user = Auth::User();
-        $deposits = Fund::where('user_id', $user->id)->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('funds.amount', 'funds.active', 'symbol', 'value', 'currencies.type')->get();
-        $currency = Currency::select('symbol', 'type', 'value')->get();
-
-        $total['active']['Cryptocurrency']['BTC'] = [0, 'value'];
-        $sum['BTC'] = 0;
-
-        foreach($currency as $c){
-          $total['active'][$c->type][$c->symbol][0] = 0;
-          $total['active'][$c->type][$c->symbol][1] = $c->value;
-
-          $sum[$c->symbol] = 0;
-        }
-
-        foreach($deposits as $deposit){
-            if($deposit->active){
-              foreach($total as $active => $type){
-                foreach($type as $type => $currency){
-                  foreach($currency as $symbol => $valor){
-                    if($symbol == $deposit->symbol){
-                      foreach($sum as $k => $v){
-                        if($k == $symbol){
-                          $sum[$symbol] = $v + $deposit->amount;
-                        }
-                        $total['active'][$type][$symbol][0] = $sum[$symbol];
-                      }
-                    }
-                  }
-                }
-              }
-            }else{
-              foreach($total as $active => $type){
-                foreach($type as $type => $currency){
-                  foreach($currency as $symbol => $valor){
-                    if($symbol == $deposit->symbol){
-                      foreach($sum as $k => $v){
-                        if($k == $symbol){
-                          $sum[$symbol] = $v + $deposit->amount;
-                        }
-                        $total['unactive'][$type][$symbol][0] = $sum[$symbol];
-                      }
-                    }
-                  }
-                }
-              }
-            }
-        }
-
-        return response()->json(['result' => $total ], 202);
-    }
 
     public function withdraws(Request $request)
     {

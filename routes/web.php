@@ -79,7 +79,11 @@ Route::post('/orders/balance', "backend\OrdersController@balance")->name('orders
 //Clients
 
 Route::get('/clients', "backend\ViewsController@clients")->name('clients')->middleware('auth.per:0250');
-Route::post('/clients/data', "backend\OrdersController@orders")->name('clients.list')->middleware('auth.per:0251');
+Route::post('/clients/list', "backend\ClientsController@index")->name('clients.list')->middleware('auth.per:0251');
+Route::post('/clients/currency', "backend\ClientsController@indexCurrency")->name('currency.funds')->middleware('auth.per:0150');
+Route::post('/clients/crypto', "backend\ClientsController@indexCrypto")->name('crypto.funds')->middleware('auth.per:0150');
+Route::post('/clients/token', "backend\ClientsController@indexToken")->name('crypto.funds')->middleware('auth.per:0150');
+Route::post('/clients/initials', "backend\ClientsController@initial")->name('crypto.funds')->middleware('auth.per:0150');
 
 //Accounts
 

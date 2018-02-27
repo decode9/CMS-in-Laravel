@@ -80,6 +80,19 @@ class CurrenciesController extends Controller
 
             $currencies  =  $query->get();
 
+            foreach($currencies as $currency){
+                if($currency->symbol == "VEF"){
+                    $json = file_get_contents('https://s3.amazonaws.com/dolartoday/data.json');
+                    $data = json_decode($json);
+                    $currency->value = $data->USD->dolartoday;
+                }elseif ($currency->symbol == "USD"){
+                    $currency->value = 1;
+                }elseif($currency->value == "coinmarketcap") {
+                    $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $currency->name);
+                    $data = json_decode($json);
+                    $currency->value = $data[0]->price_usd;
+                }
+            }
             //Get fees by month and year
 
             return response()->json(['page' => $page, 'result' => $currencies,'total' => $total], 202);
@@ -120,9 +133,9 @@ class CurrenciesController extends Controller
             $balance = new Balance;
             $balance->amount = 0;
             $balance->type = 'fund';
-            $balance->save();
             $balance->associate($user);
             $balance->associate($currency);
+            $balance->save();
         }
 
         return response()->json(['message' => "success"], 202);
@@ -157,12 +170,14 @@ class CurrenciesController extends Controller
         $name = ucfirst(strtolower($request->name));;
         $symbol = strtoupper($request->symbol);
         $type = $request->type;
+        $value = $request->value;
+        $id = $request->id;
 
         $currency = Currency::Find($id);
         $currency->name = $name;
         $currency->symbol = $symbol;
-        $currency->$type = $type;
-
+        $currency->type = $type;
+        $currency->value = $value;
         $currency->save();
 
 

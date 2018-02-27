@@ -163,9 +163,6 @@ top: -30px;
                             <th colspan="1" id="balance_currency_page">
                                 <select id="result_balance_currency_page">
                                     <option value="5" selected="selected">5</option>
-                                    <option value="10">10</option>
-                                    <option value="20">20</option>
-                                    <option value="50">50</option>
                                 </select>
                             </th>
                             <th id="table_balance_currency_pagination" colspan="2"></th>
@@ -204,9 +201,6 @@ top: -30px;
                             <th colspan="1" id="balance_crypto_page">
                                 <select id="result_balance_crypto_page">
                                     <option value="5" selected="selected">5</option>
-                                    <option value="10">10</option>
-                                    <option value="20">20</option>
-                                    <option value="50">50</option>
                                 </select>
                             </th>
                             <th id="table_balance_crypto_pagination" colspan="2"></th>
@@ -244,10 +238,7 @@ top: -30px;
                         <tr>
                             <th colspan="1" id="balance_token_page">
                                 <select id="result_balance_token_page">
-                                    <option value="5" selected="selected">5</option>
-                                    <option value="10">10</option>
-                                    <option value="20">20</option>
-                                    <option value="50">50</option>
+                                    <option value="5" selected="selected">5</option>                                
                                 </select>
                             </th>
                             <th id="table_balance_token_pagination" colspan="2"></th>
