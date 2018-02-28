@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class Currencies extends Migration
+class Balances   extends Migration
 {
     /**
      * Run the migrations.
@@ -14,12 +14,16 @@ class Currencies extends Migration
     public function up()
     {
         DB::table('balances')->insert([
-                ['currency_id' => '1', 'symbol' => 'VEF', 'type' => 'fund', 'amount' => '0'],
-                ['currency_id' => '2', 'symbol' => 'USD', 'type' => 'fund', 'amount' => '0'],
-                ['currency_id' => '3', 'symbol' => 'BTC', 'type' => 'fund', 'amount' => '0'],
-                ['currency_id' => '4', 'symbol' => 'LTC', 'type' => 'fund', 'amount' => '0'],
-                ['currency_id' => '5', 'symbol' => 'ETH', 'type' => 'fund', 'amount' => '0'],
-            ]);
+                ['currency_id' => '1',  'type' => 'fund', 'amount' => '0'],
+                ['currency_id' => '2',  'type' => 'fund', 'amount' => '0'],
+                ['currency_id' => '3',  'type' => 'fund', 'amount' => '0'],
+                ['currency_id' => '4',  'type' => 'fund', 'amount' => '0'],
+                ['currency_id' => '5',  'type' => 'fund', 'amount' => '0'],
+        ]);
+
+        DB::table('funds')->insert([
+                ['currency_id' => '2', 'reference' => 'initial', 'type' => 'initial', 'active' => '1' , 'amount' => '0', 'comment' => 'initial'],
+        ]);
     }
 
     /**

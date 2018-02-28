@@ -170,6 +170,7 @@ $(document).ready(function(){
             $(this).val(val);
         })
     }
+
     /* Selection of currency Symbol By ID (OLD USE THIS IS NOT APPLICABLE ANYMORE) */
     /*function Currency(id){
         switch (id) {
@@ -1468,14 +1469,20 @@ $(document).ready(function(){
                             if(balance.symbol == 'VEF'){
                                 var colvalue_3 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount / balance.value) + '</td>');
                             }else{
-                                var colvalue_3 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount * balance.value) + '</td>');
+                                var colvalue_3 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount * balance.value)+ '</td>');
                             }
 
 
                             rowResult.append(colvalue_1);
                             rowResult.append(colvalue_2);
                             rowResult.append(colvalue_3);
-
+                            if(data.eaccess){
+                                var colvalue_4 = $('<td class="col-sm-12 col-md-2"></td>');
+                                var buttEx = $('<button type="button">Exchange</button>');
+                                exchangeButton(buttEx, balance);
+                                colvalue_4.append(buttEx);
+                                rowResult.append(colvalue_4);
+                            }
 
                             $("#table_balance_currency_content").append(rowResult);
                         }
@@ -1600,7 +1607,13 @@ $(document).ready(function(){
                             rowResult.append(colvalue_1);
                             rowResult.append(colvalue_2);
                             rowResult.append(colvalue_3);
-
+                            if(data.eaccess){
+                                var colvalue_4 = $('<td class="col-sm-12 col-md-2"></td>');
+                                var buttEx = $('<button type="button">Exchange</button>');
+                                exchangeButton(buttEx, balance);
+                                colvalue_4.append(buttEx);
+                                rowResult.append(colvalue_4);
+                            }
 
                             $("#table_balance_crypto_content").append(rowResult);
                         }
@@ -1725,7 +1738,13 @@ $(document).ready(function(){
                             rowResult.append(colvalue_1);
                             rowResult.append(colvalue_2);
                             rowResult.append(colvalue_3);
-
+                            if(data.eaccess){
+                                var colvalue_4 = $('<td class="col-sm-12 col-md-2"></td>');
+                                var buttEx = $('<button type="button">Exchange</button>');
+                                exchangeButton(buttEx, balance);
+                                colvalue_4.append(buttEx);
+                                rowResult.append(colvalue_4);
+                            }
 
                             $("#table_balance_token_content").append(rowResult);
                         }
@@ -1802,12 +1821,185 @@ $(document).ready(function(){
 
         /*End Funds Balances*/
 
+        /*Exchange Currencies*/
+
+        function exchangeButton(button, currency){
+            button.click(function(){
+
+                box = $("<div class='Modal' id='exchangeModal' style='display:none;'><div class='modalContent' id='modalExchange'><h3>Exchange</h3><form class='ExchangeForm' id='ExchangeForm' enctype='multipart/form-data' ></form></div></div>");
+                alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Exchange</strong></div>');
+                labelA = $('<div><label >Available Balance: <span id="availableB"></span><label></div>');
+                selectO = $('<div><label for="selectout" >Change For:<label></div><div><select id="out" class="form-control" name="selectout"></select></div>');
+                inputO = $('<div><label for="valueout">Value<label></div><div><input id="valueout" name="valueout" type="text" class="form-control" placeholder="Value Out" required></div>');
+                inputI= $('<input id="currencyin" name="currencyin" type="text" class="form-control" required value="'+currency.symbol+'" display:none;>');
+                inputI= $('<div><label for="valuein">Value In<label></div><div><input id="valuein" name="valuein" type="text" class="form-control" placeholder="Value In" required></div>');
+                inputR = $('<div><label for="rate">Exchange Rate<label></div><div><input id="rate" name="rate" type="text" class="form-control" placeholder="Exchange Rate" required></div>');
+
+                $('#rightContent').append(box);
+                $('#ExchangeForm').append(alert);
+                $('#ExchangeForm').append(labelA);
+                $('#ExchangeForm').append(selectO);
+                $('#ExchangeForm').append(inputO);
+                $('#ExchangeForm').append(inputI);
+                $('#ExchangeForm').append(inputR);
+
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    url: "/funds/currencies",
+                    type: 'post',
+                    datatype: 'json',
+                    data: {currency: currency.symbol},
+                    success: function (data) {
+                        //Inicio
+                        currencies = data.data;
+                        for(i=0;i < currencies.length;i++)
+                        {
+                            var currenc = currencies[i];
+                            if(currenc.symbol == 'USD'){
+                                var option = '<option value="'+currenc.symbol+' selected="selected"">'+ currenc.symbol +'</option>';
+                            }
+                            var option = '<option value="'+currenc.symbol+'">'+ currenc.symbol +'</option>';
+                            $('#out').append(option);
+                        }
+                    },
+                    // Fin
+                    error: function (error) {
+                        ReadError(error);
+                    }
+                })
+                availableBalance('#out');
+                $('#ExchangeForm').append("<div id='exButts'></div>");
+
+                clsbut = $("<span class='close'>&times;</span>");
+                closeButton(clsbut, '.Modal');
+
+                makeBut = $("<button type='button' name='button' id='exCont'>Make</button>");
+                addMakeExButton(makeBut);
+
+                $('#modalExchange').prepend(clsbut);
+                formatInput('#valueout');
+                formatInput('#valuein');
+                formatInput('#rate');
+                $('#exButts').append(makeBut);
+                $('#out').trigger('change');
+                $('.Modal').css('display', 'block');
+        })
+    }
+
+        function availableBalance(selection){
+            $(selection).change(function(){
+                currency = $(this).val();
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    url: "/funds/available",
+                    type: 'post',
+                    datatype: 'json',
+                    data: {currency: currency},
+                    success: function (data) {
+                        //Inicio
+                        currenc = data.data;
+                        amount = formatNumber.num(currenc.amount)
+                        $('#availableB').html('');
+                        $('#availableB').append(amount);
+
+                    },
+                    // Fin
+                    error: function (error) {
+                        ReadError(error);
+                    }
+                })
+            })
+        }
+
+        function addMakeExButton(makeBut){
+            makeBut.click(function(e){
+
+                jQuery.validator.addMethod("amount", function(value, element) {
+                    return this.optional(element) || /^(\d{1}\.)?(\d+\.?)+(,\d{2})?$/i.test(value);
+                });
+
+                $('#ExchangeForm').validate({
+                    rules: {
+                        valueout:{
+                            required: true,
+                            minlength: 1,
+                            amount: true,
+                        },
+
+                        valuein:{
+                            minlength: 1,
+                            amount: true,
+                        },
+                        rate:{
+                            minlength: 1,
+                            amount: true,
+                        }
+                    },
+                    messages:{
+                        valueout: "Please introduce a valid amount, minimun 1 digits",
+                        valuein: "Please introduce a valid amount, minimun 1 digits",
+                        rate: "Please introduce a valid amount, minimun 1 digits",
+                    },
+                })
+
+                if($('#ExchangeForm').valid()){
+                    alterForm('#ExhangeForm', true);
+                    $('#exCont').hide();
+                    $('.alert').show();
+
+                    confirmBut = $("<button type='button' name='button' id='exConf'>Confirm</button>");
+                    backBut = $("<button type='button' name='button' id='exBack'>Back</button>");
+                    backButton(backBut, '#ExchangeForm', 'ex');
+                    confirmExButton(confirmBut);
+
+                    $('#exButts').append(confirmBut);
+                    $('#exButts').append(backBut);
+                }
+            })
+        }
+
+        function confirmExButton(confirmBut){
+            confirmBut.click(function(){
+                currencyout = $('#out').val();
+                currencyin = $('#in').val();
+
+                amountout = $('#valueout').val().replace(/\./g, '');
+                amountout = amountout.replace(/,/g, '.');
+
+                amountin = $('#valuein').val().replace(/\./g, '');
+                amountin = amountin.replace(/,/g, '.');
+
+                rate = $('#rate').val().replace(/\./g, '');
+                rate = rate.replace(/,/g, '.');
+
+                    $.ajax({
+                        headers: { 'X-CSRF-Token' : $('meta[name=csrf-token]').attr('content') },
+                        url: '/funds/exchange',
+                        type: 'POST',
+                        dataType: "json",
+                        data: {cout : currencyout, cin : currencyin, aout : amountout, ain : amountin, rate: rate},
+                        success: function(data){
+                            closeModal('#ExchangeModal');
+
+                            $('#form_balance_currency_search').trigger("submit");
+                            $('#form_balance_crypto_search').trigger("submit");
+                            $('#form_balance_token_search').trigger("submit");
+                        }
+                    })
+
+            })
+        }
+        /*End Exchange Currencies*/
         /*Search Deposit Table*/
         $('#table_deposit_header_currency').click(function (e) {
           orderTableDepositBy('currencies.symbol');
         });
 
-         $('#table_deposit_header_amount').click(function (e) {
+        $('#table_deposit_header_amount').click(function (e) {
           orderTableDepositBy('amount');
         });
 
@@ -3516,6 +3708,7 @@ $(document).ready(function(){
      if(pathname.toString() == '/orders'){
 
          function selectCurrencyOrder(button, currency){
+
              $(button).click(function(){
                  $('.selectbtn').removeClass('selectbtn');
                  $(this).addClass('selectbtn');

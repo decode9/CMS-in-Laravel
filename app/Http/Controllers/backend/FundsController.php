@@ -25,13 +25,32 @@ class FundsController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-     public function currencies(Request $request)
-     {
-         $currency = Currency::All();
+     public function currencies(Request $request){
+         $symbol = $request->currency;
 
-         return response()->json(['message' => "success", 'result' => $currency], 202);
+         $balance = Currency::WhereNotIn('symbol', [$symbol] )->get();
+
+         return response()->json(['data' => $balance], 202);
      }
 
+     public function available(Request $request){
+         $symbol = $request->currency;
+
+         $balance = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.symbol', $symbol )->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type')->first();
+
+         return response()->json(['data' => $balance], 202);
+     }
+
+     private function percent($user){
+             if($user->hasRole('30')){
+                     $userInitial = $user->funds()->where('type', 'initial')->first();
+                     $userInvest = $userInitial->amount;
+                     $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->first();
+                     $fundInvest = $fundInitial->amount;
+                     $percent = $userInvest / $fundInvest;
+                     return $percent;
+             }
+     }
      public function indexCurrency(Request $request){
 
          $user = Auth::User();
@@ -42,8 +61,9 @@ class FundsController extends Controller
          $orderDirection = $request->orderDirection;
          $total = 0;
 
+
          //Select Witdraws of the user
-         $query = Balance::Where('balances.type', 'fund')->where('currencies.type', 'currency')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type');
+         $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.type', 'currency')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type');
          //Search by
 
          if($searchValue != '')
@@ -90,14 +110,28 @@ class FundsController extends Controller
          $balancesCurrency  =  $query->get();
 
          foreach($balancesCurrency as $balance){
+             if($balance->symbol == "USD"){
+                $balance->value = 1;
+             }
              if($balance->symbol == "VEF"){
-                 $json = file_get_contents('https://s3.amazonaws.com/dolartoday/data.json');
-                 $data = json_decode($json);
-                 $balance->value = $data->USD->dolartoday;
+                $balance->value = 217200;
+             }
+
+         }
+         if($user->hasRole('30')){
+             $percent = $this->percent($user);
+             foreach($balancesCurrency as $balance){
+                 $newbalance = $balance->amount * $percent;
+                 $balance->amount = $newbalance;
              }
          }
+         if($user->hasRole('20') || $user->hasRole('901')){
+             $eaccess = true;
+         }else{
+             $eaccess = false;
+         }
 
-         return response()->json(['page' => $page, 'result' => $balancesCurrency, 'total' => $total, 'user' => $user->name], 202);
+         return response()->json(['page' => $page, 'result' => $balancesCurrency, 'total' => $total, 'eaccess' => $eaccess], 202);
      }
 
      public function indexCrypto(Request $request){
@@ -111,7 +145,7 @@ class FundsController extends Controller
          $total = 0;
 
          //Select Witdraws of the user
-         $query = Balance::Where('balances.type', 'fund')->where('currencies.type', 'Cryptocurrency')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'name', 'symbol', 'value', 'currencies.type');
+         $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.type', 'Cryptocurrency')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type');
          //Search by
 
          if($searchValue != '')
@@ -157,6 +191,14 @@ class FundsController extends Controller
          $query->limit($resultPage);
          $balancesCurrency  =  $query->get();
 
+         if($user->hasRole('30')){
+             $percent = $this->percent($user);
+             foreach($balancesCurrency as $balance){
+                 $newbalance = $balance->amount * $percent;
+                 $balance->amount = $newbalance;
+             }
+         }
+
          foreach($balancesCurrency as $balance){
              if($balance->value == "coinmarketcap"){
                  $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $balance->name);
@@ -164,9 +206,15 @@ class FundsController extends Controller
                  $balance->value = $data[0]->price_usd;
              }
          }
+
+         if($user->hasRole('20') || $user->hasRole('901')){
+             $eaccess = true;
+         }else{
+             $eaccess = false;
+         }
          //Get fees by month and year
 
-         return response()->json(['page' => $page, 'result' => $balancesCurrency, 'total' => $total, 'user' => $user->name], 202);
+         return response()->json(['page' => $page, 'result' => $balancesCurrency, 'total' => $total, 'eaccess' => $eaccess], 202);
      }
 
      public function indexToken(Request $request){
@@ -180,7 +228,7 @@ class FundsController extends Controller
          $total = 0;
 
          //Select Withdraws of the user
-         $query = Balance::Where('balances.type', 'fund')->where('currencies.type', 'Token')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type');
+         $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.type', 'Token')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type');
          //Search by
 
          if($searchValue != '')
@@ -226,9 +274,30 @@ class FundsController extends Controller
          $query->limit($resultPage);
          $balancesCurrency  =  $query->get();
 
+         if($user->hasRole('30')){
+             $percent = $this->percent($user);
+             foreach($balancesCurrency as $balance){
+                 $newbalance = $balance->amount * $percent;
+                 $balance->amount = $newbalance;
+             }
+         }
+
+         foreach($balancesCurrency as $balance){
+             if($balance->value == "coinmarketcap"){
+                 $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $balance->name);
+                 $data = json_decode($json);
+                 $balance->value = $data[0]->price_usd;
+             }
+         }
+
+         if($user->hasRole('20') || $user->hasRole('901')){
+             $eaccess = true;
+         }else{
+             $eaccess = false;
+         }
          //Get fees by month and year
 
-         return response()->json(['page' => $page, 'result' => $balancesCurrency, 'total' => $total, 'user' => $user->name], 202);
+         return response()->json(['page' => $page, 'result' => $balancesCurrency, 'total' => $total, 'eaccess' => $eaccess], 202);
      }
 
     public function withdraws(Request $request)

@@ -156,6 +156,9 @@ top: -30px;
                             <th id="table_balance_currency_header_symbol" style="cursor: pointer;">Symbol</th>
                             <th id="table_balance_currency_header_amount" style="cursor: pointer;">Amount</th>
                             <th id="table_balance_currency_header_equivalent" style="cursor: pointer;">USD Equivalent</th>
+                            @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
+                                <th>Option</th>
+                            @endif
                         </tr>
                     </thead>
                     <tfoot>
@@ -194,6 +197,9 @@ top: -30px;
                             <th id="table_balance_crypto_header_symbol" style="cursor: pointer;">Symbol</th>
                             <th id="table_balance_crypto_header_amount" style="cursor: pointer;">Amount</th>
                             <th id="table_balance_crypto_header_Equivalent" style="cursor: pointer;">USD Equivalent</th>
+                            @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
+                                <th>Option</th>
+                            @endif
                         </tr>
                     </thead>
                     <tfoot>
@@ -232,13 +238,16 @@ top: -30px;
                             <th id="table_balance_token_header_symbol" style="cursor: pointer;">Symbol</th>
                             <th id="table_balance_token_header_amount" style="cursor: pointer;">Amount</th>
                             <th id="table_balance_token_header_Equivalent" style="cursor: pointer;">USD Equivalent</th>
+                            @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
+                                <th>Option</th>
+                            @endif
                         </tr>
                     </thead>
                     <tfoot>
                         <tr>
                             <th colspan="1" id="balance_token_page">
                                 <select id="result_balance_token_page">
-                                    <option value="5" selected="selected">5</option>                                
+                                    <option value="5" selected="selected">5</option>
                                 </select>
                             </th>
                             <th id="table_balance_token_pagination" colspan="2"></th>

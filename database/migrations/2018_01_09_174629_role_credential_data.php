@@ -77,7 +77,7 @@ class RoleCredentialData extends Migration
                 $roleMiningSup->credentials()->attach($credential);
             }
 
-            if((intval($credential->code) >= 150 && intval($credential->code) <= 152) || (intval($credential->code) >= 200 && intval($credential->code) <= 202) ){
+            if((intval($credential->code) >= 150 && intval($credential->code) <= 152) || (intval($credential->code) >= 200 && intval($credential->code) <= 202) || (intval($credential->code) >= 350 && intval($credential->code) <= 351)){
                 $roleClientTr->credentials()->attach($credential);
             }
 

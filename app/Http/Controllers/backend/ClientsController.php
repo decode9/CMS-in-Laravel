@@ -25,7 +25,16 @@ class ClientsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-
+     private function percent($user){
+             if($user->hasRole('30')){
+                     $userInitial = $user->funds()->where('type', 'initial')->first();
+                     $userInvest = $userInitial->amount;
+                     $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->first();
+                     $fundInvest = $fundInitial->amount;
+                     $percent = $userInvest / $fundInvest;
+                     return $percent;
+             }
+     }
      public function index(Request $request){
          $user = Auth::User();
          $searchValue = $request->searchvalue;
@@ -100,7 +109,7 @@ class ClientsController extends Controller
 
      public function indexCurrency(Request $request){
 
-         $user = $request->id;
+         $user = User::find($request->id);
          $searchValue = $request->searchvalue;
          $page = $request->page;
          $resultPage = $request->resultPage;
@@ -109,7 +118,7 @@ class ClientsController extends Controller
          $total = 0;
 
          //Select Witdraws of the user
-         $query = Balance::Where('balances.type', 'fund')->where('user_id', $user)->where('currencies.type', 'currency')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type');
+         $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.type', 'currency')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type');
          //Search by
 
          if($searchValue != '')
@@ -156,10 +165,19 @@ class ClientsController extends Controller
          $balancesCurrency  =  $query->get();
 
          foreach($balancesCurrency as $balance){
+             if($balance->symbol == "USD"){
+                $balance->value = 1;
+             }
              if($balance->symbol == "VEF"){
-                 $json = file_get_contents('https://s3.amazonaws.com/dolartoday/data.json');
-                 $data = json_decode($json);
-                 $balance->value = $data->USD->dolartoday;
+                $balance->value = 217200;
+             }
+
+         }
+         if($user->hasRole('30')){
+             $percent = $this->percent($user);
+             foreach($balancesCurrency as $balance){
+                 $newbalance = $balance->amount * $percent;
+                 $balance->amount = $newbalance;
              }
          }
 
@@ -168,7 +186,7 @@ class ClientsController extends Controller
 
      public function indexCrypto(Request $request){
 
-         $user = $request->id;
+         $user = User::find($request->id);
          $searchValue = $request->searchvalue;
          $page = $request->page;
          $resultPage = $request->resultPage;
@@ -177,7 +195,7 @@ class ClientsController extends Controller
          $total = 0;
 
          //Select Witdraws of the user
-         $query = Balance::Where('balances.type', 'fund')->where('user_id', $user)->where('currencies.type', 'Cryptocurrency')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'name', 'symbol', 'value', 'currencies.type');
+         $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.type', 'Cryptocurrency')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type');
          //Search by
 
          if($searchValue != '')
@@ -222,6 +240,14 @@ class ClientsController extends Controller
 
          $query->limit($resultPage);
          $balancesCurrency  =  $query->get();
+
+         if($user->hasRole('30')){
+             $percent = $this->percent($user);
+             foreach($balancesCurrency as $balance){
+                 $newbalance = $balance->amount * $percent;
+                 $balance->amount = $newbalance;
+             }
+         }
 
          foreach($balancesCurrency as $balance){
              if($balance->value == "coinmarketcap"){
@@ -237,7 +263,7 @@ class ClientsController extends Controller
 
      public function indexToken(Request $request){
 
-         $user = $request->id;
+         $user = User::find($request->id);
          $searchValue = $request->searchvalue;
          $page = $request->page;
          $resultPage = $request->resultPage;
@@ -246,7 +272,7 @@ class ClientsController extends Controller
          $total = 0;
 
          //Select Withdraws of the user
-         $query = Balance::Where('balances.type', 'fund')->where('user_id', $user)->where('currencies.type', 'Token')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type');
+         $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.type', 'Token')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type');
          //Search by
 
          if($searchValue != '')
@@ -292,6 +318,21 @@ class ClientsController extends Controller
          $query->limit($resultPage);
          $balancesCurrency  =  $query->get();
 
+         if($user->hasRole('30')){
+             $percent = $this->percent($user);
+             foreach($balancesCurrency as $balance){
+                 $newbalance = $balance->amount * $percent;
+                 $balance->amount = $newbalance;
+             }
+         }
+
+         foreach($balancesCurrency as $balance){
+             if($balance->value == "coinmarketcap"){
+                 $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $balance->name);
+                 $data = json_decode($json);
+                 $balance->value = $data[0]->price_usd;
+             }
+         }
          //Get fees by month and year
 
          return response()->json(['page' => $page, 'result' => $balancesCurrency, 'total' => $total], 202);
@@ -312,8 +353,28 @@ class ClientsController extends Controller
 
          if(isset($hasini)){
              $fund = Fund::find($hasini->id);
+
+             $pool = Fund::where('user_id', null )->where('type', 'initial')->first();
+             $newamount = $pool->amount - $fund->amount;
+             $newamount = $pool->amount + $amount;
+
+             $poolf = Fund::find($pool->id);
+             $poolf->amount = $newamount;
+             $poolf->save();
          }else{
              $fund = new Fund;
+             $pool = Fund::where('user_id', null)->where('type', 'initial')->first();
+             $newamount = $pool->amount + $amount;
+             $poolf = Fund::find($pool->id);
+             $poolf->amount = $newamount;
+             $poolf->save();
+
+             $balance = Balance::where('user_id', null)->where('currency_id', '2')->first();
+             $newbalance = $balance->amount + $amount;
+
+             $balancef = Balance::find($balance->id);
+             $balance->amount = $newbalance;
+             $balance->save();
          }
 
          $fund->amount = $amount;
@@ -326,8 +387,6 @@ class ClientsController extends Controller
          $fund->currency()->associate($currency);
 
          $fund->save();
-
-
 
          return response()->json(['result' => 'Success'], 202);
      }

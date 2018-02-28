@@ -154,7 +154,7 @@ class UserController extends Controller
         $user->name = $fullname;
         $user->username = $request->username;
         $user->email = $request->email;
-        $user->password= $request->password;
+        $user->password= $password;
         $user->save();
 
 
@@ -162,8 +162,8 @@ class UserController extends Controller
                 $balance = New Balance;
                 $balance->amount = 0;
                 $balance->type = 'fund';
-                $balance->associate($currency);
-                $balance->associate($user);
+                $balance->currency()->associate($currency);
+                $balance->user()->  associate($user);
                 $balance->save();
         }
 

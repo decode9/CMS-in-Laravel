@@ -15,7 +15,7 @@ class CreateFundsTable extends Migration
     {
         Schema::create('funds', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('user_id')->unsigned();
+            $table->integer('user_id')->unsigned()->nullable();
             $table->integer('currency_id')->unsigned();
             $table->double('amount', 15, 8);
             $table->string('reference');
