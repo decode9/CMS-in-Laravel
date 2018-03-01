@@ -111,7 +111,7 @@ class CurrenciesController extends Controller
         //
         $request->validate([
             'name' => 'required| max:20',
-            'symbol' => 'required| max:3',
+            'symbol' => 'required| max:4',
             'type' => 'required|max:20',
             'value' => 'required|max:20'
         ]);
@@ -121,7 +121,7 @@ class CurrenciesController extends Controller
         $type = $request->type;
         $value = $request->value;
 
-        $users = User::All();
+
 
         $currency = new Currency;
         $currency->name = $name;
@@ -130,14 +130,13 @@ class CurrenciesController extends Controller
         $currency->value = $value;
         $currency->save();
 
-        foreach($users as $user){
+
             $balance = new Balance;
             $balance->amount = 0;
             $balance->type = 'fund';
-            $balance->associate($user);
-            $balance->associate($currency);
+            $balance->currency()->associate($currency);
             $balance->save();
-        }
+
 
         return response()->json(['message' => "success"], 202);
     }

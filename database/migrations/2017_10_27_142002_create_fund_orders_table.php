@@ -18,10 +18,11 @@ class CreateFundOrdersTable extends Migration
             $table->integer('user_id')->unsigned()->nullable();
             $table->integer('out_currency')->unsigned();
             $table->double('out_amount', 15, 8);
-            $table->double('rate', 8, 5);
+            $table->double('rate', 15, 8);
             $table->double('fee', 15, 8)->nullable();
             $table->integer('in_currency')->unsigned();
             $table->double('in_amount', 15, 8);
+            $table->string('status');
             $table->timestamps();
             $table->softDeletes();
 

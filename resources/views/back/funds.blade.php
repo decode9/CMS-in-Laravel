@@ -114,7 +114,7 @@ top: -30px;
       border-left: 1px solid;
       border-right: 1px solid;
       width: 33%;
-      height: fit-content;
+      height: 360px;
       margin: 0 auto;
       position: relative;
       display: block;
@@ -141,7 +141,11 @@ top: -30px;
                     <thead class="thead-default">
                         <tr>
                           <th colspan="1">Currencies</th>
-                          <th colspan="2"><div class="col-lg-12">
+                          @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
+                               <th colspan="3"><div class="col-lg-12">
+                          @else
+                                <th colspan="2"><div class="col-lg-12">
+                          @endif
                               <form id="form_balance_currency_search" class="form_search">
                                   <div class="input-group">
                                       <input id="search_balance_currency_value" type="text" class="form-control" placeholder="Search Currency">
@@ -168,7 +172,11 @@ top: -30px;
                                     <option value="5" selected="selected">5</option>
                                 </select>
                             </th>
-                            <th id="table_balance_currency_pagination" colspan="2"></th>
+                            @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
+                                 <th id="table_balance_currency_pagination" colspan="3"></th>
+                            @else
+                                <th id="table_balance_currency_pagination" colspan="2"></th>
+                            @endif
                         </tr>
                     </tfoot>
                     <tbody id="table_balance_currency_content">
@@ -182,7 +190,12 @@ top: -30px;
                     <thead class="thead-default">
                         <tr>
                           <th colspan="1">CryptoCurrencies</th>
-                          <th colspan="2"><div class="col-lg-12">
+                          @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
+                               <th colspan="3"><div class="col-lg-12">
+                          @else
+                            <th colspan="2"><div class="col-lg-12">
+                          @endif
+
                               <form id="form_balance_crypto_search" class="form_search">
                                   <div class="input-group">
                                       <input id="search_balance_crypto_value" type="text" class="form-control" placeholder="Search CryptoCurrency">
@@ -209,7 +222,11 @@ top: -30px;
                                     <option value="5" selected="selected">5</option>
                                 </select>
                             </th>
-                            <th id="table_balance_crypto_pagination" colspan="2"></th>
+                            @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
+                                 <th id="table_balance_crypto_pagination" colspan="3"></th>
+                            @else
+                                <th id="table_balance_crypto_pagination" colspan="2"></th>
+                            @endif
                         </tr>
                     </tfoot>
                     <tbody id="table_balance_crypto_content">
@@ -223,7 +240,11 @@ top: -30px;
                     <thead class="thead-default">
                         <tr>
                           <th colspan="1">Token</th>
-                          <th colspan="2"><div class="col-lg-12">
+                          @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
+                               <th colspan="3"><div class="col-lg-12">
+                          @else
+                            <th colspan="2"><div class="col-lg-12">
+                          @endif
                               <form id="form_balance_token_search" class="form_search">
                                   <div class="input-group">
                                       <input id="search_balance_token_value" type="text" class="form-control" placeholder="Search Token">
@@ -250,7 +271,11 @@ top: -30px;
                                     <option value="5" selected="selected">5</option>
                                 </select>
                             </th>
-                            <th id="table_balance_token_pagination" colspan="2"></th>
+                            @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
+                                 <th id="table_balance_token_pagination" colspan="3"></th>
+                            @else
+                                <th id="table_balance_token_pagination" colspan="2"></th>
+                            @endif
                         </tr>
                     </tfoot>
                     <tbody id="table_balance_token_content">
@@ -260,14 +285,110 @@ top: -30px;
           </div>
 
         </div>
+        <!--
         <div class="fundAction">
             <button type="button" name="button" id="btnDepo">Deposit</button>
             <button type="button" name="button" id="btnWith">Withdraw</button>
         </div>
+        -->
     </div>
 
-
     <div class="fundsOperations">
+
+        <div class="tab-pane active" id="list">
+            <table id="table_transaction" class="table table-responsive table-striped table-hover">
+                <thead class="thead-default">
+                    <tr>
+                        <th colspan="4">Transactions</th>
+                        <th colspan="6"><div class="col-lg-12">
+                            <form id="form_transaction_search" class="form_search">
+                                <div class="input-group">
+                                    <input id="search_transaction_value" type="text" class="form-control" placeholder="Search Transaction">
+                                    <span class="input-group-btn">
+                                        <button type="submit" class="btn btn-default" value="Go!"><i id="search_icon" class="fa fa-search" aria-hidden="true"></i></button>
+                                    </span>
+                                </div><!--/input-group-->
+                            </form>
+                        </div> <!--/.col-lg-6 --></th>
+                    </tr>
+                    <tr>
+                        <th id="table_transaction_header_currency_out" style="cursor: pointer;">Currency Out</th>
+                        <th id="table_transaction_header_amount_out" style="cursor: pointer;">Amount Out</th>
+                        <th id="table_transaction_header_rate" style="cursor: pointer;">Rate</th>
+                        <th id="table_transaction_header_currency_in" style="cursor: pointer;">Currency In</th>
+                        <th id="table_transaction_header_amount_in" style="cursor: pointer;">Amount In</th>
+                        <th id="table_transaction_header_reference" style="cursor: pointer;">Reference</th>
+                        <th id="table_transaction_header_date" style="cursor: pointer;">Date</th>
+                        <th id="table_transaction_header_confirmed" style="cursor: pointer;">Confirmed</th>
+                        <th id="table_transaction_header_status" style="cursor: pointer;">Status</th>
+                        <th>Options</th>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        <th colspan="4" id="transaction_page">
+                            <select id="result_transaction_page">
+                                <option value="5">5</option>
+                                <option value="10" selected="selected" >10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                            </select>
+                        </th>
+                        <th id="table_transaction_pagination" colspan="6"></th>
+                    </tr>
+                </tfoot>
+                <tbody id="table_transaction_content">
+                </tbody>
+            </table>
+        </div>
+
+        <div class="tab-pane active" id="list">
+            <table id="table_pending_transaction" class="table table-responsive table-striped table-hover">
+                <thead class="thead-default">
+                    <tr>
+                        <th colspan="4">Pending Transactions</th>
+                        <th colspan="5"><div class="col-lg-12">
+                            <form id="form_pending_transaction_search" class="form_search">
+                                <div class="input-group">
+                                    <input id="search_pending_transaction_value" type="text" class="form-control" placeholder="Search Pending Transaction">
+                                    <span class="input-group-btn">
+                                        <button type="submit" class="btn btn-default" value="Go!"><i id="search_icon" class="fa fa-search" aria-hidden="true"></i></button>
+                                    </span>
+                                </div><!--/input-group-->
+                            </form>
+                        </div> <!--/.col-lg-6--> </th>
+                    </tr>
+                    <tr>
+                        <th id="table_pending_transaction_header_currency_out" style="cursor: pointer;">Currency Out</th>
+                        <th id="table_pending_transaction_header_amount_out" style="cursor: pointer;">Amount Out</th>
+                        <th id="table_pending_transaction_header_rate" style="cursor: pointer;">Rate</th>
+                        <th id="table_pending_transaction_header_currency_in" style="cursor: pointer;">Currency In</th>
+                        <th id="table_pending_transaction_header_amount_in" style="cursor: pointer;">Amount In</th>
+                        <th id="table_pending_transaction_header_reference" style="cursor: pointer;">Reference</th>
+                        <th id="table_pending_transaction_header_date" style="cursor: pointer;">Date</th>
+                        <th id="table_pending_transaction_header_status" style="cursor: pointer;">Status</th>
+                        <th>Options</th>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                        <th colspan="4" id="pending_transaction_page">
+                            <select id="result_pending_transaction_page">
+                                <option value="5">5</option>
+                                <option value="10" selected="selected" >10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                            </select>
+                        </th>
+                        <th id="table_pending_transaction_pagination" colspan="5"></th>
+                    </tr>
+                </tfoot>
+                <tbody id="table_pending_transaction_content">
+                </tbody>
+            </table>
+        </div>
+
+        <!--
         <div class="tab-pane active" id="list">
             <table id="table_deposit" class="table table-responsive table-striped table-hover">
                 <thead class="thead-default">
@@ -280,9 +401,9 @@ top: -30px;
                                     <span class="input-group-btn">
                                         <button type="submit" class="btn btn-default" value="Go!"><i id="search_icon" class="fa fa-search" aria-hidden="true"></i></button>
                                     </span>
-                                </div><!-- /input-group -->
+                                </div>/input-group
                             </form>
-                        </div><!-- /.col-lg-6 --></th>
+                        </div> /.col-lg-6 </th>
                     </tr>
                     <tr>
                         <th id="table_deposit_header_currency" style="cursor: pointer;">Currency</th>
@@ -324,9 +445,9 @@ top: -30px;
                                     <span class="input-group-btn">
                                         <button type="submit" class="btn btn-default" value="Go!"><i id="search_icon" class="fa fa-search" aria-hidden="true"></i></button>
                                     </span>
-                                </div><!-- /input-group -->
+                                </div>/input-group
                             </form>
-                        </div><!-- /.col-lg-6 --></th>
+                        </div> /.col-lg-6 </th>
                     </tr>
                     <tr>
                         <th id="table_withdraw_header_currency" style="cursor: pointer;">Currency</th>
@@ -355,5 +476,6 @@ top: -30px;
                 </tbody>
             </table>
         </div>
+    -->
     </div>
 @endsection

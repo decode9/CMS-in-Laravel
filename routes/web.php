@@ -65,6 +65,7 @@ Route::post('/funds/crypto', "backend\FundsController@indexCrypto")->name('crypt
 Route::post('/funds/token', "backend\FundsController@indexToken")->name('crypto.funds')->middleware('auth.per:0150');
 Route::post('/funds/currencies', "backend\FundsController@currencies")->name('currencies.funds')->middleware('auth.per:0150');
 Route::post('/funds/available', "backend\FundsController@available")->name('currencies.funds')->middleware('auth.per:0150');
+Route::post('/funds/exchange', "backend\FundsController@exchange")->name('exchange.funds')->middleware('auth.per:0150');
 
 /*
 Route::post('/deposit', "backend\FundsController@deposits")->name('deposit.funds')->middleware('auth.per:0151');

@@ -1142,7 +1142,7 @@ $(document).ready(function(){
                     symbol:{
                         required: true,
                         minlength: 3,
-                        maxlength: 3,
+                        maxlength: 4,
                         lettersonly: true,
                     },
                     type:{
@@ -1831,8 +1831,8 @@ $(document).ready(function(){
                 labelA = $('<div><label >Available Balance: <span id="availableB"></span><label></div>');
                 selectO = $('<div><label for="selectout" >Change For:<label></div><div><select id="out" class="form-control" name="selectout"></select></div>');
                 inputO = $('<div><label for="valueout">Value<label></div><div><input id="valueout" name="valueout" type="text" class="form-control" placeholder="Value Out" required></div>');
-                inputI= $('<input id="currencyin" name="currencyin" type="text" class="form-control" required value="'+currency.symbol+'" display:none;>');
-                inputI= $('<div><label for="valuein">Value In<label></div><div><input id="valuein" name="valuein" type="text" class="form-control" placeholder="Value In" required></div>');
+                inputIC = $('<input id="currencyin" name="currencyin" type="text" class="form-control" required value="'+currency.symbol+'" style="display:none;" disabled>');
+                inputI = $('<div><label for="valuein">Value In<label></div><div><input id="valuein" name="valuein" type="text" class="form-control" placeholder="Value In" required></div>');
                 inputR = $('<div><label for="rate">Exchange Rate<label></div><div><input id="rate" name="rate" type="text" class="form-control" placeholder="Exchange Rate" required></div>');
 
                 $('#rightContent').append(box);
@@ -1840,6 +1840,7 @@ $(document).ready(function(){
                 $('#ExchangeForm').append(labelA);
                 $('#ExchangeForm').append(selectO);
                 $('#ExchangeForm').append(inputO);
+                $('#ExchangeForm').append(inputIC);
                 $('#ExchangeForm').append(inputI);
                 $('#ExchangeForm').append(inputR);
 
@@ -1870,20 +1871,27 @@ $(document).ready(function(){
                     }
                 })
                 availableBalance('#out');
+
                 $('#ExchangeForm').append("<div id='exButts'></div>");
 
                 clsbut = $("<span class='close'>&times;</span>");
                 closeButton(clsbut, '.Modal');
 
+                exchangeInValue('#valueout', '#rate', '#valuein')
+
                 makeBut = $("<button type='button' name='button' id='exCont'>Make</button>");
                 addMakeExButton(makeBut);
 
                 $('#modalExchange').prepend(clsbut);
+
                 formatInput('#valueout');
                 formatInput('#valuein');
                 formatInput('#rate');
+
                 $('#exButts').append(makeBut);
+
                 $('#out').trigger("change");
+
                 $('.Modal').css('display', 'block');
         })
         }
@@ -1915,11 +1923,28 @@ $(document).ready(function(){
             })
         }
 
+        function exchangeInValue(value, select, target,){
+            $(select).change(function(){
+                var val = $(value).val().replace(/\./g, '');
+                val = parseFloat(val.replace(/,/g, '.'));
+
+                var sel = $(select).val().replace(/\./g, '');
+                sel = parseFloat(sel.replace(/,/g, '.'));
+
+                var newval = val / sel;
+                console.log(sel);
+                console.log(val);
+                console.log(newval);
+
+                $(target).val(formatNumber.num(newval));
+            })
+        }
+
         function addMakeExButton(makeBut){
             makeBut.click(function(e){
 
                 jQuery.validator.addMethod("amount", function(value, element) {
-                    return this.optional(element) || /^(\d{1}\.)?(\d+\.?)+(,\d{2})?$/i.test(value);
+                    return this.optional(element) || /^(\d{1}\.)?(\d+\.?)+(,\d{3})?$/i.test(value);
                 });
 
                 $('#ExchangeForm').validate({
@@ -1947,7 +1972,7 @@ $(document).ready(function(){
                 })
 
                 if($('#ExchangeForm').valid()){
-                    alterForm('#ExhangeForm', true);
+                    alterForm('#ExchangeForm', true);
                     $('#exCont').hide();
                     $('.alert').show();
 
@@ -1965,7 +1990,7 @@ $(document).ready(function(){
         function confirmExButton(confirmBut){
             confirmBut.click(function(){
                 currencyout = $('#out').val();
-                currencyin = $('#in').val();
+                currencyin = $('#currencyin').val();
 
                 amountout = $('#valueout').val().replace(/\./g, '');
                 amountout = amountout.replace(/,/g, '.');
@@ -1983,7 +2008,8 @@ $(document).ready(function(){
                         dataType: "json",
                         data: {cout : currencyout, cin : currencyin, aout : amountout, ain : amountin, rate: rate},
                         success: function(data){
-                            closeModal('#ExchangeModal');
+
+                            closeModal('.Modal');
 
                             $('#form_balance_currency_search').trigger("submit");
                             $('#form_balance_crypto_search').trigger("submit");
@@ -1995,6 +2021,10 @@ $(document).ready(function(){
         }
 
         /*End Exchange Currencies*/
+
+        /*Transaction History*/
+
+        /*End Transaction History*/
 
         /*Search Deposit Table*/
         /*
@@ -2970,18 +3000,18 @@ $(document).ready(function(){
         $('#result_balance_token_page').change(function () {
             $('#form_balance_token_search').trigger("submit");
         });
-        $('#result_deposit_page').change(function(){
+        /*$('#result_deposit_page').change(function(){
             $('#form_deposit_search').trigger("submit");
         })
         $('#result_withdraw_page').change(function(){
             $('#form_withdraw_search').trigger("submit");
-        })
+        })*/
 
         $('#form_balance_currency_search').trigger("submit");
         $('#form_balance_crypto_search').trigger("submit");
         $('#form_balance_token_search').trigger("submit");
-        $('#form_deposit_search').trigger("submit");
-        $('#form_withdraw_search').trigger("submit");
+        /*$('#form_deposit_search').trigger("submit");
+        $('#form_withdraw_search').trigger("submit");*/
     }
 
     /* End Funds Functions */
