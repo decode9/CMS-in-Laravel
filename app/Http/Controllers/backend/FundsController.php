@@ -563,6 +563,8 @@ class FundsController extends Controller
       $idout = Currency::Where('symbol', $cout)->select('id')->first();
       $currencyout = Currency::find($idout);
 
+      $idin = Currency::Where('symbol', $cin)->select('id')->first();
+      $currencyin = Currency::find($idin);
 
       if($aout < $valid->amount){
         $order = new FundOrder;
@@ -571,15 +573,12 @@ class FundsController extends Controller
         $balance->amount = $newbalance;
 
         if(isset($ain)){
-          $idin = Currency::Where('symbol', $cin)->select('id')->first();
-          $currencyin = Currency::find($idin);
-          $order->outCurrencyOrder()->associate($currencyout);
-          $order->inCurrencyOrder()->associate($currencyin);
           $order->in_amount = $ain;
         }else{
           $order->in_amount = 0;
         }
-
+        $order->inCurrencyOrder()->associate($currencyin);
+        $order->outCurrencyOrder()->associate($currencyout);
         $order->rate = $rate;
         $order->out_amount = $aout;
       }else{
