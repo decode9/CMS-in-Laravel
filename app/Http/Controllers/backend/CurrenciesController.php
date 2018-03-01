@@ -82,9 +82,10 @@ class CurrenciesController extends Controller
 
             foreach($currencies as $currency){
                 if($currency->symbol == "VEF"){
-                    $json = file_get_contents('https://s3.amazonaws.com/dolartoday/data.json');
+                  $currency->value = 217200;
+                  /*  $json = file_get_contents('https://s3.amazonaws.com/dolartoday/data.json');
                     $data = json_decode($json);
-                    $currency->value = $data->USD->dolartoday;
+                    $currency->value = $data->USD->dolartoday;*/
                 }elseif ($currency->symbol == "USD"){
                     $currency->value = 1;
                 }elseif($currency->value == "coinmarketcap") {

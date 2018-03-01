@@ -15,7 +15,7 @@ class CreateFundOrdersTable extends Migration
     {
         Schema::create('fund_orders', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('user_id')->unsigned();
+            $table->integer('user_id')->unsigned()->nullable();
             $table->integer('out_currency')->unsigned();
             $table->double('out_amount', 15, 8);
             $table->double('rate', 8, 5);

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Currency;
 use App\Fund;
 use App\Balance;
-
+use App\FundOrder;
 
 
 class FundsController extends Controller
@@ -538,6 +538,56 @@ class FundsController extends Controller
 
         return response()->json(['message' => 'Your Withdraw #'. $fund->comment .' was processed successfully', 'withdraw' => $fund, 'user' => $user->name, 'symbol' => $currency->symbol], 202);
 
+    }
+
+    public function exchange(Request $request){
+
+      $request->validate([
+          'cout' => 'required',
+          'aout' => 'required| min:1',
+          'ain' => 'min:1',
+          'cin' => 'required',
+          'rate' => 'min:1',
+      ]);
+
+      $cout = $request->cout;
+      $cin = $request->cin;
+
+      $aout = $request->aout;
+      $ain = $request->ain;
+
+      $rate = $request->rate;
+
+      $valid =  Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.symbol', $cout)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
+
+      $idout = Currency::Where('symbol', $cout)->select('id')->first();
+      $currencyout = Currency::find($idout);
+
+
+      if($aout < $valid->amount){
+        $order = new FundOrder;
+        $balance = Balance::find($valid->id);
+        $newbalance = $balance->amount - $aout;
+        $balance->amount = $newbalance;
+
+        if(isset($ain)){
+          $idin = Currency::Where('symbol', $cin)->select('id')->first();
+          $currencyin = Currency::find($idin);
+          $order->outCurrencyOrder()->associate($currencyout);
+          $order->inCurrencyOrder()->associate($currencyin);
+          $order->in_amount = $ain;
+        }else{
+          $order->in_amount = 0;
+        }
+
+        $order->rate = $rate;
+        $order->out_amount = $aout;
+      }else{
+        return response()->json(['error' => 'You don\'t have enough funds'], 403);
+      }
+
+      $order->save();
+      $balance->save();
     }
     /**
      * Remove the specified resource from storage.•••••••••

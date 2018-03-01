@@ -161,7 +161,6 @@ class OrdersController extends Controller
             }
             $order->fee = 0;
             $order->rate = 0;
-            $order->fee = 0;
             $order->in_amount = 0;
             $order->reference = $reference;
             $order->outCurrencyOrder()->associate($outer);
@@ -185,7 +184,6 @@ class OrdersController extends Controller
             }
             $order->fee = 0;
             $order->rate = 0;
-            $order->fee = 0;
             $order->in_amount = 0;
             $order->reference = $reference;
             $order->outCurrencyOrder()->associate($inner);

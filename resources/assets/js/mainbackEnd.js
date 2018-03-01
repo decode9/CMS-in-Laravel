@@ -1883,10 +1883,10 @@ $(document).ready(function(){
                 formatInput('#valuein');
                 formatInput('#rate');
                 $('#exButts').append(makeBut);
-                $('#out').trigger('change');
+                $('#out').trigger("change");
                 $('.Modal').css('display', 'block');
         })
-    }
+        }
 
         function availableBalance(selection){
             $(selection).change(function(){
@@ -1993,8 +1993,11 @@ $(document).ready(function(){
 
             })
         }
+
         /*End Exchange Currencies*/
+
         /*Search Deposit Table*/
+        /*
         $('#table_deposit_header_currency').click(function (e) {
           orderTableDepositBy('currencies.symbol');
         });
@@ -2170,7 +2173,7 @@ $(document).ready(function(){
         }
 
         /*Deposit Form*/
-
+/*
         $('#btnDepo').click(function(){
             box = "<div class='Modal' id='depositModal' style='display:none;'><div class='modalContent' id='modalDeposit'><h3>Deposit</h3><form class='FundForm' id='DepositForm' enctype='multipart/form-data' ></form></div></div>";
 
@@ -2281,7 +2284,7 @@ $(document).ready(function(){
         }
 
         /*Search Withdraws Table*/
-
+/*
         $('#table_withdraw_header_currency').click(function (e) {
           orderTableWithdrawBy('currencies.symbol');
         });
@@ -2457,7 +2460,7 @@ $(document).ready(function(){
         }
 
         /*Withdraw Form*/
-
+/*
         $('#btnWith').click(function(){
 
             box = "<div class='Modal' id='withdrawModal' style='display:none;'><div class='modalContent' id='modalWithdraw'><h3>Withdraw</h3><form class='FundForm' id='WithdrawForm' enctype='multipart/form-data' ></form></div></div>";
@@ -2572,6 +2575,7 @@ $(document).ready(function(){
         }
 
         /*Search Accounts Table*/
+        /*
         function addTableManager(){
 
             $('#table_account_header_type').click(function (e) {
@@ -2757,6 +2761,7 @@ $(document).ready(function(){
         }
 
         /*Account Management*/
+        /*
         function addAccount(butaccount){
             butaccount.click(function(){
                 box = $('<div class="modalContent" id="modalAccount"><h3>Accounts</h3><div class="alert-account alert" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a></div></div>');
@@ -2885,7 +2890,7 @@ $(document).ready(function(){
 
             })
         }
-
+*/
         $('#table_balance_currency_header_symbol').click(function (e) {
             orderTableBalanceCurrencyBy('currencies.symbol');
         });

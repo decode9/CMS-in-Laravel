@@ -157,15 +157,17 @@ class UserController extends Controller
         $user->password= $password;
         $user->save();
 
-
-        foreach($currencies as $currency){
-                $balance = New Balance;
-                $balance->amount = 0;
-                $balance->type = 'fund';
-                $balance->currency()->associate($currency);
-                $balance->user()->  associate($user);
-                $balance->save();
+        if($user->hasRole('20')){
+          foreach($currencies as $currency){
+                  $balance = New Balance;
+                  $balance->amount = 0;
+                  $balance->type = 'fund';
+                  $balance->currency()->associate($currency);
+                  $balance->user()->  associate($user);
+                  $balance->save();
+          }
         }
+
 
         foreach($roles as $role){
             $user->roles()->attach($role);
