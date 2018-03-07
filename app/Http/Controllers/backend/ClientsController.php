@@ -35,6 +35,44 @@ class ClientsController extends Controller
                      return $percent;
              }
      }
+
+     public function total(Request $request){
+        $user = User::find($request->id);
+        $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+        $usd = 0;
+        $btc = 0;
+        foreach($balances as $balance){
+            if($balance->value == "coinmarketcap"){
+                $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $balance->name);
+                $data = json_decode($json);
+                $balance->value = $data[0]->price_usd;
+                $balance->value_btc = $data[0]->price_btc;
+
+            }
+
+            if($balance->symbol == "VEF"){
+              $balance->value_btc = 238000;
+              $btcvalue = 0;
+            }else{
+              $btcvalue = $balance->amount * $balance->value_btc;
+            }
+            if($balance->symbol == "USD"){
+              $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/bitcoin');
+              $data = json_decode($json);
+              $balance->value_btc = $data[0]->price_usd;
+              $btcvalue = $balance->amount / $balance->value_btc;
+            }
+            $usdvalue = $balance->amount * $balance->value;
+            $usd += $usdvalue;
+            $btc += $btcvalue;
+        }
+        if($user->hasRole('30')){
+            $percent = $this->percent($user);
+            $usd = $usd * $percent;
+            $btc = $btc * $percent;
+        }
+         return response()->json(['usd' => $usd, 'btc' => $btc], 202);
+     }
      public function index(Request $request){
          $user = Auth::User();
          $searchValue = $request->searchvalue;
@@ -118,7 +156,7 @@ class ClientsController extends Controller
          $total = 0;
 
          //Select Witdraws of the user
-         $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.type', 'currency')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type');
+         $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.type', 'currency')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
          //Search by
 
          if($searchValue != '')
@@ -195,7 +233,7 @@ class ClientsController extends Controller
          $total = 0;
 
          //Select Witdraws of the user
-         $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.type', 'Cryptocurrency')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type');
+         $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.type', 'Cryptocurrency')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
          //Search by
 
          if($searchValue != '')
@@ -272,7 +310,7 @@ class ClientsController extends Controller
          $total = 0;
 
          //Select Withdraws of the user
-         $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.type', 'Token')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type');
+         $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.type', 'Token')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
          //Search by
 
          if($searchValue != '')

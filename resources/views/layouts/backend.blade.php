@@ -24,7 +24,7 @@
                     <i class="fa fa-navicon"></i>
                 </div>
                 <div id="mainLogo">
-                    <img src="{{ url('/') }}/img/Logoblanco.png" width="100" alt="" height="auto">
+                    <a href="{{ route('home') }}"><img src="{{ url('/') }}/img/Logoblanco.png" width="100" alt="" height="auto"></a>
                 </div>
                 <div id="userLog">
                     <ul class="userAction">
@@ -62,14 +62,21 @@
                             <i class="fa fa-money"></i><p>Funds</p>
                         </li></a>
                         @endif
+                        <!--
                         @if(Auth::User()->getCredential(200))
-                        <a href="{{route('orders')}}"><li class="menuItem menuOrders"><i class="fa fa-list"></i> <p>Orders</p>
+                        <a href=""><li class="menuItem menuOrders"><i class="fa fa-list"></i> <p>Orders</p>
                         </li></a>
                         @endif
+                          -->
+                          @if(Auth::User()->getCredential(250))
+                          <a href="{{route('newsletter')}}"><li class="menuItem menuClients"><i class="fa fa-address-book"></i> <p>Newsletter</p>
+                          </li></a>
+                          @endif
                         @if(Auth::User()->getCredential(250))
                         <a href="{{route('clients')}}"><li class="menuItem menuClients"><i class="fa fa-address-book"></i> <p>Clients</p>
                         </li></a>
                         @endif
+
                         <li class="menuItem menuPost"><i class="fa fa-pencil-square-o "></i> <p>Posts</p>
                             <ul class="submenuItem" style ="display: none;">
                                 <a href="{{route('create.news')}}"><li>Create Post</li></a>
@@ -85,6 +92,7 @@
             </div>
         </div>
         <!-- Scripts -->
+        <script src="{{ url('/') }}/vendor/Chart.js"></script>
         <script src="{{ url('/') }}/vendor/validator/jquery.validate.js"></script>
         <script src="{{ asset('js/mainbackEnd.js') }}"></script>
 

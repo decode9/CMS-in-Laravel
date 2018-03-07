@@ -33,6 +33,44 @@ class FundsController extends Controller
          return response()->json(['data' => $balance], 202);
      }
 
+     public function total(Request $request){
+        $user = Auth::User();
+        $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+        $usd = 0;
+        $btc = 0;
+        foreach($balances as $balance){
+            if($balance->value == "coinmarketcap"){
+                $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $balance->name);
+                $data = json_decode($json);
+                $balance->value = $data[0]->price_usd;
+                $balance->value_btc = $data[0]->price_btc;
+
+            }
+
+            if($balance->symbol == "VEF"){
+              $balance->value_btc = 238000;
+              $btcvalue = 0;
+            }else{
+              $btcvalue = $balance->amount * $balance->value_btc;
+            }
+            if($balance->symbol == "USD"){
+              $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/bitcoin');
+              $data = json_decode($json);
+              $balance->value_btc = $data[0]->price_usd;
+              $btcvalue = $balance->amount / $balance->value_btc;
+            }
+            $usdvalue = $balance->amount * $balance->value;
+            $usd += $usdvalue;
+            $btc += $btcvalue;
+        }
+        if($user->hasRole('30')){
+            $percent = $this->percent($user);
+            $usd = $usd * $percent;
+            $btc = $btc * $percent;
+        }
+         return response()->json(['usd' => $usd, 'btc' => $btc], 202);
+     }
+
      public function available(Request $request){
          $symbol = $request->currency;
 
@@ -63,7 +101,7 @@ class FundsController extends Controller
 
 
          //Select Witdraws of the user
-         $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.type', 'currency')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type');
+         $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.type', 'currency')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
          //Search by
 
          if($searchValue != '')
@@ -145,7 +183,7 @@ class FundsController extends Controller
          $total = 0;
 
          //Select Witdraws of the user
-         $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.type', 'Cryptocurrency')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type');
+         $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.type', 'Cryptocurrency')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
          //Search by
 
          if($searchValue != '')
@@ -228,7 +266,7 @@ class FundsController extends Controller
          $total = 0;
 
          //Select Withdraws of the user
-         $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.type', 'Token')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type');
+         $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.type', 'Token')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
          //Search by
 
          if($searchValue != '')
@@ -300,94 +338,6 @@ class FundsController extends Controller
          return response()->json(['page' => $page, 'result' => $balancesCurrency, 'total' => $total, 'eaccess' => $eaccess], 202);
      }
 
-     public function pendingTransactions(Request $request){
-
-         $user = Auth::User();
-         $searchValue = $request->searchvalue;
-         $page = $request->page;
-         $resultPage = $request->resultPage;
-         $orderBy = $request->orderBy;
-         $orderDirection = $request->orderDirection;
-         $total = 0;
-
-         //Select Withdraws of the user
-         $query = FundOrder::where('user_id', null)->where('status', 'pending')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
-         //Search by
-
-         if($searchValue != '')
-         {
-                 $query->Where(function($query) use($searchValue){
-                     $query->Where('out_amount', 'like', '%'.$searchValue.'%')
-                     ->orWhere('in_amount', 'like', '%'.$searchValue.'%')
-                     ->orWhere('status', 'like', '%'.$searchValue.'%')
-                     ->orWhere('fund_orders.created_at', 'like', '%'.$searchValue.'%')
-                     ->orWhere('currencies.symbol', 'like', '%'.$searchValue.'%');
-                 });
-         }
-
-
-         //Order By
-
-         if($orderBy != '')
-         {
-             if($orderDirection != '')
-             {
-                 $query->orderBy($orderBy, 'desc');
-             }else{
-                 $query->orderBy($orderBy);
-             }
-         }else if($orderDirection != ''){
-             $query->orderBy('fund_orders.created_at', 'desc');
-         }else{
-              $query->orderBy('fund_orders.created_at');
-         }
-
-         if($resultPage == null || $resultPage == 0)
-         {
-             $resultPage = 10;
-         }
-
-         //Get Total of fees
-         $total  =  $query->get()->count();
-
-         if($page > 1)
-         {
-              $query->offset(    ($page -  1)   *    $resultPage);
-              $query2->offset(    ($page -  1)   *    $resultPage);
-         }
-
-
-         $query->limit($resultPage);
-         $query2->limit($resultPage);
-
-         $transactions  =  $query->get();
-         $transactions2  =  $query2->get();
-
-         if($user->hasRole('30')){
-             $percent = $this->percent($user);
-             foreach($transactions as $transaction){
-                 $newamountin = $transaction->in_amount * $percent;
-                 $newamountout = $transaction->out_amount * $percent;
-                 $transaction->in_amount = $newamountin;
-                 $transaction->out_amount = $newamountout;
-             }
-         }
-
-         foreach($transactions as $transaction){
-             $currency = Currency::find($transaction->out_currency);
-             $transaction->out_symbol = $currency->symbol;
-         }
-
-         if($user->hasRole('20') || $user->hasRole('901')){
-             $eaccess = true;
-         }else{
-             $eaccess = false;
-         }
-         //Get fees by month and year
-
-         return response()->json(['page' => $page, 'result' => $transactions, 'total' => $total, 'eaccess' => $eaccess], 202);
-     }
-
      public function transactions(Request $request){
 
          $user = Auth::User();
@@ -441,15 +391,12 @@ class FundsController extends Controller
          if($page > 1)
          {
               $query->offset(    ($page -  1)   *    $resultPage);
-              $query2->offset(    ($page -  1)   *    $resultPage);
          }
 
 
          $query->limit($resultPage);
-         $query2->limit($resultPage);
 
          $transactions  =  $query->get();
-         $transactions2  =  $query2->get();
 
          if($user->hasRole('30')){
              $percent = $this->percent($user);
@@ -475,6 +422,93 @@ class FundsController extends Controller
 
          return response()->json(['page' => $page, 'result' => $transactions, 'total' => $total, 'eaccess' => $eaccess], 202);
      }
+
+     public function pendingTransactions(Request $request){
+
+         $user = Auth::User();
+         $searchValue = $request->searchvalue;
+         $page = $request->page;
+         $resultPage = $request->resultPage;
+         $orderBy = $request->orderBy;
+         $orderDirection = $request->orderDirection;
+         $total = 0;
+
+         //Select Withdraws of the user
+         $query = FundOrder::where('user_id', null)->where('status', 'pending')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
+         //Search by
+
+         if($searchValue != '')
+         {
+                 $query->Where(function($query) use($searchValue){
+                     $query->Where('out_amount', 'like', '%'.$searchValue.'%')
+                     ->orWhere('in_amount', 'like', '%'.$searchValue.'%')
+                     ->orWhere('status', 'like', '%'.$searchValue.'%')
+                     ->orWhere('fund_orders.created_at', 'like', '%'.$searchValue.'%')
+                     ->orWhere('currencies.symbol', 'like', '%'.$searchValue.'%');
+                 });
+         }
+
+
+         //Order By
+
+         if($orderBy != '')
+         {
+             if($orderDirection != '')
+             {
+                 $query->orderBy($orderBy, 'desc');
+             }else{
+                 $query->orderBy($orderBy);
+             }
+         }else if($orderDirection != ''){
+             $query->orderBy('fund_orders.created_at', 'desc');
+         }else{
+              $query->orderBy('fund_orders.created_at');
+         }
+
+         if($resultPage == null || $resultPage == 0)
+         {
+             $resultPage = 10;
+         }
+
+         //Get Total of fees
+         $total  =  $query->get()->count();
+
+         if($page > 1)
+         {
+              $query->offset(    ($page -  1)   *    $resultPage);
+         }
+
+
+         $query->limit($resultPage);
+
+         $transactions  =  $query->get();
+
+         if($user->hasRole('30')){
+             $percent = $this->percent($user);
+             foreach($transactions as $transaction){
+                 $newamountin = $transaction->in_amount * $percent;
+                 $newamountout = $transaction->out_amount * $percent;
+                 $transaction->in_amount = $newamountin;
+                 $transaction->out_amount = $newamountout;
+             }
+         }
+
+         foreach($transactions as $transaction){
+             $currency = Currency::find($transaction->out_currency);
+             $transaction->out_symbol = $currency->symbol;
+         }
+
+         if($user->hasRole('20') || $user->hasRole('901')){
+             $eaccess = true;
+         }else{
+             $eaccess = false;
+         }
+         //Get fees by month and year
+
+         return response()->json(['page' => $page, 'result' => $transactions, 'total' => $total, 'eaccess' => $eaccess], 202);
+     }
+
+
 /*
     public function withdraws(Request $request)
     {
@@ -691,9 +725,9 @@ class FundsController extends Controller
       $request->validate([
           'cout' => 'required',
           'aout' => 'required| min:1',
-          'ain' => 'min:1',
+
           'cin' => 'required',
-          'rate' => 'min:1',
+
       ]);
 
       $cout = $request->cout;
@@ -713,24 +747,74 @@ class FundsController extends Controller
 
       if($aout < $valid->amount){
         $order = new FundOrder;
-        $balance = Balance::find($valid->id);
-        $newbalance = $balance->amount - $aout;
-        $balance->amount = $newbalance;
-
         if(isset($ain)){
+          $balance = Balance::find($valid->id);
+          $newbalance = $balance->amount - $aout;
+          $balance->amount = $newbalance;
           $order->in_amount = $ain;
           $order->status = 'complete';
           $balancen = Balance::find($change->id);
           $newbalancen = $balancen->amount + $ain;
           $balancen->amount = $newbalancen;
+          $order->rate = $rate;
+          $balance->save();
+          $balancen->save();
         }else{
           $order->in_amount = 0;
           $order->status = 'pending';
+          $order->rate = 0;
         }
         $order->inCurrencyOrder()->associate($idin);
         $order->outCurrencyOrder()->associate($idout);
-        $order->rate = $rate;
         $order->out_amount = $aout;
+      }else{
+        return response()->json(['error' => 'You don\'t have enough funds'], 403);
+      }
+
+      $order->save();
+
+
+      return response()->json(['message' => 'Your Exchange was processed successfully'], 202);
+    }
+
+    public function validateExchange(Request $request){
+
+      $request->validate([
+          'id' => 'required',
+          'cout' => 'required',
+          'aout' => 'required| min:1',
+          'ain' => 'min:1',
+          'cin' => 'required',
+          'rate' => 'min:1',
+      ]);
+
+      $cout = $request->cout;
+      $cin = $request->cin;
+
+      $aout = $request->aout;
+      $ain = $request->ain;
+      $id = $request->id;
+      $rate = $request->rate;
+
+      $valid =  Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.symbol', $cout)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
+      $change = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.symbol', $cin)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
+      $idout = Currency::Where('symbol', $cout)->select('id')->first();
+
+      $idin = Currency::Where('symbol', $cin)->select('id')->first();
+
+
+      if($aout < $valid->amount){
+        $order = FundOrder::find($id);
+        $balance = Balance::find($valid->id);
+        $newbalance = $balance->amount - $aout;
+        $balance->amount = $newbalance;
+
+        $order->in_amount = $ain;
+        $order->status = 'complete';
+        $balancen = Balance::find($change->id);
+        $newbalancen = $balancen->amount + $ain;
+        $balancen->amount = $newbalancen;
+        $order->rate = $rate;
       }else{
         return response()->json(['error' => 'You don\'t have enough funds'], 403);
       }
@@ -739,7 +823,7 @@ class FundsController extends Controller
       $balance->save();
       $balancen->save();
 
-      return response()->json(['message' => 'Your Exchange was processed successfully'], 202);
+      return response()->json(['message' => 'Your Validation was processed successfully'], 202);
     }
     /**
      * Remove the specified resource from storage.•••••••••

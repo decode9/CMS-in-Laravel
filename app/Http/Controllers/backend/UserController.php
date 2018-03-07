@@ -134,7 +134,7 @@ class UserController extends Controller
             'lastname' => 'required| max:50',
             'username' => 'required|unique:users|max:20',
             'email' => 'required|unique:users|max:50',
-            'password' => 'required|min:8|confirmed',
+            'password' => 'required|min:6|confirmed',
             'roles' => 'required',
 
         ]);
@@ -227,28 +227,18 @@ class UserController extends Controller
         }
         $user->save();
 
-        $rols = $user->roles()->get();
 
         $user->roles()->detach();
 
         foreach($roles as $role){
-            foreach($rols as $rol){
-                if($rol->id != $role){
-                    $user->roles()->attach($role);
-                }
-            }
+            $user->roles()->attach($role);
         }
 
         $user->clients()->detach();
 
         if(isset($request->client)){
-            $clients = $user->clients()->get();
             $client = $request->client;
-            foreach($clients as $c){
-                if($c->id != $client){
-                    $user->clients()->attach($client);
-                }
-            }
+            $user->clients()->attach($client);
         }
 
         return response()->json(['message' => "success"], 202);

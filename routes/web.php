@@ -31,6 +31,8 @@ Route::post('/mailcontact', 'Mail\MailController@contactMail')->name('contact.ma
 // BACKEND
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::post('/dashboard/balance', 'backend\DashboardController@balance')->name('dashboard.balance');
+Route::post('/dashboard/newsletter', 'backend\DashboardController@newsletter')->name('dashboard.newsletter');
 
 //USER ADMINISTRATION BACKEND
 
@@ -60,13 +62,16 @@ Route::get('/news/delete/{id}', 'backend\NewsController@destroy')->name('destroy
 //FUNDS
 
 Route::get('/funds', "backend\ViewsController@funds")->name('funds')->middleware('auth.per:0150');
+Route::post('/funds/total', "backend\FundsController@total")->name('total.funds')->middleware('auth.per:0150');
 Route::post('/funds/currency', "backend\FundsController@indexCurrency")->name('currency.funds')->middleware('auth.per:0150');
 Route::post('/funds/crypto', "backend\FundsController@indexCrypto")->name('crypto.funds')->middleware('auth.per:0150');
 Route::post('/funds/token', "backend\FundsController@indexToken")->name('crypto.funds')->middleware('auth.per:0150');
 Route::post('/funds/currencies', "backend\FundsController@currencies")->name('currencies.funds')->middleware('auth.per:0150');
 Route::post('/funds/available', "backend\FundsController@available")->name('currencies.funds')->middleware('auth.per:0150');
 Route::post('/funds/exchange', "backend\FundsController@exchange")->name('exchange.funds')->middleware('auth.per:0150');
-
+Route::post('/funds/exchange/validate', "backend\FundsController@validateExchange")->name('exchange.funds')->middleware('auth.per:0150');
+Route::post('/funds/transactions', "backend\FundsController@transactions")->name('trasactions.funds')->middleware('auth.per:0150');
+Route::post('/funds/transactions/pending', "backend\FundsController@pendingTransactions")->name('pending.funds')->middleware('auth.per:0150');
 /*
 Route::post('/deposit', "backend\FundsController@deposits")->name('deposit.funds')->middleware('auth.per:0151');
 Route::post('/deposit/create', "backend\FundsController@store")->name('store.deposit')->middleware('auth.per:0152');
@@ -74,29 +79,35 @@ Route::post('/withdraw', "backend\FundsController@withdraws")->name('withdraw.fu
 Route::post('/withdraw/create', "backend\FundsController@update")->name('update.withdraw')->middleware('auth.per:0153');
 Route::get('/funds/return', "backend\FundsController@destroy")->name('destroy.funds')->middleware('auth.per:0154');
 */
-//Orders
 
+//Orders
+/*
 Route::get('/orders', "backend\ViewsController@orders")->name('orders')->middleware('auth.per:0200');
 Route::post('/orders', "backend\OrdersController@orders")->name('orders.list')->middleware('auth.per:0201');
 Route::post('/orders/buySell', "backend\OrdersController@buySell")->name('orders.buySell')->middleware('auth.per:0202');
 Route::post('/orders/balance', "backend\OrdersController@balance")->name('orders.balance')->middleware('auth.per:0202');
+*/
 
 //Clients
 
 Route::get('/clients', "backend\ViewsController@clients")->name('clients')->middleware('auth.per:0250');
 Route::post('/clients/list', "backend\ClientsController@index")->name('clients.list')->middleware('auth.per:0251');
+Route::post('/clients/total', "backend\ClientsController@total")->name('total.funds')->middleware('auth.per:0150');
 Route::post('/clients/currency', "backend\ClientsController@indexCurrency")->name('currency.funds')->middleware('auth.per:0150');
 Route::post('/clients/crypto', "backend\ClientsController@indexCrypto")->name('crypto.funds')->middleware('auth.per:0150');
 Route::post('/clients/token', "backend\ClientsController@indexToken")->name('crypto.funds')->middleware('auth.per:0150');
 Route::post('/clients/initials', "backend\ClientsController@initial")->name('crypto.funds')->middleware('auth.per:0150');
 
+//NewsLetter
+Route::get('/newsletter', "backend\ViewsController@newsletter")->name('newsletter')->middleware('auth.per:0250');
+Route::post('/newsletter', 'backend\NewsletterController@index')->name('newsletter.list')->middleware('auth.per:0100');
+Route::post('/newsletter/create', 'backend\NewsletterController@store')->name('newsletter.create')->middleware('auth.per:0100');
+Route::post('/newsletter/update', 'backend\NewsletterController@update')->name('newsletter.update')->middleware('auth.per:0100');
+Route::post('/newsletter/delete', 'backend\NewsletterController@destroy')->name('newsletter.delete')->middleware('auth.per:0100');
 //Accounts
-
+/*
 Route::post('/account', "backend\AccountController@index")->name('account.list')->middleware('auth.per:0151');
 Route::post('/account/create', "backend\AccountController@store")->name('account.create')->middleware('auth.per:0152');
+*/
 
 //TRANSACTIONS
-
-Auth::routes();
-
-Route::get('/home', 'HomeController@index')->name('home');

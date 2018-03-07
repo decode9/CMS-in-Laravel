@@ -347,7 +347,11 @@ top: -30px;
                 <thead class="thead-default">
                     <tr>
                         <th colspan="4">Pending Transactions</th>
+                        @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
                         <th colspan="5"><div class="col-lg-12">
+                        @else
+                        <th colspan="4"><div class="col-lg-12">
+                        @endif
                             <form id="form_pending_transaction_search" class="form_search">
                                 <div class="input-group">
                                     <input id="search_pending_transaction_value" type="text" class="form-control" placeholder="Search Pending Transaction">
@@ -367,7 +371,9 @@ top: -30px;
                         <th id="table_pending_transaction_header_reference" style="cursor: pointer;">Reference</th>
                         <th id="table_pending_transaction_header_date" style="cursor: pointer;">Date</th>
                         <th id="table_pending_transaction_header_status" style="cursor: pointer;">Status</th>
+                        @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
                         <th>Options</th>
+                        @endif
                     </tr>
                 </thead>
                 <tfoot>
@@ -380,7 +386,11 @@ top: -30px;
                                 <option value="50">50</option>
                             </select>
                         </th>
+                        @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
                         <th id="table_pending_transaction_pagination" colspan="5"></th>
+                        @else
+                        <th id="table_pending_transaction_pagination" colspan="4"></th>
+                        @endif
                     </tr>
                 </tfoot>
                 <tbody id="table_pending_transaction_content">

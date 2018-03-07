@@ -15,7 +15,7 @@ class Currencies extends Migration
     {
         DB::table('currencies')->insert([
                 ['name' => 'Bolivar Fuerte', 'symbol' => 'VEF', 'type' => 'currency', 'value' => 'coinmarketcap'],
-                ['name' => 'Dollar', 'symbol' => 'USD', 'type' => 'currency', 'value' => 'coinmarketcap'],
+                ['name' => 'Dollar', 'symbol' => 'USD', 'type' => 'currency', 'value' => '1'],
                 ['name' => 'Bitcoin', 'symbol' => 'BTC', 'type' => 'Cryptocurrency', 'value' => 'coinmarketcap'],
                 ['name' => 'Litecoin', 'symbol' => 'LTC', 'type' => 'Cryptocurrency', 'value' => 'coinmarketcap'],
                 ['name' => 'Ethereum', 'symbol' => 'ETH', 'type' => 'Cryptocurrency', 'value' => 'coinmarketcap'],

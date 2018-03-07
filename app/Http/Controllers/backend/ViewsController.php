@@ -31,6 +31,9 @@ class ViewsController extends Controller
     public function orders(){
         return view('back.orders');
     }
+    public function newsletter(){
+        return view('back.newsletter');
+    }
     public function clients(){
         return view('back.clients');
     }
