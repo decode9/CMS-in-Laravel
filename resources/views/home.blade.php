@@ -14,11 +14,6 @@ body{
   margin: 0 auto;
   padding: 9px 10px;
 }
-#myChart{
-  width: 400px !important;
-height: auto !important;
-margin: 0 auto !important;
-}
 /* Slideshow container */
 .slideshow-container {
   max-width: 1000px;
@@ -146,7 +141,7 @@ margin: 0 auto !important;
     <div class="col-sm-3">
       <div class="well">
         <h4>% Change</h4>
-        <p><span id="percent"></span>%</p>
+        <p><span id="percent"></span></p>
       </div>
     </div>
   </div>
@@ -154,7 +149,9 @@ margin: 0 auto !important;
     <div class="col-sm-6">
       <div class="well">
         <h4>Balance Distribution</h4>
-        <canvas id="myChart" width="300" height="400"></canvas>
+        <div class="chartContainer" style="height:400px;">
+            <canvas id="myChart"></canvas>
+        </div>
       </div>
     </div>
     <div class="col-sm-6">

@@ -33,6 +33,42 @@ class FundsController extends Controller
          return response()->json(['data' => $balance], 202);
      }
 
+     private function url_exists( $url = NULL ) {
+
+         if( empty( $url ) ){
+             return false;
+         }
+
+         $ch = curl_init( $url );
+
+         //Establecer un tiempo de espera
+         curl_setopt( $ch, CURLOPT_TIMEOUT, 5 );
+         curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 5 );
+
+         //establecer NOBODY en true para hacer una solicitud tipo HEAD
+         curl_setopt( $ch, CURLOPT_NOBODY, true );
+         //Permitir seguir redireccionamientos
+         curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
+         //recibir la respuesta como string, no output
+         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+
+         $data = curl_exec( $ch );
+
+         //Obtener el código de respuesta
+         $httpcode = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+         //cerrar conexión
+         curl_close( $ch );
+
+         //Aceptar solo respuesta 200 (Ok), 301 (redirección permanente) o 302 (redirección temporal)
+         $accepted_response = array( 200, 301, 302 );
+         if( in_array( $httpcode, $accepted_response ) ) {
+             return true;
+         } else {
+             return false;
+         }
+
+     }
+
      public function total(Request $request){
         $user = Auth::User();
         $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
@@ -40,11 +76,15 @@ class FundsController extends Controller
         $btc = 0;
         foreach($balances as $balance){
             if($balance->value == "coinmarketcap"){
-                $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $balance->name);
-                $data = json_decode($json);
-                $balance->value = $data[0]->price_usd;
-                $balance->value_btc = $data[0]->price_btc;
-
+                if($this->url_exists('https://api.coinmarketcap.com/v1/ticker/'. $balance->name)){
+                    $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $balance->name);
+                    $data = json_decode($json);
+                    $balance->value = $data[0]->price_usd;
+                    $balance->value_btc = $data[0]->price_btc;
+                }else{
+                    $balance->value = 0.1;
+                    $balance->value_btc = 0.00001;
+                }
             }
 
             if($balance->symbol == "VEF"){
@@ -238,10 +278,15 @@ class FundsController extends Controller
          }
 
          foreach($balancesCurrency as $balance){
+
              if($balance->value == "coinmarketcap"){
-                 $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $balance->name);
-                 $data = json_decode($json);
-                 $balance->value = $data[0]->price_usd;
+                 if($this->url_exists('https://api.coinmarketcap.com/v1/ticker/'. $balance->name)){
+                     $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $balance->name);
+                     $data = json_decode($json);
+                     $balance->value = $data[0]->price_usd;
+                 }else{
+                     $balance->value = 0.1;
+                 }
              }
          }
 
@@ -322,9 +367,13 @@ class FundsController extends Controller
 
          foreach($balancesCurrency as $balance){
              if($balance->value == "coinmarketcap"){
-                 $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $balance->name);
-                 $data = json_decode($json);
-                 $balance->value = $data[0]->price_usd;
+                 if($this->url_exists('https://api.coinmarketcap.com/v1/ticker/'. $balance->name)){
+                     $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $balance->name);
+                     $data = json_decode($json);
+                     $balance->value = $data[0]->price_usd;
+                 }else{
+                     $balance->value = 0.1;
+                 }
              }
          }
 
@@ -725,9 +774,7 @@ class FundsController extends Controller
       $request->validate([
           'cout' => 'required',
           'aout' => 'required| min:1',
-
           'cin' => 'required',
-
       ]);
 
       $cout = $request->cout;
@@ -737,6 +784,8 @@ class FundsController extends Controller
       $ain = $request->ain;
 
       $rate = $request->rate;
+      $created = $request->created;
+      $funded = $request->funded;
 
       $valid =  Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.symbol', $cout)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
       $change = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.symbol', $cin)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
@@ -744,6 +793,7 @@ class FundsController extends Controller
 
       $idin = Currency::Where('symbol', $cin)->select('id')->first();
 
+      $ref = $this->generate(7);
 
       if($aout < $valid->amount){
         $order = new FundOrder;
@@ -757,6 +807,7 @@ class FundsController extends Controller
           $newbalancen = $balancen->amount + $ain;
           $balancen->amount = $newbalancen;
           $order->rate = $rate;
+          $order->updated_at = $funded;
           $balance->save();
           $balancen->save();
         }else{
@@ -764,6 +815,8 @@ class FundsController extends Controller
           $order->status = 'pending';
           $order->rate = 0;
         }
+        $order->reference = $ref;
+        $order->created_at = $created;
         $order->inCurrencyOrder()->associate($idin);
         $order->outCurrencyOrder()->associate($idout);
         $order->out_amount = $aout;
@@ -775,6 +828,32 @@ class FundsController extends Controller
 
 
       return response()->json(['message' => 'Your Exchange was processed successfully'], 202);
+    }
+
+    public function destroyOrder(Request $request){
+        $request->validate([
+            'id' => 'required',
+        ]);
+
+        $id = $request->id;
+
+        $order = FundOrder::find($id);
+        $balancein = Balance::Where('currency_id', $order->out_currency)->where('user_id', null)->first();
+        $bin = Balance::find($balancein->id);
+        $balanceout = Balance::Where('currency_id', $order->in_currency)->where('user_id', null)->first();
+        $bout = Balance::find($balanceout->id);
+
+        $newin = $bin->amount + $order->out_amount;
+        $newout = $bout->amount - $order->in_amount;
+
+        $bin->amount =  $newin;
+        $bout->amount = $newout;
+
+        $bin->save();
+        $bout->save();
+
+        $order->delete();
+
     }
 
     public function validateExchange(Request $request){

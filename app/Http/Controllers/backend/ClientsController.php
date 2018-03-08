@@ -35,6 +35,41 @@ class ClientsController extends Controller
                      return $percent;
              }
      }
+     private function url_exists( $url = NULL ) {
+
+         if( empty( $url ) ){
+             return false;
+         }
+
+         $ch = curl_init( $url );
+
+         //Establecer un tiempo de espera
+         curl_setopt( $ch, CURLOPT_TIMEOUT, 5 );
+         curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 5 );
+
+         //establecer NOBODY en true para hacer una solicitud tipo HEAD
+         curl_setopt( $ch, CURLOPT_NOBODY, true );
+         //Permitir seguir redireccionamientos
+         curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
+         //recibir la respuesta como string, no output
+         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+
+         $data = curl_exec( $ch );
+
+         //Obtener el código de respuesta
+         $httpcode = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+         //cerrar conexión
+         curl_close( $ch );
+
+         //Aceptar solo respuesta 200 (Ok), 301 (redirección permanente) o 302 (redirección temporal)
+         $accepted_response = array( 200, 301, 302 );
+         if( in_array( $httpcode, $accepted_response ) ) {
+             return true;
+         } else {
+             return false;
+         }
+
+     }
 
      public function total(Request $request){
         $user = User::find($request->id);
@@ -43,11 +78,15 @@ class ClientsController extends Controller
         $btc = 0;
         foreach($balances as $balance){
             if($balance->value == "coinmarketcap"){
-                $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $balance->name);
-                $data = json_decode($json);
-                $balance->value = $data[0]->price_usd;
-                $balance->value_btc = $data[0]->price_btc;
-
+                if($this->url_exists('https://api.coinmarketcap.com/v1/ticker/'. $balance->name)){
+                    $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $balance->name);
+                    $data = json_decode($json);
+                    $balance->value = $data[0]->price_usd;
+                    $balance->value_btc = $data[0]->price_btc;
+                }else{
+                    $balance->value = 0.1;
+                    $balance->value_btc = 0.00001;
+                }
             }
 
             if($balance->symbol == "VEF"){
@@ -289,9 +328,13 @@ class ClientsController extends Controller
 
          foreach($balancesCurrency as $balance){
              if($balance->value == "coinmarketcap"){
-                 $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $balance->name);
-                 $data = json_decode($json);
-                 $balance->value = $data[0]->price_usd;
+                 if($this->url_exists('https://api.coinmarketcap.com/v1/ticker/'. $balance->name)){
+                     $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $balance->name);
+                     $data = json_decode($json);
+                     $balance->value = $data[0]->price_usd;
+                 }else{
+                     $balance->value = 0.1;
+                 }
              }
          }
          //Get fees by month and year
@@ -366,9 +409,13 @@ class ClientsController extends Controller
 
          foreach($balancesCurrency as $balance){
              if($balance->value == "coinmarketcap"){
-                 $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $balance->name);
-                 $data = json_decode($json);
-                 $balance->value = $data[0]->price_usd;
+                 if($this->url_exists('https://api.coinmarketcap.com/v1/ticker/'. $balance->name)){
+                     $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $balance->name);
+                     $data = json_decode($json);
+                     $balance->value = $data[0]->price_usd;
+                 }else{
+                     $balance->value = 0.1;
+                 }
              }
          }
          //Get fees by month and year

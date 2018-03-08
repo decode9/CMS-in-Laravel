@@ -37,4 +37,7 @@ class ViewsController extends Controller
     public function clients(){
         return view('back.clients');
     }
+    public function profile(){
+        return view('back.profile');
+    }
 }

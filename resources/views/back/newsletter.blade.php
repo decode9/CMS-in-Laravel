@@ -158,10 +158,9 @@ top: -30px;
     }
 </style>
 @section('content')
-    <div class="userscontent">
-        <div class="selection">
-            <div class="tab-pane active" id="list">
-                <table id="table_user" class="table table-responsive table-striped table-hover">
+    <div class="col-sm-12">
+            <div class="col-sm-12 table-responsive" id="list">
+                <table id="table_newsletter" class="table table-responsive table-striped table-hover">
                     <thead class="thead-default">
                         <tr>
                             <th colspan="2">Newsletter</th>
@@ -196,13 +195,12 @@ top: -30px;
                                     <option value="50">50</option>
                                 </select>
                             </th>
-                            <th id="table_newsletter_pagination" colspan="3"></th>
+                            <th id="table_newsletter_pagination" class="text-right" colspan="3"></th>
                         </tr>
                     </tfoot>
                     <tbody id="table_newsletter_content">
                     </tbody>
                 </table>
             </div>
-        </div>
     </div>
 @endsection

@@ -158,14 +158,13 @@ top: -30px;
     }
 </style>
 @section('content')
-    <div class="currencycontent">
-        <div class="selection">
-            <div class="tab-pane active" id="list">
-                <table id="table_currency" class="table table-responsive table-striped table-hover">
+    <div class="col-sm-12">
+            <div class="col-sm-12 table-responsive" id="list">
+                <table id="table_currency" class="table table-striped table-hover">
                     <thead class="thead-default">
                         <tr>
                             <th colspan="3">Currencies</th>
-                            <th colspan="3"><div class="col-lg-12">
+                            <th colspan="3"><div class="col-sm-12">
                                 <form id="form_currency_search" class="form_search">
                                     <div class="input-group">
                                         <input id="search_currency_value" type="text" class="form-control" placeholder="Search Currency">
@@ -190,20 +189,21 @@ top: -30px;
                     <tfoot>
                         <tr>
                             <th colspan="3" id="currency_page">
-                                <select id="result_currency_page">
-                                    <option value="5">5</option>
-                                    <option value="10" selected="selected">10</option>
-                                    <option value="20">20</option>
-                                    <option value="50">50</option>
-                                </select>
+                                <div class="form-group" style="width:70px;">
+                                    <select id="result_currency_page" class="form-control">
+                                        <option value="5">5</option>
+                                        <option value="10" selected="selected">10</option>
+                                        <option value="20">20</option>
+                                        <option value="50">50</option>
+                                    </select>
+                                </div>
                             </th>
-                            <th id="table_currency_pagination" colspan="4"></th>
+                            <th id="table_currency_pagination" class="text-right" colspan="4"></th>
                         </tr>
                     </tfoot>
                     <tbody id="table_currency_content">
                     </tbody>
                 </table>
             </div>
-        </div>
     </div>
 @endsection

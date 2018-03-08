@@ -25,7 +25,7 @@
                         <li>Home</li>
                         <li>Enterprise</li>
                         <li>Packages</li>
-                        <a href="{{route('news.front')}}"><li>News</li></a>
+                        <a href=""><li>News</li></a>
                         <li>Contacts</li>
                     </ul>
                 </div>

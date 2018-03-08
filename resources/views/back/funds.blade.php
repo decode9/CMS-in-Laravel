@@ -129,181 +129,169 @@ top: -30px;
     }
 </style>
 @section('content')
-    <div class="fundContainer">
-        <div class="userBalance" id="balanceUser">
-          <h3>Balance</h3>
-          <div class="balanceTotal">
+    <div class="col-sm-12">
+        <h3>Balance</h3>
+        <div class="balanceTotal">
             <p>Total USD: <span id="usdtotal"></span> / BTC: <span id="btctotal"></span></p>
-          </div>
-          <div class="currenciesTable">
-            <div class="tab-pane active" id="list">
-                <table id="table_balance_currency" class="table table-responsive table-striped table-hover">
+        </div>
+        <div class="col-sm-4">
+            <div class="tab-pane active table-responsive" id="list">
+                <table id="table_balance_currency" class="table table-striped table-hover">
                     <thead class="thead-default">
-                        <tr>
-                          <th colspan="1">Currencies</th>
-                          @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
-                               <th colspan="3"><div class="col-lg-12">
-                          @else
-                                <th colspan="2"><div class="col-lg-12">
-                          @endif
-                              <form id="form_balance_currency_search" class="form_search">
-                                  <div class="input-group">
-                                      <input id="search_balance_currency_value" type="text" class="form-control" placeholder="Search Currency">
-                                      <span class="input-group-btn">
-                                          <button type="submit" class="btn btn-default" value="Go!"><i id="search_icon" class="fa fa-search" aria-hidden="true"></i></button>
-                                      </span>
-                                  </div><!-- /input-group -->
-                              </form>
-                          </div><!-- /.col-lg-6 --></th>
+                        <tr class="small">
+                            <th colspan="1">Currencies</th>
+                            @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
+                            <th colspan="3"><div class="col-sm-12">
+                            @else
+                            <th colspan="2"><div class="col-sm-12">
+                            @endif
+                                <form id="form_balance_currency_search" class="form_search">
+                                    <div class="input-group">
+                                        <input id="search_balance_currency_value" type="text" class="small form-control" placeholder="Search Currency">
+                                        <span class="input-group-btn">
+                                            <button type="submit" class="btn btn-default" value="Go!"><i id="search_icon" class="fa fa-search" aria-hidden="true"></i></button>
+                                        </span>
+                                    </div><!-- /input-group -->
+                                </form>
+                            </div><!-- /.col-lg-6 --></th>
                         </tr>
-                        <tr>
+                        <tr class="small">
                             <th id="table_balance_currency_header_symbol" style="cursor: pointer;">Symbol</th>
                             <th id="table_balance_currency_header_amount" style="cursor: pointer;">Amount</th>
                             <th id="table_balance_currency_header_equivalent" style="cursor: pointer;">USD Equivalent</th>
                             @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
-                                <th>Option</th>
+                            <th>Option</th>
                             @endif
                         </tr>
                     </thead>
                     <tfoot>
-                        <tr>
+                        <tr class="small">
                             <th colspan="1" id="balance_currency_page">
                                 <select id="result_balance_currency_page">
                                     <option value="5" selected="selected">5</option>
                                 </select>
                             </th>
                             @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
-                                 <th id="table_balance_currency_pagination" colspan="3"></th>
+                            <th id="table_balance_currency_pagination" class="text-right" colspan="3"></th>
                             @else
-                                <th id="table_balance_currency_pagination" colspan="2"></th>
+                            <th id="table_balance_currency_pagination" class="text-right" colspan="2"></th>
                             @endif
                         </tr>
                     </tfoot>
-                    <tbody id="table_balance_currency_content">
+                    <tbody class="small" id="table_balance_currency_content">
                     </tbody>
                 </table>
             </div>
-          </div>
-          <div class="currenciesTable">
-            <div class="tab-pane active" id="list">
-                <table id="table_balance_crypto" class="table table-responsive table-striped table-hover">
+        </div>
+        <div class="col-sm-4">
+            <div class="tab-pane active table-responsive" id="list">
+                <table id="table_balance_crypto" class="table table-striped table-hover">
                     <thead class="thead-default">
-                        <tr>
-                          <th colspan="1">CryptoCurrencies</th>
-                          @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
-                               <th colspan="3"><div class="col-lg-12">
-                          @else
-                            <th colspan="2"><div class="col-lg-12">
-                          @endif
-
-                              <form id="form_balance_crypto_search" class="form_search">
-                                  <div class="input-group">
-                                      <input id="search_balance_crypto_value" type="text" class="form-control" placeholder="Search CryptoCurrency">
-                                      <span class="input-group-btn">
-                                          <button type="submit" class="btn btn-default" value="Go!"><i id="search_icon" class="fa fa-search" aria-hidden="true"></i></button>
-                                      </span>
-                                  </div><!-- /input-group -->
-                              </form>
-                          </div><!-- /.col-lg-6 --></th>
+                        <tr class="small">
+                            <th colspan="1">CryptoCurrencies</th>
+                            @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
+                            <th colspan="3"><div class="col-sm-12">
+                            @else
+                            <th colspan="2"><div class="col-sm-12">
+                            @endif
+                                <form id="form_balance_crypto_search" class="form_search">
+                                    <div class="input-group">
+                                        <input id="search_balance_crypto_value" type="text" class="small form-control" placeholder="Search CryptoCurrency">
+                                        <span class="input-group-btn">
+                                            <button type="submit" class="btn btn-default" value="Go!"><i id="search_icon" class="fa fa-search" aria-hidden="true"></i></button>
+                                        </span>
+                                    </div><!-- /input-group -->
+                                </form>
+                            </div><!-- /.col-lg-6 --></th>
                         </tr>
-                        <tr>
+                        <tr class="small">
                             <th id="table_balance_crypto_header_symbol" style="cursor: pointer;">Symbol</th>
                             <th id="table_balance_crypto_header_amount" style="cursor: pointer;">Amount</th>
                             <th id="table_balance_crypto_header_Equivalent" style="cursor: pointer;">USD Equivalent</th>
                             @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
-                                <th>Option</th>
+                            <th>Option</th>
                             @endif
                         </tr>
                     </thead>
                     <tfoot>
-                        <tr>
+                        <tr class="small">
                             <th colspan="1" id="balance_crypto_page">
                                 <select id="result_balance_crypto_page">
                                     <option value="5" selected="selected">5</option>
                                 </select>
                             </th>
                             @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
-                                 <th id="table_balance_crypto_pagination" colspan="3"></th>
+                            <th id="table_balance_crypto_pagination" class="text-right" colspan="3"></th>
                             @else
-                                <th id="table_balance_crypto_pagination" colspan="2"></th>
+                            <th id="table_balance_crypto_pagination" class="text-right" colspan="2"></th>
                             @endif
                         </tr>
                     </tfoot>
-                    <tbody id="table_balance_crypto_content">
+                    <tbody class="small" id="table_balance_crypto_content">
                     </tbody>
                 </table>
             </div>
-          </div>
-          <div class="currenciesTable">
-            <div class="tab-pane active" id="list">
-                <table id="table_balance_token" class="table table-responsive table-striped table-hover">
+        </div>
+        <div class="col-sm-4">
+            <div class="tab-pane active table-responsive" id="list">
+                <table id="table_balance_token" class="table table-striped table-hover">
                     <thead class="thead-default">
-                        <tr>
-                          <th colspan="1">Token</th>
-                          @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
-                               <th colspan="3"><div class="col-lg-12">
-                          @else
-                            <th colspan="2"><div class="col-lg-12">
-                          @endif
-                              <form id="form_balance_token_search" class="form_search">
-                                  <div class="input-group">
-                                      <input id="search_balance_token_value" type="text" class="form-control" placeholder="Search Token">
-                                      <span class="input-group-btn">
-                                          <button type="submit" class="btn btn-default" value="Go!"><i id="search_icon" class="fa fa-search" aria-hidden="true"></i></button>
-                                      </span>
-                                  </div><!-- /input-group -->
-                              </form>
-                          </div><!-- /.col-lg-6 --></th>
+                        <tr class="small">
+                            <th colspan="1">Token</th>
+                            @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
+                            <th colspan="3"><div class="col-sm-12">
+                            @else
+                            <th colspan="2"><div class="col-sm-12">
+                            @endif
+                                <form id="form_balance_token_search" class="form_search">
+                                    <div class="input-group">
+                                        <input id="search_balance_token_value" type="text" class="small form-control" placeholder="Search Token">
+                                        <span class="input-group-btn">
+                                            <button type="submit" class="btn btn-default" value="Go!"><i id="search_icon" class="fa fa-search" aria-hidden="true"></i></button>
+                                        </span>
+                                    </div><!-- /input-group -->
+                                </form>
+                            </div><!-- /.col-lg-6 --></th>
                         </tr>
-                        <tr>
+                        <tr class="small">
                             <th id="table_balance_token_header_symbol" style="cursor: pointer;">Symbol</th>
                             <th id="table_balance_token_header_amount" style="cursor: pointer;">Amount</th>
                             <th id="table_balance_token_header_Equivalent" style="cursor: pointer;">USD Equivalent</th>
                             @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
-                                <th>Option</th>
+                            <th>Option</th>
                             @endif
                         </tr>
                     </thead>
                     <tfoot>
-                        <tr>
+                        <tr class="small">
                             <th colspan="1" id="balance_token_page">
                                 <select id="result_balance_token_page">
                                     <option value="5" selected="selected">5</option>
                                 </select>
                             </th>
                             @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
-                                 <th id="table_balance_token_pagination" colspan="3"></th>
+                            <th id="table_balance_token_pagination" class="text-right" colspan="3"></th>
                             @else
-                                <th id="table_balance_token_pagination" colspan="2"></th>
+                            <th id="table_balance_token_pagination" class="text-right" colspan="2"></th>
                             @endif
                         </tr>
                     </tfoot>
-                    <tbody id="table_balance_token_content">
+                    <tbody class="small" id="table_balance_token_content">
                     </tbody>
                 </table>
             </div>
-          </div>
-
         </div>
-        <!--
-        <div class="fundAction">
-            <button type="button" name="button" id="btnDepo">Deposit</button>
-            <button type="button" name="button" id="btnWith">Withdraw</button>
-        </div>
-        -->
     </div>
-
-    <div class="fundsOperations">
-
-        <div class="tab-pane active" id="list">
-            <table id="table_transaction" class="table table-responsive table-striped table-hover">
+    <div class="col-sm-12">
+        <div class="col-sm-12 table-responsive" id="list">
+            <table id="table_transaction" class="table table-striped table-hover">
                 <thead class="thead-default">
                     <tr>
                         <th colspan="4">Transactions</th>
-                        <th colspan="6"><div class="col-lg-12">
+                        <th colspan="6"><div class="col-sm-12">
                             <form id="form_transaction_search" class="form_search">
                                 <div class="input-group">
-                                    <input id="search_transaction_value" type="text" class="form-control" placeholder="Search Transaction">
+                                    <input id="search_transaction_value" type="text" class="small form-control" placeholder="Search Transaction">
                                     <span class="input-group-btn">
                                         <button type="submit" class="btn btn-default" value="Go!"><i id="search_icon" class="fa fa-search" aria-hidden="true"></i></button>
                                     </span>
@@ -334,7 +322,7 @@ top: -30px;
                                 <option value="50">50</option>
                             </select>
                         </th>
-                        <th id="table_transaction_pagination" colspan="6"></th>
+                        <th id="table_transaction_pagination" class="text-right" colspan="6"></th>
                     </tr>
                 </tfoot>
                 <tbody id="table_transaction_content">
@@ -342,19 +330,19 @@ top: -30px;
             </table>
         </div>
 
-        <div class="tab-pane active" id="list">
+        <div class="col-sm-12 table-responsive" id="list">
             <table id="table_pending_transaction" class="table table-responsive table-striped table-hover">
                 <thead class="thead-default">
                     <tr>
                         <th colspan="4">Pending Transactions</th>
                         @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
-                        <th colspan="5"><div class="col-lg-12">
+                        <th colspan="5"><div class="col-sm-12">
                         @else
-                        <th colspan="4"><div class="col-lg-12">
+                        <th colspan="4"><div class="col-sm-12">
                         @endif
                             <form id="form_pending_transaction_search" class="form_search">
                                 <div class="input-group">
-                                    <input id="search_pending_transaction_value" type="text" class="form-control" placeholder="Search Pending Transaction">
+                                    <input id="search_pending_transaction_value" type="text" class="small form-control" placeholder="Search Pending Transaction">
                                     <span class="input-group-btn">
                                         <button type="submit" class="btn btn-default" value="Go!"><i id="search_icon" class="fa fa-search" aria-hidden="true"></i></button>
                                     </span>
@@ -387,9 +375,9 @@ top: -30px;
                             </select>
                         </th>
                         @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
-                        <th id="table_pending_transaction_pagination" colspan="5"></th>
+                        <th id="table_pending_transaction_pagination" class="text-right" colspan="5"></th>
                         @else
-                        <th id="table_pending_transaction_pagination" colspan="4"></th>
+                        <th id="table_pending_transaction_pagination" class="text-right" colspan="4"></th>
                         @endif
                     </tr>
                 </tfoot>

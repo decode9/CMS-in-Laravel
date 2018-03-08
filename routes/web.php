@@ -18,10 +18,10 @@ Auth::routes();
 // FrontEnd Routes
 
 Route::get('/', 'WebController@index')->name('index');
-
+/*
 Route::get('/news', 'frontend\NewsController@index')->name('news.front');
 Route::get('news/show/{id}', 'frontend\NewsController@show')->name('notice.front');
-
+*/
 Route::get('/under', function(){
     return view('front.underconstruction');
 });
@@ -31,6 +31,7 @@ Route::post('/mailcontact', 'Mail\MailController@contactMail')->name('contact.ma
 // BACKEND
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/profile', 'backend\ViewsController@profile')->name('profile');
 Route::post('/dashboard/balance', 'backend\DashboardController@balance')->name('dashboard.balance');
 Route::post('/dashboard/newsletter', 'backend\DashboardController@newsletter')->name('dashboard.newsletter');
 
@@ -51,14 +52,14 @@ Route::post('/currencies/update', 'backend\CurrenciesController@update')->name('
 Route::post('/currencies/delete', 'backend\CurrenciesController@destroy')->name('currencies.delete')->middleware('auth.per:0100');
 
 //NEWS ADMINISTRATION BACKEND
-
+/*
 Route::get('/news/admin', "backend\NewsController@index")->name('news');
 Route::get('/news/new', "backend\NewsController@create")->name('create.news');
 Route::post('/news/new', "backend\NewsController@store")->name('store.news');
 Route::get('/news/edit/{id}', 'backend\NewsController@edit')->name('edit.news');
 Route::post('/news/edit/{id}', 'backend\NewsController@update')->name('update.news');
 Route::get('/news/delete/{id}', 'backend\NewsController@destroy')->name('destroy.news');
-
+*/
 //FUNDS
 
 Route::get('/funds', "backend\ViewsController@funds")->name('funds')->middleware('auth.per:0150');
@@ -71,6 +72,7 @@ Route::post('/funds/available', "backend\FundsController@available")->name('curr
 Route::post('/funds/exchange', "backend\FundsController@exchange")->name('exchange.funds')->middleware('auth.per:0150');
 Route::post('/funds/exchange/validate', "backend\FundsController@validateExchange")->name('exchange.funds')->middleware('auth.per:0150');
 Route::post('/funds/transactions', "backend\FundsController@transactions")->name('trasactions.funds')->middleware('auth.per:0150');
+Route::post('/funds/transactions/delete', "backend\FundsController@destroyOrder")->name('delete.funds')->middleware('auth.per:0150');
 Route::post('/funds/transactions/pending', "backend\FundsController@pendingTransactions")->name('pending.funds')->middleware('auth.per:0150');
 /*
 Route::post('/deposit', "backend\FundsController@deposits")->name('deposit.funds')->middleware('auth.per:0151');

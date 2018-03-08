@@ -152,7 +152,7 @@ $(document).ready(function(){
             var splitLeft = splitStr[0];
             var splitRight = splitStr.length > 1 ? this.sepDecimal + splitStr[1] : '';
 
-              splitRight = splitRight.substring(0,3);
+              splitRight = splitRight.substring(0,8);
 
             var regx = /(\d+)(\d{3})/;
             while (regx.test(splitLeft)) {
@@ -271,11 +271,22 @@ $(document).ready(function(){
               $('#initial').append(initial.symbol + ': ' + formatNumber.num(initial.amount));
               $('#totalusd').append(formatNumber.num(usd));
               $('#totalbtc').append(formatNumber.num(btc));
+              if(profit > 0){
+                  $('#profit').addClass('text-success');
+                  $('#percent').addClass('text-success');
+              }else{
+                  $('#profit').addClass('text-danger');
+                  $('#percent').addClass('text-danger');
+              }
               $('#profit').append(formatNumber.num(profit));
-              $('#percent').append(formatNumber.num(percent));
+              $('#percent').append(formatNumber.num(percent)+'%');
 
               var ctx = document.getElementById("myChart").getContext('2d');
               var myChart = new Chart(ctx, {
+                options:{
+                    responsive:true,
+                    maintainAspectRatio: false,
+                },
                 type: 'pie',
                 data: {
                     labels: chart['symbol'],
@@ -370,17 +381,72 @@ $(document).ready(function(){
     }
 
     /*End DashBoard Functions*/
+
+    /*Begin Profile Functions*/
+
+    if(pathname.toString() == '/profile'){
+        $('#listprofile').addClass('active');
+        function profile(){
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url: "/users",
+                type: 'post',
+                data: { searchvalue : searchUserValue, page : page, orderBy :orderUserBy, orderDirection: orderUserDirection, resultPage: resultPage } ,
+                success: function (data) {
+                    user = data.result;
+                    var name = user.name.split(' ');
+                        alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the User</strong></div>');
+                        inputI = $('<input id="id" name="id" style="display: none;" type="text" class="form-control" value="'+ user.id +'" required>');
+                        inputN = $('<div><label for="name">Name<label></div><div><input id="name" name="name" type="text" class="form-control" placeholder="Name" value="'+ name[0] +'" required disabled></div>');
+                        inputL = $('<div><label for="lastname">Last Name<label></div><div><input id="lastname" name="lastname" type="text" class="form-control" placeholder="Last Name" value="'+ name[1] +'" required disabled></div>');
+                        inputU = $('<div><label for="username">Username<label></div><div><input id="username" name="username" type="text" class="form-control" placeholder="Username" value="'+ user.username +'" required disabled></div>');
+                        inputE = $('<div><label for="email">Email<label></div><div><input id="email" name="email" type="text" class="form-control" placeholder="Email" value="'+ user.email +'" required disabled></div>');
+                        inputP = $('<div class="PasswordBox" style="display:none;"><div><label for="password">Password<label></div><div><input id="password" name="password" type="password" class="form-control" placeholder="Password" disabled></div></div>');
+                        inputPC = $('<div class="PasswordBox" style="display:none;"><div><label for="passwordConf">Confirm Password<label></div><div><input id="passwordConf" name="passwordConf" type="password" class="form-control" placeholder="Confirm Password" disabled></div></div>');
+
+                        $('.panel-body').append(inputI);
+                        $('.panel-body').append(inputN);
+                        $('.panel-body').append(inputL);
+                        $('.panel-body').append(inputU);
+                        $('.panel-body').append(inputE);
+                        $('.panel-body').append(inputP);
+                        $('.panel-body').append(inputPC);
+
+                        $('.panel-body').append('<div class="profButts"></div>');
+                        editBut = $("<button type='button' name='button' id='profCont'>Edit Data</button>");
+                        makeBut = $("<button type='button' name='button' id='profCont' style='display:none;'>Make</button>");
+                        peBut = $("<button type='button' name='button' id='profPass' style='display:none;'>Change Password</button>");
+                        passwordEditUser(peBut);
+                        $('.profButts').append(makeBut);
+                        $('.profButts').append(peBut);
+
+
+                }
+            })
+        }
+
+        function passwordEditUser(pebutton){
+            pebutton.click(function(){
+                $('.PasswordBox').toggle('slow');
+            })
+        }
+    }
+
+    /*End Profile Functions*/
+
     /*User Functions*/
 
     if(pathname.toString() == '/users'){
-
+        $('#listuser').addClass('active');
         /*Search User Table*/
 
         $('#table_user_header_name').click(function (e) {
           orderTableUserBy('name');
         });
 
-         $('#table_user_header_username').click(function (e) {
+        $('#table_user_header_username').click(function (e) {
           orderTableUserBy('username');
         });
 
@@ -447,23 +513,23 @@ $(document).ready(function(){
                             var role = roles[i];
 
                             var rowResult = $( '<tr></tr>');
-                            var colvalue_1 = $( '<td class="col-sm-12 col-md-2">'+  user.name +'</td>');
-                            var colvalue_2 = $( '<td class="col-sm-12 col-md-2">'+ user.username +'</td>');
-                            var colvalue_3 = $( '<td class="col-sm-12 col-md-2">'+  user.email  +'</td>');
+                            var colvalue_1 = $( '<td>'+  user.name +'</td>');
+                            var colvalue_2 = $( '<td>'+ user.username +'</td>');
+                            var colvalue_3 = $( '<td>'+  user.email  +'</td>');
 
-                            var colvalue_4 = $('<td class="col-sm-12 col-md-2"></td>');
+                            var colvalue_4 = $('<td></td>');
                             for(a=0 ; a < role.length ; a++){
                                 var rol = role[a];
                                 colvalue_4.append(rol.name + '<br/>');
                             }
-                            editBut = $('<button type="button" id="editBut">Edit</button>');
-                            delBut = $('<button type="button" id="delBut">Delete</button>');
+                            editBut = $('<button type="button" class="btn btn-primary btn-sm" id="editBut">Edit</button> ');
+                            delBut = $('<button type="button" class="btn btn-danger btn-sm" id="delBut">Delete</button>');
                             // we have to make in steps to add the onclick event
                             addEditUserClick(editBut, user, role);
                             addMakeDuserButton(delBut, user);
-                            var colvalue_5 = $( '<td class="col-sm-12 col-md-2">'+  user.created_at  +'</td>');
-                            var colvalue_6 = $( '<td class="col-sm-12 col-md-2">'+  user.updated_at  +'</td>');
-                            var colvalue_7 = $( '<td class="col-sm-12 col-md-2"></td>');
+                            var colvalue_5 = $( '<td>'+  user.created_at  +'</td>');
+                            var colvalue_6 = $( '<td>'+  user.updated_at  +'</td>');
+                            var colvalue_7 = $( '<td class="text-center"></td>');
 
                             colvalue_7.append(editBut);
                             colvalue_7.append(delBut);
@@ -495,7 +561,7 @@ $(document).ready(function(){
                             var pageList = $( '<ul class="pagination"></ul>');
 
                             for(i = page ; i <= totalPages; i++){
-                                pagebutton = $( '<li class="page_user pages">'+ i +'</li>');
+                                pagebutton = $( '<li class="page_user pages"><a href="#">'+ i +'</a></li>');
                                 pageList.append(pagebutton);
                                 addPageUButton(pagebutton);
                             }
@@ -514,7 +580,7 @@ $(document).ready(function(){
                             var pageList = $( '<ul class="pagination"></ul>');
 
                             for(i = page ; i <= totalPages; i++){
-                                pagebutton = $( '<li class="page_user pages">'+ i +'</li>');
+                                pagebutton = $( '<li class="page_user pages"><a href="#">'+ i +'</a></li>');
                                 pageList.append(pagebutton);
                                 addPageUButton(pagebutton);
                             }
@@ -534,7 +600,7 @@ $(document).ready(function(){
 
                             for(i = page ; i <= totalPages; i++){
 
-                                pagebutton = $( '<li class="page_user pages">'+ i +'</li>');
+                                pagebutton = $( '<li class="page_user pages"><a href="#">'+ i +'</a></li>');
                                 pageList.append(pagebutton);
                                 addPageUButton(pagebutton);
 
@@ -597,7 +663,7 @@ $(document).ready(function(){
                     for(i=0;i < roles.length;i++)
                     {
                         var role = roles[i];
-                        var label = $('<label id="labelr'+i+'" class="RoleLabel" >'+ role.name + '</label>');
+                        var label = $('<label id="labelr'+i+'" class="RoleLabel checkbox-inline" >'+ role.name + '</label>');
                         var input = $('<input class="roles" type="checkbox" name="role" value="'+ role.id +'"/>');
                         $('#roles').append('<div class="checkRoles'+i+' checkbox-inline" title="'+ role.description +'"></div>');
                         userClient(input);
@@ -617,7 +683,7 @@ $(document).ready(function(){
             clsbut = $("<span class='close'>&times;</span>");
             closeButton(clsbut, '.Modal');
 
-            makeBut = $("<button type='button' name='button' id='userCont'>Make</button>");
+            makeBut = $("<button type='button' name='button' class='btn btn-primary' id='userCont'>Make</button>");
             addMakeuserButton(makeBut);
 
             $('#modalCreateUser').prepend(clsbut);
@@ -735,8 +801,8 @@ $(document).ready(function(){
 
                     $('#userCont').hide();
                     $('.alert').show();
-                    confirmBut = $("<button type='button' name='button' id='userConf'>Confirm</button>");
-                    backBut = $("<button type='button' name='button' id='userBack'>Back</button>");
+                    confirmBut = $("<button type='button' name='button' class='btn btn-success' id='userConf'>Confirm</button>");
+                    backBut = $("<button type='button' name='button' class='btn btn-primary' id='userBack'>Back</button>");
                     backButton(backBut, '#UserForm', 'user');
                     confirmuserButton(confirmBut);
                     $('#userButts').append(confirmBut);
@@ -750,7 +816,7 @@ $(document).ready(function(){
         /* Confirm User For Creation */
         function confirmuserButton(confirmBut){
             confirmBut.click(function(){
-
+                    $(this).addClass('disabled');
                     name = $('#name').val();
                     lastname = $('#lastname').val();
                     username = $('#username').val();
@@ -775,6 +841,10 @@ $(document).ready(function(){
                         success: function(data){
                             $('#form_user_search').trigger("submit");
                             closeModal('.Modal');
+                        },
+                        error: function (error) {
+                            ReadError(error);
+                            $(this).removeClass('disabled');
                         }
                     })
             })
@@ -844,8 +914,8 @@ $(document).ready(function(){
                 $('#UserForm').append("<div id='userButts'></div>");
                 clsbut = $("<span class='close'>&times;</span>");
                 closeButton(clsbut, '.Modal');
-                makeBut = $("<button type='button' name='button' id='userCont'>Make</button>");
-                peBut = $("<button type='button' name='button' id='userPass'>Change Password</button>");
+                makeBut = $("<button type='button' name='button' class='btn btn-primary' id='userCont'>Make</button>");
+                peBut = $("<button type='button' name='button' class='btn btn-primary' id='userPass'>Change Password</button>");
                 passwordEditUser(peBut);
                 addMakeEuserButton(makeBut);
                 $('#modalUpdateUser').prepend(clsbut);
@@ -921,8 +991,8 @@ $(document).ready(function(){
                     $('#userCont').hide();
                     $('#userPass').hide();
                     $('.alert').show();
-                    confirmBut = $("<button type='button' name='button' id='userConf'>Confirm</button>");
-                    backBut = $("<button type='button' name='button' id='userBack'>Back</button>");
+                    confirmBut = $("<button type='button' name='button' class='btn btn-success' id='userConf'>Confirm</button>");
+                    backBut = $("<button type='button' name='button' class='btn btn-primary' id='userBack'>Back</button>");
                     backButton(backBut, '#UserForm', 'user');
                     confirmEuserButton(confirmBut);
                     $('#userButts').append(confirmBut);
@@ -935,6 +1005,7 @@ $(document).ready(function(){
         /* Confirm Button For Editing User */
         function confirmEuserButton(confirmBut){
             confirmBut.click(function(){
+                $(this).addClass('disabled');
                 name = $('#name').val();
                 lastname = $('#lastname').val();
                 username = $('#username').val();
@@ -958,6 +1029,9 @@ $(document).ready(function(){
                     success: function(data){
                         $('#form_user_search').trigger("submit");
                         closeModal('.Modal');
+                    },
+                    error: function(error){
+                        $(this).removeClass('disabled');
                     }
                 })
             })
@@ -977,8 +1051,8 @@ $(document).ready(function(){
                 clsbut = $("<span class='close'>&times;</span>");
                 closeButton(clsbut, '.Modal');
 
-                makeBut = $("<button type='button' name='button' id='userCont'>Delete</button>");
-                peBut = $("<button type='button' name='button' id='userPass'>Back</button>");
+                makeBut = $("<button type='button' name='button' class='btn btn-danger' id='userCont'>Delete</button>");
+                peBut = $("<button type='button' name='button' class='btn btn-primary' id='userPass'>Back</button>");
                 closeButton(peBut, '.Modal');
                 DeleteUserButton(makeBut);
 
@@ -992,6 +1066,7 @@ $(document).ready(function(){
         /* Confirmation Of User Deletion */
         function DeleteUserButton(delButt){
             delButt.click(function(){
+                $(this).addClass('disabled');
                 id = $('#id').val();
 
                 $.ajax({
@@ -1021,7 +1096,7 @@ $(document).ready(function(){
     /*Begin Currency Functions*/
 
     if(pathname.toString() == '/currencies'){
-
+        $('#listcurrency').addClass('active');
         /*Search Currencies Table*/
 
         $('#table_currency_header_name').click(function (e) {
@@ -1097,16 +1172,16 @@ $(document).ready(function(){
                             var currency = currencies[i];
                             // we have to make in steps to add the onclick event
                             var rowResult = $( '<tr></tr>');
-                            var colvalue_1 = $( '<td class="col-sm-12 col-md-2">'+ currency.name +'</td>');
-                            var colvalue_2 = $( '<td class="col-sm-12 col-md-2">'+ currency.symbol +'</td>');
-                            var colvalue_3 = $( '<td class="col-sm-12 col-md-2">'+  currency.type +'</td>');
-                            var colvalue_4 = $( '<td class="col-sm-12 col-md-2">'+  formatNumber.num(currency.value) +'</td>');
-                            var colvalue_5 = $( '<td class="col-sm-12 col-md-2">'+  currency.created_at  +'</td>');
-                            var colvalue_6 = $( '<td class="col-sm-12 col-md-2">'+ currency.updated_at  +'</td>');
-                            var colvalue_7 = $( '<td class="col-sm-12 col-md-2"></td>');
+                            var colvalue_1 = $( '<td>'+ currency.name +'</td>');
+                            var colvalue_2 = $( '<td>'+ currency.symbol +'</td>');
+                            var colvalue_3 = $( '<td>'+  currency.type +'</td>');
+                            var colvalue_4 = $( '<td>'+  formatNumber.num(currency.value) +'</td>');
+                            var colvalue_5 = $( '<td>'+  currency.created_at  +'</td>');
+                            var colvalue_6 = $( '<td>'+ currency.updated_at  +'</td>');
+                            var colvalue_7 = $( '<td class="text-center"></td>');
 
-                            editBut = $('<button type="button" id="editBut">Edit</button>');
-                            delBut = $('<button type="button" id="delBut">Delete</button>');
+                            editBut = $('<button type="button" class="btn btn-primary" id="editBut">Edit</button>');
+                            delBut = $('<button type="button" class="btn btn-danger" id="delBut">Delete</button>');
                             addEditCurrencyClick(editBut, currency);
                             addMakeDcurrencyButton(delBut, currency);
 
@@ -1133,7 +1208,7 @@ $(document).ready(function(){
                             totalPages = (maxPage < totalPages) ?  maxPage: totalPages;
                             var pageList = $( '<ul class="pagination"></ul>');
                             for(i = page ; i <= totalPages; i++){
-                                pagebutton = $( '<li class="page_currency pages">'+ i +'</li>');
+                                pagebutton = $( '<li class="page_currency pages"><a href="#">'+ i +'</a></li>');
                                 pageList.append(pagebutton);
                                 addPageCButton(pagebutton);
                             }
@@ -1146,7 +1221,7 @@ $(document).ready(function(){
                             totalPages = ( page + 2 < totalPages) ?  (page + 2): totalPages;
                             var pageList = $( '<ul class="pagination"></ul>');
                             for(i = page ; i <= totalPages; i++){
-                                pagebutton = $( '<li class="page_currency pages">'+ i +'</li>');
+                                pagebutton = $( '<li class="page_currency pages"><a href="#">'+ i +'</a></li>');
                                 pageList.append(pagebutton);
                                 addPageCButton(pagebutton);
                             }
@@ -1159,7 +1234,7 @@ $(document).ready(function(){
                             totalPages = ( page + 4 < totalPages) ?  (page + 2): totalPages;
                             var pageList = $( '<ul class="pagination"></ul>');
                             for(i = page ; i <= totalPages; i++){
-                                pagebutton = $( '<li class="page_currency pages">'+ i +'</li>');
+                                pagebutton = $( '<li class="page_currency pages"><a href="#">'+ i +'</a></li>');
                                 pageList.append(pagebutton);
                                 addPageCButton(pagebutton);
                             }
@@ -1217,7 +1292,7 @@ $(document).ready(function(){
             clsbut = $("<span class='close'>&times;</span>");
             closeButton(clsbut, '.Modal');
 
-            makeBut = $("<button type='button' name='button' id='currnCont'>Make</button>");
+            makeBut = $("<button type='button' class='btn btn-primary' name='button' id='currnCont'>Make</button>");
             addMakeCurrencyButton(makeBut);
 
             $('#modalCreateCurrency').prepend(clsbut);
@@ -1292,8 +1367,8 @@ $(document).ready(function(){
                     alterForm('#CurrencyForm', true);
                     $('#currnCont').hide();
                     $('.alert').show();
-                    confirmBut = $("<button type='button' name='button' id='currnConf'>Confirm</button>");
-                    backBut = $("<button type='button' name='button' id='currnBack'>Back</button>");
+                    confirmBut = $("<button type='button' name='button' class='btn btn-success' id='currnConf'>Confirm</button>");
+                    backBut = $("<button type='button' name='button' class='btn btn-primary' id='currnBack'>Back</button>");
                     backButton(backBut, '#CurrencyForm', 'currn');
                     confirmcurrencyButton(confirmBut);
                     $('#currnButts').append(confirmBut);
@@ -1305,7 +1380,7 @@ $(document).ready(function(){
         /*Add Confirm Button For Currency Creation*/
         function confirmcurrencyButton(confirmBut){
             confirmBut.click(function(){
-
+                $(this).addClass('disabled');
                 name = $('#name').val();
                 symbol = $('#symbol').val();
                 type = $('#type').val();
@@ -1397,7 +1472,7 @@ $(document).ready(function(){
                 clsbut = $("<span class='close'>&times;</span>");
                 closeButton(clsbut, '.Modal');
 
-                makeBut = $("<button type='button' name='button' id='currnCont'>Make</button>");
+                makeBut = $("<button type='button' name='button' class='btn btn-primary' id='currnCont'>Make</button>");
                 addMakeEcurrencyButton(makeBut);
 
                 $('#modalUpdateCurrency').prepend(clsbut);
@@ -1445,8 +1520,8 @@ $(document).ready(function(){
                     alterForm('#CurrencyForm', true);
                     $('#currnCont').hide();
                     $('.alert').show();
-                    confirmBut = $("<button type='button' name='button' id='currnConf'>Confirm</button>");
-                    backBut = $("<button type='button' name='button' id='currnBack'>Back</button>");
+                    confirmBut = $("<button type='button' class='btn btn-success' name='button' id='currnConf'>Confirm</button>");
+                    backBut = $("<button type='button' name='button' class='btn btn-primary' id='currnBack'>Back</button>");
                     backButton(backBut, '#CurrencyForm', 'currn');
                     confirmEcurrencyButton(confirmBut);
                     $('#currnButts').append(confirmBut);
@@ -1458,7 +1533,7 @@ $(document).ready(function(){
         /*Add Confirm Button for Editing Currency*/
         function confirmEcurrencyButton(confirmBut){
             confirmBut.click(function(){
-
+                $(this).addClass('disabled');
                 id = $('#id').val();
                 name = $('#name').val();
                 symbol = $('#symbol').val();
@@ -1501,8 +1576,8 @@ $(document).ready(function(){
                 clsbut = $("<span class='close'>&times;</span>");
                 closeButton(clsbut, '.Modal');
 
-                makeBut = $("<button type='button' name='button' id='currnCont'>Delete</button>");
-                peBut = $("<button type='button' name='button' id='currnPass'>Back</button>");
+                makeBut = $("<button type='button' name='button' class='btn btn-danger' id='currnCont'>Delete</button>");
+                peBut = $("<button type='button' name='button' class='btn btn-primary' id='currnPass'>Back</button>");
                 closeButton(peBut, '.Modal');
                 DeleteCurrencyButton(makeBut);
 
@@ -1516,6 +1591,7 @@ $(document).ready(function(){
         /*Delete Currency Confirm*/
         function DeleteCurrencyButton(delButt){
             delButt.click(function(){
+                $(this).addClass('disabled');
                 id = $('#id').val();
 
                 $.ajax({
@@ -1546,7 +1622,7 @@ $(document).ready(function(){
     /* Begin Funds Functions */
 
     if(pathname.toString() == '/funds'){
-
+        $('#listfund').addClass('active');
         /*Funds Balances*/
 
         function totalBalance(){
@@ -1983,6 +2059,8 @@ $(document).ready(function(){
                 inputIC = $('<input id="currencyin" name="currencyin" type="text" class="form-control" required value="'+currency.symbol+'" style="display:none;" disabled>');
                 inputI = $('<div><label for="valuein">Value In<label></div><div><input id="valuein" name="valuein" type="text" class="form-control" placeholder="Value In" ></div>');
                 inputR = $('<div><label for="rate">Exchange Rate<label></div><div><input id="rate" name="rate" type="text" class="form-control" placeholder="Exchange Rate" ></div>');
+                inputA = $('<div><label for="created">Allocated<label></div><div><input id="created" name="created" type="date" class="form-control" placeholder="Allocated" ></div>');
+                inputF = $('<div><label for="funded">Funded<label></div><div><input id="funded" name="funded" type="date" class="form-control" placeholder="Funded" ></div>');
 
                 $('#rightContent').append(box);
                 $('#ExchangeForm').append(alert);
@@ -1992,6 +2070,8 @@ $(document).ready(function(){
                 $('#ExchangeForm').append(inputIC);
                 $('#ExchangeForm').append(inputI);
                 $('#ExchangeForm').append(inputR);
+                $('#ExchangeForm').append(inputA);
+                $('#ExchangeForm').append(inputF);
 
                 $.ajax({
                     headers: {
@@ -2028,16 +2108,13 @@ $(document).ready(function(){
                 clsbut = $("<span class='close'>&times;</span>");
                 closeButton(clsbut, '.Modal');
 
-                exchangeInValue('#valueout', '#rate', '#valuein')
+                exchangeInValue('#valueout', '#rate', '#valuein');
+                exchangeInValue('#valueout', '#valuein', '#rate');
 
                 makeBut = $("<button type='button' name='button' id='exCont'>Make</button>");
                 addMakeExButton(makeBut);
 
                 $('#modalExchange').prepend(clsbut);
-
-                formatInput('#valueout');
-                formatInput('#valuein');
-                formatInput('#rate');
 
                 $('#exButts').append(makeBut);
 
@@ -2076,43 +2153,42 @@ $(document).ready(function(){
 
         function exchangeInValue(value, select, target,){
             $(select).change(function(){
-                var val = $(value).val().replace(/\./g, '');
-                val = parseFloat(val.replace(/,/g, '.'));
+                var val = $(value).val();
 
-                var sel = $(select).val().replace(/\./g, '');
-                sel = parseFloat(sel.replace(/,/g, '.'));
+
+                var sel = $(select).val();
 
                 var newval = val / sel;
-                console.log(sel);
-                console.log(val);
-                console.log(newval);
 
-                $(target).val(formatNumber.num(newval));
+                $(target).val(newval);
             })
         }
 
         function addMakeExButton(makeBut){
             makeBut.click(function(e){
 
-                jQuery.validator.addMethod("amount", function(value, element) {
-                    return this.optional(element) || /^(\d{1}\.)?(\d+\.?)+(,\d{3})?$/i.test(value);
-                });
-
                 $('#ExchangeForm').validate({
                     rules: {
                         valueout:{
                             required: true,
                             minlength: 1,
-                            amount: true,
+                            number: true,
                         },
 
                         valuein:{
 
-                            amount: true,
+                            number: true,
                         },
                         rate:{
 
-                            amount: true,
+                            number: true,
+                        },
+                        created:{
+                            date:true,
+                            required: true,
+                        },
+                        funded:{
+                            date:true,
                         }
                     },
                     messages:{
@@ -2141,21 +2217,26 @@ $(document).ready(function(){
                 currencyout = $('#out').val();
                 currencyin = $('#currencyin').val();
 
-                amountout = $('#valueout').val().replace(/\./g, '');
-                amountout = amountout.replace(/,/g, '.');
+                amountout = $('#valueout').val();
 
-                amountin = $('#valuein').val().replace(/\./g, '');
-                amountin = amountin.replace(/,/g, '.');
 
-                rate = $('#rate').val().replace(/\./g, '');
-                rate = rate.replace(/,/g, '.');
+                amountin = $('#valuein').val();
+
+
+                rate = $('#rate').val();
+
+                created = $('#created').val();
+                created = created.replace(/\//g, '-');
+
+                funded = $('#funded').val();
+                funded = funded.replace(/\//g, '-');
 
                     $.ajax({
                         headers: { 'X-CSRF-Token' : $('meta[name=csrf-token]').attr('content') },
                         url: '/funds/exchange',
                         type: 'POST',
                         dataType: "json",
-                        data: {cout : currencyout, cin : currencyin, aout : amountout, ain : amountin, rate: rate},
+                        data: {cout : currencyout, cin : currencyin, aout : amountout, ain : amountin, rate: rate, created:created, funded: funded},
                         success: function(data){
 
                             closeModal('.Modal');
@@ -2263,12 +2344,19 @@ $(document).ready(function(){
                             var colvalue_3 = $( '<td class="col-sm-12 col-md-2">'+ formatNumber.num( transaction.rate )  +'</td>');
                             var colvalue_4 = $( '<td class="col-sm-12 col-md-2">'+  transaction.symbol  +'</td>');
                             var colvalue_5 = $( '<td class="col-sm-12 col-md-2">'+  formatNumber.num( transaction.in_amount )  +'</td>');
-                            var colvalue_6 = $( '<td class="col-sm-12 col-md-2"></td>');
+                            var colvalue_6 = $( '<td class="col-sm-12 col-md-2">'+ transaction.reference +'</td>');
                             var colvalue_7 = $( '<td class="col-sm-12 col-md-2">'+ transaction.created_at  +'</td>');
                             var colvalue_8 = $( '<td class="col-sm-12 col-md-2">'+ transaction.updated_at  +'</td>');
                             var colvalue_9 = $( '<td class="col-sm-12 col-md-2">'+ transaction.status  +'</td>');
                             var colvalue_10 = $( '<td class="col-sm-12 col-md-2"></td>');
-                            var printbut = $("<button type='button' name='button' id='depoPrint'>Receipt</button>");
+                            var printbut = $("<button type='button' name='button' id='txPrint'>Receipt</button>");
+
+                            if(data.eaccess){
+                                var delbut = $("<button type='button' name='button' id='txdel'>Delete</button>");
+                                addMakeDTxButton(delbut, transaction);
+                                colvalue_10.append(delbut);
+                            }
+
 
                             colvalue_10.append(printbut);
 
@@ -2444,12 +2532,15 @@ $(document).ready(function(){
                             var colvalue_3 = $( '<td class="col-sm-12 col-md-2">'+ formatNumber.num( transaction.rate )  +'</td>');
                             var colvalue_4 = $( '<td class="col-sm-12 col-md-2">'+  transaction.symbol  +'</td>');
                             var colvalue_5 = $( '<td class="col-sm-12 col-md-2">'+  formatNumber.num( transaction.in_amount )  +'</td>');
-                            var colvalue_6 = $( '<td class="col-sm-12 col-md-2"></td>');
+                            var colvalue_6 = $( '<td class="col-sm-12 col-md-2">'+ transaction.reference +'</td>');
                             var colvalue_7 = $( '<td class="col-sm-12 col-md-2">'+ transaction.created_at  +'</td>');
                             var colvalue_8 = $( '<td class="col-sm-12 col-md-2">'+ transaction.status  +'</td>');
                             if(data.eaccess){
                               var colvalue_9 = $( '<td class="col-sm-12 col-md-2"></td>');
                               var printbut = $("<button type='button' name='button' id='validateTrans'>Validate</button>");
+                              var delbut = $("<button type='button' name='button' id='txdel'>Delete</button>");
+                              addMakeDTxButton(delbut, transaction);
+                              colvalue_9.append(delbut);
                               colvalue_9.append(printbut);
                               validateTransaction(printbut, transaction);
                             }
@@ -2623,7 +2714,7 @@ $(document).ready(function(){
             makeBut.click(function(e){
 
                 jQuery.validator.addMethod("amount", function(value, element) {
-                    return this.optional(element) || /^(\d{1}\.)?(\d+\.?)+(,\d{3})?$/i.test(value);
+                    return this.optional(element) || /^(\d{1}\.)?(\d+\.?)+(,\d{2})?$/i.test(value);
                 });
 
                 $('#ExchangeForm').validate({
@@ -2701,6 +2792,52 @@ $(document).ready(function(){
                     })
 
             })
+        }
+
+        /* Delete Function For User */
+        function addMakeDTxButton(delButt, trans){
+            delButt.click(function(){
+                box = $("<div class='Modal' id='txModal' style='display:none;'><div class='modalContent' id='modalDeleteTx'><h3>Delete Transaction</h3><form class='TxForm' id='TxForm' enctype='multipart/form-data' ></form></div></div>");
+                alert = $('<div class="alert alert-warning" ><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Are You Sure for delete transaction #'+trans.reference+'?</strong></div>');
+                inputI = $('<input id="id" name="id" style="display: none;" type="text" class="form-control" value="'+ trans.id +'" required>');
+                $('#rightContent').append(box);
+                $('#TxForm').append(alert);
+                $('#TxForm').append(inputI);
+
+                $('#TxForm').append("<div id='txButts'></div>");
+                clsbut = $("<span class='close'>&times;</span>");
+                closeButton(clsbut, '.Modal');
+
+                makeBut = $("<button type='button' name='button' id='txCont'>Delete</button>");
+                peBut = $("<button type='button' name='button' id='txPass'>Back</button>");
+                closeButton(peBut, '.Modal');
+                DeleteTxButton(makeBut);
+
+                $('#modalDeleteTx').prepend(clsbut);
+                $('#txButts').append(makeBut);
+                $('#txButts').append(peBut);
+                $('.Modal').css('display', 'block');
+            })
+        }
+
+        /* Confirmation Of User Deletion */
+        function DeleteTxButton(delButt){
+            delButt.click(function(){
+                id = $('#id').val();
+
+                $.ajax({
+                    headers: { 'X-CSRF-Token' : $('meta[name=csrf-token]').attr('content') },
+                    url: '/funds/transactions/delete',
+                    type: 'POST',
+                    dataType: "json",
+                    data: {id: id},
+                    success: function(data){
+                        $('#form_transaction_search').trigger("submit");
+                        $('#form_pending_transaction_search').trigger("submit");
+                        closeModal('.Modal');
+                    }
+                });
+            });
         }
         /*End Transaction History*/
 
@@ -3707,7 +3844,7 @@ $(document).ready(function(){
     /* Begin Client Functions */
 
     if(pathname.toString() == '/clients'){
-
+        $('#listclient').addClass('active');
         /*Search Client Table*/
 
         $('#table_client_header_name').click(function (e) {
@@ -4452,7 +4589,7 @@ $(document).ready(function(){
     /* Begin Newsletter Functions */
     if(pathname.toString() == '/newsletter'){
       /*Search User Table*/
-
+      $('#listnews').addClass('active');
       $('#table_newsletter_header_title').click(function (e) {
         orderTableNewsletterBy('title');
       });

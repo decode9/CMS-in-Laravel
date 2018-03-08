@@ -84,7 +84,7 @@ top: -30px;
         margin: 0;
         position: fixed;
         left: 33%;
-        top: 30%;
+        top: 0;
         padding: 20px;
         border: 1px solid #888;
         width: 700px;
@@ -158,14 +158,13 @@ top: -30px;
     }
 </style>
 @section('content')
-    <div class="userscontent">
-        <div class="selection">
-            <div class="tab-pane active" id="list">
-                <table id="table_user" class="table table-responsive table-striped table-hover">
+    <div class="col-sm-12">
+            <div class="col-sm-12 table-responsive active" id="list">
+                <table id="table_user" class="table table-striped table-hover">
                     <thead class="thead-default">
                         <tr>
                             <th colspan="4">Users</th>
-                            <th colspan="2"><div class="col-lg-12">
+                            <th colspan="2"><div class="col-sm-12">
                                 <form id="form_user_search" class="form_search">
                                     <div class="input-group">
                                         <input id="search_user_value" type="text" class="form-control" placeholder="Search User">
@@ -190,20 +189,21 @@ top: -30px;
                     <tfoot>
                         <tr>
                             <th colspan="3" id="user_page">
-                                <select id="result_user_page">
-                                    <option value="5">5</option>
-                                    <option value="10" selected="selected" >10</option>
-                                    <option value="20">20</option>
-                                    <option value="50">50</option>
-                                </select>
+                                <div class="form-group" style="width:70px;">
+                                    <select id="result_user_page" class="form-control">
+                                        <option value="5">5</option>
+                                        <option value="10" selected="selected" >10</option>
+                                        <option value="20">20</option>
+                                        <option value="50">50</option>
+                                    </select>
+                                </div>
                             </th>
-                            <th id="table_user_pagination" colspan="4"></th>
+                            <th id="table_user_pagination" class="text-right" colspan="4"></th>
                         </tr>
                     </tfoot>
                     <tbody id="table_user_content">
                     </tbody>
                 </table>
             </div>
-        </div>
     </div>
 @endsection
