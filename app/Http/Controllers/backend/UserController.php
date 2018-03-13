@@ -180,9 +180,12 @@ class UserController extends Controller
         return response()->json(['message' => "success"], 202);
     }
 
-    public function show($id)
+    public function show(Request $request)
     {
         //
+        $user = Auth::User();
+
+        return response()->json(['result' => $user], 202);
     }
 
     /**
@@ -244,6 +247,43 @@ class UserController extends Controller
         return response()->json(['message' => "success"], 202);
     }
 
+    public function updateProfile(Request $request)
+    {
+        //
+        $request->validate([
+            'name' => 'required| max:50',
+            'lastname' => 'required| max:50',
+            'username' => 'required|max:20',
+            'email' => 'required|max:50',
+            'password' => 'confirmed',
+        ]);
+
+        $id = $request->id;
+        $name = $request->name;
+        $lastname = $request->lastname;
+        $username = strtolower($request->username);
+        $email = strtolower($request->email);
+
+        if($request->password != ''){
+            $password = bcrypt($request->password);
+        }
+
+        $fullname = ucfirst(strtolower($name)) . " " . ucfirst(strtolower($lastname));
+
+        $user = User::Find($id);
+
+        $user->name = $fullname;
+        $user->username = $request->username;
+        $user->email = $request->email;
+
+        if($request->password != ''){
+            $user->password= $request->password;
+        }
+
+        $user->save();
+
+        return response()->json(['message' => "success"], 202);
+    }
     /**
      * Remove the specified resource from storage.•••••••••
      *

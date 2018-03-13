@@ -34,7 +34,7 @@ body{
   width: auto;
   margin-top: -22px;
   padding: 16px;
-  color: white;
+  color: black;
   font-weight: bold;
   font-size: 18px;
   transition: 0.6s ease;
@@ -120,47 +120,68 @@ body{
       </ul>
   </div>
   <div class="row">
+    <div class="col-sm-12">
+      <div class="panel panel-default">
+              <div class="panel-heading">Historical Profit</div>
+              <div class="panel-body" style="height:400px;">
+                  <canvas id="historicalChart" width="600" height="400"></canvas>
+              </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
     <div class="col-sm-3">
-      <div class="well">
-        <h4>Initial Invest</h4>
-        <p id="initial"></p>
+      <div class="panel panel-default">
+              <div class="panel-heading"><h4>Initial Invest</h4></div>
+              <div class="panel-body">
+                  <h4 id="initial"></h4>
+              </div>
       </div>
     </div>
     <div class="col-sm-3">
-      <div class="well">
-        <h4>Total USD / BTC</h4>
-        <p>USD: <span id="totalusd"></span> / BTC: <span id="totalbtc"></span></p>
+      <div class="panel panel-default">
+              <div class="panel-heading"><h4>Total USD / BTC</h4></div>
+              <div class="panel-body">
+                  <h4>USD: <span id="totalusd"></span> / BTC: <span id="totalbtc"></span></h4>
+              </div>
       </div>
     </div>
     <div class="col-sm-3">
-      <div class="well">
-        <h4>Profit Gain And Loss</h4>
-        <p>USD: <span id="profit"></span></p>
+      <div class="panel panel-default">
+              <div class="panel-heading"><h4>Profit Gain And Loss</h4></div>
+              <div class="panel-body">
+                  <h4>USD: <span id="profit"></span></h4>
+              </div>
       </div>
     </div>
     <div class="col-sm-3">
-      <div class="well">
-        <h4>% Change</h4>
-        <p><span id="percent"></span></p>
+      <div class="panel panel-default">
+              <div class="panel-heading"><h4>% Change</h4></div>
+              <div class="panel-body">
+                  <h4><span id="percent"></span></h4>
+              </div>
       </div>
     </div>
   </div>
   <div class="row">
     <div class="col-sm-6">
-      <div class="well">
-        <h4>Balance Distribution</h4>
-        <div class="chartContainer" style="height:400px;">
-            <canvas id="myChart"></canvas>
-        </div>
+      <div class="panel panel-default">
+              <div class="panel-heading"><h4>Balance Distribution</h4></div>
+              <div class="panel-body">
+                <div class="chartContainer" style="height:400px;">
+                    <canvas id="myChart"></canvas>
+                </div>
+              </div>
       </div>
     </div>
     <div class="col-sm-6">
-      <div class="well">
-        <h4>Newsletter</h4>
-        <div class="slideshow-container">
+      <div class="panel panel-default">
+              <div class="panel-heading"><h4>Newsletter</h4></div>
+              <div class="panel-body">
+                <div class="slideshow-container">
 
-        </div>
-        </div>
+                </div>
+              </div>
       </div>
     </div>
   </div>

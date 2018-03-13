@@ -44,6 +44,8 @@ Route::post('/users/update', 'backend\UserController@update')->name('users.updat
 Route::post('/users/delete', 'backend\UserController@destroy')->name('users.delete')->middleware('auth.per:0100');
 Route::post('/users/roles', 'backend\UserController@userRoles')->name('users.roles')->middleware('auth.per:0100');
 Route::post('/users/clients', 'backend\UserController@userClients')->name('users.clients')->middleware('auth.per:0100');
+Route::post('/users/profile', 'backend\UserController@show')->name('users.show')->middleware('auth.per:0100');
+Route::post('/users/profile/update', 'backend\UserController@updateProfile')->name('users.profileUpdate')->middleware('auth.per:0100');
 
 Route::get('/currencies', 'backend\ViewsController@currencies')->name('currencies')->middleware('auth.per:0100');
 Route::post('/currencies', 'backend\CurrenciesController@index')->name('currencies.list')->middleware('auth.per:0100');

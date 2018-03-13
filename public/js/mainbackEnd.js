@@ -443,6 +443,8 @@ $(document).ready(function () {
             }
         };
 
+        var dailyHistory = function dailyHistory(but) {};
+
         newsletter();
         balance();
     }
@@ -457,12 +459,13 @@ $(document).ready(function () {
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                url: "/users",
+                url: "/users/profile",
                 type: 'post',
-                data: { searchvalue: searchUserValue, page: page, orderBy: orderUserBy, orderDirection: orderUserDirection, resultPage: resultPage },
                 success: function success(data) {
                     user = data.result;
                     var name = user.name.split(' ');
+                    $('.panel-body').empty();
+                    box = $("<form class='UserForm' id='UserForm' enctype='multipart/form-data' ></form>");
                     alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the User</strong></div>');
                     inputI = $('<input id="id" name="id" style="display: none;" type="text" class="form-control" value="' + user.id + '" required>');
                     inputN = $('<div><label for="name">Name<label></div><div><input id="name" name="name" type="text" class="form-control" placeholder="Name" value="' + name[0] + '" required disabled></div>');
@@ -472,19 +475,23 @@ $(document).ready(function () {
                     inputP = $('<div class="PasswordBox" style="display:none;"><div><label for="password">Password<label></div><div><input id="password" name="password" type="password" class="form-control" placeholder="Password" disabled></div></div>');
                     inputPC = $('<div class="PasswordBox" style="display:none;"><div><label for="passwordConf">Confirm Password<label></div><div><input id="passwordConf" name="passwordConf" type="password" class="form-control" placeholder="Confirm Password" disabled></div></div>');
 
-                    $('.panel-body').append(inputI);
-                    $('.panel-body').append(inputN);
-                    $('.panel-body').append(inputL);
-                    $('.panel-body').append(inputU);
-                    $('.panel-body').append(inputE);
-                    $('.panel-body').append(inputP);
-                    $('.panel-body').append(inputPC);
+                    $('.panel-body').append(box);
+                    $('#UserForm').append(inputI);
+                    $('#UserForm').append(inputN);
+                    $('#UserForm').append(inputL);
+                    $('#UserForm').append(inputU);
+                    $('#UserForm').append(inputE);
+                    $('#UserForm').append(inputP);
+                    $('#UserForm').append(inputPC);
 
-                    $('.panel-body').append('<div class="profButts"></div>');
-                    editBut = $("<button type='button' name='button' id='profCont'>Edit Data</button>");
-                    makeBut = $("<button type='button' name='button' id='profCont' style='display:none;'>Make</button>");
-                    peBut = $("<button type='button' name='button' id='profPass' style='display:none;'>Change Password</button>");
+                    $('#UserForm').append('<div class="profButts"></div>');
+                    editBut = $("<button type='button' class='btn btn-primary' name='button' id='profedit'>Edit Data</button>");
+                    makeBut = $("<button type='button' class='btn btn-primary' name='button' id='profCont' style='display:none;'>Make</button>");
+                    peBut = $("<button type='button' class='btn btn-primary' name='button' id='profPass' style='display:none;'>Change Password</button>");
                     passwordEditUser(peBut);
+                    editProfile(editBut, '#UserForm');
+                    addMakeprofileButton(makeBut);
+                    $('.profButts').append(editBut);
                     $('.profButts').append(makeBut);
                     $('.profButts').append(peBut);
                 }
@@ -497,7 +504,120 @@ $(document).ready(function () {
             });
         };
 
-        $('#listprofile').addClass('active');
+        var editProfile = function editProfile(edit, form) {
+            edit.click(function () {
+                if ($(this).hasClass('clicked')) {
+                    alterForm(form, true);
+                    $(this).removeClass('clicked');
+                    $('#profCont').hide();
+                    $('#profPass').hide();
+                } else {
+                    alterForm(form, false);
+                    $(this).addClass('clicked');
+                    $('#profCont').show();
+                    $('#profPass').show();
+                }
+            });
+        };
+
+        var addMakeprofileButton = function addMakeprofileButton(makeBut) {
+            jQuery.validator.addMethod("lettersonly", function (value, element) {
+                return this.optional(element) || /^[a-z\s]+$/i.test(value);
+            }, "Only alphabetical characters");
+            jQuery.validator.addMethod("username", function (value, element) {
+                return this.optional(element) || /^[a-z\s\d]+$/i.test(value);
+            }, "Only alphabetical characters and numbers");
+            jQuery.validator.addMethod("password", function (value, element) {
+                return this.optional(element) || /^(?=(?:.*\d){1})(?=(?:.*[A-Z]){1})(?=(?:.*[a-z]){1})\S{6,}$/i.test(value);
+            }, "please introduce at least one capital letter, lower letter, and number, minimun 6 characters");
+
+            $('#password').change(function () {
+                var password = $(this).val();
+            });
+
+            $('#UserForm').validate({
+                rules: {
+                    name: {
+                        required: true,
+                        minlength: 2,
+                        lettersonly: true
+                    },
+                    lastname: {
+                        required: true,
+                        minlength: 2,
+                        lettersonly: true
+                    },
+                    username: {
+                        required: true,
+                        minlength: 4,
+                        username: true
+                    },
+                    email: {
+                        required: true,
+                        email: true
+                    },
+                    password: {
+                        password: true
+                    },
+                    passwordConf: {
+                        password: true,
+                        equalTo: "#password"
+                    }
+                },
+                messages: {}
+
+            });
+            makeBut.click(function (e) {
+                if ($('#UserForm').valid()) {
+                    alterForm('#UserForm', true);
+                    $('#profCont').hide();
+                    $('#profPass').hide();
+                    $('#profedit').hide();
+                    $('.alert').show();
+                    confirmBut = $("<button type='button' name='button' class='btn btn-success' id='profConf'>Confirm</button>");
+                    backBut = $("<button type='button' name='button' class='btn btn-primary' id='profBack'>Back</button>");
+                    backButton(backBut, '#UserForm', 'prof');
+                    confirmEuserButton(confirmBut);
+                    $('.profButts').append(confirmBut);
+                    $('.profButts').append(backBut);
+                }
+            });
+        };
+
+        /* Confirm Button For Editing User */
+
+
+        var confirmEuserButton = function confirmEuserButton(confirmBut) {
+            confirmBut.click(function () {
+                $(this).addClass('disabled');
+                name = $('#name').val();
+                lastname = $('#lastname').val();
+                username = $('#username').val();
+                email = $('#email').val();
+                password = $('#password').val();
+                confirm = $('#passwordConf').val();
+                id = $('#id').val();
+
+                $.ajax({
+                    headers: { 'X-CSRF-Token': $('meta[name=csrf-token]').attr('content') },
+                    url: '/users/profile/update',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { id: id, name: name, lastname: lastname, username: username, email: email, password: password, password_confirmation: confirm },
+                    success: function success(data) {
+                        profile();
+                    },
+                    error: function error(_error) {
+                        $(this).removeClass('disabled');
+                    }
+                });
+            });
+        };
+
+        $('.listprofile').addClass('active');
+
+
+        profile();
     }
 
     /*End Profile Functions*/
@@ -553,8 +673,8 @@ $(document).ready(function () {
                                 var rol = role[a];
                                 colvalue_4.append(rol.name + '<br/>');
                             }
-                            editBut = $('<button type="button" class="btn btn-primary btn-sm" id="editBut">Edit</button> ');
-                            delBut = $('<button type="button" class="btn btn-danger btn-sm" id="delBut">Delete</button>');
+                            editBut = $('<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#userMod" id="editBut">Edit</button> ');
+                            delBut = $('<button type="button" data-toggle="modal" data-target="#userMod" class="btn btn-danger btn-sm" id="delBut">Delete</button>');
                             // we have to make in steps to add the onclick event
                             addEditUserClick(editBut, user, role);
                             addMakeDuserButton(delBut, user);
@@ -638,8 +758,8 @@ $(document).ready(function () {
                     // Put the data into the element you care about.
                 },
                 // Fin
-                error: function error(_error) {
-                    ReadError(_error);
+                error: function error(_error2) {
+                    ReadError(_error2);
                 }
             });
         };
@@ -684,8 +804,8 @@ $(document).ready(function () {
                                 $('#clientBox').show();
                             },
                             // Fin
-                            error: function error(_error3) {
-                                ReadError(_error3);
+                            error: function error(_error4) {
+                                ReadError(_error4);
                             }
                         });
                     }
@@ -799,11 +919,20 @@ $(document).ready(function () {
                     data: { name: name, lastname: lastname, username: username, email: email, password: password, password_confirmation: confirm, roles: role, client: client },
                     success: function success(data) {
                         $('#form_user_search').trigger("submit");
-                        closeModal('.Modal');
+                        $('#userMod').modal('hide');
+                        $('.alert').append('User Created Sucessfully');
+                        $('.alert').removeClass('alert-warning');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-success');
+                        $('#userAlertMod').modal('show');
                     },
-                    error: function error(_error4) {
-                        ReadError(_error4);
+                    error: function error(_error5) {
                         $(this).removeClass('disabled');
+                        $('.alert').append('An error has ocurred');
+                        $('.alert').removeClass('alert-success');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-warning');
+                        $('#userAlertMod').modal('show');
                     }
                 });
             });
@@ -815,7 +944,7 @@ $(document).ready(function () {
         var addEditUserClick = function addEditUserClick(buttonEdit, user, rols) {
             var name = user.name.split(' ');
             buttonEdit.click(function () {
-                box = $("<div class='Modal' id='userModal' style='display:none;'><div class='modalContent' id='modalUpdateUser'><h3>Update User</h3><form class='UserForm' id='UserForm' enctype='multipart/form-data' ></form></div></div>");
+                box = $("<form class='UserForm' id='UserForm' enctype='multipart/form-data' ></form>");
                 alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the User</strong></div>');
                 inputI = $('<input id="id" name="id" style="display: none;" type="text" class="form-control" value="' + user.id + '" required>');
                 inputN = $('<div><label for="name">Name<label></div><div><input id="name" name="name" type="text" class="form-control" placeholder="Name" value="' + name[0] + '" required></div>');
@@ -827,7 +956,10 @@ $(document).ready(function () {
                 selectR = $('<div><label for="role" >Role<label><div id="roles" style="height:fit-content;" class="form-control"></div>');
                 selectC = $('<div id="clientBox" style="display:none;"><div><label for="selectc" >Client<label></div><div><select id="client" class="form-control" name="selectc"></select></div>');
 
-                $('#rightContent').append(box);
+                $('.modal-title').empty();
+                $('.modal-body').empty();
+                $('.modal-title').append('Edit User');
+                $('.modal-body').append(box);
                 $('#UserForm').append(alert);
                 $('#UserForm').append(inputI);
                 $('#UserForm').append(inputN);
@@ -866,22 +998,20 @@ $(document).ready(function () {
                         }
                     },
                     // Fin
-                    error: function error(_error5) {
-                        ReadError(_error5);
+                    error: function error(_error7) {
+                        ReadError(_error7);
                     }
                 });
 
                 $('#UserForm').append("<div id='userButts'></div>");
-                clsbut = $("<span class='close'>&times;</span>");
-                closeButton(clsbut, '.Modal');
+
                 makeBut = $("<button type='button' name='button' class='btn btn-primary' id='userCont'>Make</button>");
                 peBut = $("<button type='button' name='button' class='btn btn-primary' id='userPass'>Change Password</button>");
                 _passwordEditUser(peBut);
                 addMakeEuserButton(makeBut);
-                $('#modalUpdateUser').prepend(clsbut);
+
                 $('#userButts').append(makeBut);
                 $('#userButts').append(peBut);
-                $('.Modal').css('display', 'block');
             });
         };
 
@@ -957,7 +1087,7 @@ $(document).ready(function () {
                     confirmBut = $("<button type='button' name='button' class='btn btn-success' id='userConf'>Confirm</button>");
                     backBut = $("<button type='button' name='button' class='btn btn-primary' id='userBack'>Back</button>");
                     backButton(backBut, '#UserForm', 'user');
-                    confirmEuserButton(confirmBut);
+                    _confirmEuserButton(confirmBut);
                     $('#userButts').append(confirmBut);
                     $('#userButts').append(backBut);
                 }
@@ -967,7 +1097,7 @@ $(document).ready(function () {
         /* Confirm Button For Editing User */
 
 
-        var confirmEuserButton = function confirmEuserButton(confirmBut) {
+        var _confirmEuserButton = function _confirmEuserButton(confirmBut) {
             confirmBut.click(function () {
                 $(this).addClass('disabled');
                 name = $('#name').val();
@@ -992,10 +1122,20 @@ $(document).ready(function () {
                     data: { id: id, name: name, lastname: lastname, username: username, email: email, password: password, password_confirmation: confirm, roles: role, client: client },
                     success: function success(data) {
                         $('#form_user_search').trigger("submit");
-                        closeModal('.Modal');
+                        $('#userMod').modal('hide');
+                        $('.alert').append('User Edited Sucessfully');
+                        $('.alert').removeClass('alert-warning');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-success');
+                        $('#userAlertMod').modal('show');
                     },
-                    error: function error(_error7) {
+                    error: function error(_error8) {
                         $(this).removeClass('disabled');
+                        $('.alert').append('An error has ocurred');
+                        $('.alert').removeClass('alert-success');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-warning');
+                        $('#userAlertMod').modal('show');
                     }
                 });
             });
@@ -1006,26 +1146,25 @@ $(document).ready(function () {
 
         var addMakeDuserButton = function addMakeDuserButton(delButt, user) {
             delButt.click(function () {
-                box = $("<div class='Modal' id='userDModal' style='display:none;'><div class='modalContent' id='modalDeleteUser'><h3>Delete User</h3><form class='UserForm' id='UserForm' enctype='multipart/form-data' ></form></div></div>");
-                alert = $('<div class="alert alert-warning" ><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Are You Sure for delete ' + user.name + ' user?</strong></div>');
+                box = $("<form class='UserForm' id='UserForm' enctype='multipart/form-data' ></form>");
+                alert = $('<h4><strong>Are You Sure for delete ' + user.name + ' user?</strong></h4></div>');
                 inputI = $('<input id="id" name="id" style="display: none;" type="text" class="form-control" value="' + user.id + '" required>');
-                $('#rightContent').append(box);
+
+                $('.modal-title').empty();
+                $('.modal-body').empty();
+                $('.modal-title').append('Delete User');
+                $('.modal-body').append(box);
                 $('#UserForm').append(alert);
                 $('#UserForm').append(inputI);
 
                 $('#UserForm').append("<div id='userButts'></div>");
                 clsbut = $("<span class='close'>&times;</span>");
-                closeButton(clsbut, '.Modal');
 
                 makeBut = $("<button type='button' name='button' class='btn btn-danger' id='userCont'>Delete</button>");
-                peBut = $("<button type='button' name='button' class='btn btn-primary' id='userPass'>Back</button>");
-                closeButton(peBut, '.Modal');
+
                 DeleteUserButton(makeBut);
 
-                $('#modalDeleteUser').prepend(clsbut);
                 $('#userButts').append(makeBut);
-                $('#userButts').append(peBut);
-                $('.Modal').css('display', 'block');
             });
         };
 
@@ -1045,7 +1184,20 @@ $(document).ready(function () {
                     data: { id: id },
                     success: function success(data) {
                         $('#form_user_search').trigger("submit");
-                        closeModal('.Modal');
+                        $('#userMod').modal('hide');
+                        $('.alert').append('User Deleted Sucessfully');
+                        $('.alert').removeClass('alert-warning');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-success');
+                        $('#userAlertMod').modal('show');
+                    },
+                    error: function error(_error9) {
+                        $(this).removeClass('disabled');
+                        $('.alert').append('An error has ocurred');
+                        $('.alert').removeClass('alert-success');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-warning');
+                        $('#userAlertMod').modal('show');
                     }
                 });
             });
@@ -1054,7 +1206,7 @@ $(document).ready(function () {
         /*Execute Script*/
 
 
-        $('#listuser').addClass('active');
+        $('.listuser').addClass('active');
         /*Search User Table*/
 
         $('#table_user_header_name').click(function (e) {
@@ -1090,7 +1242,7 @@ $(document).ready(function () {
 
         $('.btn-create').click(function () {
 
-            box = $("<div class='Modal' id='userModal' style='display:none;'><div class='modalContent' id='modalCreateUser'><h3>New User</h3><form class='UserForm' id='UserForm' enctype='multipart/form-data' ></form></div></div>");
+            box = $("<form class='UserForm' id='UserForm' enctype='multipart/form-data' ></form>");
             alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the User</strong></div>');
             inputN = $('<div><label for="name">Name<label></div><div><input id="name" name="name" type="text" class="form-control" placeholder="Name" required></div>');
             inputL = $('<div><label for="lastname">Last Name<label></div><div><input id="lastname" name="lastname" type="text" class="form-control" placeholder="Last Name" required></div>');
@@ -1101,7 +1253,11 @@ $(document).ready(function () {
             selectR = $('<div><label for="role" >Role<label><div id="roles" style="height:fit-content;" class="form-control"></div>');
             selectC = $('<div id="clientBox" style="display:none;"><div><label for="selectc" >Client<label></div><div><select id="client" class="form-control" name="selectc"></select></div>');
 
-            $('#rightContent').append(box);
+            $('.modal-title').empty();
+            $('.modal-body').empty();
+            $('.modal-title').append('Create User');
+            $('.modal-body').append(box);
+
             $('#UserForm').append(alert);
             $('#UserForm').append(inputN);
             $('#UserForm').append(inputL);
@@ -1126,31 +1282,24 @@ $(document).ready(function () {
                         var role = roles[i];
                         var label = $('<label id="labelr' + i + '" class="RoleLabel checkbox-inline" >' + role.name + '</label>');
                         var input = $('<input class="roles" type="checkbox" name="role" value="' + role.id + '"/>');
-                        $('#roles').append('<div class="checkRoles' + i + ' checkbox-inline" title="' + role.description + '"></div>');
+                        $('#roles').append('<div class="checkRoles' + i + ' checkbox-inline" data-toggle="tooltip" data-placement="bottom" title="' + role.description + '"></div>');
                         userClient(input);
                         $('.checkRoles' + i).append(label);
                         $('#labelr' + i).prepend(input);
                     }
                 },
                 // Fin
-                error: function error(_error2) {
-                    ReadError(_error2);
+                error: function error(_error3) {
+                    ReadError(_error3);
                 }
             });
 
             $('#UserForm').append("<div id='userButts'></div>");
 
-            clsbut = $("<span class='close'>&times;</span>");
-            closeButton(clsbut, '.Modal');
-
             makeBut = $("<button type='button' name='button' class='btn btn-primary' id='userCont'>Make</button>");
             addMakeuserButton(makeBut);
 
-            $('#modalCreateUser').prepend(clsbut);
-
             $('#userButts').append(makeBut);
-
-            $('.Modal').css('display', 'block');
         });$('#result_user_page').change(function () {
             $('#form_user_search').trigger("submit");
         });
@@ -1208,8 +1357,8 @@ $(document).ready(function () {
                             var colvalue_6 = $('<td>' + currency.updated_at + '</td>');
                             var colvalue_7 = $('<td class="text-center"></td>');
 
-                            editBut = $('<button type="button" class="btn btn-primary" id="editBut">Edit</button>');
-                            delBut = $('<button type="button" class="btn btn-danger" id="delBut">Delete</button>');
+                            editBut = $('<button type="button" data-toggle="modal" data-target="#currencyMod" class="btn btn-primary btn-sm" id="editBut">Edit</button>');
+                            delBut = $('<button type="button" data-toggle="modal" data-target="#currencyMod" class="btn btn-danger btn-sm" id="delBut">Delete</button>');
                             addEditCurrencyClick(editBut, currency);
                             addMakeDcurrencyButton(delBut, currency);
 
@@ -1272,8 +1421,8 @@ $(document).ready(function () {
                     // Put the data into the element you care about.
                 },
                 // Fin
-                error: function error(_error8) {
-                    ReadError(_error8);
+                error: function error(_error10) {
+                    ReadError(_error10);
                 }
             });
         };
@@ -1387,7 +1536,20 @@ $(document).ready(function () {
                     data: { name: name, symbol: symbol, type: type, value: value },
                     success: function success(data) {
                         $('#form_currency_search').trigger("submit");
-                        closeModal('.Modal');
+                        $('#currencyMod').modal('hide');
+                        $('.alert').append('Currency Created Sucessfully');
+                        $('.alert').removeClass('alert-warning');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-success');
+                        $('#currencyAlertMod').modal('show');
+                    },
+                    error: function error(_error11) {
+                        $(this).removeClass('disabled');
+                        $('.alert').append('An error has ocurred');
+                        $('.alert').removeClass('alert-success');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-warning');
+                        $('#currencyAlertMod').modal('show');
                     }
                 });
             });
@@ -1399,7 +1561,7 @@ $(document).ready(function () {
         var addEditCurrencyClick = function addEditCurrencyClick(buttonEdit, currency) {
             buttonEdit.click(function () {
 
-                box = $("<div class='Modal' id='currencyModal' style='display:none;'><div class='modalContent' id='modalUpdateCurrency'><h3>Update Currency</h3><form class='CurrencyForm' id='CurrencyForm' enctype='multipart/form-data' ></form></div></div>");
+                box = $("<form class='CurrencyForm' id='CurrencyForm' enctype='multipart/form-data' ></form>");
                 alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Currency</strong></div>');
                 inputI = $('<input id="id" name="id" style="display: none;" type="text" class="form-control" value="' + currency.id + '" required>');
                 inputN = $('<div><label for="name">Name<label></div><div><input id="name" name="name" type="text" class="form-control" placeholder="Name" value="' + currency.name + '"  required></div>');
@@ -1410,7 +1572,11 @@ $(document).ready(function () {
 
                 types = ['Currency', 'Cryptocurrency', 'Token'];
 
-                $('#rightContent').append(box);
+                $('.modal-title').empty();
+                $('.modal-body').empty();
+                $('.modal-title').append('Edit Currency');
+                $('.modal-body').append(box);
+
                 $('#CurrencyForm').append(alert);
                 $('#CurrencyForm').append(inputI);
                 $('#CurrencyForm').append(inputN);
@@ -1461,15 +1627,10 @@ $(document).ready(function () {
 
                 $('#CurrencyForm').append("<div id='currnButts'></div>");
 
-                clsbut = $("<span class='close'>&times;</span>");
-                closeButton(clsbut, '.Modal');
-
                 makeBut = $("<button type='button' name='button' class='btn btn-primary' id='currnCont'>Make</button>");
                 addMakeEcurrencyButton(makeBut);
 
-                $('#modalUpdateCurrency').prepend(clsbut);
                 $('#currnButts').append(makeBut);
-                $('.Modal').css('display', 'block');
             });
         };
 
@@ -1539,7 +1700,6 @@ $(document).ready(function () {
                     value = value.replace(/,/g, '.');
                     value = parseFloat(value);
                 }
-                console.log(value);
 
                 $.ajax({
                     headers: { 'X-CSRF-Token': $('meta[name=csrf-token]').attr('content') },
@@ -1549,7 +1709,20 @@ $(document).ready(function () {
                     data: { id: id, name: name, symbol: symbol, type: type, value: value },
                     success: function success(data) {
                         $('#form_currency_search').trigger("submit");
-                        closeModal('.Modal');
+                        $('#currencyMod').modal('hide');
+                        $('.alert').append('Currency Edited Sucessfully');
+                        $('.alert').removeClass('alert-warning');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-success');
+                        $('#currencyAlertMod').modal('show');
+                    },
+                    error: function error(_error12) {
+                        $(this).removeClass('disabled');
+                        $('.alert').append('An error has ocurred');
+                        $('.alert').removeClass('alert-success');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-warning');
+                        $('#currencyAlertMod').modal('show');
                     }
                 });
             });
@@ -1561,28 +1734,24 @@ $(document).ready(function () {
         var addMakeDcurrencyButton = function addMakeDcurrencyButton(delButt, currency) {
             delButt.click(function () {
 
-                box = $("<div class='Modal' id='userDModal' style='display:none;'><div class='modalContent' id='modalDeleteCurrency'><h3>Delete Currency</h3><form class='CurrencyForm' id='CurrencyForm' enctype='multipart/form-data' ></form></div></div>");
-                alert = $('<div class="alert alert-warning" ><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Are You Sure for delete ' + currency.name + ' currency?</strong></div>');
+                box = $("<form class='CurrencyForm' id='CurrencyForm' enctype='multipart/form-data' ></form>");
+                alert = $('<h4><strong>Are You Sure for delete ' + currency.name + ' currency?</strong></h4>');
                 inputI = $('<input id="id" name="id" style="display: none;" type="text" class="form-control" value="' + currency.id + '" required>');
 
-                $('#rightContent').append(box);
+                $('.modal-title').empty();
+                $('.modal-body').empty();
+                $('.modal-title').append('Delete Currency');
+                $('.modal-body').append(box);
+
                 $('#CurrencyForm').append(alert);
                 $('#CurrencyForm').append(inputI);
 
                 $('#CurrencyForm').append("<div id='currnButts'></div>");
 
-                clsbut = $("<span class='close'>&times;</span>");
-                closeButton(clsbut, '.Modal');
-
                 makeBut = $("<button type='button' name='button' class='btn btn-danger' id='currnCont'>Delete</button>");
-                peBut = $("<button type='button' name='button' class='btn btn-primary' id='currnPass'>Back</button>");
-                closeButton(peBut, '.Modal');
                 DeleteCurrencyButton(makeBut);
 
-                $('#modalDeleteCurrency').prepend(clsbut);
                 $('#currnButts').append(makeBut);
-                $('#currnButts').append(peBut);
-                $('.Modal').css('display', 'block');
             });
         };
 
@@ -1602,7 +1771,20 @@ $(document).ready(function () {
                     data: { id: id },
                     success: function success(data) {
                         $('#form_currency_search').trigger("submit");
-                        closeModal('.Modal');
+                        $('#currencyMod').modal('hide');
+                        $('.alert').append('Currency Deleted Sucessfully');
+                        $('.alert').removeClass('alert-warning');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-success');
+                        $('#currencyAlertMod').modal('show');
+                    },
+                    error: function error(_error13) {
+                        $(this).removeClass('disabled');
+                        $('.alert').append('An error has ocurred');
+                        $('.alert').removeClass('alert-success');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-warning');
+                        $('#currencyAlertMod').modal('show');
                     }
                 });
             });
@@ -1611,7 +1793,7 @@ $(document).ready(function () {
         /*Execute The Script*/
 
 
-        $('#listcurrency').addClass('active');
+        $('.listcurrency').addClass('active');
         /*Search Currencies Table*/
 
         $('#table_currency_header_name').click(function (e) {
@@ -1651,7 +1833,7 @@ $(document).ready(function () {
 
         $('.btn-create-Cu').click(function () {
 
-            box = $("<div class='Modal' id='currencyModal' style='display:none;'><div class='modalContent' id='modalCreateCurrency'><h3>New Currency</h3><form class='CurrencyForm' id='CurrencyForm' enctype='multipart/form-data' ></form></div></div>");
+            box = $("<form class='CurrencyForm' id='CurrencyForm' enctype='multipart/form-data' ></form>");
             alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Currency</strong></div>');
             inputN = $('<div><label for="name">Name<label></div><div><input id="name" name="name" type="text" class="form-control" placeholder="Name" required></div>');
             inputS = $('<div><label for="symbol">Symbol<label></div><div><input id="symbol" name="symbol" type="text" class="form-control" placeholder="Symbol" required></div>');
@@ -1661,7 +1843,11 @@ $(document).ready(function () {
 
             types = ['Currency', 'Cryptocurrency', 'Token'];
 
-            $('#rightContent').append(box);
+            $('.modal-title').empty();
+            $('.modal-body').empty();
+            $('.modal-title').append('Create Currency');
+            $('.modal-body').append(box);
+
             $('#CurrencyForm').append(alert);
             $('#CurrencyForm').append(inputN);
             $('#CurrencyForm').append(inputS);
@@ -1674,22 +1860,16 @@ $(document).ready(function () {
                 option = $('<option value="' + type + '">' + type + '</option>');
                 $('#type').append(option);
             }
+
             changeValueCurrency('#valuechanges');
             formatInput('#value');
 
             $('#CurrencyForm').append("<div id='currnButts'></div>");
 
-            clsbut = $("<span class='close'>&times;</span>");
-            closeButton(clsbut, '.Modal');
-
             makeBut = $("<button type='button' class='btn btn-primary' name='button' id='currnCont'>Make</button>");
             addMakeCurrencyButton(makeBut);
 
-            $('#modalCreateCurrency').prepend(clsbut);
-
             $('#currnButts').append(makeBut);
-
-            $('.Modal').css('display', 'block');
         });$('#result_currency_page').change(function () {
             $('#form_currency_search').trigger("submit");
         });
@@ -1770,9 +1950,9 @@ $(document).ready(function () {
                             var colvalue_1 = $('<td>' + balance.symbol + '</td>');
                             var colvalue_2 = $('<td>' + formatNumber.num(balance.amount) + '</td>');
                             if (balance.symbol == 'VEF') {
-                                var colvalue_3 = $('<td">' + formatNumber.num(balance.amount / balance.value) + '</td>');
+                                var colvalue_3 = $('<td>' + formatNumber.num(balance.amount / balance.value) + '</td>');
                             } else {
-                                var colvalue_3 = $('<td">' + formatNumber.num(balance.amount * balance.value) + '</td>');
+                                var colvalue_3 = $('<td>' + formatNumber.num(balance.amount * balance.value) + '</td>');
                             }
 
                             rowResult.append(colvalue_1);
@@ -1780,7 +1960,7 @@ $(document).ready(function () {
                             rowResult.append(colvalue_3);
                             if (data.eaccess) {
                                 var colvalue_4 = $('<td class="text-center"></td>');
-                                var buttEx = $('<button class="btn btn-sm btn-primary" type="button">Exchange</button>');
+                                var buttEx = $('<button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#fundsMod" type="button">Exchange</button>');
                                 exchangeButton(buttEx, balance);
                                 colvalue_4.append(buttEx);
                                 rowResult.append(colvalue_4);
@@ -1911,7 +2091,7 @@ $(document).ready(function () {
                             rowResult.append(colvalue_3);
                             if (data.eaccess) {
                                 var colvalue_4 = $('<td class="text-center"></td>');
-                                var buttEx = $('<button class="btn btn-sm btn-primary" type="button">Exchange</button>');
+                                var buttEx = $('<button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#fundsMod" type="button">Exchange</button>');
                                 exchangeButton(buttEx, balance);
                                 colvalue_4.append(buttEx);
                                 rowResult.append(colvalue_4);
@@ -2042,7 +2222,7 @@ $(document).ready(function () {
                             rowResult.append(colvalue_3);
                             if (data.eaccess) {
                                 var colvalue_4 = $('<td class="text-center"></td>');
-                                var buttEx = $('<button class="btn btn-primary btn-sm" type="button">Exchange</button>');
+                                var buttEx = $('<button class="btn btn-primary btn-sm" data-toggle="modal" data-target="#fundsMod" type="button">Exchange</button>');
                                 exchangeButton(buttEx, balance);
                                 colvalue_4.append(buttEx);
                                 rowResult.append(colvalue_4);
@@ -2128,7 +2308,7 @@ $(document).ready(function () {
         var exchangeButton = function exchangeButton(button, currency) {
             button.click(function () {
 
-                box = $("<div class='Modal' id='exchangeModal' style='display:none;'><div class='modalContent' id='modalExchange'><h3>Exchange</h3><form class='ExchangeForm' id='ExchangeForm' enctype='multipart/form-data' ></form></div></div>");
+                box = $("<form class='ExchangeForm' id='ExchangeForm' enctype='multipart/form-data' ></form>");
                 alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Exchange</strong></div>');
                 labelA = $('<div><label >Available Balance: <span id="availableB"></span><label></div>');
                 selectO = $('<div><label for="selectout" >Change For:<label></div><div><select id="out" class="form-control" name="selectout"></select></div>');
@@ -2139,7 +2319,11 @@ $(document).ready(function () {
                 inputA = $('<div><label for="created">Allocated<label></div><div><input id="created" name="created" type="date" class="form-control" placeholder="Allocated" ></div>');
                 inputF = $('<div><label for="funded">Funded<label></div><div><input id="funded" name="funded" type="date" class="form-control" placeholder="Funded" ></div>');
 
-                $('#rightContent').append(box);
+                $('.modal-title').empty();
+                $('.modal-body').empty();
+                $('.modal-title').append('Exchange Currency');
+                $('.modal-body').append(box);
+
                 $('#ExchangeForm').append(alert);
                 $('#ExchangeForm').append(labelA);
                 $('#ExchangeForm').append(selectO);
@@ -2173,16 +2357,13 @@ $(document).ready(function () {
                         }
                     },
                     // Fin
-                    error: function error(_error9) {
-                        ReadError(_error9);
+                    error: function error(_error14) {
+                        ReadError(_error14);
                     }
                 });
                 availableBalance('#out');
 
                 $('#ExchangeForm').append("<div id='exButts'></div>");
-
-                clsbut = $("<span class='close'>&times;</span>");
-                closeButton(clsbut, '.Modal');
 
                 exchangeInValue('#valueout', '#rate', '#valuein');
                 exchangeInValue('#valueout', '#valuein', '#rate');
@@ -2190,13 +2371,9 @@ $(document).ready(function () {
                 makeBut = $("<button type='button' class='btn btn-primary' name='button' id='exCont'>Make</button>");
                 addMakeExButton(makeBut);
 
-                $('#modalExchange').prepend(clsbut);
-
                 $('#exButts').append(makeBut);
 
                 $('#out').trigger("change");
-
-                $('.Modal').css('display', 'block');
             });
         };
 
@@ -2219,8 +2396,8 @@ $(document).ready(function () {
                         $('#availableB').append(amount);
                     },
                     // Fin
-                    error: function error(_error10) {
-                        ReadError(_error10);
+                    error: function error(_error15) {
+                        ReadError(_error15);
                     }
                 });
             });
@@ -2312,7 +2489,12 @@ $(document).ready(function () {
                     data: { cout: currencyout, cin: currencyin, aout: amountout, ain: amountin, rate: rate, created: created, funded: funded },
                     success: function success(data) {
 
-                        closeModal('.Modal');
+                        $('#fundsMod').modal('hide');
+                        $('.alert').append('Exchange Made Sucessfully');
+                        $('.alert').removeClass('alert-warning');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-success');
+                        $('#fundsAlertMod').modal('show');
 
                         $('#form_balance_currency_search').trigger("submit");
                         $('#form_balance_crypto_search').trigger("submit");
@@ -2320,6 +2502,14 @@ $(document).ready(function () {
                         $('#form_transaction_search').trigger("submit");
                         $('#form_pending_transaction_search').trigger("submit");
                         totalBalance();
+                    },
+                    error: function error(_error16) {
+                        $(this).removeClass('disabled');
+                        $('.alert').append('An error has ocurred');
+                        $('.alert').removeClass('alert-success');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-warning');
+                        $('#fundsAlertMod').modal('show');
                     }
                 });
             });
@@ -2387,7 +2577,7 @@ $(document).ready(function () {
                             var printbut = $("<button type='button' name='button' class='btn btn-primary btn-sm' id='txPrint'>Receipt</button>");
 
                             if (data.eaccess) {
-                                var delbut = $("<button type='button' name='button' class='btn btn-danger btn-sm' id='txdel'>Delete</button>");
+                                var delbut = $("<button type='button' name='button' data-toggle='modal' data-target='#fundsMod' class='btn btn-danger btn-sm' id='txdel'>Delete</button>");
                                 addMakeDTxButton(delbut, transaction);
                                 colvalue_10.append(delbut);
                             }
@@ -2465,8 +2655,8 @@ $(document).ready(function () {
                     }
                 },
                 // Fin
-                error: function error(_error11) {
-                    ReadError(_error11);
+                error: function error(_error17) {
+                    ReadError(_error17);
                 }
             });
         };
@@ -2536,8 +2726,8 @@ $(document).ready(function () {
                             var colvalue_8 = $('<td>' + transaction.status + '</td>');
                             if (data.eaccess) {
                                 var colvalue_9 = $('<td class="text-center"></td>');
-                                var printbut = $("<button type='button' name='button' class='btn btn-success btn-sm' id='validateTrans'>Validate</button>");
-                                var delbut = $("<button type='button' name='button' class='btn btn-success btn-sm' id='txdel'>Delete</button>");
+                                var printbut = $("<button type='button' name='button' data-toggle='modal' data-target='#fundsMod' class='btn btn-success btn-sm' id='validateTrans'>Validate</button>");
+                                var delbut = $("<button type='button' name='button' data-toggle='modal' data-target='#fundsMod' class='btn btn-success btn-sm' id='txdel'>Delete</button>");
                                 addMakeDTxButton(delbut, transaction);
                                 colvalue_9.append(delbut);
                                 colvalue_9.append(printbut);
@@ -2615,8 +2805,8 @@ $(document).ready(function () {
                     }
                 },
                 // Fin
-                error: function error(_error12) {
-                    ReadError(_error12);
+                error: function error(_error18) {
+                    ReadError(_error18);
                 }
             });
         };
@@ -2631,7 +2821,7 @@ $(document).ready(function () {
         var validateTransaction = function validateTransaction(button, transaction) {
             button.click(function () {
 
-                box = $("<div class='Modal' id='exchangeModal' style='display:none;'><div class='modalContent' id='modalExchange'><h3>Exchange</h3><form class='ExchangeForm' id='ExchangeForm' enctype='multipart/form-data' ></form></div></div>");
+                box = $("<form class='ExchangeForm' id='ExchangeForm' enctype='multipart/form-data'></form>");
                 alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Exchange</strong></div>');
                 labelA = $('<div><label >Available Balance: <span id="availableB"></span><label></div>');
                 selectO = $('<div><label for="selectout" >Change For:<label></div><div><select  disabled="disabled" id="out" class="form-control" name="selectout"></select></div>');
@@ -2641,7 +2831,11 @@ $(document).ready(function () {
                 inputI = $('<div><label for="valuein">Value In<label></div><div><input id="valuein" name="valuein" type="text" class="form-control" placeholder="Value In" required></div>');
                 inputR = $('<div><label for="rate">Exchange Rate<label></div><div><input id="rate" name="rate" type="text" class="form-control" placeholder="Exchange Rate" required></div>');
 
-                $('#rightContent').append(box);
+                $('.modal-title').empty();
+                $('.modal-body').empty();
+                $('.modal-title').append('Validate Transaction');
+                $('.modal-body').append(box);
+
                 $('#ExchangeForm').append(alert);
                 $('#ExchangeForm').append(labelA);
                 $('#ExchangeForm').append(selectO);
@@ -2674,23 +2868,18 @@ $(document).ready(function () {
                         }
                     },
                     // Fin
-                    error: function error(_error13) {
-                        ReadError(_error13);
+                    error: function error(_error19) {
+                        ReadError(_error19);
                     }
                 });
                 availableBalance('#out');
 
                 $('#ExchangeForm').append("<div id='exButts'></div>");
 
-                clsbut = $("<span class='close'>&times;</span>");
-                closeButton(clsbut, '.Modal');
-
                 exchangeInValue('#valueout', '#rate', '#valuein');
 
                 makeBut = $("<button type='button' class='btn btn-primary' name='button' id='exCont'>Make</button>");
                 addMakeVExButton(makeBut);
-
-                $('#modalExchange').prepend(clsbut);
 
                 formatInput('#valueout');
                 formatInput('#valuein');
@@ -2698,7 +2887,6 @@ $(document).ready(function () {
 
                 $('#exButts').append(makeBut);
 
-                $('.Modal').css('display', 'block');
                 $('#out').trigger("change");
             });
         };
@@ -2774,7 +2962,12 @@ $(document).ready(function () {
                     data: { id: id, cout: currencyout, cin: currencyin, aout: amountout, ain: amountin, rate: rate },
                     success: function success(data) {
 
-                        closeModal('.Modal');
+                        $('#fundsMod').modal('hide');
+                        $('.alert').append('Validation Made Sucessfully');
+                        $('.alert').removeClass('alert-warning');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-success');
+                        $('#fundsAlertMod').modal('show');
 
                         $('#form_balance_currency_search').trigger("submit");
                         $('#form_balance_crypto_search').trigger("submit");
@@ -2782,6 +2975,14 @@ $(document).ready(function () {
                         $('#form_transaction_search').trigger("submit");
                         $('#form_pending_transaction_search').trigger("submit");
                         totalBalance();
+                    },
+                    error: function error(_error20) {
+                        $(this).removeClass('disabled');
+                        $('.alert').append('An error has ocurred');
+                        $('.alert').removeClass('alert-success');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-warning');
+                        $('#fundsAlertMod').modal('show');
                     }
                 });
             });
@@ -2792,26 +2993,27 @@ $(document).ready(function () {
 
         var addMakeDTxButton = function addMakeDTxButton(delButt, trans) {
             delButt.click(function () {
-                box = $("<div class='Modal' id='txModal' style='display:none;'><div class='modalContent' id='modalDeleteTx'><h3>Delete Transaction</h3><form class='TxForm' id='TxForm' enctype='multipart/form-data' ></form></div></div>");
-                alert = $('<div class="alert alert-warning" ><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Are You Sure for delete transaction #' + trans.reference + '?</strong></div>');
+                box = $("<form class='TxForm' id='TxForm' enctype='multipart/form-data' ></form>");
+                alert = $('<h4><strong>Are You Sure for delete transaction #' + trans.reference + '?</strong></h4>');
                 inputI = $('<input id="id" name="id" style="display: none;" type="text" class="form-control" value="' + trans.id + '" required>');
-                $('#rightContent').append(box);
+
+                $('.modal-title').empty();
+                $('.modal-body').empty();
+                $('.modal-title').append('Delete Transaction');
+                $('.modal-body').append(box);
+
                 $('#TxForm').append(alert);
                 $('#TxForm').append(inputI);
 
                 $('#TxForm').append("<div id='txButts'></div>");
-                clsbut = $("<span class='close'>&times;</span>");
-                closeButton(clsbut, '.Modal');
 
                 makeBut = $("<button type='button' class='btn btn-danger' name='button' id='txCont'>Delete</button>");
                 peBut = $("<button type='button' class='btn btn-primary' name='button' id='txPass'>Back</button>");
-                closeButton(peBut, '.Modal');
+
                 DeleteTxButton(makeBut);
 
-                $('#modalDeleteTx').prepend(clsbut);
                 $('#txButts').append(makeBut);
                 $('#txButts').append(peBut);
-                $('.Modal').css('display', 'block');
             });
         };
 
@@ -2830,9 +3032,27 @@ $(document).ready(function () {
                     dataType: "json",
                     data: { id: id },
                     success: function success(data) {
+                        $('#fundsMod').modal('hide');
+                        $('.alert').append('Transaction Deleted Sucessfully');
+                        $('.alert').removeClass('alert-warning');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-success');
+                        $('#fundsAlertMod').modal('show');
+
+                        $('#form_balance_currency_search').trigger("submit");
+                        $('#form_balance_crypto_search').trigger("submit");
+                        $('#form_balance_token_search').trigger("submit");
                         $('#form_transaction_search').trigger("submit");
                         $('#form_pending_transaction_search').trigger("submit");
-                        closeModal('.Modal');
+                        totalBalance();
+                    },
+                    error: function error(_error21) {
+                        $(this).removeClass('disabled');
+                        $('.alert').append('An error has ocurred');
+                        $('.alert').removeClass('alert-success');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-warning');
+                        $('#fundsAlertMod').modal('show');
                     }
                 });
             });
@@ -3632,7 +3852,7 @@ $(document).ready(function () {
         }
         */
 
-        $('#listfund').addClass('active');;;
+        $('.listfund').addClass('active');;;
 
         ;
 
@@ -3871,7 +4091,7 @@ $(document).ready(function () {
                             var colvalue_3 = $('<td>' + formatNumber.num(client.amount) + '</td>');
                             var colvalue_4 = $('<td class="text-center"></td>');
                             var buttonS = $('<button class="btn btn-primary btn-sm" type="button">Select Client</button>');
-                            var buttonI = $('<button class="btn btn-success btn-sm" type="button">Initial Investment</button>');
+                            var buttonI = $('<button class="btn btn-success btn-sm" data-toggle="modal" data-target="#clientMod" type="button">Initial Investment</button>');
                             selectClient(buttonS, client.id);
                             initialInvest(buttonI, client);
 
@@ -3958,9 +4178,9 @@ $(document).ready(function () {
         var selectClient = function selectClient(button, id) {
             button.click(function () {
                 /*Funds Balances*/
-                $("#table_balance_currency_content").html('');
-                $("#table_balance_crypto_content").html('');
-                $("#table_balance_token_content").html('');
+                $("#table_balance_currency_content").empty();
+                $("#table_balance_crypto_content").empty();
+                $("#table_balance_token_content").empty();
                 /*Search Balances Currency Table*/
                 function totalBalance() {
                     $.ajax({
@@ -4447,27 +4667,25 @@ $(document).ready(function () {
         var initialInvest = function initialInvest(button, user) {
             button.click(function () {
 
-                box = $("<div class='Modal' id='initalModal' style='display:none;'><div class='modalContent' id='modalCreateInitial'><h3>Initial Invest for " + user.name + "</h3><form class='InitialForm' id='InitialForm' enctype='multipart/form-data' ></form></div></div>");
+                box = $("<form class='InitialForm' id='InitialForm' enctype='multipart/form-data' ></form>");
                 alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Initial Fund Invest</strong></div>');
                 inputN = $('<div><label for="inital">Initial Invest USD<label></div><div><input id="initial" name="initial" type="text" class="form-control" placeholder="Initial Invest" required></div>');
 
-                $('#rightContent').append(box);
+                $('.modal-title').empty();
+                $('.modal-body').empty();
+                $('.modal-title').append('Initial Invest');
+                $('.modal-body').append(box);
+
                 $('#InitialForm').append(alert);
                 $('#InitialForm').append(inputN);
 
                 $('#InitialForm').append("<div id='iniButts'></div>");
 
-                clsbut = $("<span class='close'>&times;</span>");
-                closeButton(clsbut, '.Modal');
-
                 makeBut = $("<button type='button' class='btn btn-primary' name='button' id='iniCont'>Make</button>");
                 addMakeiButton(makeBut);
-
-                $('#modalCreateInitial').prepend(clsbut);
                 $('#iniButts').append(makeBut);
 
                 formatInput("#initial");
-                $('.Modal').css('display', 'block');
             });
             function addMakeiButton(makeBut) {
                 makeBut.click(function (e) {
@@ -4518,15 +4736,28 @@ $(document).ready(function () {
                         dataType: "json",
                         data: { amount: amount, id: user.id },
                         success: function success(data) {
-                            closeModal('.Modal');
                             $('#form_client_search').trigger("submit");
+                            $('#newsMod').modal('hide');
+                            $('.alert').append('Initial Invest Sucessfully');
+                            $('.alert').removeClass('alert-warning');
+                            $('.alert').removeClass('alert-danger');
+                            $('.alert').addClass('alert-success');
+                            $('#newsAlertMod').modal('show');
+                        },
+                        error: function error(_error22) {
+                            $(this).removeClass('disabled');
+                            $('.alert').append('An error has ocurred');
+                            $('.alert').removeClass('alert-success');
+                            $('.alert').removeClass('alert-danger');
+                            $('.alert').addClass('alert-warning');
+                            $('#newsAlertMod').modal('show');
                         }
                     });
                 });
             }
         };
 
-        $('#listclient').addClass('active');
+        $('.listclient').addClass('active');
         /*Search Client Table*/
 
         $('#table_client_header_name').click(function (e) {
@@ -4606,8 +4837,8 @@ $(document).ready(function () {
                             var colvalue_3 = $('<td>' + newsletter.message + '</td>');
                             var colvalue_4 = $('<td></td>');
 
-                            editBut = $('<button type="button" id="editBut" class="btn btn-primary btn-sm">Edit</button>');
-                            delBut = $('<button type="button" id="delBut" class="btn btn-danger btn-sm">Delete</button>');
+                            editBut = $('<button type="button"  data-toggle="modal" data-target="#newsMod" id="editBut" class="btn btn-primary btn-sm">Edit</button>');
+                            delBut = $('<button type="button"  data-toggle="modal" data-target="#newsMod" id="delBut" class="btn btn-danger btn-sm">Delete</button>');
                             // we have to make in steps to add the onclick event
                             addEditNewsletterClick(editBut, newsletter);
                             addMakeDnewsButton(delBut, newsletter);
@@ -4690,8 +4921,8 @@ $(document).ready(function () {
                     // Put the data into the element you care about.
                 },
                 // Fin
-                error: function error(_error14) {
-                    ReadError(_error14);
+                error: function error(_error23) {
+                    ReadError(_error23);
                 }
             });
         };
@@ -4707,21 +4938,16 @@ $(document).ready(function () {
 
         /*Make Button For Create News*/
         var addMakeNewsButton = function addMakeNewsButton(makeBut) {
-            jQuery.validator.addMethod("lettersonly", function (value, element) {
-                return this.optional(element) || /^[a-z\s]+$/i.test(value);
-            }, "Only alphabetical characters");
 
             $('#NewsForm').validate({
                 rules: {
                     title: {
                         required: true,
-                        minlength: 2,
-                        lettersonly: true
+                        minlength: 2
                     },
                     message: {
                         required: true,
-                        minlength: 2,
-                        lettersonly: true
+                        minlength: 2
                     }
                 }
             });
@@ -4761,7 +4987,20 @@ $(document).ready(function () {
                     data: { title: title, message: message },
                     success: function success(data) {
                         $('#form_newsletter_search').trigger("submit");
-                        closeModal('.Modal');
+                        $('#newsMod').modal('hide');
+                        $('.alert').append('Newsletter Created Sucessfully');
+                        $('.alert').removeClass('alert-warning');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-success');
+                        $('#newsAlertMod').modal('show');
+                    },
+                    error: function error(_error24) {
+                        $(this).removeClass('disabled');
+                        $('.alert').append('An error has ocurred');
+                        $('.alert').removeClass('alert-success');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-warning');
+                        $('#newsAlertMod').modal('show');
                     }
                 });
             });
@@ -4772,13 +5011,17 @@ $(document).ready(function () {
 
         var addEditNewsletterClick = function addEditNewsletterClick(buttonEdit, newsletter) {
             buttonEdit.click(function () {
-                box = $("<div class='Modal' id='newsletterModal' style='display:none;'><div class='modalContent' id='modalUpdateNews'><h3>Update Newsletter</h3><form class='NewsForm' id='NewsForm' enctype='multipart/form-data' ></form></div></div>");
+                box = $("<form class='NewsForm' id='NewsForm' enctype='multipart/form-data' ></form>");
                 alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Newsletter</strong></div>');
                 inputI = $('<input id="id" name="id" style="display: none;" type="text" class="form-control" value="' + newsletter.id + '" required>');
                 inputN = $('<div><label for="title">Title<label></div><div><input id="title" name="title" type="text" class="form-control" placeholder="Title" value="' + newsletter.title + '" required></div>');
                 inputL = $('<div><label for="message">Message<label></div><div><textarea id="message" class="form-control" name="message" rows="4" cols="50" placeholder="Message">' + newsletter.message + '</textarea></div>');
 
-                $('#rightContent').append(box);
+                $('.modal-title').empty();
+                $('.modal-body').empty();
+                $('.modal-title').append('Edit Newsletter');
+                $('.modal-body').append(box);
+
                 $('#NewsForm').append(alert);
                 $('#NewsForm').append(inputI);
                 $('#NewsForm').append(inputN);
@@ -4786,17 +5029,10 @@ $(document).ready(function () {
 
                 $('#NewsForm').append("<div id='newsButts'></div>");
 
-                clsbut = $("<span class='close'>&times;</span>");
-                closeButton(clsbut, '.Modal');
-
                 makeBut = $("<button type='button' class='btn btn-primary' name='button' id='newsCont'>Make</button>");
                 addMakeENewsButton(makeBut);
 
-                $('#modalUpdateNews').prepend(clsbut);
-
                 $('#newsButts').append(makeBut);
-
-                $('.Modal').css('display', 'block');
             });
         };
 
@@ -4804,21 +5040,16 @@ $(document).ready(function () {
 
 
         var addMakeENewsButton = function addMakeENewsButton(makeBut) {
-            jQuery.validator.addMethod("lettersonly", function (value, element) {
-                return this.optional(element) || /^[a-z\s]+$/i.test(value);
-            }, "Only alphabetical characters");
 
             $('#NewsForm').validate({
                 rules: {
                     title: {
                         required: true,
-                        minlength: 2,
-                        lettersonly: true
+                        minlength: 2
                     },
                     message: {
                         required: true,
-                        minlength: 2,
-                        lettersonly: true
+                        minlength: 2
                     }
                 }
             });
@@ -4858,7 +5089,20 @@ $(document).ready(function () {
                     data: { id: id, title: title, message: message },
                     success: function success(data) {
                         $('#form_newsletter_search').trigger("submit");
-                        closeModal('.Modal');
+                        $('#newsMod').modal('hide');
+                        $('.alert').append('Newsletter Edited Sucessfully');
+                        $('.alert').removeClass('alert-warning');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-success');
+                        $('#newsAlertMod').modal('show');
+                    },
+                    error: function error(_error25) {
+                        $(this).removeClass('disabled');
+                        $('.alert').append('An error has ocurred');
+                        $('.alert').removeClass('alert-success');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-warning');
+                        $('#newsAlertMod').modal('show');
                     }
                 });
             });
@@ -4870,9 +5114,14 @@ $(document).ready(function () {
         var addMakeDnewsButton = function addMakeDnewsButton(delButt, news) {
             delButt.click(function () {
                 box = $("<div class='Modal' id='newsDModal' style='display:none;'><div class='modalContent' id='modalDeleteNews'><h3>Delete User</h3><form class='NewsForm' id='NewsForm' enctype='multipart/form-data' ></form></div></div>");
-                alert = $('<div class="alert alert-warning" ><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Are You Sure for delete ' + news.title + ' Newsletter?</strong></div>');
+                alert = $('<h4><strong>Are You Sure for delete ' + news.title + ' Newsletter?</strong></h4>');
                 inputI = $('<input id="id" name="id" style="display: none;" type="text" class="form-control" value="' + news.id + '" required>');
-                $('#rightContent').append(box);
+
+                $('.modal-title').empty();
+                $('.modal-body').empty();
+                $('.modal-title').append('Delete Newsletter');
+                $('.modal-body').append(box);
+
                 $('#NewsForm').append(alert);
                 $('#NewsForm').append(inputI);
 
@@ -4881,14 +5130,9 @@ $(document).ready(function () {
                 closeButton(clsbut, '.Modal');
 
                 makeBut = $("<button type='button' name='button' class='btn btn-danger btn-sm' id='newsCont'>Delete</button>");
-                peBut = $("<button type='button' name='button' class='btn btn-primary' id='newsPass'>Back</button>");
-                closeButton(peBut, '.Modal');
                 DeleteNewsButton(makeBut);
 
-                $('#modalDeleteNews').prepend(clsbut);
                 $('#newsButts').append(makeBut);
-                $('#newsButts').append(peBut);
-                $('.Modal').css('display', 'block');
             });
         };
 
@@ -4908,7 +5152,20 @@ $(document).ready(function () {
                     data: { id: id },
                     success: function success(data) {
                         $('#form_newsletter_search').trigger("submit");
-                        closeModal('.Modal');
+                        $('#newsMod').modal('hide');
+                        $('.alert').append('Newsletter Deleted Sucessfully');
+                        $('.alert').removeClass('alert-warning');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-success');
+                        $('#newsAlertMod').modal('show');
+                    },
+                    error: function error(_error26) {
+                        $(this).removeClass('disabled');
+                        $('.alert').append('An error has ocurred');
+                        $('.alert').removeClass('alert-success');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-warning');
+                        $('#newsAlertMod').modal('show');
                     }
                 });
             });
@@ -4918,7 +5175,7 @@ $(document).ready(function () {
 
 
         /*Search User Table*/
-        $('#listnews').addClass('active');
+        $('.listnews').addClass('active');
         $('#table_newsletter_header_title').click(function (e) {
             orderTableNewsletterBy('title');
         });
@@ -4952,29 +5209,26 @@ $(document).ready(function () {
 
         $('.btn-create').click(function () {
 
-            box = $("<div class='Modal' id='newsletterModal' style='display:none;'><div class='modalContent' id='modalCreateNews'><h3>New Newsletter</h3><form class='NewsForm' id='NewsForm' enctype='multipart/form-data' ></form></div></div>");
+            box = $("<form class='NewsForm' id='NewsForm' enctype='multipart/form-data' ></form>");
             alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Newsletter</strong></div>');
             inputN = $('<div><label for="title">Title<label></div><div><input id="title" name="title" type="text" class="form-control" placeholder="Title" required></div>');
             inputL = $('<div><label for="message">Message<label></div><div><textarea id="message" class="form-control" name="message" rows="4" cols="50" placeholder="Message"></textarea></div>');
 
-            $('#rightContent').append(box);
+            $('.modal-title').empty();
+            $('.modal-body').empty();
+            $('.modal-title').append('Create Newsletter');
+            $('.modal-body').append(box);
+
             $('#NewsForm').append(alert);
             $('#NewsForm').append(inputN);
             $('#NewsForm').append(inputL);
 
             $('#NewsForm').append("<div id='newsButts'></div>");
 
-            clsbut = $("<span class='close'>&times;</span>");
-            closeButton(clsbut, '.Modal');
-
             makeBut = $("<button type='button' name='button' class='btn btn-primary' id='newsCont'>Make</button>");
             addMakeNewsButton(makeBut);
 
-            $('#modalCreateNews').prepend(clsbut);
-
             $('#newsButts').append(makeBut);
-
-            $('.Modal').css('display', 'block');
         });$('#result_newsletter_page').change(function () {
             $('#form_newsletter_search').trigger("submit");
         });
@@ -5300,8 +5554,8 @@ $(document).ready(function () {
                     // Put the data into the element you care about.
                 },
                 // Fin
-                error: function error(_error15) {
-                    ReadError(_error15);
+                error: function error(_error27) {
+                    ReadError(_error27);
                 }
             });
         };
