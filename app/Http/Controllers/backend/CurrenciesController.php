@@ -124,7 +124,8 @@ class CurrenciesController extends Controller
                 }elseif ($currency->symbol == "USD"){
                     $currency->value = 1;
                 }elseif($currency->value == "coinmarketcap") {
-                    if($this->url_exists('https://api.coinmarketcap.com/v1/ticker/'. $currency->name)){
+                  $url = 'api.coinmarketcap.com/v1/ticker/'. $currency->name;
+                  if($this->url_exists($url)){
                         $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $currency->name);
                         $data = json_decode($json);
                         $currency->value = $data[0]->price_usd;

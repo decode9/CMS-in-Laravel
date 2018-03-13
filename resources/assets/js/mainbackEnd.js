@@ -1689,12 +1689,12 @@ $(document).ready(function(){
 
                             // we have to make in steps to add the onclick event
                             var rowResult = $('<tr></tr>');
-                            var colvalue_1 = $('<td class="col-sm-12 col-md-2">' + balance.symbol + '</td>');
-                            var colvalue_2 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount) + '</td>');
+                            var colvalue_1 = $('<td>' + balance.symbol + '</td>');
+                            var colvalue_2 = $('<td>' + formatNumber.num(balance.amount) + '</td>');
                             if(balance.symbol == 'VEF'){
-                                var colvalue_3 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount / balance.value) + '</td>');
+                                var colvalue_3 = $('<td">' + formatNumber.num(balance.amount / balance.value) + '</td>');
                             }else{
-                                var colvalue_3 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount * balance.value)+ '</td>');
+                                var colvalue_3 = $('<td">' + formatNumber.num(balance.amount * balance.value)+ '</td>');
                             }
 
 
@@ -1702,8 +1702,8 @@ $(document).ready(function(){
                             rowResult.append(colvalue_2);
                             rowResult.append(colvalue_3);
                             if(data.eaccess){
-                                var colvalue_4 = $('<td class="col-sm-12 col-md-2"></td>');
-                                var buttEx = $('<button type="button">Exchange</button>');
+                                var colvalue_4 = $('<td class="text-center"></td>');
+                                var buttEx = $('<button class="btn btn-sm btn-primary" type="button">Exchange</button>');
                                 exchangeButton(buttEx, balance);
                                 colvalue_4.append(buttEx);
                                 rowResult.append(colvalue_4);
@@ -1725,7 +1725,7 @@ $(document).ready(function(){
                             var pageList = $('<ul class="pagination"></ul>');
 
                             for (i = page; i <= totalPages; i++) {
-                                pagebutton = $('<li class="page_balance_currency pages">' + i + '</li>');
+                                pagebutton = $('<li class="page_balance_currency pages"><a href="#">' + i + '</a></li>');
                                 pageList.append(pagebutton);
                                 addPageBCButton(pagebutton);
                             }
@@ -1742,7 +1742,7 @@ $(document).ready(function(){
                             var pageList = $('<ul class="pagination"></ul>');
 
                             for (i = page; i <= totalPages; i++) {
-                                pagebutton = $('<li class="page_balance_currency pages">' + i + '</li>');
+                                pagebutton = $('<li class="page_balance_currency pages"><a href="#">' + i + '</a></li>');
                                 pageList.append(pagebutton);
                                 addPageBCButton(pagebutton);
                             }
@@ -1759,7 +1759,7 @@ $(document).ready(function(){
                             var pageList = $('<ul class="pagination"></ul>');
 
                             for (i = page; i <= totalPages; i++) {
-                                pagebutton = $('<li class="page_balance_currency pages">' + i + '</li>');
+                                pagebutton = $('<li class="page_balance_currency pages"><a href="#">' + i + '</a></li>');
                                 pageList.append(pagebutton);
                                 addPageBCButton(pagebutton);
                             }
@@ -1825,16 +1825,16 @@ $(document).ready(function(){
 
                             // we have to make in steps to add the onclick event
                             var rowResult = $('<tr></tr>');
-                            var colvalue_1 = $('<td class="col-sm-12 col-md-2">' + balance.symbol + '</td>');
-                            var colvalue_2 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount) + '</td>');
-                            var colvalue_3 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount * balance.value) + '</td>');
+                            var colvalue_1 = $('<td>' + balance.symbol + '</td>');
+                            var colvalue_2 = $('<td>' + formatNumber.num(balance.amount) + '</td>');
+                            var colvalue_3 = $('<td>' + formatNumber.num(balance.amount * balance.value) + '</td>');
 
                             rowResult.append(colvalue_1);
                             rowResult.append(colvalue_2);
                             rowResult.append(colvalue_3);
                             if(data.eaccess){
-                                var colvalue_4 = $('<td class="col-sm-12 col-md-2"></td>');
-                                var buttEx = $('<button type="button">Exchange</button>');
+                                var colvalue_4 = $('<td class="text-center"></td>');
+                                var buttEx = $('<button class="btn btn-sm btn-primary" type="button">Exchange</button>');
                                 exchangeButton(buttEx, balance);
                                 colvalue_4.append(buttEx);
                                 rowResult.append(colvalue_4);
@@ -1856,7 +1856,7 @@ $(document).ready(function(){
                             var pageList = $('<ul class="pagination"></ul>');
 
                             for (i = page; i <= totalPages; i++) {
-                                pagebutton = $('<li class="page_balance_crypto pages">' + i + '</li>');
+                                pagebutton = $('<li class="page_balance_crypto pages"><a href="#">' + i + '</a></li>');
                                 pageList.append(pagebutton);
                                 addPageBCRButton(pagebutton);
                             }
@@ -1873,7 +1873,7 @@ $(document).ready(function(){
                             var pageList = $('<ul class="pagination"></ul>');
 
                             for (i = page; i <= totalPages; i++) {
-                                pagebutton = $('<li class="page_balance_crypto pages">' + i + '</li>');
+                                pagebutton = $('<li class="page_balance_crypto pages"><a href="#">' + i + '</a></li>');
                                 pageList.append(pagebutton);
                                 addPageBCRButton(pagebutton);
                             }
@@ -1890,7 +1890,7 @@ $(document).ready(function(){
                             var pageList = $('<ul class="pagination"></ul>');
 
                             for (i = page; i <= totalPages; i++) {
-                                pagebutton = $('<li class="page_balance_crypto pages">' + i + '</li>');
+                                pagebutton = $('<li class="page_balance_crypto pages"><a href="#">' + i + '</a></li>');
                                 pageList.append(pagebutton);
                                 addPageBCRButton(pagebutton);
                             }
@@ -1956,16 +1956,16 @@ $(document).ready(function(){
 
                             // we have to make in steps to add the onclick event
                             var rowResult = $('<tr></tr>');
-                            var colvalue_1 = $('<td class="col-sm-12 col-md-2">' + balance.symbol + '</td>');
-                            var colvalue_2 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount) + '</td>');
-                            var colvalue_3 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount * balance.value) + '</td>');
+                            var colvalue_1 = $('<td>' + balance.symbol + '</td>');
+                            var colvalue_2 = $('<td>' + formatNumber.num(balance.amount) + '</td>');
+                            var colvalue_3 = $('<td>' + formatNumber.num(balance.amount * balance.value) + '</td>');
 
                             rowResult.append(colvalue_1);
                             rowResult.append(colvalue_2);
                             rowResult.append(colvalue_3);
                             if(data.eaccess){
-                                var colvalue_4 = $('<td class="col-sm-12 col-md-2"></td>');
-                                var buttEx = $('<button type="button">Exchange</button>');
+                                var colvalue_4 = $('<td class="text-center"></td>');
+                                var buttEx = $('<button class="btn btn-primary btn-sm" type="button">Exchange</button>');
                                 exchangeButton(buttEx, balance);
                                 colvalue_4.append(buttEx);
                                 rowResult.append(colvalue_4);
@@ -1987,7 +1987,7 @@ $(document).ready(function(){
                             var pageList = $('<ul class="pagination"></ul>');
 
                             for (i = page; i <= totalPages; i++) {
-                                pagebutton = $('<li class="page_balance_token pages">' + i + '</li>');
+                                pagebutton = $('<li class="page_balance_token pages"><a href="#">' + i + '</a></li>');
                                 pageList.append(pagebutton);
                                 addPageTButton(pagebutton);
                             }
@@ -2004,7 +2004,7 @@ $(document).ready(function(){
                             var pageList = $('<ul class="pagination"></ul>');
 
                             for (i = page; i <= totalPages; i++) {
-                                pagebutton = $('<li class="page_balance_token pages">' + i + '</li>');
+                                pagebutton = $('<li class="page_balance_token pages"><a href="#">' + i + '</a></li>');
                                 pageList.append(pagebutton);
                                 addPageTButton(pagebutton);
                             }
@@ -2021,7 +2021,7 @@ $(document).ready(function(){
                             var pageList = $('<ul class="pagination"></ul>');
 
                             for (i = page; i <= totalPages; i++) {
-                                pagebutton = $('<li class="page_balance_token pages">' + i + '</li>');
+                                pagebutton = $('<li class="page_balance_token pages"><a href="#">' + i + '</a></li>');
                                 pageList.append(pagebutton);
                                 addPageTButton(pagebutton);
                             }
@@ -2111,7 +2111,7 @@ $(document).ready(function(){
                 exchangeInValue('#valueout', '#rate', '#valuein');
                 exchangeInValue('#valueout', '#valuein', '#rate');
 
-                makeBut = $("<button type='button' name='button' id='exCont'>Make</button>");
+                makeBut = $("<button type='button' class='btn btn-primary' name='button' id='exCont'>Make</button>");
                 addMakeExButton(makeBut);
 
                 $('#modalExchange').prepend(clsbut);
@@ -2201,8 +2201,8 @@ $(document).ready(function(){
                     $('#exCont').hide();
                     $('.alert').show();
 
-                    confirmBut = $("<button type='button' name='button' id='exConf'>Confirm</button>");
-                    backBut = $("<button type='button' name='button' id='exBack'>Back</button>");
+                    confirmBut = $("<button type='button' name='button' class='btn btn-success' id='exConf'>Confirm</button>");
+                    backBut = $("<button type='button' class='btn btn-primary' name='button' id='exBack'>Back</button>");
                     backButton(backBut, '#ExchangeForm', 'ex');
                     confirmExButton(confirmBut);
 
@@ -2214,6 +2214,7 @@ $(document).ready(function(){
 
         function confirmExButton(confirmBut){
             confirmBut.click(function(){
+              $(this).addClass('disabled');
                 currencyout = $('#out').val();
                 currencyin = $('#currencyin').val();
 
@@ -2339,20 +2340,20 @@ $(document).ready(function(){
 
                             // we have to make in steps to add the onclick event
                             var rowResult = $( '<tr></tr>');
-                            var colvalue_1 = $( '<td class="col-sm-12 col-md-2">'+  transaction.out_symbol +'</td>');
-                            var colvalue_2 = $( '<td class="col-sm-12 col-md-2">'+ formatNumber.num( transaction.out_amount ) +'</td>');
-                            var colvalue_3 = $( '<td class="col-sm-12 col-md-2">'+ formatNumber.num( transaction.rate )  +'</td>');
-                            var colvalue_4 = $( '<td class="col-sm-12 col-md-2">'+  transaction.symbol  +'</td>');
-                            var colvalue_5 = $( '<td class="col-sm-12 col-md-2">'+  formatNumber.num( transaction.in_amount )  +'</td>');
-                            var colvalue_6 = $( '<td class="col-sm-12 col-md-2">'+ transaction.reference +'</td>');
-                            var colvalue_7 = $( '<td class="col-sm-12 col-md-2">'+ transaction.created_at  +'</td>');
-                            var colvalue_8 = $( '<td class="col-sm-12 col-md-2">'+ transaction.updated_at  +'</td>');
-                            var colvalue_9 = $( '<td class="col-sm-12 col-md-2">'+ transaction.status  +'</td>');
-                            var colvalue_10 = $( '<td class="col-sm-12 col-md-2"></td>');
-                            var printbut = $("<button type='button' name='button' id='txPrint'>Receipt</button>");
+                            var colvalue_1 = $( '<td>'+  transaction.out_symbol +'</td>');
+                            var colvalue_2 = $( '<td>'+ formatNumber.num( transaction.out_amount ) +'</td>');
+                            var colvalue_3 = $( '<td>'+ formatNumber.num( transaction.rate )  +'</td>');
+                            var colvalue_4 = $( '<td>'+  transaction.symbol  +'</td>');
+                            var colvalue_5 = $( '<td>'+  formatNumber.num( transaction.in_amount )  +'</td>');
+                            var colvalue_6 = $( '<td>'+ transaction.reference +'</td>');
+                            var colvalue_7 = $( '<td>'+ transaction.created_at  +'</td>');
+                            var colvalue_8 = $( '<td>'+ transaction.updated_at  +'</td>');
+                            var colvalue_9 = $( '<td>'+ transaction.status  +'</td>');
+                            var colvalue_10 = $( '<td class="text-center"></td>');
+                            var printbut = $("<button type='button' name='button' class='btn btn-primary btn-sm' id='txPrint'>Receipt</button>");
 
                             if(data.eaccess){
-                                var delbut = $("<button type='button' name='button' id='txdel'>Delete</button>");
+                                var delbut = $("<button type='button' name='button' class='btn btn-danger btn-sm' id='txdel'>Delete</button>");
                                 addMakeDTxButton(delbut, transaction);
                                 colvalue_10.append(delbut);
                             }
@@ -2387,7 +2388,7 @@ $(document).ready(function(){
                             var pageList = $( '<ul class="pagination"></ul>');
 
                             for(i = page ; i <= totalPages; i++){
-                                pagebutton = $( '<li class="page_transaction pages">'+ i +'</li>');
+                                pagebutton = $( '<li class="page_transaction pages"><a href="#">'+ i +'</a></li>');
                                 pageList.append(pagebutton);
                                 addPageTButton(pagebutton);
                             }
@@ -2405,7 +2406,7 @@ $(document).ready(function(){
                             var pageList = $( '<ul class="pagination"></ul>');
 
                             for(i = page ; i <= totalPages; i++){
-                                pagebutton = $( '<li class="page_transaction pages">'+ i +'</li>');
+                                pagebutton = $( '<li class="page_transaction pages"><a href="#">'+ i +'</a></li>');
                                 pageList.append(pagebutton);
                                 addPageTButton(pagebutton);
                             }
@@ -2423,7 +2424,7 @@ $(document).ready(function(){
                             var pageList = $( '<ul class="pagination"></ul>');
 
                             for(i = page ; i <= totalPages; i++){
-                                pagebutton = $( '<li class="page_transaction pages">'+ i +'</li>');
+                                pagebutton = $( '<li class="page_transaction pages"><a href="#">'+ i +'</a></li>');
                                 pageList.append(pagebutton);
                                 addPageTButton(pagebutton);
                             }
@@ -2527,18 +2528,18 @@ $(document).ready(function(){
 
                             // we have to make in steps to add the onclick event
                             var rowResult = $( '<tr></tr>');
-                            var colvalue_1 = $( '<td class="col-sm-12 col-md-2">'+  transaction.out_symbol +'</td>');
-                            var colvalue_2 = $( '<td class="col-sm-12 col-md-2">'+ formatNumber.num( transaction.out_amount ) +'</td>');
-                            var colvalue_3 = $( '<td class="col-sm-12 col-md-2">'+ formatNumber.num( transaction.rate )  +'</td>');
-                            var colvalue_4 = $( '<td class="col-sm-12 col-md-2">'+  transaction.symbol  +'</td>');
-                            var colvalue_5 = $( '<td class="col-sm-12 col-md-2">'+  formatNumber.num( transaction.in_amount )  +'</td>');
-                            var colvalue_6 = $( '<td class="col-sm-12 col-md-2">'+ transaction.reference +'</td>');
-                            var colvalue_7 = $( '<td class="col-sm-12 col-md-2">'+ transaction.created_at  +'</td>');
-                            var colvalue_8 = $( '<td class="col-sm-12 col-md-2">'+ transaction.status  +'</td>');
+                            var colvalue_1 = $( '<td>'+  transaction.out_symbol +'</td>');
+                            var colvalue_2 = $( '<td>'+ formatNumber.num( transaction.out_amount ) +'</td>');
+                            var colvalue_3 = $( '<td>'+ formatNumber.num( transaction.rate )  +'</td>');
+                            var colvalue_4 = $( '<td>'+  transaction.symbol  +'</td>');
+                            var colvalue_5 = $( '<td>'+  formatNumber.num( transaction.in_amount )  +'</td>');
+                            var colvalue_6 = $( '<td>'+ transaction.reference +'</td>');
+                            var colvalue_7 = $( '<td>'+ transaction.created_at  +'</td>');
+                            var colvalue_8 = $( '<td>'+ transaction.status  +'</td>');
                             if(data.eaccess){
-                              var colvalue_9 = $( '<td class="col-sm-12 col-md-2"></td>');
-                              var printbut = $("<button type='button' name='button' id='validateTrans'>Validate</button>");
-                              var delbut = $("<button type='button' name='button' id='txdel'>Delete</button>");
+                              var colvalue_9 = $( '<td class="text-center"></td>');
+                              var printbut = $("<button type='button' name='button' class='btn btn-success btn-sm' id='validateTrans'>Validate</button>");
+                              var delbut = $("<button type='button' name='button' class='btn btn-success btn-sm' id='txdel'>Delete</button>");
                               addMakeDTxButton(delbut, transaction);
                               colvalue_9.append(delbut);
                               colvalue_9.append(printbut);
@@ -2575,7 +2576,7 @@ $(document).ready(function(){
                             var pageList = $( '<ul class="pagination"></ul>');
 
                             for(i = page ; i <= totalPages; i++){
-                                pagebutton = $( '<li class="page_pending_transaction pages">'+ i +'</li>');
+                                pagebutton = $( '<li class="page_pending_transaction pages"><a href="#">'+ i +'</a></li>');
                                 pageList.append(pagebutton);
                                 addPagePTButton(pagebutton);
                             }
@@ -2593,7 +2594,7 @@ $(document).ready(function(){
                             var pageList = $( '<ul class="pagination"></ul>');
 
                             for(i = page ; i <= totalPages; i++){
-                                pagebutton = $( '<li class="page_pending_transaction pages">'+ i +'</li>');
+                                pagebutton = $( '<li class="page_pending_transaction pages"><a href="#">'+ i +'</a></li>');
                                 pageList.append(pagebutton);
                                 addPagePTButton(pagebutton);
                             }
@@ -2611,7 +2612,7 @@ $(document).ready(function(){
                             var pageList = $( '<ul class="pagination"></ul>');
 
                             for(i = page ; i <= totalPages; i++){
-                                pagebutton = $( '<li class="page_pending_transaction pages">'+ i +'</li>');
+                                pagebutton = $( '<li class="page_pending_transaction pages"><a href="#">'+ i +'</a></li>');
                                 pageList.append(pagebutton);
                                 addPagePTButton(pagebutton);
                             }
@@ -2694,7 +2695,7 @@ $(document).ready(function(){
 
               exchangeInValue('#valueout', '#rate', '#valuein')
 
-              makeBut = $("<button type='button' name='button' id='exCont'>Make</button>");
+              makeBut = $("<button type='button' class='btn btn-primary' name='button' id='exCont'>Make</button>");
               addMakeVExButton(makeBut);
 
               $('#modalExchange').prepend(clsbut);
@@ -2746,8 +2747,8 @@ $(document).ready(function(){
                     $('#exCont').hide();
                     $('.alert').show();
 
-                    confirmBut = $("<button type='button' name='button' id='exConf'>Confirm</button>");
-                    backBut = $("<button type='button' name='button' id='exBack'>Back</button>");
+                    confirmBut = $("<button type='button' name='button' class='btn btn-success' id='exConf'>Confirm</button>");
+                    backBut = $("<button type='button' name='button' class='btn btn-primary' id='exBack'>Back</button>");
                     backButton(backBut, '#ExchangeForm', 'ex');
                     confirmVExButton(confirmBut);
 
@@ -2759,6 +2760,7 @@ $(document).ready(function(){
 
         function confirmVExButton(confirmBut){
             confirmBut.click(function(){
+              $(this).addClass('disabled');
                 currencyout = $('#out').val();
                 id = $('#transid').val();
                 currencyin = $('#currencyin').val();
@@ -2808,8 +2810,8 @@ $(document).ready(function(){
                 clsbut = $("<span class='close'>&times;</span>");
                 closeButton(clsbut, '.Modal');
 
-                makeBut = $("<button type='button' name='button' id='txCont'>Delete</button>");
-                peBut = $("<button type='button' name='button' id='txPass'>Back</button>");
+                makeBut = $("<button type='button' class='btn btn-danger' name='button' id='txCont'>Delete</button>");
+                peBut = $("<button type='button' class='btn btn-primary' name='button' id='txPass'>Back</button>");
                 closeButton(peBut, '.Modal');
                 DeleteTxButton(makeBut);
 
@@ -2823,6 +2825,7 @@ $(document).ready(function(){
         /* Confirmation Of User Deletion */
         function DeleteTxButton(delButt){
             delButt.click(function(){
+              $(this).addClass('disabled');
                 id = $('#id').val();
 
                 $.ajax({
@@ -3902,12 +3905,12 @@ $(document).ready(function(){
 
                             // we have to make in steps to add the onclick event
                             var rowResult = $('<tr></tr>');
-                            var colvalue_1 = $('<td class="col-sm-12 col-md-2">' + client.name + '</td>');
-                            var colvalue_2 = $('<td class="col-sm-12 col-md-2">' + client.email + '</td>');
-                            var colvalue_3 = $('<td class="col-sm-12 col-md-2">'+ formatNumber.num(client.amount) +'</td>');
-                            var colvalue_4 = $('<td class="col-sm-12 col-md-2"></td>');
-                            var buttonS = $('<button type="button">Select Client</button>');
-                            var buttonI = $('<button type="button">Initial Investment</button>');
+                            var colvalue_1 = $('<td>' + client.name + '</td>');
+                            var colvalue_2 = $('<td>' + client.email + '</td>');
+                            var colvalue_3 = $('<td>'+ formatNumber.num(client.amount) +'</td>');
+                            var colvalue_4 = $('<td class="text-center"></td>');
+                            var buttonS = $('<button class="btn btn-primary btn-sm" type="button">Select Client</button>');
+                            var buttonI = $('<button class="btn btn-success btn-sm" type="button">Initial Investment</button>');
                             selectClient(buttonS, client.id);
                             initialInvest(buttonI, client);
 
@@ -3934,7 +3937,7 @@ $(document).ready(function(){
                             var pageList = $('<ul class="pagination"></ul>');
 
                             for (i = page; i <= totalPages; i++) {
-                                pagebutton = $('<li class="page_client pages">' + i + '</li>');
+                                pagebutton = $('<li class="page_client pages"><a href="#">' + i + '</a></li>');
                                 pageList.append(pagebutton);
                                 addPageCLButton(pagebutton);
                             }
@@ -3951,7 +3954,7 @@ $(document).ready(function(){
                             var pageList = $('<ul class="pagination"></ul>');
 
                             for (i = page; i <= totalPages; i++) {
-                                pagebutton = $('<li class="page_client pages">' + i + '</li>');
+                                pagebutton = $('<li class="page_client pages"><a href="#">' + i + '</a></li>');
                                 pageList.append(pagebutton);
                                 addPageCLButton(pagebutton);
                             }
@@ -3968,7 +3971,7 @@ $(document).ready(function(){
                             var pageList = $('<ul class="pagination"></ul>');
 
                             for (i = page; i <= totalPages; i++) {
-                                pagebutton = $('<li class="page_client pages">' + i + '</li>');
+                                pagebutton = $('<li class="page_client pages"><a href="#">' + i + '</a></li>');
                                 pageList.append(pagebutton);
                                 addPageCLButton(pagebutton);
                             }
@@ -4076,12 +4079,12 @@ $(document).ready(function(){
 
                                     // we have to make in steps to add the onclick event
                                     var rowResult = $('<tr></tr>');
-                                    var colvalue_1 = $('<td class="col-sm-12 col-md-2">' + balance.symbol + '</td>');
-                                    var colvalue_2 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount) + '</td>');
+                                    var colvalue_1 = $('<td>' + balance.symbol + '</td>');
+                                    var colvalue_2 = $('<td>' + formatNumber.num(balance.amount) + '</td>');
                                     if(balance.symbol == 'VEF'){
-                                        var colvalue_3 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount / balance.value) + '</td>');
+                                        var colvalue_3 = $('<td>' + formatNumber.num(balance.amount / balance.value) + '</td>');
                                     }else{
-                                        var colvalue_3 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount * balance.value) + '</td>');
+                                        var colvalue_3 = $('<td>' + formatNumber.num(balance.amount * balance.value) + '</td>');
                                     }
 
 
@@ -4106,7 +4109,7 @@ $(document).ready(function(){
                                     var pageList = $('<ul class="pagination"></ul>');
 
                                     for (i = page; i <= totalPages; i++) {
-                                        pagebutton = $('<li class="page_balance_currency pages">' + i + '</li>');
+                                        pagebutton = $('<li class="page_balance_currency pages"><a href="#">' + i + '</a></li>');
                                         pageList.append(pagebutton);
                                         addPageBCButton(pagebutton);
                                     }
@@ -4123,7 +4126,7 @@ $(document).ready(function(){
                                     var pageList = $('<ul class="pagination"></ul>');
 
                                     for (i = page; i <= totalPages; i++) {
-                                        pagebutton = $('<li class="page_balance_currency pages">' + i + '</li>');
+                                        pagebutton = $('<li class="page_balance_currency pages"><a href="#">' + i + '</a></li>');
                                         pageList.append(pagebutton);
                                         addPageBCButton(pagebutton);
                                     }
@@ -4140,7 +4143,7 @@ $(document).ready(function(){
                                     var pageList = $('<ul class="pagination"></ul>');
 
                                     for (i = page; i <= totalPages; i++) {
-                                        pagebutton = $('<li class="page_balance_currency pages">' + i + '</li>');
+                                        pagebutton = $('<li class="page_balance_currency pages"><a href="#">' + i + '</a></li>');
                                         pageList.append(pagebutton);
                                         addPageBCButton(pagebutton);
                                     }
@@ -4206,9 +4209,9 @@ $(document).ready(function(){
 
                                     // we have to make in steps to add the onclick event
                                     var rowResult = $('<tr></tr>');
-                                    var colvalue_1 = $('<td class="col-sm-12 col-md-2">' + balance.symbol + '</td>');
-                                    var colvalue_2 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount) + '</td>');
-                                    var colvalue_3 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount * balance.value) + '</td>');
+                                    var colvalue_1 = $('<td>' + balance.symbol + '</td>');
+                                    var colvalue_2 = $('<td>' + formatNumber.num(balance.amount) + '</td>');
+                                    var colvalue_3 = $('<td>' + formatNumber.num(balance.amount * balance.value) + '</td>');
 
                                     rowResult.append(colvalue_1);
                                     rowResult.append(colvalue_2);
@@ -4231,7 +4234,7 @@ $(document).ready(function(){
                                     var pageList = $('<ul class="pagination"></ul>');
 
                                     for (i = page; i <= totalPages; i++) {
-                                        pagebutton = $('<li class="page_balance_crypto pages">' + i + '</li>');
+                                        pagebutton = $('<li class="page_balance_crypto pages"><a href="#">' + i + '</a></li>');
                                         pageList.append(pagebutton);
                                         addPageBCRButton(pagebutton);
                                     }
@@ -4248,7 +4251,7 @@ $(document).ready(function(){
                                     var pageList = $('<ul class="pagination"></ul>');
 
                                     for (i = page; i <= totalPages; i++) {
-                                        pagebutton = $('<li class="page_balance_crypto pages">' + i + '</li>');
+                                        pagebutton = $('<li class="page_balance_crypto pages"><a href="#">' + i + '</a></li>');
                                         pageList.append(pagebutton);
                                         addPageBCRButton(pagebutton);
                                     }
@@ -4265,7 +4268,7 @@ $(document).ready(function(){
                                     var pageList = $('<ul class="pagination"></ul>');
 
                                     for (i = page; i <= totalPages; i++) {
-                                        pagebutton = $('<li class="page_balance_crypto pages">' + i + '</li>');
+                                        pagebutton = $('<li class="page_balance_crypto pages"><a href="#">' + i + '</a></li>');
                                         pageList.append(pagebutton);
                                         addPageBCRButton(pagebutton);
                                     }
@@ -4331,9 +4334,9 @@ $(document).ready(function(){
 
                                     // we have to make in steps to add the onclick event
                                     var rowResult = $('<tr></tr>');
-                                    var colvalue_1 = $('<td class="col-sm-12 col-md-2">' + balance.symbol + '</td>');
-                                    var colvalue_2 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount) + '</td>');
-                                    var colvalue_3 = $('<td class="col-sm-12 col-md-2">' + formatNumber.num(balance.amount * balance.value) + '</td>');
+                                    var colvalue_1 = $('<td>' + balance.symbol + '</td>');
+                                    var colvalue_2 = $('<td>' + formatNumber.num(balance.amount) + '</td>');
+                                    var colvalue_3 = $('<td>' + formatNumber.num(balance.amount * balance.value) + '</td>');
 
                                     rowResult.append(colvalue_1);
                                     rowResult.append(colvalue_2);
@@ -4356,7 +4359,7 @@ $(document).ready(function(){
                                     var pageList = $('<ul class="pagination"></ul>');
 
                                     for (i = page; i <= totalPages; i++) {
-                                        pagebutton = $('<li class="page_balance_token pages">' + i + '</li>');
+                                        pagebutton = $('<li class="page_balance_token pages"><a href="#">' + i + '</a></li>');
                                         pageList.append(pagebutton);
                                         addPageTButton(pagebutton);
                                     }
@@ -4373,7 +4376,7 @@ $(document).ready(function(){
                                     var pageList = $('<ul class="pagination"></ul>');
 
                                     for (i = page; i <= totalPages; i++) {
-                                        pagebutton = $('<li class="page_balance_token pages">' + i + '</li>');
+                                        pagebutton = $('<li class="page_balance_token pages"><a href="#">' + i + '</a></li>');
                                         pageList.append(pagebutton);
                                         addPageTButton(pagebutton);
                                     }
@@ -4390,7 +4393,7 @@ $(document).ready(function(){
                                     var pageList = $('<ul class="pagination"></ul>');
 
                                     for (i = page; i <= totalPages; i++) {
-                                        pagebutton = $('<li class="page_balance_token pages">' + i + '</li>');
+                                        pagebutton = $('<li class="page_balance_token pages"><a href="#">' + i + '</a></li>');
                                         pageList.append(pagebutton);
                                         addPageTButton(pagebutton);
                                     }
@@ -4517,7 +4520,7 @@ $(document).ready(function(){
                 clsbut = $("<span class='close'>&times;</span>");
                 closeButton(clsbut, '.Modal');
 
-                makeBut = $("<button type='button' name='button' id='iniCont'>Make</button>");
+                makeBut = $("<button type='button' class='btn btn-primary' name='button' id='iniCont'>Make</button>");
                 addMakeiButton(makeBut);
 
                 $('#modalCreateInitial').prepend(clsbut);
@@ -4551,8 +4554,8 @@ $(document).ready(function(){
                         $('#iniCont').hide();
                         $('.alert').show();
 
-                        confirmBut = $("<button type='button' name='button' id='iniConf'>Confirm</button>");
-                        backBut = $("<button type='button' name='button' id='iniBack'>Back</button>");
+                        confirmBut = $("<button type='button' class='btn btn-success' name='button' id='iniConf'>Confirm</button>");
+                        backBut = $("<button type='button' class='btn btn-primary' name='button' id='iniBack'>Back</button>");
                         backButton(backBut, '#InitialForm', 'ini');
                         confirmiButton(confirmBut);
 
@@ -4564,6 +4567,7 @@ $(document).ready(function(){
 
             function confirmiButton(confirmBut){
                 confirmBut.click(function(){
+                  $(this).addClass('disabled');
                     amount = $('#initial').val().replace(/\./g, '');
                     amount = amount.replace(/,/g, '.');
 
@@ -4660,19 +4664,19 @@ $(document).ready(function(){
                           var newsletter = newsletters[i];
 
                           var rowResult = $( '<tr></tr>');
-                          var colvalue_1 = $( '<td class="col-sm-12 col-md-2">'+  newsletter.title +'</td>');
-                          var colvalue_2 = $( '<td class="col-sm-12 col-md-2">'+ newsletter.username +'</td>');
-                          var colvalue_3 = $( '<td class="col-sm-12 col-md-2">'+  newsletter.message  +'</td>');
-                          var colvalue_4 = $('<td class="col-sm-12 col-md-2"></td>');
+                          var colvalue_1 = $( '<td>'+  newsletter.title +'</td>');
+                          var colvalue_2 = $( '<td>'+ newsletter.username +'</td>');
+                          var colvalue_3 = $( '<td>'+  newsletter.message  +'</td>');
+                          var colvalue_4 = $('<td></td>');
 
-                          editBut = $('<button type="button" id="editBut">Edit</button>');
-                          delBut = $('<button type="button" id="delBut">Delete</button>');
+                          editBut = $('<button type="button" id="editBut" class="btn btn-primary btn-sm">Edit</button>');
+                          delBut = $('<button type="button" id="delBut" class="btn btn-danger btn-sm">Delete</button>');
                           // we have to make in steps to add the onclick event
                           addEditNewsletterClick(editBut, newsletter);
                           addMakeDnewsButton(delBut, newsletter);
-                          var colvalue_4 = $( '<td class="col-sm-12 col-md-2">'+  newsletter.created_at  +'</td>');
-                          var colvalue_5 = $( '<td class="col-sm-12 col-md-2">'+  newsletter.updated_at  +'</td>');
-                          var colvalue_6 = $( '<td class="col-sm-12 col-md-2"></td>');
+                          var colvalue_4 = $( '<td>'+  newsletter.created_at  +'</td>');
+                          var colvalue_5 = $( '<td>'+  newsletter.updated_at  +'</td>');
+                          var colvalue_6 = $( '<td></td>');
 
                           colvalue_6.append(editBut);
                           colvalue_6.append(delBut);
@@ -4703,7 +4707,7 @@ $(document).ready(function(){
                           var pageList = $( '<ul class="pagination"></ul>');
 
                           for(i = page ; i <= totalPages; i++){
-                              pagebutton = $( '<li class="page_newsletter pages">'+ i +'</li>');
+                              pagebutton = $( '<li class="page_newsletter pages"><a href="#">'+ i +'</a></li>');
                               pageList.append(pagebutton);
                               addPageNButton(pagebutton);
                           }
@@ -4722,7 +4726,7 @@ $(document).ready(function(){
                           var pageList = $( '<ul class="pagination"></ul>');
 
                           for(i = page ; i <= totalPages; i++){
-                              pagebutton = $( '<li class="page_newsletter pages">'+ i +'</li>');
+                              pagebutton = $( '<li class="page_newsletter pages"><a href="#">'+ i +'</a></li>');
                               pageList.append(pagebutton);
                               addPageNButton(pagebutton);
                           }
@@ -4742,7 +4746,7 @@ $(document).ready(function(){
 
                           for(i = page ; i <= totalPages; i++){
 
-                              pagebutton = $( '<li class="page_newsletter pages">'+ i +'</li>');
+                              pagebutton = $( '<li class="page_newsletter pages"><a href="#">'+ i +'</a></li>');
                               pageList.append(pagebutton);
                               addPageNButton(pagebutton);
 
@@ -4786,7 +4790,7 @@ $(document).ready(function(){
           clsbut = $("<span class='close'>&times;</span>");
           closeButton(clsbut, '.Modal');
 
-          makeBut = $("<button type='button' name='button' id='newsCont'>Make</button>");
+          makeBut = $("<button type='button' name='button' class='btn btn-primary' id='newsCont'>Make</button>");
           addMakeNewsButton(makeBut);
 
           $('#modalCreateNews').prepend(clsbut);
@@ -4824,8 +4828,8 @@ $(document).ready(function(){
 
                   $('#newsCont').hide();
                   $('.alert').show();
-                  confirmBut = $("<button type='button' name='button' id='newsConf'>Confirm</button>");
-                  backBut = $("<button type='button' name='button' id='newsBack'>Back</button>");
+                  confirmBut = $("<button type='button' name='button' class='btn btn-success' id='newsConf'>Confirm</button>");
+                  backBut = $("<button type='button' name='button' class='btn btn-primary' id='newsBack'>Back</button>");
                   backButton(backBut, '#NewsForm', 'news');
                   confirmnewsButton(confirmBut);
                   $('#newsButts').append(confirmBut);
@@ -4839,7 +4843,7 @@ $(document).ready(function(){
       /* Confirm User For Creation */
       function confirmnewsButton(confirmBut){
           confirmBut.click(function(){
-
+            $(this).addClass('disabled');
                   title = $('#title').val();
                   message = $('#message').val();
 
@@ -4879,7 +4883,7 @@ $(document).ready(function(){
               clsbut = $("<span class='close'>&times;</span>");
               closeButton(clsbut, '.Modal');
 
-              makeBut = $("<button type='button' name='button' id='newsCont'>Make</button>");
+              makeBut = $("<button type='button' class='btn btn-primary' name='button' id='newsCont'>Make</button>");
               addMakeENewsButton(makeBut);
 
               $('#modalUpdateNews').prepend(clsbut);
@@ -4917,8 +4921,8 @@ $(document).ready(function(){
 
                 $('#newsCont').hide();
                 $('.alert').show();
-                confirmBut = $("<button type='button' name='button' id='newsConf'>Confirm</button>");
-                backBut = $("<button type='button' name='button' id='newsBack'>Back</button>");
+                confirmBut = $("<button type='button' class='btn btn-success' name='button' id='newsConf'>Confirm</button>");
+                backBut = $("<button type='button' class='btn btn-primary' name='button' id='newsBack'>Back</button>");
                 backButton(backBut, '#NewsForm', 'news');
                 confirmEnewsButton(confirmBut);
                 $('#newsButts').append(confirmBut);
@@ -4931,6 +4935,7 @@ $(document).ready(function(){
       /* Confirm Button For Editing User */
       function confirmEnewsButton(confirmBut){
         confirmBut.click(function(){
+          $(this).addClass('disabled');
                 id = $('#id').val();
                 title = $('#title').val();
                 message = $('#message').val();
@@ -4964,8 +4969,8 @@ $(document).ready(function(){
               clsbut = $("<span class='close'>&times;</span>");
               closeButton(clsbut, '.Modal');
 
-              makeBut = $("<button type='button' name='button' id='newsCont'>Delete</button>");
-              peBut = $("<button type='button' name='button' id='newsPass'>Back</button>");
+              makeBut = $("<button type='button' name='button' class='btn btn-danger btn-sm' id='newsCont'>Delete</button>");
+              peBut = $("<button type='button' name='button' class='btn btn-primary' id='newsPass'>Back</button>");
               closeButton(peBut, '.Modal');
               DeleteNewsButton(makeBut);
 
@@ -4979,6 +4984,7 @@ $(document).ready(function(){
       /* Confirmation Of User Deletion */
       function DeleteNewsButton(delButt){
           delButt.click(function(){
+            $(this).addClass('disabled');
               id = $('#id').val();
 
               $.ajax({

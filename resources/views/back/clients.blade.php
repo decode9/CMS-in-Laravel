@@ -244,10 +244,12 @@ top: -30px;
                     <tfoot>
                         <tr>
                             <th colspan="1" id="client_page">
-                                <select id="result_client_page">
+                              <div class="form-group" style='width:70px'>
+                                <select id="result_client_page" class='form-control'>
                                     <option value="5">5</option>
                                     <option value="10" selected="selected">10</option>
                                 </select>
+                              </div>
                             </th>
                             <th id="table_client_pagination" class="text-right" colspan="3"></th>
                         </tr>
@@ -288,9 +290,11 @@ top: -30px;
                         <tfoot>
                             <tr class="small">
                                 <th colspan="1" id="balance_currency_page">
-                                    <select id="result_balance_currency_page">
+                                  <div class="form-group" style='width:70px'>
+                                    <select id="result_balance_currency_page" class='form-control'>
                                         <option value="5" selected="selected">5</option>
                                     </select>
+                                  </div>
                                 </th>
                                 <th id="table_balance_currency_pagination" class="text-right" colspan="2"></th>
                             </tr>
@@ -326,9 +330,11 @@ top: -30px;
                           <tfoot>
                               <tr class="small">
                                   <th colspan="1" id="balance_crypto_page">
-                                      <select id="result_balance_crypto_page">
+                                    <div class="form-group" style='width:70px'>
+                                      <select id="result_balance_crypto_page" class='form-control'>
                                           <option value="5" selected="selected">5</option>
                                       </select>
+                                    </div>
                                   </th>
                                   <th id="table_balance_crypto_pagination" class="text-right" colspan="2"></th>
                               </tr>
@@ -364,9 +370,11 @@ top: -30px;
                           <tfoot>
                               <tr class="small">
                                   <th colspan="1" id="balance_token_page">
-                                      <select id="result_balance_token_page">
+                                    <div class="form-group" style='width:70px'>
+                                      <select id="result_balance_token_page" class='form-control'>
                                           <option value="5" selected="selected">5</option>
                                       </select>
+                                    </div>
                                   </th>
                                   <th id="table_balance_token_pagination" colspan="2"></th>
                               </tr>

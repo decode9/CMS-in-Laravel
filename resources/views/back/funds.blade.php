@@ -167,9 +167,11 @@ top: -30px;
                     <tfoot>
                         <tr class="small">
                             <th colspan="1" id="balance_currency_page">
-                                <select id="result_balance_currency_page">
+                              <div class="form-group" style="width: 70px;">
+                                <select id="result_balance_currency_page" class="form-control">
                                     <option value="5" selected="selected">5</option>
                                 </select>
+                              </div>
                             </th>
                             @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
                             <th id="table_balance_currency_pagination" class="text-right" colspan="3"></th>
@@ -216,9 +218,11 @@ top: -30px;
                     <tfoot>
                         <tr class="small">
                             <th colspan="1" id="balance_crypto_page">
-                                <select id="result_balance_crypto_page">
+                              <div class="form-group" style="width:70px;">
+                                <select id="result_balance_crypto_page" class="form-control">
                                     <option value="5" selected="selected">5</option>
                                 </select>
+                              </div>
                             </th>
                             @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
                             <th id="table_balance_crypto_pagination" class="text-right" colspan="3"></th>
@@ -265,9 +269,11 @@ top: -30px;
                     <tfoot>
                         <tr class="small">
                             <th colspan="1" id="balance_token_page">
-                                <select id="result_balance_token_page">
+                              <div class="form-group" style="width:70px;">
+                                <select id="result_balance_token_page" class="form-control">
                                     <option value="5" selected="selected">5</option>
                                 </select>
+                              </div>
                             </th>
                             @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
                             <th id="table_balance_token_pagination" class="text-right" colspan="3"></th>
@@ -315,12 +321,15 @@ top: -30px;
                 <tfoot>
                     <tr>
                         <th colspan="4" id="transaction_page">
-                            <select id="result_transaction_page">
+                          <div class="form-group" style="width:70px;">
+                            <select id="result_transaction_page" class="form-control">
                                 <option value="5">5</option>
                                 <option value="10" selected="selected" >10</option>
                                 <option value="20">20</option>
                                 <option value="50">50</option>
                             </select>
+                          </div>
+
                         </th>
                         <th id="table_transaction_pagination" class="text-right" colspan="6"></th>
                     </tr>
@@ -367,12 +376,14 @@ top: -30px;
                 <tfoot>
                     <tr>
                         <th colspan="4" id="pending_transaction_page">
-                            <select id="result_pending_transaction_page">
+                          <div class="form-group" style="width:70px;">
+                            <select id="result_pending_transaction_page" class="form-control">
                                 <option value="5">5</option>
                                 <option value="10" selected="selected" >10</option>
                                 <option value="20">20</option>
                                 <option value="50">50</option>
                             </select>
+                          </div>
                         </th>
                         @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
                         <th id="table_pending_transaction_pagination" class="text-right" colspan="5"></th>

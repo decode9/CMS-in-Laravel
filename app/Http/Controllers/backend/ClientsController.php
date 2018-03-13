@@ -78,7 +78,8 @@ class ClientsController extends Controller
         $btc = 0;
         foreach($balances as $balance){
             if($balance->value == "coinmarketcap"){
-                if($this->url_exists('https://api.coinmarketcap.com/v1/ticker/'. $balance->name)){
+              $url = 'api.coinmarketcap.com/v1/ticker/'. $balance->name;
+                if($this->url_exists($url)){
                     $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $balance->name);
                     $data = json_decode($json);
                     $balance->value = $data[0]->price_usd;
@@ -328,7 +329,8 @@ class ClientsController extends Controller
 
          foreach($balancesCurrency as $balance){
              if($balance->value == "coinmarketcap"){
-                 if($this->url_exists('https://api.coinmarketcap.com/v1/ticker/'. $balance->name)){
+               $url = 'api.coinmarketcap.com/v1/ticker/'. $balance->name;
+                 if($this->url_exists($url)){
                      $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $balance->name);
                      $data = json_decode($json);
                      $balance->value = $data[0]->price_usd;
@@ -409,7 +411,8 @@ class ClientsController extends Controller
 
          foreach($balancesCurrency as $balance){
              if($balance->value == "coinmarketcap"){
-                 if($this->url_exists('https://api.coinmarketcap.com/v1/ticker/'. $balance->name)){
+               $url = 'api.coinmarketcap.com/v1/ticker/'. $balance->name;
+                 if($this->url_exists($url)){
                      $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $balance->name);
                      $data = json_decode($json);
                      $balance->value = $data[0]->price_usd;

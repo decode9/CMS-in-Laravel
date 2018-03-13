@@ -36,7 +36,7 @@ class DashboardController extends Controller
             return false;
         }
 
-        $ch = curl_init( $url );
+        $ch = curl_init($url);
 
         //Establecer un tiempo de espera
         curl_setopt( $ch, CURLOPT_TIMEOUT, 5 );
@@ -55,9 +55,8 @@ class DashboardController extends Controller
         $httpcode = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
         //cerrar conexión
         curl_close( $ch );
-
         //Aceptar solo respuesta 200 (Ok), 301 (redirección permanente) o 302 (redirección temporal)
-        $accepted_response = array( 200, 301, 302 );
+        $accepted_response = array( 200, 301, 302);
         if( in_array( $httpcode, $accepted_response ) ) {
             return true;
         } else {
@@ -76,7 +75,8 @@ class DashboardController extends Controller
       $chart['amount'] = [];
       foreach($balances as $balance){
           if($balance->value == "coinmarketcap"){
-              if($this->url_exists('https://api.coinmarketcap.com/v1/ticker/'. $balance->name)){
+            $url = 'api.coinmarketcap.com/v1/ticker/'. $balance->name;
+              if($this->url_exists($url)){
                   $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $balance->name);
                   $data = json_decode($json);
                   $balance->value = $data[0]->price_usd;

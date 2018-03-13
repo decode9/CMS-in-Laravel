@@ -164,7 +164,7 @@ top: -30px;
                     <thead class="thead-default">
                         <tr>
                             <th colspan="2">Newsletter</th>
-                            <th colspan="3"><div class="col-lg-12">
+                            <th colspan="3"><div class="col-sm-12">
                                 <form id="form_newsletter_search" class="form_search">
                                     <div class="input-group">
                                         <input id="search_newsletter_value" type="text" class="form-control" placeholder="Search Newsletter">
@@ -188,12 +188,14 @@ top: -30px;
                     <tfoot>
                         <tr>
                             <th colspan="3" id="newsletter_page">
-                                <select id="result_newsletter_page">
+                              <div class="form-group" style="width:70px">
+                                <select class='form-control' id="result_newsletter_page">
                                     <option value="5">5</option>
                                     <option value="10" selected="selected" >10</option>
                                     <option value="20">20</option>
                                     <option value="50">50</option>
                                 </select>
+                              </div>
                             </th>
                             <th id="table_newsletter_pagination" class="text-right" colspan="3"></th>
                         </tr>
