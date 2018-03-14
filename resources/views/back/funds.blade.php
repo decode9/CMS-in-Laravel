@@ -28,7 +28,7 @@ body{
                           <div class="input-group">
                               <input id="search_balance_currency_value" type="text" class="small form-control" placeholder="Search Currency">
                               <span class="input-group-btn">
-                                  <button type="submit" class="btn btn-default" value="Go!"><i id="search_icon" class="fa fa-search" aria-hidden="true"></i></button>
+                                  <button type="submit" class="btn btn-default" value="Go!"><span class="glyphicon glyphicon-search"></span></button>
                               </span>
                           </div><!-- /input-group -->
                       </form>
@@ -79,7 +79,7 @@ body{
                           <div class="input-group">
                               <input id="search_balance_crypto_value" type="text" class="small form-control" placeholder="Search CryptoCurrency">
                               <span class="input-group-btn">
-                                  <button type="submit" class="btn btn-default" value="Go!"><i id="search_icon" class="fa fa-search" aria-hidden="true"></i></button>
+                                  <button type="submit" class="btn btn-default" value="Go!"><span class="glyphicon glyphicon-search"></span></button>
                               </span>
                           </div><!-- /input-group -->
                       </form>
@@ -130,7 +130,7 @@ body{
                           <div class="input-group">
                               <input id="search_balance_token_value" type="text" class="small form-control" placeholder="Search Token">
                               <span class="input-group-btn">
-                                  <button type="submit" class="btn btn-default" value="Go!"><i id="search_icon" class="fa fa-search" aria-hidden="true"></i></button>
+                                  <button type="submit" class="btn btn-default" value="Go!"><span class="glyphicon glyphicon-search"></span></button>
                               </span>
                           </div><!-- /input-group -->
                       </form>
@@ -187,7 +187,7 @@ body{
                         <div class="input-group">
                             <input id="search_transaction_value" type="text" class="small form-control" placeholder="Search Transaction">
                             <span class="input-group-btn">
-                                <button type="submit" class="btn btn-default" value="Go!"><i id="search_icon" class="fa fa-search" aria-hidden="true"></i></button>
+                                <button type="submit" class="btn btn-default" value="Go!"><span class="glyphicon glyphicon-search"></span></button>
                             </span>
                         </div><!--/input-group-->
                     </form>
@@ -244,7 +244,7 @@ body{
                         <div class="input-group">
                             <input id="search_pending_transaction_value" type="text" class="small form-control" placeholder="Search Pending Transaction">
                             <span class="input-group-btn">
-                                <button type="submit" class="btn btn-default" value="Go!"><i id="search_icon" class="fa fa-search" aria-hidden="true"></i></button>
+                                <button type="submit" class="btn btn-default" value="Go!"><span class="glyphicon glyphicon-search"></span></button>
                             </span>
                         </div><!--/input-group-->
                     </form>

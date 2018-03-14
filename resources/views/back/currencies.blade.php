@@ -18,7 +18,7 @@ body{
                           <div class="input-group">
                               <input id="search_currency_value" type="text" class="form-control" placeholder="Search Currency">
                               <span class="input-group-btn">
-                                  <button type="submit" class="btn btn-default" value="Go!"><i id="search_icon" class="fa fa-search" aria-hidden="true"></i></button>
+                                  <button type="submit" class="btn btn-default" value="Go!"><span class="glyphicon glyphicon-search"></span></button>
                               </span>
                           </div><!-- /input-group -->
                       </form>
