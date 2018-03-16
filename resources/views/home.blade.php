@@ -123,34 +123,36 @@ body{
   </div>
   <div class="row">
     <div class="col-sm-12">
-      <div class="panel panel-default">
+      <div class="panel panel-alternative">
               <div class="panel-heading">
-                <h4>Historical Profit</h4>
-                <div class="col-sm-4" style="float:right;">
-                  <div class="btn-group">
-                    <button type="button" class="btn btn-default btn-chart" id="daily">Daily</button>
-                    <button type="button" class="btn btn-default btn-chart" id="weekly">Weekly</button>
-                    <button type="button" class="btn btn-default btn-chart" id="monthly">Monthly</button>
+                <div class="col-sm-8">
+                  <h4>Historical Profit</h4>
+                </div>
+                <div class="col-sm-4">
+                  <div class="col-sm-12 text-center" style="float:right;">
+                    <button type="button" class="btn btn-alternative btn-chart" id="daily">Daily</button>
+                    <button type="button" class="btn btn-alternative btn-chart" id="weekly">Weekly</button>
+                    <button type="button" class="btn btn-alternative btn-chart" id="monthly">Monthly</button>
                   </div>
                 </div>
               </div>
-              <div class="panel-body" style="height:400px;">
-                  <canvas id="historicalChart" width="600" height="400"></canvas>
+              <div class="panel-body" style="height:300px;">
+                  <canvas id="historicalChart" width="600" height="300"></canvas>
               </div>
       </div>
     </div>
   </div>
   <div class="row">
     <div class="col-sm-3">
-      <div class="panel panel-default">
+      <div class="panel panel-alternative">
               <div class="panel-heading"><h4>Initial Invest</h4></div>
-              <div class="panel-body">
-                  <h4 id="initial"></h4>
+              <div class="panel-body" style="height:150px">
+                  <canvas id="initialChart" width="600" height="90"></canvas>
               </div>
       </div>
     </div>
     <div class="col-sm-3">
-      <div class="panel panel-default">
+      <div class="panel panel-alternative">
               <div class="panel-heading"><h4>Total USD / BTC</h4></div>
               <div class="panel-body">
                   <h4>USD: <span id="totalusd"></span> / BTC: <span id="totalbtc"></span></h4>
@@ -158,7 +160,7 @@ body{
       </div>
     </div>
     <div class="col-sm-3">
-      <div class="panel panel-default">
+      <div class="panel panel-alternative">
               <div class="panel-heading"><h4>Profit Gain And Loss</h4></div>
               <div class="panel-body">
                   <h4>USD: <span id="profit"></span></h4>
@@ -166,7 +168,7 @@ body{
       </div>
     </div>
     <div class="col-sm-3">
-      <div class="panel panel-default">
+      <div class="panel panel-alternative">
               <div class="panel-heading"><h4>% Change</h4></div>
               <div class="panel-body">
                   <h4><span id="percent"></span></h4>
@@ -176,7 +178,7 @@ body{
   </div>
   <div class="row">
     <div class="col-sm-6">
-      <div class="panel panel-default">
+      <div class="panel panel-alternative">
               <div class="panel-heading"><h4>Balance Distribution</h4></div>
               <div class="panel-body">
                 <div class="chartContainer" style="height:400px;">
@@ -186,7 +188,7 @@ body{
       </div>
     </div>
     <div class="col-sm-6">
-      <div class="panel panel-default">
+      <div class="panel panel-alternative">
               <div class="panel-heading"><h4>Newsletter</h4></div>
               <div class="panel-body">
                 <div class="slideshow-container">

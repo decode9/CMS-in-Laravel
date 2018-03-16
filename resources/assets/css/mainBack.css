@@ -1,3 +1,10 @@
+@font-face {
+    font-family: florence;
+    src: url(/fonts/Florsn17.ttf);
+}
+body{
+  font-family: florence;
+}
 .menuItem{
     cursor: pointer;
 }
@@ -16,4 +23,68 @@ a:hover{
 }
 .btn{
     margin: 2px;
+}
+
+.row.content {
+  height: auto;
+  background-color: #0F2145;
+}
+
+/* Set gray background color and 100% height */
+.sidenav {
+  background-color: #0E214B;
+  height: 100%;
+}
+
+/* On small screens, set height to 'auto' for the grid */
+@media screen and (max-width: 767px) {
+  .row.content {height: auto;}
+}
+.navBack{
+  border-radius: 0px !important;
+  margin: 0px !important;
+  background-color: #0E214B;
+  border: none;
+  border-bottom: 1px solid black;
+}
+.sub-nav{
+  margin-top: 10px;
+}
+.panel{
+  border-radius: 0px;
+  background-color: #132a3a;
+  color: white;
+}
+
+.panel-alternative{
+  border-color:  #132a3a;
+  color: white;
+  font-family: florence;
+  text-transform: uppercase;
+}
+.panel-alternative h4{
+  font-size: 14px;
+}
+.panel-alternative>.panel-heading{
+  border-radius: 0px;
+  background-color: #132a3a;
+  text-align: left;
+}
+
+.btn-alternative{
+    border-radius: 0px;
+    background-color: transparent;
+    color: rgba(255, 255, 253, 0.5);
+    border: none;
+    transition: all 0.5s;
+    text-transform: uppercase;
+}
+.btn-alternative:hover{
+  border-bottom: 2px solid #47b5b6;
+  color: white;
+  transition: all 0.5s;
+}
+.btn-alternative.active, btn-alternative:active{
+  border-bottom: 2px solid #47b5b6;
+  color: white;
 }

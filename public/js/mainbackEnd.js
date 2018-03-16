@@ -316,6 +316,47 @@ $(document).ready(function () {
         });
     }
 
+    Chart.pluginService.register({
+        beforeDraw: function beforeDraw(chart) {
+            if (chart.config.options.elements.center) {
+                //Get ctx from string
+                var ctx = chart.chart.ctx;
+
+                //Get options from the center object in options
+                var centerConfig = chart.config.options.elements.center;
+                var fontStyle = centerConfig.fontStyle || 'Arial';
+                var txt = centerConfig.text;
+                var color = centerConfig.color || '#000';
+                var sidePadding = centerConfig.sidePadding || 20;
+                var sidePaddingCalculated = sidePadding / 100 * (chart.innerRadius * 2);
+                //Start with a base font of 30px
+                ctx.font = "30px " + fontStyle;
+
+                //Get the width of the string and also the width of the element minus 10 to give it 5px side padding
+                var stringWidth = ctx.measureText(txt).width;
+                var elementWidth = chart.innerRadius * 2 - sidePaddingCalculated;
+
+                // Find out how much the font can grow in width.
+                var widthRatio = elementWidth / stringWidth;
+                var newFontSize = Math.floor(30 * widthRatio);
+                var elementHeight = chart.innerRadius * 2;
+
+                // Pick a new font size so it will not be larger than the height of label.
+                var fontSizeToUse = Math.min(newFontSize, elementHeight);
+
+                //Set font settings to draw it correctly.
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                var centerX = (chart.chartArea.left + chart.chartArea.right) / 2;
+                var centerY = (chart.chartArea.top + chart.chartArea.bottom) / 2;
+                ctx.font = fontSizeToUse + "px " + fontStyle;
+                ctx.fillStyle = color;
+
+                //Draw text in center
+                ctx.fillText(txt, centerX, centerY);
+            }
+        }
+    });
     /* End Common Functions */
 
     /*Begin DashBoard Functions*/
@@ -330,7 +371,7 @@ $(document).ready(function () {
                 type: 'post',
                 success: function success(data) {
                     var balances = data.result;
-                    var initial = data.initial;
+                    var initial = data.initial.amount;
                     var usd = data.usd;
                     var btc = data.btc;
                     var profit = data.profit;
@@ -342,16 +383,47 @@ $(document).ready(function () {
                         $('#listBalance').append(list);
                     }
 
-                    $('#initial').append(initial.symbol + ': ' + formatNumber.num(initial.amount));
+                    diffI = initial - usd;
+                    diffPU = initial - profit;
+                    if (profit > 0) {
+                        color = 'green';
+                        color2 = 'red';
+                    } else {
+                        color = 'red';
+                        color2 = 'green';
+                    }
+                    var configI = {
+                        type: 'doughnut',
+
+                        data: {
+                            datasets: [{
+                                data: [initial],
+                                backgroundColor: ["#36A2EB"],
+                                borderColor: ['transparent'],
+                                hoverBackgroundColor: ["#36A2EB"],
+                                borderWidth: [1]
+                            }]
+                        },
+                        options: {
+                            cutoutPercentage: 90,
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            elements: {
+                                center: {
+                                    text: 'USD: ' + initial,
+                                    color: 'white', // Default is #000000
+                                    fontStyle: 'florence', // Default is Arial
+                                    sidePadding: 10 // Defualt is 20 (as a percentage)
+                                }
+                            }
+                        }
+                    };
+                    var ctxI = document.getElementById("initialChart").getContext("2d");
+                    var initialChart = new Chart(ctxI, configI);
+
                     $('#totalusd').append(formatNumber.num(usd));
                     $('#totalbtc').append(formatNumber.num(btc));
-                    if (profit > 0) {
-                        $('#profit').addClass('text-success');
-                        $('#percent').addClass('text-success');
-                    } else {
-                        $('#profit').addClass('text-danger');
-                        $('#percent').addClass('text-danger');
-                    }
+
                     $('#profit').append(formatNumber.num(profit));
                     $('#percent').append(formatNumber.num(percent) + '%');
 
@@ -367,7 +439,7 @@ $(document).ready(function () {
                             datasets: [{
                                 label: 'Balances',
                                 data: chart['amount'],
-                                backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)', 'rgba(75, 192, 192, 0.2)', 'rgba(153, 102, 255, 0.2)', 'rgba(255, 159, 64, 0.2)'],
+                                backgroundColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)', 'rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)'],
                                 borderColor: ['rgba(255,99,132,1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)', 'rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)'],
                                 borderWidth: 1
                             }]
@@ -480,6 +552,10 @@ $(document).ready(function () {
                 });
             });
         };
+
+        Chart.defaults.global.defaultFontColor = 'white';
+        Chart.defaults.global.defaultFontFamily = 'florence';
+
 
         lineChart('#daily', 'daily');
         lineChart('#weekly', 'weekly');
