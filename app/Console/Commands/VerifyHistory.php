@@ -81,14 +81,19 @@ class VerifyHistory extends Command
               $initstamp = $init->timestamp;
               $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
               foreach($balances as $balance){
-                $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initstamp);
-                $data = json_decode($json);
-                $symbol = $balance->symbol;
-                $balance->value = $data->$symbol->USD;
+                  if($balance->amount > 0){
+                      $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initstamp);
+                      $data = json_decode($json);
+                      $symbol = $balance->symbol;
+                      $balance->value = $data->$symbol->USD;
 
-                $newamount = $balance->amount * $percent;
-                $na = $newamount * $balance->value;
-                $sum += $na;
+                      $newamount = $balance->amount * $percent;
+                      $na = $newamount * $balance->value;
+
+                  }else{
+                     $na = 0;
+                  }
+                  $sum += $na;
               }
               $history = new History;
               $history->register = $init;
@@ -109,13 +114,18 @@ class VerifyHistory extends Command
               $initWstamp = $initW->timestamp;
               $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
               foreach($balances as $balance){
-                $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initWstamp);
-                $data = json_decode($json);
-                $symbol = $balance->symbol;
-                $balance->value = $data->$symbol->USD;
+                  if($balance->amount > 0){
+                      $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initstamp);
+                      $data = json_decode($json);
+                      $symbol = $balance->symbol;
+                      $balance->value = $data->$symbol->USD;
 
-                $newamount = $balance->amount * $percent;
-                $na = $newamount * $balance->value;
+                      $newamount = $balance->amount * $percent;
+                      $na = $newamount * $balance->value;
+
+                  }else{
+                     $na = 0;
+                  }
                 $sum += $na;
               }
               $history = new History;
@@ -137,13 +147,18 @@ class VerifyHistory extends Command
               $initMstamp = $initM->timestamp;
               $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
               foreach($balances as $balance){
-                $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initMstamp);
-                $data = json_decode($json);
-                $symbol = $balance->symbol;
-                $balance->value = $data->$symbol->USD;
+                  if($balance->amount > 0){
+                      $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initstamp);
+                      $data = json_decode($json);
+                      $symbol = $balance->symbol;
+                      $balance->value = $data->$symbol->USD;
 
-                $newamount = $balance->amount * $percent;
-                $na = $newamount * $balance->value;
+                      $newamount = $balance->amount * $percent;
+                      $na = $newamount * $balance->value;
+
+                  }else{
+                     $na = 0;
+                  }
                 $sum += $na;
               }
               $history = new History;
@@ -183,13 +198,17 @@ class VerifyHistory extends Command
           $initGstamp = $initG->timestamp;
           $balancesG = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
           foreach($balancesG as $balance){
-            $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initGstamp);
-            $data = json_decode($json);
-            $symbol = $balance->symbol;
-            $balance->value = $data->$symbol->USD;
+              if($balance->amount > 0){
+                  $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initGstamp);
+                  $data = json_decode($json);
+                  $symbol = $balance->symbol;
+                  $balance->value = $data->$symbol->USD;
 
-            $newamount = $balance->amount * $balance->value;
-            $sum += $newamount;
+                  $newamount = $balance->amount * $balance->value;
+              }else{
+                  $newamount = 0;
+              }
+              $sum += $newamount;
           }
 
           $historyG = new History;
@@ -210,13 +229,17 @@ class VerifyHistory extends Command
           $initGWstamp = $initGW->timestamp;
           $balancesG = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
           foreach($balancesG as $balance){
-            $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initGWstamp);
-            $data = json_decode($json);
-            $symbol = $balance->symbol;
-            $balance->value = $data->$symbol->USD;
+              if($balance->amount > 0){
+                  $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initGstamp);
+                  $data = json_decode($json);
+                  $symbol = $balance->symbol;
+                  $balance->value = $data->$symbol->USD;
 
-            $newamount = $balance->amount * $balance->value;
-            $sum += $newamount;
+                  $newamount = $balance->amount * $balance->value;
+              }else{
+                  $newamount = 0;
+              }
+              $sum += $newamount;
           }
 
           $historyG = new History;
@@ -237,13 +260,17 @@ class VerifyHistory extends Command
           $initGMstamp = $initGM->timestamp;
           $balancesG = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
           foreach($balancesG as $balance){
-            $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initGMstamp);
-            $data = json_decode($json);
-            $symbol = $balance->symbol;
-            $balance->value = $data->$symbol->USD;
+              if($balance->amount > 0){
+                  $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initGstamp);
+                  $data = json_decode($json);
+                  $symbol = $balance->symbol;
+                  $balance->value = $data->$symbol->USD;
 
-            $newamount = $balance->amount * $balance->value;
-            $sum += $newamount;
+                  $newamount = $balance->amount * $balance->value;
+              }else{
+                  $newamount = 0;
+              }
+              $sum += $newamount;
           }
 
           $historyG = new History;

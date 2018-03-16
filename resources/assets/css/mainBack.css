@@ -70,6 +70,19 @@ a:hover{
   background-color: #132a3a;
   text-align: left;
 }
+.panel-alternative>.panel-footer{
+  border-radius: 0px;
+  background-color: #132a3a;
+  text-align: center;
+  color: #395b71;
+  font-weight: bold;
+  border:none;
+}
+.panel-alternative>.panel-footer h4{
+
+  font-weight: bold;
+
+}
 
 .btn-alternative{
     border-radius: 0px;

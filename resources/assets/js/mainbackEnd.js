@@ -324,6 +324,7 @@ $(document).ready(function(){
               var initial = data.initial.amount;
               var usd = data.usd;
               var btc = data.btc;
+              var initialB = data.initialb;
               var profit = data.profit;
               var percent = data.percent;
               var chart = data.chart;
@@ -333,12 +334,13 @@ $(document).ready(function(){
                 $('#listBalance').append(list);
               }
 
+              diffI = initial - usd;
+              diffP = initial - diffI;
+              diffB = initialB - btc;
               if(profit > 0){
                   color = 'green';
-                  color2 = 'red';
               }else{
                   color = 'red';
-                  color2 = 'green';
               }
               var configI = {
 			             type: 'doughnut',
@@ -369,7 +371,10 @@ $(document).ready(function(){
                                         fontStyle: 'florence', // Default is Arial
                                         sidePadding: 10// Defualt is 20 (as a percentage)
 				                         }
-			                     }
+			                     },
+                                 tooltips: {
+                                     enabled: false,
+                                 }
 		                  }
 	            };
               var ctxI = document.getElementById("initialChart").getContext("2d");
@@ -380,18 +385,18 @@ $(document).ready(function(){
 
 			                data: {
 				                    datasets: [{
-					                        data: [usd, profit],
+					                        data: [usd, diffI],
 					                        backgroundColor: [
                                     color,
-                                    'transparent',
+                                    '#8a8a8a47',
 					                        ],
                                   borderColor:[
                                     'transparent',
-                                    'transparent'
+                                    '#3a3a3a00'
                                   ],
 					                        hoverBackgroundColor: [
-					                          "#36A2EB",
-                                    color2
+					                          color,
+                                    '#3a3a3a00'
 					                        ],
 				                     }]
 			                },
@@ -401,21 +406,113 @@ $(document).ready(function(){
                         maintainAspectRatio: false,
 			                     elements: {
 				                         center: {
-					                              text: 'USD: '+ formatNumber2.num(usd) + ' BTC: '+ formatNumber2.num(btc),
-                                        color: 'white', // Default is #000000
+					                              text: 'USD: '+ formatNumber2.num(usd),
+                                        color: color, // Default is #000000
                                         fontStyle: 'florence', // Default is Arial
                                         sidePadding: 10// Defualt is 20 (as a percentage)
 				                         }
-			                     }
+			                     },
+                                 tooltips: {
+                                     enabled: false,
+                                 }
 		                  }
 	            };
               var ctxT = document.getElementById("totalChart").getContext("2d");
 		          var totalChart = new Chart(ctxT, configT);
 
+                  var configP = {
+    			             type: 'doughnut',
 
+    			                data: {
+    				                    datasets: [{
+    					                        data: [profit, diffP],
+    					                        backgroundColor: [
+                                        color,
+                                        '#8a8a8a47',
+    					                        ],
+                                      borderColor:[
+                                        'transparent',
+                                        '#3a3a3a00'
+                                      ],
+    					                hoverBackgroundColor: [
+    					                          "#36A2EB",
+                                        '#3a3a3a00'
+    					                        ],
+                                        hoverBorderColor:[
+                                            'transparent',
+                                            '#3a3a3a00'
+                                        ]
+    				                     }]
+    			                },
+    		                  options: {
+                            cutoutPercentage: 90,
+                            responsive:true,
+                            maintainAspectRatio: false,
+    			                     elements: {
+    				                         center: {
+    					                              text: formatNumber2.num(percent)+'%',
+                                            color: color, // Default is #000000
+                                            fontStyle: 'florence', // Default is Arial
+                                            sidePadding: 10// Defualt is 20 (as a percentage)
+    				                         }
+    			                     },
+                                     tooltips: {
+                                         enabled: true,
+                                     }
+    		                  }
+    	            };
+                  var ctxP = document.getElementById("profitChart").getContext("2d");
+    		      var profitChart = new Chart(ctxP, configP);
 
-              $('#profit').append(formatNumber.num(profit));
-              $('#percent').append(formatNumber.num(percent)+'%');
+                  if(btc < initialB){
+                      colorb = 'red';
+                  }else{
+                      colorb = 'green';
+                  }
+                  var configB = {
+    			             type: 'doughnut',
+
+    			                data: {
+    				                    datasets: [{
+    					                        data: [btc, diffB],
+    					                        backgroundColor: [
+                                        colorb,
+                                        '#8a8a8a47',
+    					                        ],
+                                      borderColor:[
+                                        'transparent',
+                                        '#3a3a3a00'
+                                      ],
+    					                hoverBackgroundColor: [
+    					                          colorb,
+                                        '#3a3a3a00'
+    					                        ],
+                                        hoverBorderColor:[
+                                            'transparent',
+                                            '#3a3a3a00'
+                                        ]
+    				                     }]
+    			                },
+    		                  options: {
+                            cutoutPercentage: 90,
+                            responsive:true,
+                            maintainAspectRatio: false,
+    			                     elements: {
+    				                         center: {
+    					                              text: 'BTC: ' + formatNumber2.num(btc),
+                                            color: color, // Default is #000000
+                                            fontStyle: 'florence', // Default is Arial
+                                            sidePadding: 10// Defualt is 20 (as a percentage)
+    				                         }
+    			                     },
+                                     tooltips: {
+                                         enabled: true,
+                                     }
+    		                  }
+    	            };
+                  var ctxB = document.getElementById("BTCChart").getContext("2d");
+    		      var btcChart = new Chart(ctxB, configB);
+
 
               var ctx = document.getElementById("myChart").getContext('2d');
               var myChart = new Chart(ctx, {

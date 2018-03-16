@@ -145,33 +145,41 @@ body{
   <div class="row">
     <div class="col-sm-3">
       <div class="panel panel-alternative">
-              <div class="panel-heading"><h4>Initial Invest</h4></div>
               <div class="panel-body" style="height:150px">
                   <canvas id="initialChart" width="600" height="90"></canvas>
               </div>
+              <div class="panel-footer">
+                  <h4>Initial Invest</h4>
+              </div>
       </div>
     </div>
     <div class="col-sm-3">
       <div class="panel panel-alternative">
-              <div class="panel-heading"><h4>Total USD / BTC</h4></div>
               <div class="panel-body" style="height:150px">
                   <canvas id="totalChart" width="600" height="90"></canvas>
               </div>
-      </div>
-    </div>
-    <div class="col-sm-3">
-      <div class="panel panel-alternative">
-              <div class="panel-heading"><h4>Profit Gain And Loss</h4></div>
-              <div class="panel-body" style="height:150px">
-                  <canvas id="profitChart" width="600" height="90"></canvas>
+              <div class="panel-footer">
+                  <h4>Total USD</h4>
               </div>
       </div>
     </div>
     <div class="col-sm-3">
       <div class="panel panel-alternative">
-              <div class="panel-heading"><h4>% Change</h4></div>
               <div class="panel-body" style="height:150px">
-                  <canvas id="percentChart" width="600" height="90"></canvas>
+                  <canvas id="profitChart" width="600" height="90"></canvas>
+              </div>
+              <div class="panel-footer">
+                  <h4>Profit Gain And Loss</h4>
+              </div>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="panel panel-alternative">
+              <div class="panel-body" style="height:150px">
+                  <canvas id="BTCChart" width="600" height="90"></canvas>
+              </div>
+              <div class="panel-footer">
+                  <h4>Total BTC</h4>
               </div>
       </div>
     </div>

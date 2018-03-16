@@ -69,7 +69,7 @@ class DashboardController extends Controller
     public function balance(Request $request){
       $user = Auth::User();
       $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('amount', '>', '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.amount', 'value', 'symbol', 'name')->get();
-      $initial = Fund::Where('user_id', null)->where('funds.type', 'initial')->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('amount', 'symbol')->first();
+      $initial = Fund::Where('user_id', null)->where('funds.type', 'initial')->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('amount', 'symbol', 'funds.created_at')->first();
       $usd = 0;
       $btc = 0;
       $chart['symbol'] = [];
@@ -112,6 +112,15 @@ class DashboardController extends Controller
           $usd += $usdvalue;
           $btc += $btcvalue;
       }
+      $initstamp = $initial->created_at->timestamp;
+
+      $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=BTC&tsyms=USD&ts='.$initstamp);
+      $data = json_decode($json);
+
+      $btcU = $data->BTC->USD;
+
+      $btcI = $initial->amount / $btcU;
+
       if($user->hasRole('30')){
           $percent = $this->percent($user);
           foreach($balances as $balance){
@@ -122,12 +131,17 @@ class DashboardController extends Controller
           $initial->amount = $newinitial;
           $usd = $usd * $percent;
           $btc = $btc * $percent;
+          $btcI = $btcI * $percent;
       }
+
+
+
+
        $profit = $usd - $initial->amount;
        $Tpercent = $profit / $initial->amount;
        $Tpercent = $Tpercent * 100;
 
-      return response()->json(['result' => $balances, 'initial' => $initial, 'usd' => $usd, 'btc' => $btc, 'profit' => $profit, 'percent' => $Tpercent , 'chart' => $chart], 202);
+      return response()->json(['result' => $balances, 'initial' => $initial, 'usd' => $usd, 'btc' => $btc, 'profit' => $profit, 'percent' => $Tpercent , 'chart' => $chart, 'initialb' => $btcI], 202);
     }
 
     public function newsletter(){
