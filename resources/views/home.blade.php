@@ -86,7 +86,9 @@ body{
   display: inline-block;
   transition: background-color 0.6s ease;
 }
-
+.btn-group > .btn{
+  margin: 0px;
+}
 .active, .dot:hover {
   background-color: #717171;
 }
@@ -122,7 +124,16 @@ body{
   <div class="row">
     <div class="col-sm-12">
       <div class="panel panel-default">
-              <div class="panel-heading">Historical Profit</div>
+              <div class="panel-heading">
+                <h4>Historical Profit</h4>
+                <div class="col-sm-4" style="float:right;">
+                  <div class="btn-group">
+                    <button type="button" class="btn btn-default btn-chart" id="daily">Daily</button>
+                    <button type="button" class="btn btn-default btn-chart" id="weekly">Weekly</button>
+                    <button type="button" class="btn btn-default btn-chart" id="monthly">Monthly</button>
+                  </div>
+                </div>
+              </div>
               <div class="panel-body" style="height:400px;">
                   <canvas id="historicalChart" width="600" height="400"></canvas>
               </div>

@@ -31,8 +31,11 @@ class User extends Authenticatable
         return $this->hasMany('App\Post');
     }
 
-    public function newsletter(){
+    public function newsletters(){
         return $this->hasMany('App\Newsletter');
+    }
+    public function histories(){
+        return $this->hasMany('App\History');
     }
 
     public function roles(){

@@ -10,7 +10,9 @@ use App\Currency;
 use App\Fund;
 use App\Balance;
 use App\FundOrder;
-
+use App\User;
+use App\History;
+use Carbon\Carbon;
 
 class FundsController extends Controller
 {
@@ -70,6 +72,10 @@ class FundsController extends Controller
      }
 
      public function total(Request $request){
+       //
+
+
+
         $user = Auth::User();
         $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
         $usd = 0;
@@ -278,6 +284,8 @@ class FundsController extends Controller
              }
          }
 
+
+
          foreach($balancesCurrency as $balance){
 
              if($balance->value == "coinmarketcap"){
@@ -298,6 +306,7 @@ class FundsController extends Controller
              $eaccess = false;
          }
          //Get fees by month and year
+
 
          return response()->json(['page' => $page, 'result' => $balancesCurrency, 'total' => $total, 'eaccess' => $eaccess], 202);
      }

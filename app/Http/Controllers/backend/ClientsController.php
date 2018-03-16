@@ -428,6 +428,7 @@ class ClientsController extends Controller
 
      public function initial(Request $request){
          $request->validate([
+              'date' => 'required',
              'amount' => 'required| min:01',
              'id' => 'required',
          ]);
@@ -435,6 +436,7 @@ class ClientsController extends Controller
          $currency = Currency::Where('symbol', 'USD')->first();
          $id = $request->id;
          $amount = $request->amount;
+         $date = $request->date;
          $user = User::find($id);
 
          $hasini = $user->funds()->where('type', 'initial')->first();
@@ -470,7 +472,7 @@ class ClientsController extends Controller
          $fund->active = 1;
          $fund->comment = 'Initial Invest';
          $fund->type = "initial";
-
+         $fund->created_at = $date;
          $fund->user()->associate($id);
          $fund->currency()->associate($currency);
 

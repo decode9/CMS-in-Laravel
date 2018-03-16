@@ -11,6 +11,7 @@ use App\Fund;
 use App\Balance;
 use App\FundOrder;
 use App\Newsletter;
+use App\History;
 
 class DashboardController extends Controller
 {
@@ -136,4 +137,26 @@ class DashboardController extends Controller
       return response()->json(['result' => $newsletters], 202);
 
     }
+
+    public function historyChart(Request $request){
+      $type = $request->type;
+      $user = Auth::User();
+      $chart['register'] = [];
+      $chart['amount'] = [];
+      $query = History::Where('type', $type)->select('register', 'amount')->orderBy('register');
+
+      if($user->hasRole(30)){
+        $query->where('user_id', $user->id);
+      }else{
+        $query->where('user_id', null);
+      }
+      $histories = $query->get();
+      foreach($histories as $history){
+        array_push($chart['amount'], $history->amount);
+        array_push($chart['register'], $history->register);
+      }
+
+      return response()->json(['result' => $chart], 202);
+    }
+
 }

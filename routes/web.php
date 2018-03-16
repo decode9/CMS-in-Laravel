@@ -34,6 +34,7 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/profile', 'backend\ViewsController@profile')->name('profile');
 Route::post('/dashboard/balance', 'backend\DashboardController@balance')->name('dashboard.balance');
 Route::post('/dashboard/newsletter', 'backend\DashboardController@newsletter')->name('dashboard.newsletter');
+Route::post('/dashboard/charts', 'backend\DashboardController@historyChart')->name('dashboard.chart');
 
 //USER ADMINISTRATION BACKEND
 

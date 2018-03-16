@@ -384,6 +384,52 @@ $(document).ready(function(){
 
       }
 
+
+      function lineChart(but, type){
+        $(but).click(function(){
+          $('.btn-chart').removeClass('active');
+          $(this).addClass('active');
+          $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            data: {type: type},
+            url: "/dashboard/charts",
+            type: 'post',
+            success: function (data) {
+              chart = data.result;
+              var ctx = document.getElementById("historicalChart").getContext('2d');
+              var myChart = new Chart(ctx, {
+                options:{
+                    responsive:true,
+                    maintainAspectRatio: false,
+                },
+                type: 'line',
+                data: {
+                    labels: chart['register'],
+                    datasets: [{
+                        label: 'USD Profit',
+                        data: chart['amount'],
+                        backgroundColor: [
+                            'rgba(75, 192, 192, 0.2)',
+                        ],
+                        borderColor: [                        
+                            'rgba(75, 192, 192, 1)',
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+              });
+            },
+          })
+        })
+      }
+
+      lineChart('#daily', 'daily');
+      lineChart('#weekly', 'weekly');
+      lineChart('#monthly', 'monthly');
+
+      $('#daily').trigger('click');
       newsletter()
       balance();
     }
@@ -438,6 +484,8 @@ $(document).ready(function(){
 
                 }
             })
+
+
         }
 
         function passwordEditUser(pebutton){
@@ -3366,7 +3414,7 @@ $(document).ready(function(){
         }
 
         /*Search Withdraws Table*/
-/*
+        /*
         $('#table_withdraw_header_currency').click(function (e) {
           orderTableWithdrawBy('currencies.symbol');
         });
@@ -3542,7 +3590,7 @@ $(document).ready(function(){
         }
 
         /*Withdraw Form*/
-/*
+        /*
         $('#btnWith').click(function(){
 
             box = "<div class='Modal' id='withdrawModal' style='display:none;'><div class='modalContent' id='modalWithdraw'><h3>Withdraw</h3><form class='FundForm' id='WithdrawForm' enctype='multipart/form-data' ></form></div></div>";
@@ -3972,7 +4020,7 @@ $(document).ready(function(){
 
             })
         }
-*/
+        */
 
         $('#table_balance_currency_header_symbol').click(function (e) {
             orderTableBalanceCurrencyBy('currencies.symbol');
@@ -4744,7 +4792,7 @@ $(document).ready(function(){
                 box = $("<form class='InitialForm' id='InitialForm' enctype='multipart/form-data' ></form>");
                 alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Initial Fund Invest</strong></div>');
                 inputN = $('<div><label for="inital">Initial Invest USD<label></div><div><input id="initial" name="initial" type="text" class="form-control" placeholder="Initial Invest" required></div>');
-
+                inputA = $('<div><label for="created">Initial Date<label></div><div><input id="created" name="created" type="date" class="form-control" placeholder="Initial Date" ></div>');
                 $('.modal-title').empty();
                 $('.modal-body').empty();
                 $('.modal-title').append('Initial Invest');
@@ -4752,7 +4800,7 @@ $(document).ready(function(){
 
                 $('#InitialForm').append(alert);
                 $('#InitialForm').append(inputN);
-
+                $('#InitialForm').append(inputA);
                 $('#InitialForm').append("<div id='iniButts'></div>");
 
                 makeBut = $("<button type='button' class='btn btn-primary' name='button' id='iniCont'>Make</button>");
@@ -4775,6 +4823,11 @@ $(document).ready(function(){
                                 minlength: 1,
                                 amount: true,
                             },
+                            created:{
+                              date: true,
+                              required: true,
+                            }
+
                         },
                         messages:{
                             amount: "Please introduce a valid amount, minimun 3 digits",
@@ -4802,13 +4855,14 @@ $(document).ready(function(){
                   $(this).addClass('disabled');
                     amount = $('#initial').val().replace(/\./g, '');
                     amount = amount.replace(/,/g, '.');
+                    date = $('#created').val();
 
                         $.ajax({
                             headers: { 'X-CSRF-Token' : $('meta[name=csrf-token]').attr('content') },
                             url: '/clients/initials',
                             type: 'POST',
                             dataType: "json",
-                            data: {amount:amount, id: user.id},
+                            data: {amount:amount, id: user.id, date: date},
                             success: function(data){
                                 $('#form_client_search').trigger("submit");
                                 $('#newsMod').modal('hide');
