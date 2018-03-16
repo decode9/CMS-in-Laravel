@@ -165,6 +165,28 @@ $(document).ready(function(){
             return this.formatear(num);
         }
     }
+    var formatNumber2 = {
+        separador: ".", // separador para los miles
+        sepDecimal: ',', // separador para los decimales
+        formatear:function (num){
+            num +='';
+            var splitStr = num.split('.');
+            var splitLeft = splitStr[0];
+            var splitRight = splitStr.length > 1 ? this.sepDecimal + splitStr[1] : '';
+
+              splitRight = splitRight.substring(0,3);
+
+            var regx = /(\d+)(\d{3})/;
+            while (regx.test(splitLeft)) {
+                splitLeft = splitLeft.replace(regx, '$1' + this.separador + '$2');
+            }
+            return this.simbol + splitLeft +splitRight;
+        },
+        num:function(num, simbol){
+            this.simbol = simbol ||'';
+            return this.formatear(num);
+        }
+    }
     /* Applicate formatnumber function to an input */
     function formatInput(input){
         $(input).change(function(){
@@ -311,8 +333,6 @@ $(document).ready(function(){
                 $('#listBalance').append(list);
               }
 
-              diffI = initial - usd;
-              diffPU = initial - profit;
               if(profit > 0){
                   color = 'green';
                   color2 = 'red';
@@ -355,8 +375,42 @@ $(document).ready(function(){
               var ctxI = document.getElementById("initialChart").getContext("2d");
 		          var initialChart = new Chart(ctxI, configI);
 
-              $('#totalusd').append(formatNumber.num(usd));
-              $('#totalbtc').append(formatNumber.num(btc));
+              var configT = {
+			             type: 'doughnut',
+
+			                data: {
+				                    datasets: [{
+					                        data: [usd, profit],
+					                        backgroundColor: [
+                                    color,
+                                    'transparent',
+					                        ],
+                                  borderColor:[
+                                    'transparent',
+                                    'transparent'
+                                  ],
+					                        hoverBackgroundColor: [
+					                          "#36A2EB",
+                                    color2
+					                        ],
+				                     }]
+			                },
+		                  options: {
+                        cutoutPercentage: 90,
+                        responsive:true,
+                        maintainAspectRatio: false,
+			                     elements: {
+				                         center: {
+					                              text: 'USD: '+ formatNumber2.num(usd) + ' BTC: '+ formatNumber2.num(btc),
+                                        color: 'white', // Default is #000000
+                                        fontStyle: 'florence', // Default is Arial
+                                        sidePadding: 10// Defualt is 20 (as a percentage)
+				                         }
+			                     }
+		                  }
+	            };
+              var ctxT = document.getElementById("totalChart").getContext("2d");
+		          var totalChart = new Chart(ctxT, configT);
 
 
 

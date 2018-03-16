@@ -154,24 +154,24 @@ body{
     <div class="col-sm-3">
       <div class="panel panel-alternative">
               <div class="panel-heading"><h4>Total USD / BTC</h4></div>
-              <div class="panel-body">
-                  <h4>USD: <span id="totalusd"></span> / BTC: <span id="totalbtc"></span></h4>
+              <div class="panel-body" style="height:150px">
+                  <canvas id="totalChart" width="600" height="90"></canvas>
               </div>
       </div>
     </div>
     <div class="col-sm-3">
       <div class="panel panel-alternative">
               <div class="panel-heading"><h4>Profit Gain And Loss</h4></div>
-              <div class="panel-body">
-                  <h4>USD: <span id="profit"></span></h4>
+              <div class="panel-body" style="height:150px">
+                  <canvas id="profitChart" width="600" height="90"></canvas>
               </div>
       </div>
     </div>
     <div class="col-sm-3">
       <div class="panel panel-alternative">
               <div class="panel-heading"><h4>% Change</h4></div>
-              <div class="panel-body">
-                  <h4><span id="percent"></span></h4>
+              <div class="panel-body" style="height:150px">
+                  <canvas id="percentChart" width="600" height="90"></canvas>
               </div>
       </div>
     </div>
