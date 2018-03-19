@@ -124,7 +124,7 @@ body{
                   <h4>Historical Profit</h4>
                 </div>
                 <div class="col-sm-4">
-                  <div class="col-sm-12 text-center" style="float:right;">
+                  <div class="col-sm-12 text-center">
                     <button type="button" class="btn btn-alternative btn-chart" id="daily">Daily</button>
                     <button type="button" class="btn btn-alternative btn-chart" id="weekly">Weekly</button>
                     <button type="button" class="btn btn-alternative btn-chart" id="monthly">Monthly</button>
@@ -144,10 +144,11 @@ body{
     <div class="col-sm-3">
       <div class="panel panel-alternative">
               <div class="panel-body" style="height:150px">
-                  <canvas id="initialChart" width="600" height="90"></canvas>
+                  <canvas id="BTCChart" width="600" height="90"></canvas>
+                  <p id="btcAmount"></p>
               </div>
               <div class="panel-footer">
-                  <h4>Initial Invest</h4>
+                  <h4>Total BTC</h4>
               </div>
       </div>
     </div>
@@ -155,6 +156,7 @@ body{
       <div class="panel panel-alternative">
               <div class="panel-body" style="height:150px">
                   <canvas id="totalChart" width="600" height="90"></canvas>
+                  <p id="usdAmount"></p>
               </div>
               <div class="panel-footer">
                   <h4>Total USD</h4>
@@ -165,6 +167,7 @@ body{
       <div class="panel panel-alternative">
               <div class="panel-body" style="height:150px">
                   <canvas id="profitChart" width="600" height="90"></canvas>
+                  <p id="profitAmount"></p>
               </div>
               <div class="panel-footer">
                   <h4>Profit Gain And Loss</h4>
@@ -174,35 +177,38 @@ body{
     <div class="col-sm-3">
       <div class="panel panel-alternative">
               <div class="panel-body" style="height:150px">
-                  <canvas id="BTCChart" width="600" height="90"></canvas>
+                  <canvas id="initialChart" width="600" height="90"></canvas>
+                  <p id="initialAmount"></p>
               </div>
               <div class="panel-footer">
-                  <h4>Total BTC</h4>
+                  <h4>Initial Invest</h4>
               </div>
       </div>
     </div>
   </div>
   <div class="row">
     <div class="col-sm-6">
+
       <div class="col-sm-12" style="padding: 0px;">
         <div class="panel panel-alternative">
-                <div class="panel-heading"><h4>Newsletter</h4></div>
-                <div class="panel-body">
-                  <div class="message-container col-sm-7 text-left">
-                  </div>
-                  <div class="info-container col-sm-5">
-                    <div class="date-container col-sm-12" style="height:50px">
-                    </div>
-                    <div class="read-container col-sm-12">
-                    </div>
-                  </div>
+                <div class="panel-heading"><h4>My portfolio</h4></div>
+                <div class="panel-body myPortfolio">
                 </div>
         </div>
       </div>
       <div class="col-sm-12" style="padding: 0px;">
         <div class="panel panel-alternative">
-                <div class="panel-heading"><h4>My portfolio</h4></div>
-                <div class="panel-body">
+                <div class="panel-heading"><h4>Newsletter</h4></div>
+                <div class="panel-body bodyNews">
+                  <div class="message-container col-sm-7 text-left">
+                  </div>
+                  <div class="info-container col-sm-5">
+                    <div class="date-container col-sm-12" style="height:50px">
+
+                    </div>
+                    <div class="read-container col-sm-12">
+                    </div>
+                  </div>
                 </div>
         </div>
       </div>
@@ -211,9 +217,15 @@ body{
       <div class="panel panel-alternative">
               <div class="panel-heading"><h4>Balance Distribution</h4></div>
               <div class="panel-body">
-                <div class="chartContainer" style="height:400px;">
-                    <canvas id="myChart"></canvas>
-                </div>
+                  <div class="col-sm-5 list-dist">
+                      <div class="list-gr">
+
+                      </div>
+                  </div>
+                  <div class="col-sm-7" style="height:200px;">
+                      <canvas id="myChart"></canvas>
+                  </div>
+
               </div>
       </div>
     </div>

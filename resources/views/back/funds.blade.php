@@ -6,7 +6,7 @@ body{
 </style>
 @section('content')
     <div class="col-sm-12">
-      <div class="panel panel-default">
+      <div class="panel panel-alternative">
               <div class="panel-heading">
                 <div class="row">
                   <div class="col-sm-2 text-center">
@@ -28,7 +28,7 @@ body{
                           <div class="input-group">
                               <input id="search_balance_currency_value" type="text" class="small form-control" placeholder="Search Currency">
                               <span class="input-group-btn">
-                                  <button type="submit" class="btn btn-default" value="Go!"><span class="glyphicon glyphicon-search"></span></button>
+                                  <button type="submit" class="btn btn-alternative" value="Go!"><span class="glyphicon glyphicon-search"></span></button>
                               </span>
                           </div><!-- /input-group -->
                       </form>
@@ -79,7 +79,7 @@ body{
                           <div class="input-group">
                               <input id="search_balance_crypto_value" type="text" class="small form-control" placeholder="Search CryptoCurrency">
                               <span class="input-group-btn">
-                                  <button type="submit" class="btn btn-default" value="Go!"><span class="glyphicon glyphicon-search"></span></button>
+                                  <button type="submit" class="btn btn-alternative" value="Go!"><span class="glyphicon glyphicon-search"></span></button>
                               </span>
                           </div><!-- /input-group -->
                       </form>
@@ -130,7 +130,7 @@ body{
                           <div class="input-group">
                               <input id="search_balance_token_value" type="text" class="small form-control" placeholder="Search Token">
                               <span class="input-group-btn">
-                                  <button type="submit" class="btn btn-default" value="Go!"><span class="glyphicon glyphicon-search"></span></button>
+                                  <button type="submit" class="btn btn-alternative" value="Go!"><span class="glyphicon glyphicon-search"></span></button>
                               </span>
                           </div><!-- /input-group -->
                       </form>
@@ -176,7 +176,7 @@ body{
 
     </div>
     <div class="col-sm-12">
-      <div class="panel panel-default">
+      <div class="panel panel-alternative">
               <div class="panel-heading">
                 <div class="row">
                   <div class="col-sm-7 text-center">
@@ -187,7 +187,7 @@ body{
                         <div class="input-group">
                             <input id="search_transaction_value" type="text" class="small form-control" placeholder="Search Transaction">
                             <span class="input-group-btn">
-                                <button type="submit" class="btn btn-default" value="Go!"><span class="glyphicon glyphicon-search"></span></button>
+                                <button type="submit" class="btn btn-alternative" value="Go!"><span class="glyphicon glyphicon-search"></span></button>
                             </span>
                         </div><!--/input-group-->
                     </form>
@@ -233,7 +233,7 @@ body{
                 </div>
               </div>
       </div>
-      <div class="panel panel-default">
+      <div class="panel panel-alternative">
               <div class="panel-heading">
                 <div class="row">
                   <div class="col-sm-7 text-center">
@@ -244,7 +244,7 @@ body{
                         <div class="input-group">
                             <input id="search_pending_transaction_value" type="text" class="small form-control" placeholder="Search Pending Transaction">
                             <span class="input-group-btn">
-                                <button type="submit" class="btn btn-default" value="Go!"><span class="glyphicon glyphicon-search"></span></button>
+                                <button type="submit" class="btn btn-alternative" value="Go!"><span class="glyphicon glyphicon-search"></span></button>
                             </span>
                         </div><!--/input-group-->
                     </form>

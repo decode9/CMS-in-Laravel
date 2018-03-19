@@ -103,13 +103,13 @@
               </ul>
             </div>
           </nav>
-            <div class="col-sm-2 sidenav hidden-xs">
+            <div class="col-sm-3 col-md-2 col-lg-2 sidenav hidden-xs">
 
                 <ul class="nav nav-pills nav-stacked sub-nav">
                     @if(Auth::User()->getCredential(100))
                     <li class="list listuser">
                       <a href="{{route('users')}}">
-                        <img src="{{ url('/') }}/img/icons/team.png" width="56" alt="" height="auto">
+                        <img src="{{ url('/') }}/img/icons/users.png" width="32" alt="" height="auto">
                         <p>Users</p>
                       </a>
                     </li>
@@ -117,7 +117,7 @@
                     @if(Auth::User()->getCredential(150))
                     <li class="list listcurrency">
                       <a href="{{route('currencies')}}">
-                        <img src="{{ url('/') }}/img/icons/money.png" width="56" alt="" height="auto">
+                        <img src="{{ url('/') }}/img/icons/currencies.png" width="32" alt="" height="auto">
                         <p>Currencies</p>
                       </a>
                     </li>
@@ -125,7 +125,7 @@
                     @if(Auth::User()->getCredential(150))
                     <li class="list listfund">
                       <a href="{{route('funds')}}">
-                        <img src="{{ url('/') }}/img/icons/money-bag.png" width="56" alt="" height="auto">
+                        <img src="{{ url('/') }}/img/icons/funds.png" width="auto" alt="" height="32">
                         <p>Funds</p>
                       </a>
                     </li>
@@ -133,7 +133,7 @@
                     @if(Auth::User()->getCredential(250))
                     <li class="list listnews">
                       <a href="{{route('newsletter')}}">
-                        <img src="{{ url('/') }}/img/icons/newspaper.png" width="56" alt="" height="auto">
+                        <img src="{{ url('/') }}/img/icons/newsletter.png" width="32" alt="" height="auto">
                         <p>Newsletter</p>
                       </a>
                     </li>
@@ -141,7 +141,7 @@
                     @if(Auth::User()->getCredential(250))
                     <li class="list listclient">
                       <a href="{{route('clients')}}">
-                        <img src="{{ url('/') }}/img/icons/rating.png" width="56" alt="" height="auto">
+                        <img src="{{ url('/') }}/img/icons/client-company.png" width="auto" alt="" height="32">
                         <p>Clients</p>
                       </a>
                     </li>
@@ -149,7 +149,7 @@
                 </ul><br>
             </div>
             <br>
-            <div class="col-sm-10" id="rightContent">
+            <div class="col-sm-9 col-md-10 col-lg-10" id="rightContent">
                 @yield('content')
             </div>
         </div>

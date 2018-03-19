@@ -27,12 +27,12 @@ a:hover{
 
 .row.content {
   height: auto;
-  background-color: #0F2145;
+  background-color: #102733;
 }
 
 /* Set gray background color and 100% height */
 .sidenav {
-  background-color: #0E214B;
+  background-color: #112e3d;
   height: 100%;
 }
 
@@ -40,15 +40,17 @@ a:hover{
 @media screen and (max-width: 767px) {
   .row.content {height: auto;}
 }
+
 .navBack{
   border-radius: 0px !important;
   margin: 0px !important;
-  background-color: #0E214B;
+  background-color: #112e3d;
   border: none;
   border-bottom: 1px solid black;
 }
+
 .sub-nav{
-  margin-top: 10px;
+  margin-top: 120px;
 }
 .panel{
   border-radius: 0px;
@@ -84,6 +86,7 @@ a:hover{
 
 }
 
+
 .btn-alternative{
     border-radius: 0px;
     background-color: transparent;
@@ -101,6 +104,50 @@ a:hover{
   border-bottom: 2px solid #47b5b6;
   color: white;
 }
+
+.btn-alternative-success:hover{
+  border-bottom: 2px solid #398439;
+  color: white;
+  transition: all 0.2s;
+}
+.btn-alternative-success.active, btn-alternative-succes:active{
+  border-bottom: 2px solid #398439;
+  color: white;
+}
+
+.btn-alternative-danger:hover{
+  border-bottom: 2px solid #d9534f;
+  color: white;
+  transition: all 0.2s;
+}
+.btn-alternative-danger.active, btn-alternative-danger:active{
+  border-bottom: 2px solid #d9534f;
+  color: white;
+}
+
+.sub-nav>li>a{
+    border-radius: 0px;
+    background-color: transparent;
+    color: rgba(255, 255, 253, 0.5);
+    border: none;
+    transition: all 0.2s;
+    text-transform: uppercase;
+}
+.sub-nav>li>a:hover{
+  border-bottom: 2px solid #47b5b6;
+  color: white;
+  transition: all 0.2s;
+  background-color: transparent;
+}
+.nav-pills>li.active>a, .nav-pills>li.active>a:focus, .nav-pills>li.active>a:hover{
+  border-bottom: 2px solid #47b5b6;
+  color: white;
+  background-color: transparent;
+}
+
+
+
+
 .modal-alternative{
   border-radius: 0px;
   background-color: #132a3a;
@@ -117,4 +164,51 @@ a:hover{
 }
 .modal-alternative>.modal-footer{
     border-color: #395b71;
+}
+.colorChart{
+    height: 20px;
+}
+.list-gr p{
+    margin: 0px;
+    color: #395b71;
+}
+.list-gr h5{
+    margin: 0px;
+}
+.divPro{
+    padding-top: 7.5px;
+    padding-bottom: 4.5px;
+}
+.progress{
+    margin: 0px;
+    background-color: transparent;
+    border-radius: none;
+}
+
+.form-control{
+    border-radius: 0px;
+    background-color: transparent;
+    color:white;
+}
+.form-control option{
+    background-color: #395b71;
+
+}
+.table{
+    color:white;
+    font-size: 13px;
+}
+.table-striped>tbody>tr:nth-of-type(odd){
+    background-color: #395b71;
+}
+.table-hover>tbody>tr:hover{
+    background-color: #102734;
+}
+.pagination>li>a, .pagination>li>span{
+    color:white;
+    background-color: transparent;
+    border-radius: 0px;
+}
+.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control{
+    background-color: #6b6b6b69;
 }

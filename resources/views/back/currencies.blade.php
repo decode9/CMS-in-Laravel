@@ -6,7 +6,7 @@ body{
 </style>
 @section('content')
     <div class="col-sm-12">
-      <div class="panel panel-default">
+      <div class="panel panel-alternative">
               <div class="panel-heading text-center">
                 <div class="row">
                   <div class="col-sm-4">
@@ -18,13 +18,13 @@ body{
                           <div class="input-group">
                               <input id="search_currency_value" type="text" class="form-control" placeholder="Search Currency">
                               <span class="input-group-btn">
-                                  <button type="submit" class="btn btn-default" value="Go!"><span class="glyphicon glyphicon-search"></span></button>
+                                  <button type="submit" class="btn btn-alternative" value="Go!"><span class="glyphicon glyphicon-search"></span></button>
                               </span>
                           </div><!-- /input-group -->
                       </form>
                     </div>
                     <div class="col-sm-3">
-                      <button type="button" class="btn btn-default btn-create-Cu" data-toggle="modal" data-target="#currencyMod" value="Go!"><i id="new_icon" class="fa fa-currency" aria-hidden="true">Create Currency</i></button>
+                      <button type="button" class="btn btn-alternative btn-create-Cu" data-toggle="modal" data-target="#currencyMod" value="Go!"><i id="new_icon" class="fa fa-currency" aria-hidden="true">Create Currency</i></button>
                     </div>
                   </div>
                 </div>
@@ -70,7 +70,7 @@ body{
     <div class="modal-dialog">
 
       <!-- Modal content-->
-      <div class="modal-content">
+      <div class="modal-content modal-alternative">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
           <h4 class="modal-title"></h4>
@@ -90,7 +90,7 @@ body{
   <div class="modal-dialog modal-sm">
 
     <!-- Modal content-->
-    <div class="modal-content content-alert">
+    <div class="modal-content modal-alternative content-alert">
         <div class="alert" style="margin: 0px;">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>

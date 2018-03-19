@@ -98,10 +98,12 @@ class DashboardController extends Controller
           if($balance->symbol == "VEF"){
             $balance->value_btc = 238000;
             $btcvalue = 0;
+            $balance->img = "none";
           }else{
             $btcvalue = $balance->amount * $balance->value_btc;
           }
           if($balance->symbol == "USD"){
+              $balance->img = "none";
             $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/bitcoin');
             $data = json_decode($json);
             $balance->value_btc = $data[0]->price_usd;
@@ -118,6 +120,16 @@ class DashboardController extends Controller
 
           $usd += $usdvalue;
           $btc += $btcvalue;
+      }
+      foreach ($balances as $balance) {
+          $usdvalue = $balance->amount * $balance->value;
+          if($user->hasRole('30')){
+            $percent = $this->percent($user);
+            $camount = $usdvalue * $percent;
+            $balance->percent = ($camount / $usd) * 100;
+          }else{
+          $balance->percent = ($usdvalue / $usd) * 100;
+          }
       }
       $initstamp = $initial->created_at->timestamp;
 
