@@ -246,6 +246,13 @@ $(document).ready(function(){
 
     }
 
+
+    function cutText(text){
+      text1 = text.substr(0, 30);
+      text1 = text1 + '...';
+      return text1;
+    }
+
     /* Print Recipients deposits or withdraw Recipients */
 
     function printRecipient(user, data, symbol, type , printbut ){
@@ -500,7 +507,7 @@ $(document).ready(function(){
     			                     elements: {
     				                         center: {
     					                              text: 'BTC: ' + formatNumber2.num(btc),
-                                            color: color, // Default is #000000
+                                            color: colorb, // Default is #000000
                                             fontStyle: 'florence', // Default is Arial
                                             sidePadding: 10// Defualt is 20 (as a percentage)
     				                         }
@@ -562,26 +569,50 @@ $(document).ready(function(){
                 newsletters = data.result;
                 for(i=0;i< newsletters.length; i++){
                   var newsletter = newsletters[i];
-                  div = $('<div class="mySlides fade"></div>');
-                  title = $('<h5>'+newsletter.title+'</h5>');
-                  message = $('<p>'+newsletter.message+'</p>');
-                  textby = $('<p id="created by">Created By '+ newsletter.name +'</p>');
+                  divM = $('<div class="messageSlides fade"></div>');
+                  message = $('<p>'+cutText(newsletter.message)+'</p>');
 
-                  div.append(title);
-                  div.append(message);
-                  div.append(textby);
-                  $('.slideshow-container').prepend(div);
+                  div = $('<div class="dateSlides fade text-center"></div>')
+                  date = $('<h5>'+newsletter.date+'</h5>');
+
+                  divR = $('<div class="readSlides fade text-center"></div>')
+                  readM = $('<button type="button" data-toggle="modal" data-target="#newsMod"  class="btn btn-alternative">Read More</button>');
 
                   prev = $('<a class="prev">&#10094;</a>');
                   next = $('<a class="next">&#10095;</a>');
-                  slide(prev, next);
-                  $('.slideshow-container').append(prev);
-                  $('.slideshow-container').append(next);
+
+
+                  divM.append(message);
+                  div.append(date);
+                  divR.append(readM);
+
+
+
+                  $('.message-container').append(divM);
+                  $('.date-container').append(div);
+                  $('.read-container').append(divR);
+                  viewNews(readM, newsletter);
+
                 }
+                slide(prev, next);
+                $('.date-container').append(prev);
+                $('.date-container').append(next);
             }
         })
       }
 
+      function viewNews(but, news){
+        but.click(function(){
+          title = $('<h4>'+news.title+'</h4>');
+          message = $('<p>'+news.message+'</p>');
+          textby = $('<p id="created by">Created By '+ news.name +'</p>');
+          $('.modal-header').empty();
+          $('.modal-body').empty();
+          $('.modal-header').append(title);
+          $('.modal-body').append(message);
+          $('.modal-body').append(textby);
+        })
+      }
       function slide(prev, next){
         var slideIndex = 1;
         showSlides(slideIndex);
@@ -601,7 +632,61 @@ $(document).ready(function(){
 
         function showSlides(n) {
         var i;
-        var slides = document.getElementsByClassName("mySlides");
+        var slides = document.getElementsByClassName("messageSlides");
+
+        if (n > slides.length) {slideIndex = 1}
+        if (n < 1) {slideIndex = slides.length}
+        for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = "none";
+        }
+        slides[slideIndex-1].style.display = "block";
+        }
+
+        showSlidesD(slideIndex);
+
+        // Next/previous controls
+        prev.click(function(){
+          showSlidesD(slideIndex += -1);
+        })
+        next.click(function(){
+          showSlidesD(slideIndex += 1);
+        })
+
+        // Thumbnail image controls
+        function currentSlideD(n) {
+        showSlidesD(slideIndex = n);
+        }
+
+        function showSlidesD(n) {
+        var i;
+        var slides = document.getElementsByClassName("dateSlides");
+
+        if (n > slides.length) {slideIndex = 1}
+        if (n < 1) {slideIndex = slides.length}
+        for (i = 0; i < slides.length; i++) {
+            slides[i].style.display = "none";
+        }
+        slides[slideIndex-1].style.display = "block";
+        }
+
+        showSlidesR(slideIndex);
+
+        // Next/previous controls
+        prev.click(function(){
+          showSlidesR(slideIndex += -1);
+        })
+        next.click(function(){
+          showSlidesR(slideIndex += 1);
+        })
+
+        // Thumbnail image controls
+        function currentSlideR(n) {
+        showSlidesR(slideIndex = n);
+        }
+
+        function showSlidesR(n) {
+        var i;
+        var slides = document.getElementsByClassName("readSlides");
 
         if (n > slides.length) {slideIndex = 1}
         if (n < 1) {slideIndex = slides.length}
@@ -656,6 +741,7 @@ $(document).ready(function(){
           })
         })
       }
+
 
       lineChart('#daily', 'daily');
       lineChart('#weekly', 'weekly');

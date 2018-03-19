@@ -74,6 +74,10 @@ class DashboardController extends Controller
       $btc = 0;
       $chart['symbol'] = [];
       $chart['amount'] = [];
+      $jsonimg = file_get_contents('https://www.cryptocompare.com/api/data/coinlist/');
+      $dataimg = json_decode($jsonimg);
+      $baseimg = $dataimg->BaseImageUrl;
+
       foreach($balances as $balance){
           if($balance->value == "coinmarketcap"){
             $url = 'api.coinmarketcap.com/v1/ticker/'. $balance->name;
@@ -82,6 +86,9 @@ class DashboardController extends Controller
                   $data = json_decode($json);
                   $balance->value = $data[0]->price_usd;
                   $balance->value_btc = $data[0]->price_btc;
+                  $symbol = $balance->symbol;
+                  $imgurl = $baseimg . $dataimg->Data->$symbol->ImageUrl;
+                  $balance->img = $imgurl;
               }else{
                   $balance->value = 0.1;
                   $balance->value_btc = 0.00001;
@@ -136,7 +143,6 @@ class DashboardController extends Controller
 
 
 
-
        $profit = $usd - $initial->amount;
        $Tpercent = $profit / $initial->amount;
        $Tpercent = $Tpercent * 100;
@@ -148,6 +154,10 @@ class DashboardController extends Controller
 
       $newsletters = Newsletter::LeftJoin('users', 'newsletters.user_id', '=', 'users.id')->select('newsletters.*', 'name')->get();
 
+      foreach($newsletters as $newsletter){
+        $date = $newsletter->created_at->toFormattedDateString();;
+        $newsletter->date = $date;
+      }
       return response()->json(['result' => $newsletters], 202);
 
     }

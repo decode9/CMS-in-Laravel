@@ -33,7 +33,7 @@ body{
   top: 50%;
   width: auto;
   margin-top: -22px;
-  padding: 16px;
+  padding: 0px 13px;
   color: black;
   font-weight: bold;
   font-size: 18px;
@@ -116,11 +116,6 @@ body{
 </style>
 @section('content')
 <div class="col-sm-12" style="text-align:center;">
-  <div class="well">
-      <h4 style="float:left;">Balance</h4>
-      <ul id="listBalance">
-      </ul>
-  </div>
   <div class="row">
     <div class="col-sm-12">
       <div class="panel panel-alternative">
@@ -136,8 +131,11 @@ body{
                   </div>
                 </div>
               </div>
-              <div class="panel-body" style="height:300px;">
+              <div class="panel-body" style="height:370px;" >
+                <div class="col-sm-12" style="height:300px;">
                   <canvas id="historicalChart" width="600" height="300"></canvas>
+                </div>
+
               </div>
       </div>
     </div>
@@ -186,6 +184,30 @@ body{
   </div>
   <div class="row">
     <div class="col-sm-6">
+      <div class="col-sm-12" style="padding: 0px;">
+        <div class="panel panel-alternative">
+                <div class="panel-heading"><h4>Newsletter</h4></div>
+                <div class="panel-body">
+                  <div class="message-container col-sm-7 text-left">
+                  </div>
+                  <div class="info-container col-sm-5">
+                    <div class="date-container col-sm-12" style="height:50px">
+                    </div>
+                    <div class="read-container col-sm-12">
+                    </div>
+                  </div>
+                </div>
+        </div>
+      </div>
+      <div class="col-sm-12" style="padding: 0px;">
+        <div class="panel panel-alternative">
+                <div class="panel-heading"><h4>My portfolio</h4></div>
+                <div class="panel-body">
+                </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6">
       <div class="panel panel-alternative">
               <div class="panel-heading"><h4>Balance Distribution</h4></div>
               <div class="panel-body">
@@ -195,19 +217,28 @@ body{
               </div>
       </div>
     </div>
-    <div class="col-sm-6">
-      <div class="panel panel-alternative">
-              <div class="panel-heading"><h4>Newsletter</h4></div>
-              <div class="panel-body">
-                <div class="slideshow-container">
-
-                </div>
-              </div>
-      </div>
-    </div>
   </div>
 </div>
+<div class="modal  fade" id="newsMod" role="dialog">
+<div class="modal-dialog">
 
+  <!-- Modal content-->
+  <div class="modal-content modal-alternative">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal">&times;</button>
+      <h4 class="modal-title"></h4>
+    </div>
+    <div class="modal-body">
+
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-alternative" data-dismiss="modal">Close</button>
+    </div>
+  </div>
+
+</div>
+
+</div>
 <script type="text/javascript">
 
 </script>
