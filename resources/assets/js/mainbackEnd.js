@@ -90,7 +90,7 @@ $(document).ready(function(){
 
     /* Alter Formulary for verification Process */
     function alterForm(form, change){
-        $(form + ' input, ' + form +' select').each(function(index){
+        $(form + ' input, ' + form +' select, '+ form +' textarea' ).each(function(index){
             input = $(this);
             if(change == true){
                 input.attr('disabled', change);
@@ -99,6 +99,7 @@ $(document).ready(function(){
             }
 
         })
+
     }
 
     /* Back Button For Rewrite Data Storage */
@@ -355,7 +356,7 @@ $(document).ready(function(){
                 var amount = chart['amount'][i];
                 var symbol = chart['symbol'][i];
 
-                list = '<div class="col-sm-12"><div class="col-sm-2 colorChart" id="colorChart'+i+'"><div class="color"></div></div><div class="col-sm-10 text-left"><h5 class="list-group-item-heading">'+symbol+'</h5><p class="small">Amount: '+formatNumber2.num(amount)+'</p><p class="small">percent: '+formatNumber2.num(balance.percent)+'%</p></div></div>';
+                list = '<div class="col-sm-12"><div class="col-sm-2 colorChart" id="colorChart'+i+'"><div class="color"></div></div><div class="col-sm-9 text-left"><h5 class="list-group-item-heading">'+symbol+'</h5><p class="small">Amount: '+formatNumber2.num(amount)+'</p><p class="small">percent: '+formatNumber2.num(balance.percent)+'%</p></div></div>';
                 list2 = $('<div class="col-sm-12 text-center folioList"></div>');
 
                 img = $('<div class="col-sm-1"><img src="'+balance.img+'"width="32" height="32" /></div>');
@@ -752,7 +753,7 @@ $(document).ready(function(){
                 data: {
                     labels: chart['register'],
                     datasets: [{
-                        label: 'USD Profit',
+                        label: 'USD Value',
                         data: chart['amount'],
                         backgroundColor: [
                             'rgba(52, 152, 219, 0.5)',
@@ -801,7 +802,6 @@ $(document).ready(function(){
                         inputI = $('<input id="id" name="id" style="display: none;" type="text" class="form-control" value="'+ user.id +'" required>');
                         inputN = $('<div><label for="name">Name<label></div><div><input id="name" name="name" type="text" class="form-control" placeholder="Name" value="'+ name[0] +'" required disabled></div>');
                         inputL = $('<div><label for="lastname">Last Name<label></div><div><input id="lastname" name="lastname" type="text" class="form-control" placeholder="Last Name" value="'+ name[1] +'" required disabled></div>');
-                        inputU = $('<div><label for="username">Username<label></div><div><input id="username" name="username" type="text" class="form-control" placeholder="Username" value="'+ user.username +'" required disabled></div>');
                         inputE = $('<div><label for="email">Email<label></div><div><input id="email" name="email" type="text" class="form-control" placeholder="Email" value="'+ user.email +'" required disabled></div>');
                         inputP = $('<div class="PasswordBox" style="display:none;"><div><label for="password">Password<label></div><div><input id="password" name="password" type="password" class="form-control" placeholder="Password" disabled></div></div>');
                         inputPC = $('<div class="PasswordBox" style="display:none;"><div><label for="passwordConf">Confirm Password<label></div><div><input id="passwordConf" name="passwordConf" type="password" class="form-control" placeholder="Confirm Password" disabled></div></div>');
@@ -967,10 +967,6 @@ $(document).ready(function(){
           orderTableUserBy('name');
         });
 
-        $('#table_user_header_username').click(function (e) {
-          orderTableUserBy('username');
-        });
-
         $('#table_user_header_email').click(function (e) {
           orderTableUserBy('email');
         });
@@ -1035,7 +1031,6 @@ $(document).ready(function(){
 
                             var rowResult = $( '<tr></tr>');
                             var colvalue_1 = $( '<td>'+  user.name +'</td>');
-                            var colvalue_2 = $( '<td>'+ user.username +'</td>');
                             var colvalue_3 = $( '<td>'+  user.email  +'</td>');
 
                             var colvalue_4 = $('<td></td>');
@@ -1056,7 +1051,6 @@ $(document).ready(function(){
                             colvalue_7.append(delBut);
 
                             rowResult.append(colvalue_1);
-                            rowResult.append(colvalue_2);
                             rowResult.append(colvalue_3);
                             rowResult.append(colvalue_4);
                             rowResult.append(colvalue_5);
@@ -1153,7 +1147,6 @@ $(document).ready(function(){
             alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the User</strong></div>');
             inputN = $('<div class="form-group"><label for="name">Name</label><input id="name" name="name" type="text" class="form-control" placeholder="Name" required></div>');
             inputL = $('<div class="form-group"><label for="lastname">Last Name</label><input id="lastname" name="lastname" type="text" class="form-control" placeholder="Last Name" required></div>');
-            inputU = $('<div class="form-group"><label for="username">Username</label><input id="username" name="username" type="text" class="form-control" placeholder="Username" required></div>');
             inputE = $('<div class="form-group"><label for="email">Email</label><input id="email" name="email" type="text" class="form-control" placeholder="Email" required></div>');
             inputP = $('<div class="form-group"><label for="password">Password</label><input id="password" name="password" type="password" class="form-control" placeholder="Password" required></div>');
             inputPC = $('<div class="form-group"><label for="passwordConf">Confirm Password</label><input id="passwordConf" name="passwordConf" type="password" class="form-control" placeholder="Confirm Password" required></div>');
@@ -1287,11 +1280,6 @@ $(document).ready(function(){
                         minlength: 2,
                         lettersonly: true,
                     },
-                    username:{
-                        required: true,
-                        minlength: 4,
-                        username: true,
-                    },
                     email:{
                         required: true,
                         email: true,
@@ -1389,7 +1377,6 @@ $(document).ready(function(){
                 inputI = $('<input id="id" name="id" style="display: none;" type="text" class="form-control" value="'+ user.id +'" required>');
                 inputN = $('<div class="form-group"><label for="name">Name</label><input id="name" name="name" type="text" class="form-control" placeholder="Name" value="'+ name[0] +'" required></div>');
                 inputL = $('<div class="form-group"><label for="lastname">Last Name</label><input id="lastname" name="lastname" type="text" class="form-control" placeholder="Last Name" value="'+ name[1] +'" required></div>');
-                inputU = $('<div class="form-group"><label for="username">Username</label><input id="username" name="username" type="text" class="form-control" placeholder="Username" value="'+ user.username +'" required></div>');
                 inputE = $('<div class="form-group"><label for="email">Email</label><input id="email" name="email" type="text" class="form-control" placeholder="Email" value="'+ user.email +'" required></div>');
                 inputP = $('<div class="PasswordBox form-group" style="display:none;"><label for="password">Password</label><<input id="password" name="password" type="password" class="form-control" placeholder="Password" required></div>');
                 inputPC = $('<div class="PasswordBox form-group" style="display:none;"><label for="passwordConf">Confirm Password</label><input id="passwordConf" name="passwordConf" type="password" class="form-control" placeholder="Confirm Password" required></div>');
@@ -1492,11 +1479,6 @@ $(document).ready(function(){
                         required: true,
                         minlength: 2,
                         lettersonly: true,
-                    },
-                    username:{
-                        required: true,
-                        minlength: 4,
-                        username: true,
                     },
                     email:{
                         required: true,
@@ -4494,6 +4476,7 @@ $(document).ready(function(){
     /* Begin Client Functions */
 
     if(pathname.toString() == '/clients'){
+
         $('.listclient').addClass('active');
         /*Search Client Table*/
 
@@ -4554,10 +4537,10 @@ $(document).ready(function(){
                             var rowResult = $('<tr></tr>');
                             var colvalue_1 = $('<td>' + client.name + '</td>');
                             var colvalue_2 = $('<td>' + client.email + '</td>');
-                            var colvalue_3 = $('<td>'+ formatNumber.num(client.amount) +'</td>');
+                            var colvalue_3 = $('<td>'+ formatNumber2.num(client.amount) +'</td>');
                             var colvalue_4 = $('<td class="text-center"></td>');
-                            var buttonS = $('<button class="btn btn-primary btn-sm" type="button">Select Client</button>');
-                            var buttonI = $('<button class="btn btn-success btn-sm" data-toggle="modal" data-target="#clientMod" type="button">Initial Investment</button>');
+                            var buttonS = $('<button class="btn btn-alternative btn-sm" type="button">Select Client</button>');
+                            var buttonI = $('<button class="btn btn-alternative-success btn-alternative btn-sm" data-toggle="modal" data-target="#clientMod" type="button">Initial Investment</button>');
                             selectClient(buttonS, client.id);
                             initialInvest(buttonI, client);
 
@@ -4660,8 +4643,7 @@ $(document).ready(function(){
             button.click(function(){
                 /*Funds Balances*/
                 $("#table_balance_currency_content").empty();
-                $("#table_balance_crypto_content").empty();
-                $("#table_balance_token_content").empty();
+
                 /*Search Balances Currency Table*/
                 function totalBalance(){
                   $.ajax({
@@ -4727,11 +4709,11 @@ $(document).ready(function(){
                                     // we have to make in steps to add the onclick event
                                     var rowResult = $('<tr></tr>');
                                     var colvalue_1 = $('<td>' + balance.symbol + '</td>');
-                                    var colvalue_2 = $('<td>' + formatNumber.num(balance.amount) + '</td>');
+                                    var colvalue_2 = $('<td>' + formatNumber2.num(balance.amount) + '</td>');
                                     if(balance.symbol == 'VEF'){
-                                        var colvalue_3 = $('<td>' + formatNumber.num(balance.amount / balance.value) + '</td>');
+                                        var colvalue_3 = $('<td>' + formatNumber2.num(balance.amount / balance.value) + '</td>');
                                     }else{
-                                        var colvalue_3 = $('<td>' + formatNumber.num(balance.amount * balance.value) + '</td>');
+                                        var colvalue_3 = $('<td>' + formatNumber2.num(balance.amount * balance.value) + '</td>');
                                     }
 
 
@@ -4813,256 +4795,6 @@ $(document).ready(function(){
                     });
                 };
 
-                function orderTableBalanceCryptoBy(by) {
-                    if (orderBalanceCryptoBy === by) {
-                        if (orderBalanceCryptoDirection === "") {
-                            orderBalanceCryptoDirection = "DESC";
-                        } else {
-                            orderBalanceCryptoDirection = "";
-                        }
-                    } else {
-                        orderBalanceCryptoBy = by;
-                        orderBalanceCryptoDirection = "";
-                    }
-                    searchBalanceCrypto(1);
-                };
-
-                //Get Balance Currency Data
-
-                function searchBalanceCrypto(page) {
-
-                    resultPage = $("#result_balance_crypto_page").val();
-
-                    $.ajax({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        url: "/clients/crypto",
-                        type: 'post',
-                        data: {id: id, searchvalue: searchBalanceCryptoValue, page: page, orderBy: orderBalanceCryptoBy, orderDirection: orderBalanceCryptoDirection, resultPage: resultPage },
-                        success: function success(data) {
-                            //Inicio
-                            var balances = data.result;
-
-                            if (balances.length == 0) {
-                                $("#table_balance_crypto_content").html("");
-                                $('#table_balance_crypto_content').append('<tr><td colspan="3">None</td></tr>');
-                            } else {
-                                // Put the data into the element you care about.
-                                $("#table_balance_crypto_content").html("");
-
-                                for (i = 0; i < balances.length; i++) {
-                                    var balance = balances[i];
-
-                                    // we have to make in steps to add the onclick event
-                                    var rowResult = $('<tr></tr>');
-                                    var colvalue_1 = $('<td>' + balance.symbol + '</td>');
-                                    var colvalue_2 = $('<td>' + formatNumber.num(balance.amount) + '</td>');
-                                    var colvalue_3 = $('<td>' + formatNumber.num(balance.amount * balance.value) + '</td>');
-
-                                    rowResult.append(colvalue_1);
-                                    rowResult.append(colvalue_2);
-                                    rowResult.append(colvalue_3);
-
-
-                                    $("#table_balance_crypto_content").append(rowResult);
-                                }
-
-                                $("#table_balance_crypto_pagination").html("");
-
-                                page = parseInt(data.page);
-                                var total = data.total;
-                                var resultPage = $("#result_balance_crypto_page").val();
-                                var totalPages = Math.ceil(total / resultPage);
-
-                                if (page === 1) {
-                                    maxPage = page + 2;
-                                    totalPages = maxPage < totalPages ? maxPage : totalPages;
-                                    var pageList = $('<ul class="pagination"></ul>');
-
-                                    for (i = page; i <= totalPages; i++) {
-                                        pagebutton = $('<li class="page_balance_crypto pages"><a href="#">' + i + '</a></li>');
-                                        pageList.append(pagebutton);
-                                        addPageBCRButton(pagebutton);
-                                    }
-
-                                    $("#table_balance_crypto_pagination").append(pageList);
-                                } else if (page === totalPages) {
-                                    page = page - 2;
-
-                                    if (page < 1) {
-                                        page = 1;
-                                    }
-
-                                    totalPages = page + 2 < totalPages ? page + 2 : totalPages;
-                                    var pageList = $('<ul class="pagination"></ul>');
-
-                                    for (i = page; i <= totalPages; i++) {
-                                        pagebutton = $('<li class="page_balance_crypto pages"><a href="#">' + i + '</a></li>');
-                                        pageList.append(pagebutton);
-                                        addPageBCRButton(pagebutton);
-                                    }
-
-                                    $("#table_balance_crypto_pagination").append(pageList);
-                                } else {
-                                    page = page - 2;
-
-                                    if (page < 1) {
-                                        page = 1;
-                                    }
-
-                                    totalPages = page + 4 < totalPages ? page + 2 : totalPages;
-                                    var pageList = $('<ul class="pagination"></ul>');
-
-                                    for (i = page; i <= totalPages; i++) {
-                                        pagebutton = $('<li class="page_balance_crypto pages"><a href="#">' + i + '</a></li>');
-                                        pageList.append(pagebutton);
-                                        addPageBCRButton(pagebutton);
-                                    }
-
-                                    $("#table_balance_crypto_pagination").append(pageList);
-                                }
-                            }
-                        },
-                        // Fin
-                        error: function error(_error6) {
-                            ReadError(_error6);
-                        }
-                    });
-                };
-
-                function addPageBCRButton(pagebutton) {
-                    pagebutton.click(function () {
-                        page = $(this).text();
-                        searchBalanceCrypto(page);
-                    });
-                };
-
-                function orderTableBalanceTokenBy(by) {
-                    if (orderBalanceTokenBy === by) {
-                        if (orderBalanceTokenDirection === "") {
-                            orderBalanceTokenDirection = "DESC";
-                        } else {
-                            orderBalanceTokenDirection = "";
-                        }
-                    } else {
-                        orderBalanceTokenBy = by;
-                        orderBalanceTokenDirection = "";
-                    }
-                    searchBalanceToken(1);
-                };
-
-                //Get Balance Currency Data
-
-                function searchBalanceToken(page) {
-
-                    resultPage = $("#result_balance_token_page").val();
-
-                    $.ajax({
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                        },
-                        url: "/clients/token",
-                        type: 'post',
-                        data: { id: id, searchvalue: searchBalanceTokenValue, page: page, orderBy: orderBalanceTokenBy, orderDirection: orderBalanceTokenDirection, resultPage: resultPage },
-                        success: function success(data) {
-                            //Inicio
-                            var balances = data.result;
-
-                            if (balances.length == 0) {
-                                $("#table_balance_token_content").html("");
-                                $('#table_balance_token_content').append('<tr><td colspan="3">None</td></tr>');
-                            } else {
-                                // Put the data into the element you care about.
-                                $("#table_balance_token_content").html("");
-
-                                for (i = 0; i < balances.length; i++) {
-                                    var balance = balances[i];
-
-                                    // we have to make in steps to add the onclick event
-                                    var rowResult = $('<tr></tr>');
-                                    var colvalue_1 = $('<td>' + balance.symbol + '</td>');
-                                    var colvalue_2 = $('<td>' + formatNumber.num(balance.amount) + '</td>');
-                                    var colvalue_3 = $('<td>' + formatNumber.num(balance.amount * balance.value) + '</td>');
-
-                                    rowResult.append(colvalue_1);
-                                    rowResult.append(colvalue_2);
-                                    rowResult.append(colvalue_3);
-
-
-                                    $("#table_balance_token_content").append(rowResult);
-                                }
-
-                                $("#table_balance_token_pagination").html("");
-
-                                page = parseInt(data.page);
-                                var total = data.total;
-                                var resultPage = $("#result_balance_token_page").val();
-                                var totalPages = Math.ceil(total / resultPage);
-
-                                if (page === 1) {
-                                    maxPage = page + 2;
-                                    totalPages = maxPage < totalPages ? maxPage : totalPages;
-                                    var pageList = $('<ul class="pagination"></ul>');
-
-                                    for (i = page; i <= totalPages; i++) {
-                                        pagebutton = $('<li class="page_balance_token pages"><a href="#">' + i + '</a></li>');
-                                        pageList.append(pagebutton);
-                                        addPageTButton(pagebutton);
-                                    }
-
-                                    $("#table_balance_token_pagination").append(pageList);
-                                } else if (page === totalPages) {
-                                    page = page - 2;
-
-                                    if (page < 1) {
-                                        page = 1;
-                                    }
-
-                                    totalPages = page + 2 < totalPages ? page + 2 : totalPages;
-                                    var pageList = $('<ul class="pagination"></ul>');
-
-                                    for (i = page; i <= totalPages; i++) {
-                                        pagebutton = $('<li class="page_balance_token pages"><a href="#">' + i + '</a></li>');
-                                        pageList.append(pagebutton);
-                                        addPageTButton(pagebutton);
-                                    }
-
-                                    $("#table_balance_token_pagination").append(pageList);
-                                } else {
-                                    page = page - 2;
-
-                                    if (page < 1) {
-                                        page = 1;
-                                    }
-
-                                    totalPages = page + 4 < totalPages ? page + 2 : totalPages;
-                                    var pageList = $('<ul class="pagination"></ul>');
-
-                                    for (i = page; i <= totalPages; i++) {
-                                        pagebutton = $('<li class="page_balance_token pages"><a href="#">' + i + '</a></li>');
-                                        pageList.append(pagebutton);
-                                        addPageTButton(pagebutton);
-                                    }
-
-                                    $("#table_balance_token_pagination").append(pageList);
-                                }
-                            }
-                        },
-                        // Fin
-                        error: function error(_error6) {
-                            ReadError(_error6);
-                        }
-                    });
-                };
-
-                function addPageTButton(pagebutton) {
-                    pagebutton.click(function () {
-                        page = $(this).text();
-                        searchBalanceToken(page);
-                    });
-                };
-
                 $('#table_balance_currency_header_symbol').click(function (e) {
                     orderTableBalanceCurrencyBy('currencies.symbol');
                 });
@@ -5086,66 +4818,11 @@ $(document).ready(function(){
                     searchBalanceCurrency(1);
                 });
 
-                $('#table_balance_crypto_header_symbol').click(function (e) {
-                    orderTableBalanceCryptoBy('currencies.symbol');
-                });
-
-                $('#table_balance_crypto_header_amount').click(function (e) {
-                    orderTableBalanceCryptoBy('amount');
-                });
-
-                $('#table_balance_crypto_header_equivalent').click(function (e) {
-                    orderTableBalanceCryptoBy('value');
-                });
-
-                var orderBalanceCryptoBy = "";
-                var orderBalanceCryptoDirection = "";
-                var searchBalanceCryptoValue = "";
-
-                $("#form_balance_crypto_search").submit(function (e) {
-                    e.preventDefault();
-                    //DESC
-                    searchBalanceCryptoValue = $("#search_balance_crypto_value").val();
-                    searchBalanceCrypto(1);
-                });
-
-                $('#table_balance_token_header_symbol').click(function (e) {
-                    orderTableBalanceTokenBy('currencies.symbol');
-                });
-
-                $('#table_balance_token_header_amount').click(function (e) {
-                    orderTableBalanceTokenBy('amount');
-                });
-
-                $('#table_balance_token_header_equivalent').click(function (e) {
-                    orderTableBalanceTokenBy('value');
-                });
-
-                var orderBalanceTokenBy = "";
-                var orderBalanceTokenDirection = "";
-                var searchBalanceTokenValue = "";
-
-                $("#form_balance_token_search").submit(function (e) {
-                    e.preventDefault();
-                    //DESC
-                    searchBalanceTokenValue = $("#search_balance_token_value").val();
-                    searchBalanceToken(1);
-                });
-
-
                 $('#result_balance_currency_page').change(function () {
                     $('#form_balance_currency_search').trigger("submit");
                 });
-                $('#result_balance_crypto_page').change(function () {
-                    $('#form_balance_crypto_search').trigger("submit");
-                });
-                $('#result_balance_token_page').change(function () {
-                    $('#form_balance_token_search').trigger("submit");
-                });
 
                 $('#form_balance_currency_search').trigger("submit");
-                $('#form_balance_crypto_search').trigger("submit");
-                $('#form_balance_token_search').trigger("submit");
                 totalBalance();
                 /*End Funds Balances*/
             })
@@ -5156,21 +4833,26 @@ $(document).ready(function(){
 
                 box = $("<form class='InitialForm' id='InitialForm' enctype='multipart/form-data' ></form>");
                 alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Initial Fund Invest</strong></div>');
-                inputN = $('<div><label for="inital">Initial Invest USD<label></div><div><input id="initial" name="initial" type="text" class="form-control" placeholder="Initial Invest" required></div>');
-                inputA = $('<div><label for="created">Initial Date<label></div><div><input id="created" name="created" type="date" class="form-control" placeholder="Initial Date" ></div>');
+                inputN = $('<div class="form-group"><label for="inital">Initial Invest USD</label><input id="initial" name="initial" type="text" class="form-control" placeholder="Initial Invest" required></div>');
+                inputA = $('<div class="form-group"><label for="created">Initial Date</label><input id="created" name="created" type="date" class="form-control" placeholder="Initial Date" ></div>');
+
                 $('.modal-title').empty();
                 $('.modal-body').empty();
+                $('.modal-footer').empty();
+
                 $('.modal-title').append('Initial Invest');
                 $('.modal-body').append(box);
 
                 $('#InitialForm').append(alert);
                 $('#InitialForm').append(inputN);
                 $('#InitialForm').append(inputA);
-                $('#InitialForm').append("<div id='iniButts'></div>");
+                $('.modal-footer').append("<div id='iniButts'></div>");
 
-                makeBut = $("<button type='button' class='btn btn-primary' name='button' id='iniCont'>Make</button>");
+                closeBut = $('<button type="button" class="btn btn-alternative" data-dismiss="modal">Close</button>');
+                makeBut = $("<button type='button' class='btn btn-alternative' name='button' id='iniCont'>Make</button>");
                 addMakeiButton(makeBut);
                 $('#iniButts').append(makeBut);
+                $('#iniButts').append(closeBut);
 
                 formatInput("#initial");
             });
@@ -5208,9 +4890,9 @@ $(document).ready(function(){
                         backBut = $("<button type='button' class='btn btn-primary' name='button' id='iniBack'>Back</button>");
                         backButton(backBut, '#InitialForm', 'ini');
                         confirmiButton(confirmBut);
+                        $('#iniButts').prepend(backBut);
+                        $('#iniButts').prepend(confirmBut);
 
-                        $('#iniButts').append(confirmBut);
-                        $('#iniButts').append(backBut);
                     }
                 })
             }
@@ -5257,7 +4939,9 @@ $(document).ready(function(){
     /* Begin Newsletter Functions */
     if(pathname.toString() == '/newsletter'){
       /*Search User Table*/
+
       $('.listnews').addClass('active');
+
       $('#table_newsletter_header_title').click(function (e) {
         orderTableNewsletterBy('title');
       });
@@ -5333,8 +5017,8 @@ $(document).ready(function(){
                           var colvalue_3 = $( '<td>'+  newsletter.message  +'</td>');
                           var colvalue_4 = $('<td></td>');
 
-                          editBut = $('<button type="button"  data-toggle="modal" data-target="#newsMod" id="editBut" class="btn btn-primary btn-sm">Edit</button>');
-                          delBut = $('<button type="button"  data-toggle="modal" data-target="#newsMod" id="delBut" class="btn btn-danger btn-sm">Delete</button>');
+                          editBut = $('<button type="button"  data-toggle="modal" data-target="#newsMod" id="editBut" class="btn btn-alternative btn-sm">Edit</button>');
+                          delBut = $('<button type="button"  data-toggle="modal" data-target="#newsMod" id="delBut" class="btn btn-alternative-danger btn-alternative btn-sm">Delete</button>');
                           // we have to make in steps to add the onclick event
                           addEditNewsletterClick(editBut, newsletter);
                           addMakeDnewsButton(delBut, newsletter);
@@ -5440,11 +5124,13 @@ $(document).ready(function(){
 
           box = $("<form class='NewsForm' id='NewsForm' enctype='multipart/form-data' ></form>");
           alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Newsletter</strong></div>');
-          inputN = $('<div><label for="title">Title<label></div><div><input id="title" name="title" type="text" class="form-control" placeholder="Title" required></div>');
-          inputL = $('<div><label for="message">Message<label></div><div><textarea id="message" class="form-control" name="message" rows="4" cols="50" placeholder="Message"></textarea></div>');
+          inputN = $('<div class="form-group"><label for="title">Title</label><input id="title" name="title" type="text" class="form-control" placeholder="Title" required></div>');
+          inputL = $('<div class="form-group"><label for="message">Message</label><textarea id="message" class="form-control" name="message" rows="4" cols="50" placeholder="Message"></textarea></div>');
 
           $('.modal-title').empty();
           $('.modal-body').empty();
+          $('.modal-footer').empty();
+
           $('.modal-title').append('Create Newsletter');
           $('.modal-body').append(box);
 
@@ -5453,12 +5139,15 @@ $(document).ready(function(){
           $('#NewsForm').append(inputL);
 
 
-          $('#NewsForm').append("<div id='newsButts'></div>");
+          $('.modal-footer').append("<div id='newsButts'></div>");
 
-          makeBut = $("<button type='button' name='button' class='btn btn-primary' id='newsCont'>Make</button>");
+          closeBut = $('<button type="button" class="btn btn-alternative" data-dismiss="modal">Close</button>');
+          makeBut = $("<button type='button' name='button' class='btn btn-alternative' id='newsCont'>Make</button>");
           addMakeNewsButton(makeBut);
 
+
           $('#newsButts').append(makeBut);
+          $('#newsButts').append(closeBut);
       });
 
       /*Make Button For Create News*/
@@ -5484,12 +5173,13 @@ $(document).ready(function(){
 
                   $('#newsCont').hide();
                   $('.alert').show();
-                  confirmBut = $("<button type='button' name='button' class='btn btn-success' id='newsConf'>Confirm</button>");
-                  backBut = $("<button type='button' name='button' class='btn btn-primary' id='newsBack'>Back</button>");
+                  confirmBut = $("<button type='button' name='button' class='btn btn-alternative-success btn-alternative' id='newsConf'>Confirm</button>");
+                  backBut = $("<button type='button' name='button' class='btn btn-alternative' id='newsBack'>Back</button>");
                   backButton(backBut, '#NewsForm', 'news');
                   confirmnewsButton(confirmBut);
-                  $('#newsButts').append(confirmBut);
-                  $('#newsButts').append(backBut);
+                  $('#newsButts').prepend(backBut);
+                  $('#newsButts').prepend(confirmBut);
+
 
               }
           })
@@ -5537,11 +5227,13 @@ $(document).ready(function(){
               box = $("<form class='NewsForm' id='NewsForm' enctype='multipart/form-data' ></form>");
               alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Newsletter</strong></div>');
               inputI = $('<input id="id" name="id" style="display: none;" type="text" class="form-control" value="'+ newsletter.id +'" required>');
-              inputN = $('<div><label for="title">Title<label></div><div><input id="title" name="title" type="text" class="form-control" placeholder="Title" value="'+newsletter.title+'" required></div>');
-              inputL = $('<div><label for="message">Message<label></div><div><textarea id="message" class="form-control" name="message" rows="4" cols="50" placeholder="Message">'+newsletter.message+'</textarea></div>');
+              inputN = $('<div class="form-group"><label for="title">Title</label><input id="title" name="title" type="text" class="form-control" placeholder="Title" value="'+newsletter.title+'" required></div>');
+              inputL = $('<div class="form-group"><label for="message">Message</label><textarea id="message" class="form-control" name="message" rows="4" cols="50" placeholder="Message">'+newsletter.message+'</textarea></div>');
 
               $('.modal-title').empty();
               $('.modal-body').empty();
+              $('.modal-footer').empty();
+
               $('.modal-title').append('Edit Newsletter');
               $('.modal-body').append(box);
 
@@ -5551,12 +5243,13 @@ $(document).ready(function(){
               $('#NewsForm').append(inputL);
 
 
-              $('#NewsForm').append("<div id='newsButts'></div>");
-
-              makeBut = $("<button type='button' class='btn btn-primary' name='button' id='newsCont'>Make</button>");
+              $('.modal-footer').append("<div id='newsButts'></div>");
+              closeBut = $('<button type="button" class="btn btn-alternative" data-dismiss="modal">Close</button>');
+              makeBut = $("<button type='button' class='btn btn-alternative' name='button' id='newsCont'>Make</button>");
               addMakeENewsButton(makeBut);
 
               $('#newsButts').append(makeBut);
+              $('#newsButts').append(closeBut);
           });
       }
 
@@ -5582,12 +5275,13 @@ $(document).ready(function(){
 
                 $('#newsCont').hide();
                 $('.alert').show();
-                confirmBut = $("<button type='button' class='btn btn-success' name='button' id='newsConf'>Confirm</button>");
-                backBut = $("<button type='button' class='btn btn-primary' name='button' id='newsBack'>Back</button>");
+                confirmBut = $("<button type='button' class='btn btn-alternative-success btn-alternative' name='button' id='newsConf'>Confirm</button>");
+                backBut = $("<button type='button' class='btn btn-alternative' name='button' id='newsBack'>Back</button>");
                 backButton(backBut, '#NewsForm', 'news');
                 confirmEnewsButton(confirmBut);
-                $('#newsButts').append(confirmBut);
-                $('#newsButts').append(backBut);
+                $('#newsButts').prepend(backBut);
+                $('#newsButts').prepend(confirmBut);
+
 
             }
         })
@@ -5632,26 +5326,29 @@ $(document).ready(function(){
       /* Delete Function For User */
       function addMakeDnewsButton(delButt, news){
           delButt.click(function(){
-              box = $("<div class='Modal' id='newsDModal' style='display:none;'><div class='modalContent' id='modalDeleteNews'><h3>Delete User</h3><form class='NewsForm' id='NewsForm' enctype='multipart/form-data' ></form></div></div>");
+              box = $("<form class='NewsForm' id='NewsForm' enctype='multipart/form-data'></form>");
               alert = $('<h4><strong>Are You Sure for delete '+ news.title +' Newsletter?</strong></h4>');
               inputI = $('<input id="id" name="id" style="display: none;" type="text" class="form-control" value="'+ news.id +'" required>');
 
               $('.modal-title').empty();
               $('.modal-body').empty();
+              $('.modal-footer').empty();
               $('.modal-title').append('Delete Newsletter');
               $('.modal-body').append(box);
 
               $('#NewsForm').append(alert);
               $('#NewsForm').append(inputI);
 
-              $('#NewsForm').append("<div id='newsButts'></div>");
-              clsbut = $("<span class='close'>&times;</span>");
-              closeButton(clsbut, '.Modal');
+              $('.modal-footer').append("<div id='newsButts'></div>");
 
-              makeBut = $("<button type='button' name='button' class='btn btn-danger btn-sm' id='newsCont'>Delete</button>");
+              closeBut = $('<button type="button" class="btn btn-alternative" data-dismiss="modal">Close</button>');
+              makeBut = $("<button type='button' name='button' class='btn btn-alternative-danger btn-alternative' id='newsCont'>Delete</button>");
+
               DeleteNewsButton(makeBut);
 
+
               $('#newsButts').append(makeBut);
+              $('#newsButts').append(closeBut);
           })
       }
 

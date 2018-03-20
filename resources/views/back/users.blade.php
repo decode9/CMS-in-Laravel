@@ -14,7 +14,7 @@ body{
                     <h4>Users</h4>
                   </div>
                   <div class="col-sm-8 float-right">
-                    <div class="col-sm-10">
+                    <div class="col-sm-12 col-md-8 col-lg-9">
                         <form id="form_user_search" class="form_search">
                             <div class="input-group">
                                 <input id="search_user_value" type="text" class="form-control" placeholder="Search User">
@@ -24,8 +24,8 @@ body{
                             </div><!-- /input-group -->
                         </form>
                     </div>
-                    <div class="col-sm-2">
-                      <button type="button" class="btn btn-alternative btn-create" data-toggle="modal" data-target="#userMod" value="Go!"><i id="new_icon" class="fa fa-user" aria-hidden="true"> Create User</i></button>
+                    <div class="col-sm-12 col-md-4 col-lg-3 text-center">
+                      <button type="button" class="btn btn-alternative btn-create" data-toggle="modal" data-target="#userMod" value="Go!"><span class="glyphicon glyphicon-user"> </span> Create User</button>
                     </div>
                   </div>
                 </div>
@@ -36,7 +36,6 @@ body{
                         <thead class="thead-default">
                             <tr>
                                 <th id="table_user_header_name" style="cursor: pointer;">Name</th>
-                                <th id="table_user_header_username" style="cursor: pointer;">Username</th>
                                 <th id="table_user_header_email" style="cursor: pointer;">Email</th>
                                 <th id="table_user_header_roles" style="cursor: pointer;">Roles</th>
                                 <th id="table_user_header_date" style="cursor: pointer;">Created</th>

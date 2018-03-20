@@ -18,7 +18,7 @@ body{
                 </div>
               </div>
               <div class="panel-body">
-                <div class="col-sm-4">
+                <div class="col-sm-12">
                   <div class="row">
                     <div class="col-sm-3 text-center">
                       <h5>Currencies</h5>
@@ -64,108 +64,6 @@ body{
                                 </tr>
                             </tfoot>
                             <tbody class="small" id="table_balance_currency_content">
-                            </tbody>
-                        </table>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-sm-4">
-                  <div class="row">
-                    <div class="col-sm-4 text-center">
-                      <h5>CryptoCurrencies</h5>
-                    </div>
-                    <div class="col-sm-8">
-                      <form id="form_balance_crypto_search" class="form_search">
-                          <div class="input-group">
-                              <input id="search_balance_crypto_value" type="text" class="small form-control" placeholder="Search CryptoCurrency">
-                              <span class="input-group-btn">
-                                  <button type="submit" class="btn btn-alternative" value="Go!"><span class="glyphicon glyphicon-search"></span></button>
-                              </span>
-                          </div><!-- /input-group -->
-                      </form>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="tab-pane active table-responsive" id="list">
-                        <table id="table_balance_crypto" class="table table-hover">
-                            <thead class="thead-default">
-                                <tr class="small">
-                                    <th id="table_balance_crypto_header_symbol" style="cursor: pointer;">Symbol</th>
-                                    <th id="table_balance_crypto_header_amount" style="cursor: pointer;">Amount</th>
-                                    <th id="table_balance_crypto_header_Equivalent" style="cursor: pointer;">USD Equivalent</th>
-                                    @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
-                                    <th>Option</th>
-                                    @endif
-                                </tr>
-                            </thead>
-                            <tfoot>
-                                <tr class="small">
-                                    <th colspan="1" id="balance_crypto_page">
-                                      <div class="form-group" style="width:70px;">
-                                        <select id="result_balance_crypto_page" class="form-control">
-                                            <option value="5" selected="selected">5</option>
-                                        </select>
-                                      </div>
-                                    </th>
-                                    @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
-                                    <th id="table_balance_crypto_pagination" class="text-right" colspan="3"></th>
-                                    @else
-                                    <th id="table_balance_crypto_pagination" class="text-right" colspan="2"></th>
-                                    @endif
-                                </tr>
-                            </tfoot>
-                            <tbody class="small" id="table_balance_crypto_content">
-                            </tbody>
-                        </table>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-sm-4">
-                  <div class="row">
-                    <div class="col-sm-3 text-center">
-                      <h5>Token</h5>
-                    </div>
-                    <div class="col-sm-9">
-                      <form id="form_balance_token_search" class="form_search">
-                          <div class="input-group">
-                              <input id="search_balance_token_value" type="text" class="small form-control" placeholder="Search Token">
-                              <span class="input-group-btn">
-                                  <button type="submit" class="btn btn-alternative" value="Go!"><span class="glyphicon glyphicon-search"></span></button>
-                              </span>
-                          </div><!-- /input-group -->
-                      </form>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="tab-pane active table-responsive" id="list">
-                        <table id="table_balance_token" class="table table-hover">
-                            <thead class="thead-default">
-                                <tr class="small">
-                                    <th id="table_balance_token_header_symbol" style="cursor: pointer;">Symbol</th>
-                                    <th id="table_balance_token_header_amount" style="cursor: pointer;">Amount</th>
-                                    <th id="table_balance_token_header_Equivalent" style="cursor: pointer;">USD Equivalent</th>
-                                    @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
-                                    <th>Option</th>
-                                    @endif
-                                </tr>
-                            </thead>
-                            <tfoot>
-                                <tr class="small">
-                                    <th colspan="1" id="balance_token_page">
-                                      <div class="form-group" style="width:70px;">
-                                        <select id="result_balance_token_page" class="form-control">
-                                            <option value="5" selected="selected">5</option>
-                                        </select>
-                                      </div>
-                                    </th>
-                                    @if(Auth::User()->hasRole('20') || Auth::User()->hasRole('901'))
-                                    <th id="table_balance_token_pagination" class="text-right" colspan="3"></th>
-                                    @else
-                                    <th id="table_balance_token_pagination" class="text-right" colspan="2"></th>
-                                    @endif
-                                </tr>
-                            </tfoot>
-                            <tbody class="small" id="table_balance_token_content">
                             </tbody>
                         </table>
                     </div>

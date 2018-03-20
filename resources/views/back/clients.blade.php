@@ -7,7 +7,7 @@ body{
 @section('content')
     <div class="col-sm-12">
       <div class="col-sm-12">
-        <div class="panel panel-default">
+        <div class="panel panel-alternative">
           <div class="panel-heading text-center">
             <div class="row">
               <div class="col-sm-7">
@@ -18,7 +18,7 @@ body{
                       <div class="input-group">
                           <input id="search_client_value" type="text" class="form-control" placeholder="Search Client">
                           <span class="input-group-btn">
-                              <button type="submit" class="btn btn-default" value="Go!"><span class="glyphicon glyphicon-search"></span></button>
+                              <button type="submit" class="btn btn-alternative" value="Go!"><span class="glyphicon glyphicon-search"></span></button>
                           </span>
                       </div><!-- /input-group -->
                   </form>
@@ -27,7 +27,7 @@ body{
           </div>
                 <div class="panel-body">
                   <div class="col-sm-12 table-responsive" id="list">
-                      <table id="table_client" class="table table-striped table-hover">
+                      <table id="table_client" class="table table-hover">
                           <thead class="thead-default">
                               <tr>
                                   <th id="table_client_header_name" style="cursor: pointer;">Name</th>
@@ -57,7 +57,7 @@ body{
         </div>
       </div>
       <div class="col-sm-12">
-        <div class="panel panel-default">
+        <div class="panel panel-alternative">
                 <div class="panel-heading">
                   <div class="row">
                     <div class="col-sm-2 text-center">
@@ -69,7 +69,7 @@ body{
                   </div>
                 </div>
                 <div class="panel-body">
-                  <div class="col-sm-4">
+                  <div class="col-sm-12">
                     <div class="row">
                       <div class="col-sm-3 text-center">
                         <h5>Currencies</h5>
@@ -79,7 +79,7 @@ body{
                             <div class="input-group">
                                 <input id="search_balance_currency_value" type="text" class="small form-control" placeholder="Search Currency">
                                 <span class="input-group-btn">
-                                    <button type="submit" class="btn btn-default" value="Go!"><span class="glyphicon glyphicon-search"></span></button>
+                                    <button type="submit" class="btn btn-alternative" value="Go!"><span class="glyphicon glyphicon-search"></span></button>
                                 </span>
                             </div><!-- /input-group -->
                         </form>
@@ -87,7 +87,7 @@ body{
                     </div>
                     <div class="row">
                       <div class="tab-pane active table-responsive" id="list">
-                          <table id="table_balance_currency" class="table table-striped table-hover">
+                          <table id="table_balance_currency" class="table table-hover">
                               <thead class="thead-default">
                                   <tr class="small">
                                       <th id="table_balance_currency_header_symbol" style="cursor: pointer;">Symbol</th>
@@ -113,94 +113,6 @@ body{
                       </div>
                     </div>
                   </div>
-                  <div class="col-sm-4">
-                    <div class="row">
-                      <div class="col-sm-4 text-center">
-                        <h5>CryptoCurrencies</h5>
-                      </div>
-                      <div class="col-sm-8">
-                        <form id="form_balance_crypto_search" class="form_search">
-                            <div class="input-group">
-                                <input id="search_balance_crypto_value" type="text" class="small form-control" placeholder="Search CryptoCurrency">
-                                <span class="input-group-btn">
-                                    <button type="submit" class="btn btn-default" value="Go!"><span class="glyphicon glyphicon-search"></span></button>
-                                </span>
-                            </div><!-- /input-group -->
-                        </form>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="tab-pane active table-responsive" id="list">
-                          <table id="table_balance_crypto" class="table table-striped table-hover">
-                              <thead class="thead-default">
-                                  <tr class="small">
-                                      <th id="table_balance_crypto_header_symbol" style="cursor: pointer;">Symbol</th>
-                                      <th id="table_balance_crypto_header_amount" style="cursor: pointer;">Amount</th>
-                                      <th id="table_balance_crypto_header_Equivalent" style="cursor: pointer;">USD Equivalent</th>
-                                  </tr>
-                              </thead>
-                              <tfoot>
-                                  <tr class="small">
-                                      <th colspan="1" id="balance_crypto_page">
-                                        <div class="form-group" style="width:70px;">
-                                          <select id="result_balance_crypto_page" class="form-control">
-                                              <option value="5" selected="selected">5</option>
-                                          </select>
-                                        </div>
-                                      </th>
-                                      <th id="table_balance_crypto_pagination" class="text-right" colspan="2"></th>
-                                  </tr>
-                              </tfoot>
-                              <tbody class="small" id="table_balance_crypto_content">
-                              </tbody>
-                          </table>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-sm-4">
-                    <div class="row">
-                      <div class="col-sm-3 text-center">
-                        <h5>Token</h5>
-                      </div>
-                      <div class="col-sm-9">
-                        <form id="form_balance_token_search" class="form_search">
-                            <div class="input-group">
-                                <input id="search_balance_token_value" type="text" class="small form-control" placeholder="Search Token">
-                                <span class="input-group-btn">
-                                    <button type="submit" class="btn btn-default" value="Go!"><span class="glyphicon glyphicon-search"></span></button>
-                                </span>
-                            </div><!-- /input-group -->
-                        </form>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="tab-pane active table-responsive" id="list">
-                          <table id="table_balance_token" class="table table-striped table-hover">
-                              <thead class="thead-default">
-                                  <tr class="small">
-                                      <th id="table_balance_token_header_symbol" style="cursor: pointer;">Symbol</th>
-                                      <th id="table_balance_token_header_amount" style="cursor: pointer;">Amount</th>
-                                      <th id="table_balance_token_header_Equivalent" style="cursor: pointer;">USD Equivalent</th>
-                                  </tr>
-                              </thead>
-                              <tfoot>
-                                  <tr class="small">
-                                      <th colspan="1" id="balance_token_page">
-                                        <div class="form-group" style="width:70px;">
-                                          <select id="result_balance_token_page" class="form-control">
-                                              <option value="5" selected="selected">5</option>
-                                          </select>
-                                        </div>
-                                      </th>
-                                      <th id="table_balance_token_pagination" class="text-right" colspan="2"></th>
-                                  </tr>
-                              </tfoot>
-                              <tbody class="small" id="table_balance_token_content">
-                              </tbody>
-                          </table>
-                      </div>
-                    </div>
-                  </div>
                 </div>
         </div>
       </div>
@@ -209,7 +121,7 @@ body{
     <div class="modal-dialog">
 
       <!-- Modal content-->
-      <div class="modal-content">
+      <div class="modal-content modal-alternative">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
           <h4 class="modal-title"></h4>
@@ -218,7 +130,7 @@ body{
 
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          
         </div>
       </div>
 
@@ -229,7 +141,7 @@ body{
   <div class="modal-dialog modal-sm">
 
     <!-- Modal content-->
-    <div class="modal-content content-alert">
+    <div class="modal-content modal-alternative content-alert">
         <div class="alert" style="margin: 0px;">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>

@@ -32,6 +32,11 @@
             </div>
             <div class="collapse navbar-collapse" id="myNavbar">
                 <ul class="nav navbar-nav">
+
+                  @guest
+                  <li><a href="{{ route('login') }}">Login</a></li>
+                  <li><a href="{{ route('register') }}">Register</a></li>
+                  @else
                   <li><a href="{{ route('home') }}"><span class="glyphicon glyphicon-home"></span></a></li>
                   <li class="dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class="glyphicon glyphicon-user"></span> {{ Auth::user()->name }}
@@ -42,7 +47,7 @@
                         <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                           <span class="glyphicon glyphicon-log-out"></span> Logout
                         </a>
-                        <form class="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                        <form class="logout-form" id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                           {{ csrf_field() }}
                         </form>
                       </li>
@@ -70,6 +75,7 @@
                   @if(Auth::User()->getCredential(250))
                   <li class="listclient"><a href="{{route('clients')}}"><span class="glyphicon glyphicon-list-alt"></span> Clients</a></li>
                   @endif
+                  @endguest
                 </ul>
             </div>
         </div>
@@ -81,6 +87,10 @@
               <div class="navbar-header">
               </div>
               <ul class="nav navbar-nav navbar-right">
+                @guest
+                <li><a href="{{ route('login') }}">Login</a></li>
+                <li><a href="{{ route('register') }}">Register</a></li>
+                @else
                 <li><a href="{{ route('home') }}"><span class="glyphicon glyphicon-home" style='font-size:30px;'></span></a></li>
                 <li class="dropdown">
                   <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class=""><img src="{{ url('/') }}/img/icons/user.png" width="32" alt="" height="auto"></span> {{ Auth::user()->name }}
@@ -91,67 +101,73 @@
                       <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                         <span class="glyphicon glyphicon-log-out"></span> Logout
                       </a>
-                      <form class="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                        {{ csrf_field() }}
-                      </form>
                     </li>
                     <li class="listprofile">
-                      <a href="{{ route('profile') }}">Profile</a>
+                      <a href="{{ route('profile') }}"><span class="glyphicon glyphicon-user"> </span> Profile</a>
                     </li>
                   </ul>
                 </li>
+                @endguest
+
               </ul>
             </div>
           </nav>
-            <div class="col-sm-3 col-md-2 col-lg-2 sidenav hidden-xs">
+          @guest
+          <div class="col-sm-12 col-md-12 col-lg-12" id="rightContent">
+              @yield('content')
+          </div>
+          @else
+          <div class="col-sm-3 col-md-2 col-lg-2 sidenav hidden-xs">
 
-                <ul class="nav nav-pills nav-stacked sub-nav">
-                    @if(Auth::User()->getCredential(100))
-                    <li class="list listuser">
-                      <a href="{{route('users')}}">
-                        <img src="{{ url('/') }}/img/icons/users.png" width="32" alt="" height="auto">
-                        <p>Users</p>
-                      </a>
-                    </li>
-                    @endif
-                    @if(Auth::User()->getCredential(150))
-                    <li class="list listcurrency">
-                      <a href="{{route('currencies')}}">
-                        <img src="{{ url('/') }}/img/icons/currencies.png" width="32" alt="" height="auto">
-                        <p>Currencies</p>
-                      </a>
-                    </li>
-                    @endif
-                    @if(Auth::User()->getCredential(150))
-                    <li class="list listfund">
-                      <a href="{{route('funds')}}">
-                        <img src="{{ url('/') }}/img/icons/funds.png" width="auto" alt="" height="32">
-                        <p>Funds</p>
-                      </a>
-                    </li>
-                    @endif
-                    @if(Auth::User()->getCredential(250))
-                    <li class="list listnews">
-                      <a href="{{route('newsletter')}}">
-                        <img src="{{ url('/') }}/img/icons/newsletter.png" width="32" alt="" height="auto">
-                        <p>Newsletter</p>
-                      </a>
-                    </li>
-                    @endif
-                    @if(Auth::User()->getCredential(250))
-                    <li class="list listclient">
-                      <a href="{{route('clients')}}">
-                        <img src="{{ url('/') }}/img/icons/client-company.png" width="auto" alt="" height="32">
-                        <p>Clients</p>
-                      </a>
-                    </li>
-                    @endif
-                </ul><br>
-            </div>
-            <br>
-            <div class="col-sm-9 col-md-10 col-lg-10" id="rightContent">
-                @yield('content')
-            </div>
+              <ul class="nav nav-pills nav-stacked sub-nav">
+                  @if(Auth::User()->getCredential(100))
+                  <li class="list listuser">
+                    <a href="{{route('users')}}">
+                      <img src="{{ url('/') }}/img/icons/users.png" width="32" alt="" height="auto">
+                      <p>Users</p>
+                    </a>
+                  </li>
+                  @endif
+                  @if(Auth::User()->getCredential(150))
+                  <li class="list listcurrency">
+                    <a href="{{route('currencies')}}">
+                      <img src="{{ url('/') }}/img/icons/currencies.png" width="32" alt="" height="auto">
+                      <p>Currencies</p>
+                    </a>
+                  </li>
+                  @endif
+                  @if(Auth::User()->getCredential(150))
+                  <li class="list listfund">
+                    <a href="{{route('funds')}}">
+                      <img src="{{ url('/') }}/img/icons/funds.png" width="auto" alt="" height="32">
+                      <p>Funds</p>
+                    </a>
+                  </li>
+                  @endif
+                  @if(Auth::User()->getCredential(250))
+                  <li class="list listnews">
+                    <a href="{{route('newsletter')}}">
+                      <img src="{{ url('/') }}/img/icons/newsletter.png" width="32" alt="" height="auto">
+                      <p>Newsletter</p>
+                    </a>
+                  </li>
+                  @endif
+                  @if(Auth::User()->getCredential(250))
+                  <li class="list listclient">
+                    <a href="{{route('clients')}}">
+                      <img src="{{ url('/') }}/img/icons/client-company.png" width="auto" alt="" height="32">
+                      <p>Clients</p>
+                    </a>
+                  </li>
+                  @endif
+              </ul><br>
+          </div>
+          <br>
+          <div class="col-sm-9 col-md-10 col-lg-10" id="rightContent">
+              @yield('content')
+          </div>
+          @endguest
+
         </div>
     </div>
     <!-- Scripts -->

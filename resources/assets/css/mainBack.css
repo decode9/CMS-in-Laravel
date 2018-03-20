@@ -4,6 +4,8 @@
 }
 body{
   font-family: florence;
+  height: auto;
+    background-color: #102733;
 }
 .menuItem{
     cursor: pointer;
@@ -29,7 +31,10 @@ a:hover{
   height: auto;
   background-color: #102733;
 }
-
+.container{
+    position: relative;
+    top: 20px;
+}
 /* Set gray background color and 100% height */
 .sidenav {
   background-color: #112e3d;

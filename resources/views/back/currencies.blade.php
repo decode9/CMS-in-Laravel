@@ -13,7 +13,7 @@ body{
                     <h4>Currencies</h4>
                   </div>
                   <div class="col-sm-8 float-right">
-                    <div class="col-sm-9">
+                    <div class="col-sm-12 col-md-7 col-lg-8">
                       <form id="form_currency_search" class="form_search">
                           <div class="input-group">
                               <input id="search_currency_value" type="text" class="form-control" placeholder="Search Currency">
@@ -23,8 +23,8 @@ body{
                           </div><!-- /input-group -->
                       </form>
                     </div>
-                    <div class="col-sm-3">
-                      <button type="button" class="btn btn-alternative btn-create-Cu" data-toggle="modal" data-target="#currencyMod" value="Go!"><i id="new_icon" class="fa fa-currency" aria-hidden="true">Create Currency</i></button>
+                    <div class="col-sm-12 col-md-5 col-lg-4 text-center">
+                      <button type="button" class="btn btn-alternative btn-create-Cu" data-toggle="modal" data-target="#currencyMod" value="Go!">Create Currency</button>
                     </div>
                   </div>
                 </div>

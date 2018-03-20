@@ -13,7 +13,7 @@ body{
               <h4>Newsletters</h4>
             </div>
             <div class="col-sm-8 float-right">
-              <div class="col-sm-9">
+              <div class="col-sm-12 col-md-8 col-lg-8">
                 <form id="form_newsletter_search" class="form_search">
                     <div class="input-group">
                         <input id="search_newsletter_value" type="text" class="form-control" placeholder="Search Newsletter">
@@ -23,8 +23,8 @@ body{
                     </div><!-- /input-group -->
                 </form>
               </div>
-              <div class="col-sm-3">
-                <button type="button" class="btn btn-alternative btn-create" data-toggle="modal" data-target="#newsMod" value="Go!"><i id="new_icon" class="fa fa-user" aria-hidden="true"> Create Newsletter</i></button>
+              <div class="col-sm-12 col-md-5 col-lg-4 text-center">
+                <button type="button" class="btn btn-alternative btn-create" data-toggle="modal" data-target="#newsMod" value="Go!">Create Newsletter</button>
               </div>
             </div>
           </div>
@@ -77,7 +77,7 @@ body{
 
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
         </div>
       </div>
 

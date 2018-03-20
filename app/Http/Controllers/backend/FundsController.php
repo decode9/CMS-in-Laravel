@@ -148,7 +148,7 @@ class FundsController extends Controller
 
 
          //Select Witdraws of the user
-         $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.type', 'currency')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
+         $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
          //Search by
 
          if($searchValue != '')
@@ -156,8 +156,7 @@ class FundsController extends Controller
                  $query->Where(function($query) use($searchValue){
                      $query->Where('symbol', 'like', '%'.$searchValue.'%')
                      ->orWhere('amount', 'like', '%'.$searchValue.'%')
-                     ->orWhere('value', 'like', '%'.$searchValue.'%')
-                     ->orWhere('balances.created_at', 'like', '%'.$searchValue.'%');
+                     ->orWhere('value', 'like', '%'.$searchValue.'%');
                  });
          }
 
@@ -172,9 +171,9 @@ class FundsController extends Controller
                  $query->orderBy($orderBy);
              }
          }else if($orderDirection != ''){
-             $query->orderBy('balances.created_at', 'desc');
+             $query->orderBy('balances.amount');
          }else{
-              $query->orderBy('balances.created_at');
+              $query->orderBy('balances.amount', 'desc');
          }
 
          if($resultPage == null || $resultPage == 0)
@@ -203,89 +202,6 @@ class FundsController extends Controller
              }
 
          }
-         if($user->hasRole('30')){
-             $percent = $this->percent($user);
-             foreach($balancesCurrency as $balance){
-                 $newbalance = $balance->amount * $percent;
-                 $balance->amount = $newbalance;
-             }
-         }
-         if($user->hasRole('20') || $user->hasRole('901')){
-             $eaccess = true;
-         }else{
-             $eaccess = false;
-         }
-
-         return response()->json(['page' => $page, 'result' => $balancesCurrency, 'total' => $total, 'eaccess' => $eaccess], 202);
-     }
-
-     public function indexCrypto(Request $request){
-
-         $user = Auth::User();
-         $searchValue = $request->searchvalue;
-         $page = $request->page;
-         $resultPage = $request->resultPage;
-         $orderBy = $request->orderBy;
-         $orderDirection = $request->orderDirection;
-         $total = 0;
-
-         //Select Witdraws of the user
-         $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.type', 'Cryptocurrency')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
-         //Search by
-
-         if($searchValue != '')
-         {
-                 $query->Where(function($query) use($searchValue){
-                     $query->Where('symbol', 'like', '%'.$searchValue.'%')
-                     ->orWhere('amount', 'like', '%'.$searchValue.'%')
-                     ->orWhere('value', 'like', '%'.$searchValue.'%')
-                     ->orWhere('balances.created_at', 'like', '%'.$searchValue.'%');
-                 });
-         }
-
-         //Order By
-
-         if($orderBy != '')
-         {
-             if($orderDirection != '')
-             {
-                 $query->orderBy($orderBy, 'desc');
-             }else{
-                 $query->orderBy($orderBy);
-             }
-         }else if($orderDirection != ''){
-             $query->orderBy('balances.created_at', 'desc');
-         }else{
-              $query->orderBy('balances.created_at');
-         }
-
-         if($resultPage == null || $resultPage == 0)
-         {
-             $resultPage = 10;
-         }
-
-         //Get Total of fees
-         $total  =  $query->get()->count();
-
-         if($page > 1)
-         {
-              $query->offset(    ($page -  1)   *    $resultPage);
-         }
-
-
-         $query->limit($resultPage);
-         $balancesCurrency  =  $query->get();
-
-         if($user->hasRole('30')){
-             $percent = $this->percent($user);
-             foreach($balancesCurrency as $balance){
-                 $newbalance = $balance->amount * $percent;
-                 $balance->amount = $newbalance;
-             }
-         }
-
-
-
          foreach($balancesCurrency as $balance){
 
              if($balance->value == "coinmarketcap"){
@@ -299,75 +215,6 @@ class FundsController extends Controller
                  }
              }
          }
-
-         if($user->hasRole('20') || $user->hasRole('901')){
-             $eaccess = true;
-         }else{
-             $eaccess = false;
-         }
-         //Get fees by month and year
-
-
-         return response()->json(['page' => $page, 'result' => $balancesCurrency, 'total' => $total, 'eaccess' => $eaccess], 202);
-     }
-
-     public function indexToken(Request $request){
-
-         $user = Auth::User();
-         $searchValue = $request->searchvalue;
-         $page = $request->page;
-         $resultPage = $request->resultPage;
-         $orderBy = $request->orderBy;
-         $orderDirection = $request->orderDirection;
-         $total = 0;
-
-         //Select Withdraws of the user
-         $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.type', 'Token')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
-         //Search by
-
-         if($searchValue != '')
-         {
-                 $query->Where(function($query) use($searchValue){
-                     $query->Where('symbol', 'like', '%'.$searchValue.'%')
-                     ->orWhere('amount', 'like', '%'.$searchValue.'%')
-                     ->orWhere('value', 'like', '%'.$searchValue.'%')
-                     ->orWhere('balances.created_at', 'like', '%'.$searchValue.'%');
-                 });
-         }
-
-         //Order By
-
-         if($orderBy != '')
-         {
-             if($orderDirection != '')
-             {
-                 $query->orderBy($orderBy, 'desc');
-             }else{
-                 $query->orderBy($orderBy);
-             }
-         }else if($orderDirection != ''){
-             $query->orderBy('balances.created_at', 'desc');
-         }else{
-              $query->orderBy('balances.created_at');
-         }
-
-         if($resultPage == null || $resultPage == 0)
-         {
-             $resultPage = 10;
-         }
-
-         //Get Total of fees
-         $total  =  $query->get()->count();
-
-         if($page > 1)
-         {
-              $query->offset(    ($page -  1)   *    $resultPage);
-         }
-
-
-         $query->limit($resultPage);
-         $balancesCurrency  =  $query->get();
-
          if($user->hasRole('30')){
              $percent = $this->percent($user);
              foreach($balancesCurrency as $balance){
@@ -375,26 +222,11 @@ class FundsController extends Controller
                  $balance->amount = $newbalance;
              }
          }
-
-         foreach($balancesCurrency as $balance){
-             if($balance->value == "coinmarketcap"){
-               $url = 'api.coinmarketcap.com/v1/ticker/'. $balance->name;
-                 if($this->url_exists($url)){
-                     $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $balance->name);
-                     $data = json_decode($json);
-                     $balance->value = $data[0]->price_usd;
-                 }else{
-                     $balance->value = 0.1;
-                 }
-             }
-         }
-
          if($user->hasRole('20') || $user->hasRole('901')){
              $eaccess = true;
          }else{
              $eaccess = false;
          }
-         //Get fees by month and year
 
          return response()->json(['page' => $page, 'result' => $balancesCurrency, 'total' => $total, 'eaccess' => $eaccess], 202);
      }

@@ -121,7 +121,7 @@ body{
       <div class="panel panel-alternative">
               <div class="panel-heading">
                 <div class="col-sm-8">
-                  <h4>Historical Profit</h4>
+                  <h4>Historical Chart</h4>
                 </div>
                 <div class="col-sm-4">
                   <div class="col-sm-12 text-center">
@@ -131,7 +131,7 @@ body{
                   </div>
                 </div>
               </div>
-              <div class="panel-body" style="height:370px;" >
+              <div class="panel-body" style="height:400px;" >
                 <div class="col-sm-12" style="height:300px;">
                   <canvas id="historicalChart" width="600" height="300"></canvas>
                 </div>
@@ -187,7 +187,7 @@ body{
     </div>
   </div>
   <div class="row">
-    <div class="col-sm-6">
+    <div class="col-sm-12 col-md-6 col-lg-6">
 
       <div class="col-sm-12" style="padding: 0px;">
         <div class="panel panel-alternative">
@@ -213,16 +213,16 @@ body{
         </div>
       </div>
     </div>
-    <div class="col-sm-6">
+    <div class="col-sm-12 col-md-6 col-lg-6">
       <div class="panel panel-alternative">
               <div class="panel-heading"><h4>Balance Distribution</h4></div>
               <div class="panel-body">
-                  <div class="col-sm-5 list-dist">
+                  <div class="col-sm-5 col-md-12 col-lg-5 list-dist">
                       <div class="list-gr">
 
                       </div>
                   </div>
-                  <div class="col-sm-7" style="height:200px;">
+                  <div class="col-sm-7 col-md-12 col-lg-7" style="height:200px;">
                       <canvas id="myChart"></canvas>
                   </div>
 

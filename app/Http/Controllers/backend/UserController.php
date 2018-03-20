@@ -132,7 +132,6 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required| max:50',
             'lastname' => 'required| max:50',
-            'username' => 'required|unique:users|max:20',
             'email' => 'required|unique:users|max:50',
             'password' => 'required|min:6|confirmed',
             'roles' => 'required',
@@ -152,7 +151,6 @@ class UserController extends Controller
 
         $user = new User;
         $user->name = $fullname;
-        $user->username = $request->username;
         $user->email = $request->email;
         $user->password= $password;
         $user->save();
@@ -202,7 +200,6 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required| max:50',
             'lastname' => 'required| max:50',
-            'username' => 'required|max:20',
             'email' => 'required|max:50',
             'password' => 'confirmed',
             'roles' => 'required',
@@ -223,7 +220,6 @@ class UserController extends Controller
         $user = User::Find($id);
 
         $user->name = $fullname;
-        $user->username = $request->username;
         $user->email = $request->email;
         if($request->password != ''){
             $user->password= $request->password;
@@ -253,7 +249,6 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required| max:50',
             'lastname' => 'required| max:50',
-            'username' => 'required|max:20',
             'email' => 'required|max:50',
             'password' => 'confirmed',
         ]);
@@ -261,7 +256,6 @@ class UserController extends Controller
         $id = $request->id;
         $name = $request->name;
         $lastname = $request->lastname;
-        $username = strtolower($request->username);
         $email = strtolower($request->email);
 
         if($request->password != ''){
