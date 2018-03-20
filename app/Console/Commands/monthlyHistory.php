@@ -66,7 +66,7 @@ class monthlyHistory extends Command
               $percent = $this->percent($user);
               $initial = $user->histories()->where('type', 'monthly')->get()->last();
 
-              $initialT = $initial->created_at;
+              $initialT = Carbon::parse($initial->register);
 
               $diffD = $initialT->diffInMonths($today);
 
@@ -107,7 +107,7 @@ class monthlyHistory extends Command
 
           if($attributes){
 
-              $initialGT = $historical->created_at;
+              $initialGT = Carbon::parse($historical->register);
 
               $diffGD = $initialGT->diffInMonths($today);
 

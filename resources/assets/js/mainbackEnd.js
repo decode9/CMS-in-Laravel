@@ -340,12 +340,21 @@ $(document).ready(function(){
               var profit = data.profit;
               var percent = data.percent;
               var chart = data.chart;
-              var colors = [];
+              var colors = ['#F08080', '#20B2AA', '#B0C4DE', '#87CEEB',
+                            '#FFA07A', '#FF7F50', '#FF6347', '#FA8072',
+                            '#FFA500', '#FFD700', '#FFFF00', '#FFE4B5',
+                            '#FFDAB9', '#EEE8AA', '#E6E6FA', '#D8BFD8',
+                            '#DDA0DD', '#9370DB', '#9966CC', '#8B008B',
+                            '#6A5ACD', '#7B68EE', '#98FB98', '#66CDAA',
+                            '#8FBC8F', '#DB7093', '#008B8B', '#E0FFFF',
+                            '#AFEEEE', '#7FFFD4', '#40E0D0', '#FFC0CB',
+                            '#B0E0E6', '#ADD8E6', '#F0FFF0',
+                            '#F5FFFA', '#F0FFFF', '#FFB6C1', '#C0C0C0'];
               for(i=0; i < balances.length; i++){
                 var balance = balances[i];
                 var amount = chart['amount'][i];
                 var symbol = chart['symbol'][i];
-                color = random_rgb();
+
                 list = '<div class="col-sm-12"><div class="col-sm-2 colorChart" id="colorChart'+i+'"><div class="color"></div></div><div class="col-sm-10 text-left"><h5 class="list-group-item-heading">'+symbol+'</h5><p class="small">Amount: '+formatNumber2.num(amount)+'</p><p class="small">percent: '+formatNumber2.num(balance.percent)+'%</p></div></div>';
                 list2 = $('<div class="col-sm-12 text-center folioList"></div>');
 
@@ -363,18 +372,17 @@ $(document).ready(function(){
 
                 $('.myPortfolio').append(list2);
                 $('.list-gr').append(list);
-                $('#colorChart'+i).css('background-color', color);
-                $('#progress'+i).css('background-color', color);
-                colors.push(color);
+                $('#colorChart'+i).css('background-color', colors[i]);
+                $('#progress'+i).css('background-color', colors[i]);
               }
 
               diffI = initial - usd;
               diffP = initial - diffI;
               diffB = initialB - btc;
               if(profit > 0){
-                  color = 'green';
+                  color = '#9966CC';
               }else{
-                  color = '#dc677d';
+                  color = '#40E0D0';
               }
               var configI = {
 			             type: 'doughnut',
@@ -423,7 +431,7 @@ $(document).ready(function(){
 				                    datasets: [{
 					                        data: [usd, diffI],
 					                        backgroundColor: [
-                                    '#dc677d',
+                                    color,
                                     '#8a8a8a47',
 					                        ],
                                   borderColor:[
@@ -431,7 +439,7 @@ $(document).ready(function(){
                                     '#3a3a3a00'
                                   ],
 					                        hoverBackgroundColor: [
-					                          '#dc677d',
+					                          color,
                                     '#3a3a3a00'
 					                        ],
 				                     }]
@@ -503,7 +511,7 @@ $(document).ready(function(){
                   if(btc < initialB){
                       colorb = '#dc677d';
                   }else{
-                      colorb = 'green';
+                      colorb = '#9370DB';
                   }
                   var configB = {
     			             type: 'doughnut',
@@ -747,7 +755,7 @@ $(document).ready(function(){
                         label: 'USD Profit',
                         data: chart['amount'],
                         backgroundColor: [
-                            'rgba(52, 152, 219, 1)',
+                            'rgba(52, 152, 219, 0.5)',
                         ],
                         borderColor: [
                             'rgba(52, 112, 241, 1)',
@@ -808,9 +816,9 @@ $(document).ready(function(){
                         $('#UserForm').append(inputPC);
 
                         $('#UserForm').append('<div class="profButts"></div>');
-                        editBut = $("<button type='button' class='btn btn-primary' name='button' id='profedit'>Edit Data</button>");
-                        makeBut = $("<button type='button' class='btn btn-primary' name='button' id='profCont' style='display:none;'>Make</button>");
-                        peBut = $("<button type='button' class='btn btn-primary' name='button' id='profPass' style='display:none;'>Change Password</button>");
+                        editBut = $("<button type='button' class='btn btn-alternative' name='button' id='profedit'>Edit Data</button>");
+                        makeBut = $("<button type='button' class='btn btn-alternative' name='button' id='profCont' style='display:none;'>Make</button>");
+                        peBut = $("<button type='button' class='btn btn-alternative' name='button' id='profPass' style='display:none;'>Change Password</button>");
                         passwordEditUser(peBut);
                         editProfile(editBut, '#UserForm');
                         addMakeprofileButton(makeBut);
@@ -904,8 +912,8 @@ $(document).ready(function(){
                     $('#profPass').hide();
                     $('#profedit').hide();
                     $('.alert').show();
-                    confirmBut = $("<button type='button' name='button' class='btn btn-success' id='profConf'>Confirm</button>");
-                    backBut = $("<button type='button' name='button' class='btn btn-primary' id='profBack'>Back</button>");
+                    confirmBut = $("<button type='button' name='button' class='btn btn-alternative-success btn-alternative' id='profConf'>Confirm</button>");
+                    backBut = $("<button type='button' name='button' class='btn btn-alternative' id='profBack'>Back</button>");
                     backButton(backBut, '#UserForm', 'prof');
                     confirmEuserButton(confirmBut);
                     $('.profButts').append(confirmBut);
@@ -1975,10 +1983,10 @@ $(document).ready(function(){
                 box = $("<form class='CurrencyForm' id='CurrencyForm' enctype='multipart/form-data' ></form>");
                 alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Currency</strong></div>');
                 inputI = $('<input id="id" name="id" style="display: none;" type="text" class="form-control" value="'+ currency.id +'" required>');
-                inputN = $('<div><label for="name">Name<label></div><div><input id="name" name="name" type="text" class="form-control" placeholder="Name" value="'+ currency.name +'"  required></div>');
-                inputS = $('<div><label for="symbol">Symbol<label></div><div><input id="symbol" name="symbol" type="text" class="form-control" placeholder="Symbol" value="'+ currency.symbol +'"  required ></div>');
-                selectT = $('<div><label for="type">Type<label></div><div><select id="type" class="form-control" name="selectt"></select></div>');
-                inputA = $('<div><label for="value">Value<label></div><div id="valuechange"><input id="value" name="value" type="text" class="form-control" placeholder="Value" value="'+ currency.value +'" required></div>')
+                inputN = $('<div class="form-group"><label for="name">Name</label><input id="name" name="name" type="text" class="form-control" placeholder="Name" value="'+ currency.name +'"  required></div>');
+                inputS = $('<div class="form-group"><label for="symbol">Symbol</label><input id="symbol" name="symbol" type="text" class="form-control" placeholder="Symbol" value="'+ currency.symbol +'"  required ></div>');
+                selectT = $('<div class="form-group"><label for="type">Type</label><select id="type" class="form-control" name="selectt"></select></div>');
+                inputA = $('<div class="form-group"><label for="value">Value</label><div id="valuechange"><input id="value" name="value" type="text" class="form-control" placeholder="Value" value="'+ currency.value +'" required></div></div>')
                 inputC = ('<div class="checkbox-inline" title="Change between manual value or an API value"><label id="labelch" ><input class="changevalue" id="valuechanges" type="checkbox" name="chnge" value=""/> Change value selection</label></div>');
 
                 types = ['Currency', 'Cryptocurrency', 'Token'];
@@ -2280,11 +2288,11 @@ $(document).ready(function(){
                             // we have to make in steps to add the onclick event
                             var rowResult = $('<tr></tr>');
                             var colvalue_1 = $('<td>' + balance.symbol + '</td>');
-                            var colvalue_2 = $('<td>' + formatNumber.num(balance.amount) + '</td>');
+                            var colvalue_2 = $('<td>' + formatNumber2.num(balance.amount) + '</td>');
                             if(balance.symbol == 'VEF'){
-                                var colvalue_3 = $('<td>' + formatNumber.num(balance.amount / balance.value) + '</td>');
+                                var colvalue_3 = $('<td>' + formatNumber2.num(balance.amount / balance.value) + '</td>');
                             }else{
-                                var colvalue_3 = $('<td>' + formatNumber.num(balance.amount * balance.value)+ '</td>');
+                                var colvalue_3 = $('<td>' + formatNumber2.num(balance.amount * balance.value)+ '</td>');
                             }
 
 
@@ -2417,7 +2425,7 @@ $(document).ready(function(){
                             var rowResult = $('<tr></tr>');
                             var colvalue_1 = $('<td>' + balance.symbol + '</td>');
                             var colvalue_2 = $('<td>' + formatNumber.num(balance.amount) + '</td>');
-                            var colvalue_3 = $('<td>' + formatNumber.num(balance.amount * balance.value) + '</td>');
+                            var colvalue_3 = $('<td>' + formatNumber2.num(balance.amount * balance.value) + '</td>');
 
                             rowResult.append(colvalue_1);
                             rowResult.append(colvalue_2);
@@ -2548,7 +2556,7 @@ $(document).ready(function(){
                             var rowResult = $('<tr></tr>');
                             var colvalue_1 = $('<td>' + balance.symbol + '</td>');
                             var colvalue_2 = $('<td>' + formatNumber.num(balance.amount) + '</td>');
-                            var colvalue_3 = $('<td>' + formatNumber.num(balance.amount * balance.value) + '</td>');
+                            var colvalue_3 = $('<td>' + formatNumber2.num(balance.amount * balance.value) + '</td>');
 
                             rowResult.append(colvalue_1);
                             rowResult.append(colvalue_2);
@@ -2643,17 +2651,18 @@ $(document).ready(function(){
 
                 box = $("<form class='ExchangeForm' id='ExchangeForm' enctype='multipart/form-data' ></form>");
                 alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Exchange</strong></div>');
-                labelA = $('<div><label >Available Balance: <span id="availableB"></span><label></div>');
-                selectO = $('<div><label for="selectout" >Change For:<label></div><div><select id="out" class="form-control" name="selectout"></select></div>');
-                inputO = $('<div><label for="valueout">Value<label></div><div><input id="valueout" name="valueout" type="text" class="form-control" placeholder="Value Out" required></div>');
+                labelA = $('<div class="form-group"><label>Available Balance: <span id="availableB"></span></label></div>');
+                selectO = $('<div class="form-group"><label for="selectout" >Change For:</label><select id="out" class="form-control" name="selectout"></select></div>');
+                inputO = $('<div class="form-group"><label for="valueout">Value</label><input id="valueout" name="valueout" type="text" class="form-control" placeholder="Value Out" required></div>');
                 inputIC = $('<input id="currencyin" name="currencyin" type="text" class="form-control" required value="'+currency.symbol+'" style="display:none;" disabled>');
-                inputI = $('<div><label for="valuein">Value In<label></div><div><input id="valuein" name="valuein" type="text" class="form-control" placeholder="Value In" ></div>');
-                inputR = $('<div><label for="rate">Exchange Rate<label></div><div><input id="rate" name="rate" type="text" class="form-control" placeholder="Exchange Rate" ></div>');
-                inputA = $('<div><label for="created">Allocated<label></div><div><input id="created" name="created" type="date" class="form-control" placeholder="Allocated" ></div>');
-                inputF = $('<div><label for="funded">Funded<label></div><div><input id="funded" name="funded" type="date" class="form-control" placeholder="Funded" ></div>');
+                inputI = $('<div class="form-group"><label for="valuein">Value In</label><input id="valuein" name="valuein" type="text" class="form-control" placeholder="Value In" ></div>');
+                inputR = $('<div class="form-group"><label for="rate">Exchange Rate</label><input id="rate" name="rate" type="text" class="form-control" placeholder="Exchange Rate" ></div>');
+                inputA = $('<div class="form-group"><label for="created">Allocated</label><input id="created" name="created" type="date" class="form-control" placeholder="Allocated" ></div>');
+                inputF = $('<div class="form-group"><label for="funded">Funded</label><input id="funded" name="funded" type="date" class="form-control" placeholder="Funded" ></div>');
 
                 $('.modal-title').empty();
                 $('.modal-body').empty();
+                $('.modal-footer').empty();
                 $('.modal-title').append('Exchange Currency');
                 $('.modal-body').append(box);
 
@@ -2697,15 +2706,16 @@ $(document).ready(function(){
                 })
                 availableBalance('#out');
 
-                $('#ExchangeForm').append("<div id='exButts'></div>");
+                $('.modal-footer').append("<div id='exButts'></div>");
 
                 exchangeInValue('#valueout', '#rate', '#valuein');
                 exchangeInValue('#valueout', '#valuein', '#rate');
 
-                makeBut = $("<button type='button' class='btn btn-primary' name='button' id='exCont'>Make</button>");
+                makeBut = $("<button type='button' class='btn btn-alternative' name='button' id='exCont'>Make</button>");
                 addMakeExButton(makeBut);
-
+                closebut = $('<button type="button" class="btn btn-alternative" data-dismiss="modal">Close</button>');
                 $('#exButts').append(makeBut);
+                $('#exButts').append(closebut);
 
                 $('#out').trigger("change");
         })
@@ -2788,13 +2798,14 @@ $(document).ready(function(){
                     $('#exCont').hide();
                     $('.alert').show();
 
-                    confirmBut = $("<button type='button' name='button' class='btn btn-success' id='exConf'>Confirm</button>");
-                    backBut = $("<button type='button' class='btn btn-primary' name='button' id='exBack'>Back</button>");
+                    confirmBut = $("<button type='button' name='button' class='btn btn-alternative-success btn-alternative' id='exConf'>Confirm</button>");
+                    backBut = $("<button type='button' class='btn btn-alternative' name='button' id='exBack'>Back</button>");
                     backButton(backBut, '#ExchangeForm', 'ex');
                     confirmExButton(confirmBut);
 
-                    $('#exButts').append(confirmBut);
-                    $('#exButts').append(backBut);
+                    $('#exButts').prepend(backBut);
+                    $('#exButts').prepend(confirmBut);
+
                 }
             })
         }
@@ -2951,10 +2962,10 @@ $(document).ready(function(){
                             var colvalue_8 = $( '<td>'+ transaction.updated_at  +'</td>');
                             var colvalue_9 = $( '<td>'+ transaction.status  +'</td>');
                             var colvalue_10 = $( '<td class="text-center"></td>');
-                            var printbut = $("<button type='button' name='button' class='btn btn-primary btn-sm' id='txPrint'>Receipt</button>");
+                            var printbut = $("<button type='button' name='button' class='btn btn-alternative btn-sm' id='txPrint'>Receipt</button>");
 
                             if(data.eaccess){
-                                var delbut = $("<button type='button' name='button' data-toggle='modal' data-target='#fundsMod' class='btn btn-danger btn-sm' id='txdel'>Delete</button>");
+                                var delbut = $("<button type='button' name='button' data-toggle='modal' data-target='#fundsMod' class='btn btn-alternative-danger btn-alternative btn-sm' id='txdel'>Delete</button>");
                                 addMakeDTxButton(delbut, transaction);
                                 colvalue_10.append(delbut);
                             }
@@ -3139,8 +3150,8 @@ $(document).ready(function(){
                             var colvalue_8 = $( '<td>'+ transaction.status  +'</td>');
                             if(data.eaccess){
                               var colvalue_9 = $( '<td class="text-center"></td>');
-                              var printbut = $("<button type='button' name='button' data-toggle='modal' data-target='#fundsMod' class='btn btn-success btn-sm' id='validateTrans'>Validate</button>");
-                              var delbut = $("<button type='button' name='button' data-toggle='modal' data-target='#fundsMod' class='btn btn-success btn-sm' id='txdel'>Delete</button>");
+                              var printbut = $("<button type='button' name='button' data-toggle='modal' data-target='#fundsMod' class='btn btn-alternative-success btn-alternative btn-sm' id='validateTrans'>Validate</button>");
+                              var delbut = $("<button type='button' name='button' data-toggle='modal' data-target='#fundsMod' class='btn btn-alternative-danger btn-alternative btn-sm' id='txdel'>Delete</button>");
                               addMakeDTxButton(delbut, transaction);
                               colvalue_9.append(delbut);
                               colvalue_9.append(printbut);
@@ -3241,16 +3252,17 @@ $(document).ready(function(){
 
               box = $("<form class='ExchangeForm' id='ExchangeForm' enctype='multipart/form-data'></form>");
               alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Exchange</strong></div>');
-              labelA = $('<div><label >Available Balance: <span id="availableB"></span><label></div>');
-              selectO = $('<div><label for="selectout" >Change For:<label></div><div><select  disabled="disabled" id="out" class="form-control" name="selectout"></select></div>');
-              inputO = $('<div><label for="valueout">Value out<label></div><div><input id="valueout" name="valueout" type="text" class="form-control" value="'+formatNumber.num(transaction.out_amount)+'" placeholder="Value Out" required disabled></div>');
+              labelA = $('<div class="form-group"><label>Available Balance: <span id="availableB"></span></label></div>');
+              selectO = $('<div class="form-group"><label for="selectout" >Change For:</label><select  disabled="disabled" id="out" class="form-control" name="selectout"></select></div>');
+              inputO = $('<div class="form-group"><label for="valueout">Value out</label><input id="valueout" name="valueout" type="text" class="form-control" value="'+formatNumber.num(transaction.out_amount)+'" placeholder="Value Out" required disabled></div>');
               inputIC = $('<input id="currencyin" name="currencyin" type="text" class="form-control" required value="'+transaction.symbol+'" style="display:none;" disabled>');
               inputID = $('<input id="transid" name="transid" type="text" class="form-control" required value="'+transaction.id+'" style="display:none;" disabled>');
-              inputI = $('<div><label for="valuein">Value In<label></div><div><input id="valuein" name="valuein" type="text" class="form-control" placeholder="Value In" required></div>');
-              inputR = $('<div><label for="rate">Exchange Rate<label></div><div><input id="rate" name="rate" type="text" class="form-control" placeholder="Exchange Rate" required></div>');
+              inputI = $('<div class="form-group"><label for="valuein">Value In</label><input id="valuein" name="valuein" type="text" class="form-control" placeholder="Value In" required></div>');
+              inputR = $('<div class="form-group"><label for="rate">Exchange Rate</label><input id="rate" name="rate" type="text" class="form-control" placeholder="Exchange Rate" required></div>');
 
               $('.modal-title').empty();
               $('.modal-body').empty();
+              $('.modal-footer').empty();
               $('.modal-title').append('Validate Transaction');
               $('.modal-body').append(box);
 
@@ -3292,12 +3304,12 @@ $(document).ready(function(){
                   }
               })
               availableBalance('#out');
-
-              $('#ExchangeForm').append("<div id='exButts'></div>");
+              closebut = $('<button type="button" class="btn btn-alternative" data-dismiss="modal">Close</button>');
+              $('.modal-footer').append("<div id='exButts'></div>");
 
               exchangeInValue('#valueout', '#rate', '#valuein')
 
-              makeBut = $("<button type='button' class='btn btn-primary' name='button' id='exCont'>Make</button>");
+              makeBut = $("<button type='button' class='btn btn-alternative' name='button' id='exCont'>Make</button>");
               addMakeVExButton(makeBut);
 
               formatInput('#valueout');
@@ -3305,6 +3317,7 @@ $(document).ready(function(){
               formatInput('#rate');
 
               $('#exButts').append(makeBut);
+              $('#exButts').append(closebut);
 
               $('#out').trigger("change");
             })
@@ -3346,13 +3359,14 @@ $(document).ready(function(){
                     $('#exCont').hide();
                     $('.alert').show();
 
-                    confirmBut = $("<button type='button' name='button' class='btn btn-success' id='exConf'>Confirm</button>");
-                    backBut = $("<button type='button' name='button' class='btn btn-primary' id='exBack'>Back</button>");
+                    confirmBut = $("<button type='button' name='button' class='btn btn-alternative-success btn-alternative' id='exConf'>Confirm</button>");
+                    backBut = $("<button type='button' name='button' class='btn btn-alternative' id='exBack'>Back</button>");
                     backButton(backBut, '#ExchangeForm', 'ex');
                     confirmVExButton(confirmBut);
 
-                    $('#exButts').append(confirmBut);
-                    $('#exButts').append(backBut);
+                    $('#exButts').prepend(backBut);
+                    $('#exButts').prepend(confirmBut);
+
                 }
             })
         }
@@ -3418,21 +3432,21 @@ $(document).ready(function(){
 
                 $('.modal-title').empty();
                 $('.modal-body').empty();
+                $('.modal-footer').empty();
                 $('.modal-title').append('Delete Transaction');
                 $('.modal-body').append(box);
 
                 $('#TxForm').append(alert);
                 $('#TxForm').append(inputI);
 
-                $('#TxForm').append("<div id='txButts'></div>");
+                $('.modal-footer').append("<div id='txButts'></div>");
 
-                makeBut = $("<button type='button' class='btn btn-danger' name='button' id='txCont'>Delete</button>");
-                peBut = $("<button type='button' class='btn btn-primary' name='button' id='txPass'>Back</button>");
-
+                makeBut = $("<button type='button' class='btn btn-alternative-danger btn-alternative' name='button' id='txCont'>Delete</button>");
+                closebut = $('<button type="button" class="btn btn-alternative" data-dismiss="modal">Close</button>');
                 DeleteTxButton(makeBut);
 
                 $('#txButts').append(makeBut);
-                $('#txButts').append(peBut);
+                $('#txButts').append(closebut);
             })
         }
 

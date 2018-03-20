@@ -212,3 +212,14 @@ a:hover{
 .form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control{
     background-color: #6b6b6b69;
 }
+
+.dropdown-menu{
+  border-radius: 0px;
+  background-color: #395b71;
+}
+.dropdown-menu>li>a{
+  color: white;
+}
+.nav{
+  font-family: florence;
+}

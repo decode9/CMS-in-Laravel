@@ -36,7 +36,7 @@ body{
                   </div>
                   <div class="row">
                     <div class="tab-pane active table-responsive" id="list">
-                        <table id="table_balance_currency" class="table table-striped table-hover">
+                        <table id="table_balance_currency" class="table table-hover">
                             <thead class="thead-default">
                                 <tr class="small">
                                     <th id="table_balance_currency_header_symbol" style="cursor: pointer;">Symbol</th>
@@ -87,7 +87,7 @@ body{
                   </div>
                   <div class="row">
                     <div class="tab-pane active table-responsive" id="list">
-                        <table id="table_balance_crypto" class="table table-striped table-hover">
+                        <table id="table_balance_crypto" class="table table-hover">
                             <thead class="thead-default">
                                 <tr class="small">
                                     <th id="table_balance_crypto_header_symbol" style="cursor: pointer;">Symbol</th>
@@ -138,7 +138,7 @@ body{
                   </div>
                   <div class="row">
                     <div class="tab-pane active table-responsive" id="list">
-                        <table id="table_balance_token" class="table table-striped table-hover">
+                        <table id="table_balance_token" class="table table-hover">
                             <thead class="thead-default">
                                 <tr class="small">
                                     <th id="table_balance_token_header_symbol" style="cursor: pointer;">Symbol</th>
@@ -196,7 +196,7 @@ body{
               </div>
               <div class="panel-body">
                 <div class="table-responsive">
-                  <table id="table_transaction" class="table table-striped table-hover">
+                  <table id="table_transaction" class="table table-hover">
                       <thead class="thead-default">
                           <tr>
                               <th id="table_transaction_header_currency_out" style="cursor: pointer;">Currency Out</th>
@@ -253,7 +253,7 @@ body{
               </div>
               <div class="panel-body">
                 <div class="table-responsive">
-                    <table id="table_pending_transaction" class="table table-responsive table-striped table-hover">
+                    <table id="table_pending_transaction" class="table table-hover">
                         <thead class="thead-default">
                             <tr>
                                 <th id="table_pending_transaction_header_currency_out" style="cursor: pointer;">Currency Out</th>
@@ -388,7 +388,7 @@ body{
     <div class="modal-dialog">
 
       <!-- Modal content-->
-      <div class="modal-content">
+      <div class="modal-content modal-alternative">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
           <h4 class="modal-title"></h4>
@@ -397,7 +397,7 @@ body{
 
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
         </div>
       </div>
 
@@ -408,7 +408,7 @@ body{
   <div class="modal-dialog modal-sm">
 
     <!-- Modal content-->
-    <div class="modal-content content-alert">
+    <div class="modal-content modal-alternative content-alert">
         <div class="alert" style="margin: 0px;">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
         </div>

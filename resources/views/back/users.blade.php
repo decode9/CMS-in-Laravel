@@ -32,7 +32,7 @@ body{
               </div>
               <div class="panel-body">
                 <div class="col-sm-12 table-responsive active" id="list">
-                    <table id="table_user" class="table table-striped table-hover">
+                    <table id="table_user" class="table table-hover">
                         <thead class="thead-default">
                             <tr>
                                 <th id="table_user_header_name" style="cursor: pointer;">Name</th>

@@ -67,7 +67,7 @@ class weeklyHistory extends Command
               $percent = $this->percent($user);
               $initial = $user->histories()->where('type', 'weekly')->get()->last();
 
-              $initialT = $initial->created_at;
+              $initialT = Carbon::parse($initial->register);
 
               $diffD = $initialT->diffInWeeks($today);
 
@@ -108,7 +108,7 @@ class weeklyHistory extends Command
 
           if($attributes){
 
-              $initialGT = $historical->created_at;
+              $initialGT = Carbon::parse($historical->created_at);
 
               $diffGD = $initialGT->diffInWeeks($today);
 
