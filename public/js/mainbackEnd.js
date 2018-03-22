@@ -60,20 +60,20 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 43);
+/******/ 	return __webpack_require__(__webpack_require__.s = 45);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 43:
+/***/ 45:
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(44);
+module.exports = __webpack_require__(46);
 
 
 /***/ }),
 
-/***/ 44:
+/***/ 46:
 /***/ (function(module, exports) {
 
 /*****************************************************************/
@@ -336,6 +336,22 @@ $(document).ready(function () {
 
     /* Print Recipients deposits or withdraw Recipients */
 
+    function profilePhoto() {
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            url: "/users/profile",
+            type: 'post',
+            success: function success(data) {
+                user = data.result;
+                if (user.image !== null) {
+                    $('.imageIcon').attr('src', user.image);
+                }
+            }
+        });
+    }
+
     function printRecipient(user, data, symbol, type, printbut) {
         printbut.click(function () {
             if (type == "deposit") {
@@ -395,7 +411,7 @@ $(document).ready(function () {
     /* End Common Functions */
 
     /*Begin DashBoard Functions*/
-
+    profilePhoto();
     if (pathname.toString() == '/home') {
         var balance = function balance() {
             $.ajax({
@@ -816,6 +832,7 @@ $(document).ready(function () {
 
     if (pathname.toString() == '/profile') {
         var profile = function profile() {
+
             $.ajax({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -825,36 +842,88 @@ $(document).ready(function () {
                 success: function success(data) {
                     user = data.result;
                     var name = user.name.split(' ');
-                    $('.panel-body').empty();
-                    box = $("<form class='UserForm' id='UserForm' enctype='multipart/form-data' ></form>");
-                    alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the User</strong></div>');
-                    inputI = $('<input id="id" name="id" style="display: none;" type="text" class="form-control" value="' + user.id + '" required>');
-                    inputN = $('<div><label for="name">Name<label></div><div><input id="name" name="name" type="text" class="form-control" placeholder="Name" value="' + name[0] + '" required disabled></div>');
-                    inputL = $('<div><label for="lastname">Last Name<label></div><div><input id="lastname" name="lastname" type="text" class="form-control" placeholder="Last Name" value="' + name[1] + '" required disabled></div>');
-                    inputE = $('<div><label for="email">Email<label></div><div><input id="email" name="email" type="text" class="form-control" placeholder="Email" value="' + user.email + '" required disabled></div>');
-                    inputP = $('<div class="PasswordBox" style="display:none;"><div><label for="password">Password<label></div><div><input id="password" name="password" type="password" class="form-control" placeholder="Password" disabled></div></div>');
-                    inputPC = $('<div class="PasswordBox" style="display:none;"><div><label for="passwordConf">Confirm Password<label></div><div><input id="passwordConf" name="passwordConf" type="password" class="form-control" placeholder="Confirm Password" disabled></div></div>');
+                    firstname = name[0];
+                    lastname = name[1];
+                    title = user.roles[0].slug;
+                    email = user.email;
 
-                    $('.panel-body').append(box);
-                    $('#UserForm').append(inputI);
-                    $('#UserForm').append(inputN);
-                    $('#UserForm').append(inputL);
-                    $('#UserForm').append(inputU);
-                    $('#UserForm').append(inputE);
-                    $('#UserForm').append(inputP);
-                    $('#UserForm').append(inputPC);
+                    if (user.image !== null) {
+                        image = user.image;
+                        $('#profilePic').attr("src", image);
+                    }
 
-                    $('#UserForm').append('<div class="profButts"></div>');
-                    editBut = $("<button type='button' class='btn btn-alternative' name='button' id='profedit'>Edit Data</button>");
-                    makeBut = $("<button type='button' class='btn btn-alternative' name='button' id='profCont' style='display:none;'>Make</button>");
-                    peBut = $("<button type='button' class='btn btn-alternative' name='button' id='profPass' style='display:none;'>Change Password</button>");
-                    passwordEditUser(peBut);
-                    editProfile(editBut, '#UserForm');
-                    addMakeprofileButton(makeBut);
-                    $('.profButts').append(editBut);
-                    $('.profButts').append(makeBut);
-                    $('.profButts').append(peBut);
+                    $('#name').empty();
+                    $('#lastname').empty();
+                    $('#title').empty();
+                    $('#email').empty();
+
+                    $('#name').append(firstname);
+                    $('#lastname').append(lastname);
+                    $('#title').append(title);
+                    $('#email').append(email);
+                    button = $('<button type="button" class="btn btn-alternative btn-edit" data-toggle="modal" data-target="#profileMod" name="button">Edit Information</button>');
+                    editProfile(button, user);
+                    $('.btn-edit').remove();
+                    $('.basicInfo').append(button);
                 }
+            });
+        };
+
+        var uploadPicture = function uploadPicture(but, id) {
+            but.click(function () {
+                var imageData = $('#image-cropper').cropit('export');
+                var formData = new FormData();
+                formData.append('picture', imageData);
+                formData.append('id', id);
+
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    url: "/profile/upload/picture",
+                    type: "POST",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function success(data) {
+                        $('#profileMod').modal('hide');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('Photo Upload Successfully');
+                        $('.alert').removeClass('alert-warning');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-success');
+                        $('#profileAlertMod').modal('show');
+                        profile();
+                        profilePhoto();
+                    },
+                    error: function error(_error) {
+                        $(this).removeClass('disabled');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('An error has ocurred');
+                        $('.alert').removeClass('alert-success');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-warning');
+                        $('#profileAlertMod').modal('show');
+                    }
+                });
+            });
+        };
+
+        var cropt = function cropt() {
+            $('#image-cropper').cropit();
+
+            // When user clicks select image button,
+            // open select file dialog programmatically
+            $('.btn-select-image').click(function () {
+                $('.cropit-image-input').click();
+            });
+
+            // Handle rotation
+            $('.rotate-cw-btn').click(function () {
+                $('#image-cropper').cropit('rotateCW');
+            });
+            $('.rotate-ccw-btn').click(function () {
+                $('#image-cropper').cropit('rotateCCW');
             });
         };
 
@@ -864,19 +933,41 @@ $(document).ready(function () {
             });
         };
 
-        var editProfile = function editProfile(edit, form) {
+        var editProfile = function editProfile(edit, user) {
             edit.click(function () {
-                if ($(this).hasClass('clicked')) {
-                    alterForm(form, true);
-                    $(this).removeClass('clicked');
-                    $('#profCont').hide();
-                    $('#profPass').hide();
-                } else {
-                    alterForm(form, false);
-                    $(this).addClass('clicked');
-                    $('#profCont').show();
-                    $('#profPass').show();
-                }
+                var name = user.name.split(' ');
+                box = $("<form class='ProfileForm' id='ProfileForm' enctype='multipart/form-data' ></form>");
+                alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Currency</strong></div>');
+                inputN = $('<div class="form-group"><label for="name">Name</label><input id="nameI" name="name" type="text" class="form-control" placeholder="Name" value="' + name[0] + '" required></div>');
+                inputS = $('<div class="form-group"><label for="lastname">Lastname</label><input id="lastnameI" name="lastname" value="' + name[1] + '" type="text" class="form-control" placeholder="Lastname" required></div>');
+                inputA = $('<div class="form-group"><label for="email">Email</label><input id="emailI" name="email" type="text" class="form-control" placeholder="Email" value="' + user.email + '" required></div></div>');
+                inputP = $('<div class="PasswordBox form-group" style="display:none;"><label for="password">Password</label><input id="passwordI" name="password" type="password" class="form-control" placeholder="Password" required></div>');
+                inputPC = $('<div class="PasswordBox form-group" style="display:none;"><label for="passwordConf">Confirm Password</label><input id="passwordConfI" name="passwordConf" type="password" class="form-control" placeholder="Confirm Password" required></div>');
+
+                $('.modal-title').empty();
+                $('.modal-body').empty();
+                $('.modal-footer').empty();
+                $('.modal-title').append('Edit Basic Information');
+                $('.modal-body').append(box);
+
+                $('#ProfileForm').append(alert);
+                $('#ProfileForm').append(inputN);
+                $('#ProfileForm').append(inputS);
+                $('#ProfileForm').append(inputA);
+                $('#ProfileForm').append(inputP);
+                $('#ProfileForm').append(inputPC);
+
+                $('.modal-footer').append("<div id='profButts'></div>");
+                peBut = $("<button type='button' name='button' class='btn btn-alternative' id='profPass'>Change Password</button>");
+                closebut = $('<button type="button" class="btn btn-alternative" data-dismiss="modal">Close</button>');
+                makeBut = $("<button type='button' class='btn btn-alternative' name='button' id='profCont'>Make</button>");
+
+                addMakeprofileButton(makeBut);
+                passwordEditUser(peBut);
+
+                $('#profButts').append(makeBut);
+                $('#profButts').append(peBut);
+                $('#profButts').append(closebut);
             });
         };
 
@@ -907,11 +998,6 @@ $(document).ready(function () {
                         minlength: 2,
                         lettersonly: true
                     },
-                    username: {
-                        required: true,
-                        minlength: 4,
-                        username: true
-                    },
                     email: {
                         required: true,
                         email: true
@@ -928,18 +1014,18 @@ $(document).ready(function () {
 
             });
             makeBut.click(function (e) {
-                if ($('#UserForm').valid()) {
-                    alterForm('#UserForm', true);
+                if ($('#ProfileForm').valid()) {
+                    alterForm('#ProfileForm', true);
                     $('#profCont').hide();
                     $('#profPass').hide();
                     $('#profedit').hide();
                     $('.alert').show();
                     confirmBut = $("<button type='button' name='button' class='btn btn-alternative-success btn-alternative' id='profConf'>Confirm</button>");
                     backBut = $("<button type='button' name='button' class='btn btn-alternative' id='profBack'>Back</button>");
-                    backButton(backBut, '#UserForm', 'prof');
+                    backButton(backBut, '#ProfileForm', 'prof');
                     confirmEuserButton(confirmBut);
-                    $('.profButts').append(confirmBut);
-                    $('.profButts').append(backBut);
+                    $('#profButts').prepend(backBut);
+                    $('#profButts').prepend(confirmBut);
                 }
             });
         };
@@ -950,12 +1036,11 @@ $(document).ready(function () {
         var confirmEuserButton = function confirmEuserButton(confirmBut) {
             confirmBut.click(function () {
                 $(this).addClass('disabled');
-                name = $('#name').val();
-                lastname = $('#lastname').val();
-                username = $('#username').val();
-                email = $('#email').val();
-                password = $('#password').val();
-                confirm = $('#passwordConf').val();
+                name = $('#nameI').val();
+                lastname = $('#lastnameI').val();
+                email = $('#emailI').val();
+                password = $('#passwordI').val();
+                confirm = $('#passwordConfI').val();
                 id = $('#id').val();
 
                 $.ajax({
@@ -963,12 +1048,25 @@ $(document).ready(function () {
                     url: '/users/profile/update',
                     type: 'POST',
                     dataType: "json",
-                    data: { id: id, name: name, lastname: lastname, username: username, email: email, password: password, password_confirmation: confirm },
+                    data: { id: id, name: name, lastname: lastname, email: email, password: password, password_confirmation: confirm },
                     success: function success(data) {
+                        $('#profileMod').modal('hide');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('Information Change Successfully');
+                        $('.alert').removeClass('alert-warning');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-success');
+                        $('#profileAlertMod').modal('show');
                         profile();
                     },
-                    error: function error(_error) {
+                    error: function error(_error2) {
                         $(this).removeClass('disabled');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('An error has ocurred');
+                        $('.alert').removeClass('alert-success');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-warning');
+                        $('#profileAlertMod').modal('show');
                     }
                 });
             });
@@ -976,6 +1074,55 @@ $(document).ready(function () {
 
         $('.listprofile').addClass('active');
 
+
+        $('.btn-photo').click(function () {
+            box = $('<div id="image-cropper" class="text-center"></div>');
+            divpreview = $('<div class="cropit-preview" style="margin: 0 auto; display:block;"></div>');
+            controls = $('<div class="cropit-controls col-sm-12"></div>');
+            rotation = $('<div class="col-sm-4 text-center"><span class="glyphicon glyphicon-repeat icon icon-right rotate-ccw-btn"></span><span class="glyphicon glyphicon-repeat icon rotate-cw-btn"></span></div>');
+            range = $('<div class="col-sm-8"></div>');
+            inputrange = $('<span class="glyphicon glyphicon-picture icon small" style="float:left; margin-top:2px;"></span><input type="range" class="slider cropit-image-zoom-input" style="float:left;" /><span class="glyphicon icon glyphicon-picture" style="float:left;"></span>');
+            inputimg = $('<input type="file" class="cropit-image-input" />');
+            btnimg = $('<div class="btn btn-alternative btn-select-image text-center">Select Photo</div>');
+
+            $('.modal-title').empty();
+            $('.modal-body').empty();
+            $('.modal-footer').empty();
+
+            $('.modal-title').append('Upload Photo');
+
+            controls.append(rotation);
+            range.append(inputrange);
+            controls.append(range);
+
+            box.append(divpreview);
+            box.append(controls);
+            box.append(inputimg);
+            box.append(btnimg);
+
+            $('.modal-body').append(box);
+
+            $('.modal-footer').append("<div id='profButts'></div>");
+
+            closebut = $('<button type="button" class="btn btn-alternative" data-dismiss="modal">Close</button>');
+            makeBut = $("<button type='button' class='btn btn-alternative' name='button' id='profCont'>Upload</button>");
+
+            cropt();
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url: "/users/profile",
+                type: 'post',
+                success: function success(data) {
+                    user = data.result;
+                    uploadPicture(makeBut, user.id);
+                }
+            });
+
+            $('#profButts').append(makeBut);
+            $('#profButts').append(closebut);
+        });
 
         profile();
     }
@@ -1116,8 +1263,8 @@ $(document).ready(function () {
                     // Put the data into the element you care about.
                 },
                 // Fin
-                error: function error(_error2) {
-                    ReadError(_error2);
+                error: function error(_error3) {
+                    ReadError(_error3);
                 }
             });
         };
@@ -1162,8 +1309,8 @@ $(document).ready(function () {
                                 $('#clientBox').show();
                             },
                             // Fin
-                            error: function error(_error4) {
-                                ReadError(_error4);
+                            error: function error(_error5) {
+                                ReadError(_error5);
                             }
                         });
                     }
@@ -1279,7 +1426,7 @@ $(document).ready(function () {
                         $('.alert').addClass('alert-success');
                         $('#userAlertMod').modal('show');
                     },
-                    error: function error(_error5) {
+                    error: function error(_error7) {
                         $(this).removeClass('disabled');
                         $('.alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
@@ -1317,7 +1464,6 @@ $(document).ready(function () {
                 $('#UserForm').append(inputI);
                 $('#UserForm').append(inputN);
                 $('#UserForm').append(inputL);
-                $('#UserForm').append(inputU);
                 $('#UserForm').append(inputE);
                 $('#UserForm').append(inputP);
                 $('#UserForm').append(inputPC);
@@ -1351,8 +1497,8 @@ $(document).ready(function () {
                         }
                     },
                     // Fin
-                    error: function error(_error7) {
-                        ReadError(_error7);
+                    error: function error(_error8) {
+                        ReadError(_error8);
                     }
                 });
 
@@ -1478,7 +1624,7 @@ $(document).ready(function () {
                         $('.alert').addClass('alert-success');
                         $('#userAlertMod').modal('show');
                     },
-                    error: function error(_error8) {
+                    error: function error(_error9) {
                         $(this).removeClass('disabled');
                         $('.alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
@@ -1542,7 +1688,7 @@ $(document).ready(function () {
                         $('.alert').addClass('alert-success');
                         $('#userAlertMod').modal('show');
                     },
-                    error: function error(_error9) {
+                    error: function error(_error10) {
                         $(this).removeClass('disabled');
                         $('.alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
@@ -1608,7 +1754,6 @@ $(document).ready(function () {
             $('#UserForm').append(alert);
             $('#UserForm').append(inputN);
             $('#UserForm').append(inputL);
-            $('#UserForm').append(inputU);
             $('#UserForm').append(inputE);
             $('#UserForm').append(inputP);
             $('#UserForm').append(inputPC);
@@ -1636,8 +1781,8 @@ $(document).ready(function () {
                     }
                 },
                 // Fin
-                error: function error(_error3) {
-                    ReadError(_error3);
+                error: function error(_error4) {
+                    ReadError(_error4);
                 }
             });
             closebut = $('<button type="button" class="btn btn-alternative" data-dismiss="modal">Close</button>');
@@ -1769,8 +1914,8 @@ $(document).ready(function () {
                     // Put the data into the element you care about.
                 },
                 // Fin
-                error: function error(_error10) {
-                    ReadError(_error10);
+                error: function error(_error11) {
+                    ReadError(_error11);
                 }
             });
         };
@@ -1891,7 +2036,7 @@ $(document).ready(function () {
                         $('.alert').addClass('alert-success');
                         $('#currencyAlertMod').modal('show');
                     },
-                    error: function error(_error11) {
+                    error: function error(_error12) {
                         $(this).removeClass('disabled');
                         $('.alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
@@ -2066,7 +2211,7 @@ $(document).ready(function () {
                         $('.alert').addClass('alert-success');
                         $('#currencyAlertMod').modal('show');
                     },
-                    error: function error(_error12) {
+                    error: function error(_error13) {
                         $(this).removeClass('disabled');
                         $('.alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
@@ -2130,7 +2275,7 @@ $(document).ready(function () {
                         $('.alert').addClass('alert-success');
                         $('#currencyAlertMod').modal('show');
                     },
-                    error: function error(_error13) {
+                    error: function error(_error14) {
                         $(this).removeClass('disabled');
                         $('.alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
@@ -2712,8 +2857,8 @@ $(document).ready(function () {
                         }
                     },
                     // Fin
-                    error: function error(_error14) {
-                        ReadError(_error14);
+                    error: function error(_error15) {
+                        ReadError(_error15);
                     }
                 });
                 availableBalance('#out');
@@ -2752,8 +2897,8 @@ $(document).ready(function () {
                         $('#availableB').append(amount);
                     },
                     // Fin
-                    error: function error(_error15) {
-                        ReadError(_error15);
+                    error: function error(_error16) {
+                        ReadError(_error16);
                     }
                 });
             });
@@ -2859,7 +3004,7 @@ $(document).ready(function () {
                         $('#form_pending_transaction_search').trigger("submit");
                         totalBalance();
                     },
-                    error: function error(_error16) {
+                    error: function error(_error17) {
                         $(this).removeClass('disabled');
                         $('.alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
@@ -3011,8 +3156,8 @@ $(document).ready(function () {
                     }
                 },
                 // Fin
-                error: function error(_error17) {
-                    ReadError(_error17);
+                error: function error(_error18) {
+                    ReadError(_error18);
                 }
             });
         };
@@ -3161,8 +3306,8 @@ $(document).ready(function () {
                     }
                 },
                 // Fin
-                error: function error(_error18) {
-                    ReadError(_error18);
+                error: function error(_error19) {
+                    ReadError(_error19);
                 }
             });
         };
@@ -3225,8 +3370,8 @@ $(document).ready(function () {
                         }
                     },
                     // Fin
-                    error: function error(_error19) {
-                        ReadError(_error19);
+                    error: function error(_error20) {
+                        ReadError(_error20);
                     }
                 });
                 availableBalance('#out');
@@ -3334,7 +3479,7 @@ $(document).ready(function () {
                         $('#form_pending_transaction_search').trigger("submit");
                         totalBalance();
                     },
-                    error: function error(_error20) {
+                    error: function error(_error21) {
                         $(this).removeClass('disabled');
                         $('.alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
@@ -3404,7 +3549,7 @@ $(document).ready(function () {
                         $('#form_pending_transaction_search').trigger("submit");
                         totalBalance();
                     },
-                    error: function error(_error21) {
+                    error: function error(_error22) {
                         $(this).removeClass('disabled');
                         $('.alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
@@ -3418,34 +3563,34 @@ $(document).ready(function () {
         /*End Transaction History*/
 
         /*Search Deposit Table
-         $('#table_deposit_header_currency').click(function (e) {
+          $('#table_deposit_header_currency').click(function (e) {
           orderTableDepositBy('currencies.symbol');
         });
-         $('#table_deposit_header_amount').click(function (e) {
+          $('#table_deposit_header_amount').click(function (e) {
           orderTableDepositBy('amount');
         });
-         $('#table_deposit_header_reference').click(function (e) {
+          $('#table_deposit_header_reference').click(function (e) {
           orderTableDepositBy('comment');
         });
-         $('#table_deposit_header_date').click(function (e) {
+          $('#table_deposit_header_date').click(function (e) {
           orderTableDepositBy('funds.created_at');
         });
-         $('#table_deposit_header_confirmed').click(function (e) {
+          $('#table_deposit_header_confirmed').click(function (e) {
           orderTableDepositBy('active');
         });
-         $('#table_deposit_header_confirm_date').click(function (e) {
+          $('#table_deposit_header_confirm_date').click(function (e) {
           orderTableDepositBy('funds.updated_at');
         });
-         var orderDepositBy = "";
+          var orderDepositBy = "";
         var orderDepositDirection = "";
         var searchDepositValue = "";
-         $( "#form_deposit_search" ).submit(function(e){
+          $( "#form_deposit_search" ).submit(function(e){
             e.preventDefault();
             //DESC
             searchDepositValue = $( "#search_deposit_value" ).val();
             searchDeposit(1);
         });
-         function orderTableDepositBy(by){
+          function orderTableDepositBy(by){
             if(orderDepositBy === by){
                 if(orderDepositDirection === ""){
                     orderDepositDirection = "DESC";
@@ -3458,10 +3603,10 @@ $(document).ready(function () {
             }
             searchDeposit(1);
         }
-         //Get Deposit Data
+          //Get Deposit Data
         function searchDeposit(page){
-             resultPage =  $( "#result_deposit_page" ).val();
-             $.ajax({
+              resultPage =  $( "#result_deposit_page" ).val();
+              $.ajax({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
@@ -3472,15 +3617,15 @@ $(document).ready(function () {
                     //Inicio
                     var deposits = data.result;
                     var user = data.user;
-                     if(deposits.length == 0){
+                      if(deposits.length == 0){
                         $("#table_deposit_content").html("");
                         $('#table_deposit_content').append('<tr><td colspan="7">None</td></tr>');
                     }else{
                         // Put the data into the element you care about.
                         $("#table_deposit_content").html("");
-                         for(i=0;i<  deposits.length;i++){
+                          for(i=0;i<  deposits.length;i++){
                             var deposit = deposits[i];
-                             // we have to make in steps to add the onclick event
+                              // we have to make in steps to add the onclick event
                             var rowResult = $( '<tr></tr>');
                             var colvalue_1 = $( '<td class="col-sm-12 col-md-2">'+  deposit.symbol +'</td>');
                             var colvalue_2 = $( '<td class="col-sm-12 col-md-2">'+ formatNumber.num( deposit.amount ) +'</td>');
@@ -3489,59 +3634,59 @@ $(document).ready(function () {
                             var colvalue_5 = $( '<td class="col-sm-12 col-md-2">'+  active(deposit.active)  +'</td>');
                             var colvalue_6 = $( '<td class="col-sm-12 col-md-2">'+  updated(deposit)  +'</td>');
                             var colvalue_7 = $( '<td class="col-sm-12 col-md-2"></td>');
-                             var printbut = $("<button type='button' name='button' id='depoPrint'>Receipt</button>");
+                              var printbut = $("<button type='button' name='button' id='depoPrint'>Receipt</button>");
                             printRecipient(user, deposit, deposit.symbol , 'deposit', printbut);
-                             colvalue_7.append(printbut);
-                             rowResult.append(colvalue_1);
+                              colvalue_7.append(printbut);
+                              rowResult.append(colvalue_1);
                             rowResult.append(colvalue_2);
                             rowResult.append(colvalue_3);
                             rowResult.append(colvalue_4);
                             rowResult.append(colvalue_5);
                             rowResult.append(colvalue_6);
                             rowResult.append(colvalue_7);
-                             $("#table_deposit_content").append(rowResult);
+                              $("#table_deposit_content").append(rowResult);
                         }
-                         $("#table_deposit_pagination").html("");
-                         page = parseInt(data.page);
+                          $("#table_deposit_pagination").html("");
+                          page = parseInt(data.page);
                         var total = data.total;
                         var resultPage =  $( "#result_deposit_page" ).val();
                         var totalPages = Math.ceil(total / resultPage);
-                         if(page === 1){
+                          if(page === 1){
                             maxPage = page + 2;
                             totalPages = (maxPage < totalPages) ?  maxPage: totalPages;
                             var pageList = $( '<ul class="pagination"></ul>');
-                             for(i = page ; i <= totalPages; i++){
+                              for(i = page ; i <= totalPages; i++){
                                 pagebutton = $( '<li class="page_Deposit pages">'+ i +'</li>');
                                 pageList.append(pagebutton);
                                 addPageButton(pagebutton);
                             }
-                             $("#table_deposit_pagination").append(pageList);
-                         }else if(page === totalPages){
+                              $("#table_deposit_pagination").append(pageList);
+                          }else if(page === totalPages){
                             page = page - 2;
-                             if(page < 1){
+                              if(page < 1){
                                 page = 1;
                             }
-                             totalPages = ( page + 2 < totalPages) ?  (page + 2): totalPages;
+                              totalPages = ( page + 2 < totalPages) ?  (page + 2): totalPages;
                             var pageList = $( '<ul class="pagination"></ul>');
-                             for(i = page ; i <= totalPages; i++){
+                              for(i = page ; i <= totalPages; i++){
                                 pagebutton = $( '<li class="page_Deposit pages">'+ i +'</li>');
                                 pageList.append(pagebutton);
                                 addPageButton(pagebutton);
                             }
-                             $("#table_deposit_pagination").append(pageList);
-                         }else{
+                              $("#table_deposit_pagination").append(pageList);
+                          }else{
                             page = page - 2;
-                             if(page < 1){
+                              if(page < 1){
                                 page = 1;
                             }
-                             totalPages = ( page + 4 < totalPages) ?  (page + 2): totalPages;
+                              totalPages = ( page + 4 < totalPages) ?  (page + 2): totalPages;
                             var pageList = $( '<ul class="pagination"></ul>');
-                             for(i = page ; i <= totalPages; i++){
+                              for(i = page ; i <= totalPages; i++){
                                 pagebutton = $( '<li class="page_Deposit pages">'+ i +'</li>');
                                 pageList.append(pagebutton);
                                 addPageButton(pagebutton);
                             }
-                             $("#table_deposit_pagination").append(pageList);
+                              $("#table_deposit_pagination").append(pageList);
                         }
                     }
                 },
@@ -3551,47 +3696,47 @@ $(document).ready(function () {
                 }
             });
         }
-         function addPageButton(pagebutton){
+          function addPageButton(pagebutton){
             pagebutton.click(function(){
                 page = $(this).text();
                 searchDeposit(page);
             })
         }
-         /*Deposit Form*/
+          /*Deposit Form*/
         /*
         $('#btnDepo').click(function(){
             box = "<div class='Modal' id='depositModal' style='display:none;'><div class='modalContent' id='modalDeposit'><h3>Deposit</h3><form class='FundForm' id='DepositForm' enctype='multipart/form-data' ></form></div></div>";
-             $('#rightContent').append(box);
+              $('#rightContent').append(box);
             $('#DepositForm').append('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Deposit</strong></div>')
             $('#DepositForm').append("<div><label for='currency'>Currency</label><select id='currency' class='form-control' name='currency'><option value='VEF'>Bolivares</option><option value='USD'>Dollar</option><option value='BTC'>Bitcoin</option><option value='ETH'>Ethereum</option><option value='LTC'>LiteCoin</option></select></div>");
             $('#DepositForm').append("<div id='amountD'><label for='amount'>Amount</label></div>");
-             input = $("<input id='amount' name='amount' type='text' class='form-control' required>");
-             $('#amountD').append(input);
-             $('#DepositForm').append("<div><label for='reference'>Reference</label><input id='reference' name='reference' type='text' class='form-control' required></div>");
+              input = $("<input id='amount' name='amount' type='text' class='form-control' required>");
+              $('#amountD').append(input);
+              $('#DepositForm').append("<div><label for='reference'>Reference</label><input id='reference' name='reference' type='text' class='form-control' required></div>");
             $('#DepositForm').append("<div><label for='file'>File</label><input id='file' name='file' type='file' class='custom-file-input' required></div>");
             $('#DepositForm').append("<div id='depoButts'></div>");
-             makeBut = $("<button type='button' name='button' id='depoCont'>Make</button>");
+              makeBut = $("<button type='button' name='button' id='depoCont'>Make</button>");
             clsbut = $("<span class='close'>&times;</span>");
             addMakedButton(makeBut);
             closeButton(clsbut, '#depositModal');
-             $('#modalDeposit').prepend(clsbut);
+              $('#modalDeposit').prepend(clsbut);
             $('#depoButts').append(makeBut);
-             formatInput("#amount");
+              formatInput("#amount");
             $('#depositModal').show();
         });
-         function addMakedButton(makeBut){
+          function addMakedButton(makeBut){
             makeBut.click(function(e){
-                 jQuery.validator.addMethod("amount", function(value, element) {
+                  jQuery.validator.addMethod("amount", function(value, element) {
                     return this.optional(element) || /^(\d{1}\.)?(\d+\.?)+(,\d{2})?$/i.test(value);
                 });
-                 $('#DepositForm').validate({
+                  $('#DepositForm').validate({
                     rules: {
                         amount:{
                             required: true,
                             minlength: 1,
                             amount: true,
                         },
-                         reference:{
+                          reference:{
                             required: true,
                             minlength: 3,
                         },
@@ -3605,20 +3750,20 @@ $(document).ready(function () {
                         file: 'Please attach the deposit confirmation file',
                     },
                 })
-                 if($('#DepositForm').valid()){
+                  if($('#DepositForm').valid()){
                     alterForm('#DepositForm', true);
                     $('#depoCont').hide();
                     $('.alert').show();
-                     confirmBut = $("<button type='button' name='button' id='depoConf'>Confirm</button>");
+                      confirmBut = $("<button type='button' name='button' id='depoConf'>Confirm</button>");
                     backBut = $("<button type='button' name='button' id='depoBack'>Back</button>");
                     backButton(backBut, '#DepositForm', 'depo');
                     confirmdButton(confirmBut);
-                     $('#depoButts').append(confirmBut);
+                      $('#depoButts').append(confirmBut);
                     $('#depoButts').append(backBut);
                 }
             })
         }
-         function confirmdButton(confirmBut){
+          function confirmdButton(confirmBut){
             confirmBut.click(function(){
                 currency = $('#currency').val();
                 reference = $('#reference').val();
@@ -3649,38 +3794,38 @@ $(document).ready(function () {
                             opModalPrint(message, deposit, symbol, user, 'deposit');
                         }
                     })
-             })
+              })
         }
-         /*Search Withdraws Table*/
+          /*Search Withdraws Table*/
         /*
         $('#table_withdraw_header_currency').click(function (e) {
           orderTableWithdrawBy('currencies.symbol');
         });
-         $('#table_withdraw_header_amount').click(function (e) {
+          $('#table_withdraw_header_amount').click(function (e) {
           orderTableWithdrawBy('amount');
         });
-         $('#table_withdraw_header_reference').click(function (e) {
+          $('#table_withdraw_header_reference').click(function (e) {
           orderTableWithdrawBy('comment');
         });
-         $('#table_withdraw_header_date').click(function (e) {
+          $('#table_withdraw_header_date').click(function (e) {
           orderTableWithdrawBy('funds.created_at');
         });
-         $('#table_withdraw_header_confirmed').click(function (e) {
+          $('#table_withdraw_header_confirmed').click(function (e) {
           orderTableWithdrawBy('active');
         });
-         $('#table_withdraw_header_confirm_date').click(function (e) {
+          $('#table_withdraw_header_confirm_date').click(function (e) {
           orderTableWithdrawBy('funds.updated_at');
         });
-         var orderWithdrawBy = "";
+          var orderWithdrawBy = "";
         var orderWithdrawDirection = "";
         var searchWithdrawValue = "";
-         $( "#form_withdraw_search" ).submit(function(e){
+          $( "#form_withdraw_search" ).submit(function(e){
             e.preventDefault();
             //DESC
             searchWithdrawValue = $( "#search_withdraw_value" ).val();
             searchWithdraw(1);
         });
-         function orderTableWithdrawBy(by){
+          function orderTableWithdrawBy(by){
             if(orderWithdrawBy === by){
                 if(orderWithdrawDirection === ""){
                     orderWithdrawDirection = "DESC";
@@ -3693,10 +3838,10 @@ $(document).ready(function () {
             }
             searchWithdraw(1);
         }
-         //Get Withdraw Data
-         function searchWithdraw(page){
-             resultPage =  $( "#result_withdraw_page" ).val();
-             $.ajax({
+          //Get Withdraw Data
+          function searchWithdraw(page){
+              resultPage =  $( "#result_withdraw_page" ).val();
+              $.ajax({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
@@ -3707,128 +3852,128 @@ $(document).ready(function () {
                     //Inicio
                     var user = data.user;
                     var withdraws = data.result;
-                     if(withdraws.length == 0){
+                      if(withdraws.length == 0){
                         $("#table_withdraw_content").html("");
                         $('#table_withdraw_content').append('<tr><td colspan="7">None</td></tr>');
                     }else{
                         $("#table_withdraw_content").html("");
-                         for(i=0;i<  withdraws.length;i++){
+                          for(i=0;i<  withdraws.length;i++){
                             var withdraw = withdraws[i];
                             // we have to make in steps to add the onclick event
                             var rowResult = $( '<tr></tr>');
-                             var colvalue_1 = $( '<td class="col-sm-12 col-md-2">'+  withdraw.symbol +'</td>');
+                              var colvalue_1 = $( '<td class="col-sm-12 col-md-2">'+  withdraw.symbol +'</td>');
                             var colvalue_2 = $( '<td class="col-sm-12 col-md-2">'+ formatNumber.num( withdraw.amount ) +'</td>');
                             var colvalue_3 = $( '<td class="col-sm-12 col-md-2">'+  withdraw.comment  +'</td>');
                             var colvalue_4 = $( '<td class="col-sm-12 col-md-2">'+  withdraw.created_at  +'</td>');
                             var colvalue_5 = $( '<td class="col-sm-12 col-md-2">'+  active(withdraw.active)  +'</td>');
                             var colvalue_6 = $( '<td class="col-sm-12 col-md-2">'+  updated(withdraw)  +'</td>');
                             var colvalue_7 = $( '<td class="col-sm-12 col-md-2"></td>');
-                             var printbut = $("<button type='button' name='button' id='withPrint'>Receipt</button>");
+                              var printbut = $("<button type='button' name='button' id='withPrint'>Receipt</button>");
                             printRecipient(user, withdraw, withdraw.symbol , 'withdraw', printbut);
-                             colvalue_7.append(printbut);
-                             rowResult.append(colvalue_1);
+                              colvalue_7.append(printbut);
+                              rowResult.append(colvalue_1);
                             rowResult.append(colvalue_2);
                             rowResult.append(colvalue_3);
                             rowResult.append(colvalue_4);
                             rowResult.append(colvalue_5);
                             rowResult.append(colvalue_6);
                             rowResult.append(colvalue_7);
-                             $("#table_withdraw_content").append(rowResult);
+                              $("#table_withdraw_content").append(rowResult);
                         }
-                         $("#table_withdraw_pagination").html("");
-                         page = parseInt(data.page);
+                          $("#table_withdraw_pagination").html("");
+                          page = parseInt(data.page);
                         var total = data.total;
                         var resultPage =  $( "#result_withdraw_page" ).val();
                         var totalPages = Math.ceil(total / resultPage);
-                         if(page === 1){
+                          if(page === 1){
                             maxPage = page + 2;
                             totalPages = (maxPage < totalPages) ?  maxPage: totalPages;
                             var pageList = $( '<ul class="pagination"></ul>');
-                             for(i = page ; i <= totalPages; i++){
+                              for(i = page ; i <= totalPages; i++){
                                 pagebutton = $( '<li class="page_withdraw pages">'+ i +'</li>');
                                 pageList.append(pagebutton);
                                 addPageButton(pagebutton);
                             }
-                             $("#table_withdraw_pagination").append(pageList);
+                              $("#table_withdraw_pagination").append(pageList);
                         }else if(page === totalPages){
                             page = page - 2;
-                             if(page < 1){
+                              if(page < 1){
                                 page = 1;
                             }
-                             totalPages = ( page + 2 < totalPages) ?  (page + 2): totalPages;
+                              totalPages = ( page + 2 < totalPages) ?  (page + 2): totalPages;
                             var pageList = $( '<ul class="pagination"></ul>');
-                             for(i = page ; i <= totalPages; i++){
+                              for(i = page ; i <= totalPages; i++){
                                 pagebutton = $( '<li class="page_Withdraw pages">'+ i +'</li>');
                                 pageList.append(pagebutton);
                                 addPageButton(pagebutton);
                             }
-                             $("#table_withdraw_pagination").append(pageList);
+                              $("#table_withdraw_pagination").append(pageList);
                         }else{
                             page = page - 2;
-                             if(page < 1){
+                              if(page < 1){
                                 page = 1;
                             }
-                             totalPages = ( page + 4 < totalPages) ?  (page + 2): totalPages;
+                              totalPages = ( page + 4 < totalPages) ?  (page + 2): totalPages;
                             var pageList = $( '<ul class="pagination"></ul>');
-                             for(i = page ; i <= totalPages; i++){
+                              for(i = page ; i <= totalPages; i++){
                                 pagebutton = $( '<li class="page_Withdraw pages">'+ i +'</li>');
                                 pageList.append(pagebutton);
                                 addPagewButton(pagebutton);
                             }
-                             $("#table_withdraw_pagination").append(pageList);
+                              $("#table_withdraw_pagination").append(pageList);
                         }
                     }
                     // Put the data into the element you care about.
-                 },
+                  },
                 // Fin
                 error: function (error) {
                     ReadError(error);
                 }
             });
         }
-         function addPagewButton(pagebutton){
+          function addPagewButton(pagebutton){
             pagebutton.click(function(){
                 page = $(this).text();
                 searchWithdraw(page);
             })
         }
-         /*Withdraw Form*/
+          /*Withdraw Form*/
         /*
         $('#btnWith').click(function(){
-             box = "<div class='Modal' id='withdrawModal' style='display:none;'><div class='modalContent' id='modalWithdraw'><h3>Withdraw</h3><form class='FundForm' id='WithdrawForm' enctype='multipart/form-data' ></form></div></div>";
-             $('#rightContent').append(box);
-             $('#WithdrawForm').append('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Withdraw</strong></div>');
+              box = "<div class='Modal' id='withdrawModal' style='display:none;'><div class='modalContent' id='modalWithdraw'><h3>Withdraw</h3><form class='FundForm' id='WithdrawForm' enctype='multipart/form-data' ></form></div></div>";
+              $('#rightContent').append(box);
+              $('#WithdrawForm').append('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Withdraw</strong></div>');
             $('#WithdrawForm').append("<div><label for='currency'>Currency</label><select id='currency' class='form-control' name='currency'><option value='VEF'>Bolivares</option><option value='USD'>Dollar</option><option value='BTC'>Bitcoin</option><option value='ETH'>Ethereum</option><option value='LTC'>LiteCoin</option></select></div>");
             $('#WithdrawForm').append("<div id='amountW'><label for='amount'>Amount</label></div>");
-             input = $("<input id='amount' name='amount' type='text' class='form-control' required>");
-             $('#amountW').append(input);
-             $('#WithdrawForm').append("<div ><input id='accountId' name='accountId' type='text' class='form-control' style='display:none;' required disabled></div>");
+              input = $("<input id='amount' name='amount' type='text' class='form-control' required>");
+              $('#amountW').append(input);
+              $('#WithdrawForm').append("<div ><input id='accountId' name='accountId' type='text' class='form-control' style='display:none;' required disabled></div>");
             $('#WithdrawForm').append("<div id='acc'><label for='account'>Account</label><input id='account' name='account' type='text' class='form-control' required disabled></div>");
             $('#WithdrawForm').append("<div id='withButts'></div>");
-             accountbut = $("<button type='button' name='addcount' id='addcount'>+</button>");
+              accountbut = $("<button type='button' name='addcount' id='addcount'>+</button>");
             makeBut = $("<button type='button' name='button' id='withCont'>Make</button>");
             clsbut = $("<span class='close'>&times;</span>");
             addMakewButton(makeBut);
             addAccount(accountbut);
-             closeButton(clsbut, '#withdrawModal');
-             $('#acc').append(accountbut);
+              closeButton(clsbut, '#withdrawModal');
+              $('#acc').append(accountbut);
             $('#modalWithdraw').prepend(clsbut);
             $('#withButts').append(makeBut);
-             formatInput("#amount");
+              formatInput("#amount");
             $('#withdrawModal').show();
         });
-         function addMakewButton(makeBut){
+          function addMakewButton(makeBut){
             jQuery.validator.addMethod("amount", function(value, element) {
                     return this.optional(element) || /^(\d{1}\.)?(\d+\.?)+(,\d{2})?$/i.test(value);
             });
-             $('#WithdrawForm').validate({
+              $('#WithdrawForm').validate({
                 rules: {
                     amount:{
                         required: true,
                         minlength: 1,
                         amount: true,
                     },
-                     account:{
+                      account:{
                         required: true,
                     },
                 },
@@ -3837,7 +3982,7 @@ $(document).ready(function () {
                     account: 'Please introduce the account of the withdraw',
                 },
             });
-             makeBut.click(function(e){
+              makeBut.click(function(e){
                 if($('#WithdrawForm').valid()){
                     amount = $('#amount').val();
                     currency = $('#currency').val();
@@ -3862,14 +4007,14 @@ $(document).ready(function () {
                 }
             })
         }
-         function confirmwButton(confirmBut){
+          function confirmwButton(confirmBut){
             confirmBut.click(function(){
-                     currency = $('#currency').val();
+                      currency = $('#currency').val();
                     amount = $('#amount').val().replace(/\./g, '');
                     amount = amount.replace(/,/g, '.');
                     amount = parseFloat(amount) * -1;
                     accountId = $('#accountId').val();
-                     $.ajax({
+                      $.ajax({
                         headers: { 'X-CSRF-Token' : $('meta[name=csrf-token]').attr('content') },
                         url: '/withdraw/create',
                         type: 'POST',
@@ -3886,30 +4031,30 @@ $(document).ready(function () {
                             opModalPrint(message, deposit, symbol, user, 'withdraw');
                         }
                     })
-             })
+              })
         }
-         /*Search Accounts Table*/
+          /*Search Accounts Table*/
         /*
         function addTableManager(){
-             $('#table_account_header_type').click(function (e) {
+              $('#table_account_header_type').click(function (e) {
                 orderTableAccountBy('type');
             });
-             $('#table_account_header_entity').click(function (e) {
+              $('#table_account_header_entity').click(function (e) {
                 orderTableAccountBy('entity');
             });
-             $('#table_account_header_address').click(function (e) {
+              $('#table_account_header_address').click(function (e) {
                 orderTableAccountBy('address');
             });
-             var orderAccountBy = "";
+              var orderAccountBy = "";
             var orderAccountDirection = "";
             var searchAccountValue = "";
-             $( "#form_account_search" ).submit(function(e){
+              $( "#form_account_search" ).submit(function(e){
                 e.preventDefault();
                 //DESC
                 searchAccountValue = $( "#search_account_value" ).val();
                 searchAccount(1);
             });
-             function orderTableAccountBy(by){
+              function orderTableAccountBy(by){
                 if(orderAccountBy === by){
                     if(orderAccountDirection === ""){
                         orderAccountDirection = "DESC";
@@ -3922,7 +4067,7 @@ $(document).ready(function () {
                 }
                 searchAccount(1);
             }
-             //Get Account Data
+              //Get Account Data
             function searchAccount(page){
                 resultPage =  $( "#result_account_page" ).val();
                 $.ajax({
@@ -3934,7 +4079,7 @@ $(document).ready(function () {
                     data: { searchvalue : searchAccountValue, page : page, orderBy :orderAccountBy, orderDirection: orderAccountDirection,    resultPage: resultPage } ,
                     success: function (data) {
                         //Inicio
-                         var accounts = data.result;
+                          var accounts = data.result;
                         if(accounts.length == 0){
                             $('#table_account_content').append('<tr><td colspan="4">None</td></tr>');
                         }else{
@@ -3942,79 +4087,79 @@ $(document).ready(function () {
                             for(i=0;i<  accounts.length;i++)
                             {
                                 var account = accounts[i];
-                                 // we have to make in steps to add the onclick event
+                                  // we have to make in steps to add the onclick event
                                 var rowResult = $( '<tr></tr>');
                                 var colvalue_1 = $( '<td class="col-sm-12 col-md-2">'+  account.type +'</td>');
                                 var colvalue_2 = $( '<td class="col-sm-12 col-md-2">'+ account.entity +'</td>');
                                 var colvalue_3 = $( '<td class="col-sm-12 col-md-2">'+  account.address  +'</td>');
                                 var colvalue_4 = $( '<td class="col-sm-12 col-md-2"></td>');
-                                 var selectbut = $("<button type='button' name='button' id='accSelect'>Select</button>");
+                                  var selectbut = $("<button type='button' name='button' id='accSelect'>Select</button>");
                                 selectAccount(account.type ,account.id, account.address, selectbut);
                                 colvalue_4.append(selectbut);
-                                 rowResult.append(colvalue_1);
+                                  rowResult.append(colvalue_1);
                                 rowResult.append(colvalue_2);
                                 rowResult.append(colvalue_3);
                                 rowResult.append(colvalue_4);
-                                 $("#table_account_content").append(rowResult);
+                                  $("#table_account_content").append(rowResult);
                             }
-                             $("#table_account_pagination").html("");
-                             page = parseInt(data.page);
+                              $("#table_account_pagination").html("");
+                              page = parseInt(data.page);
                             var total = data.total;
                             var resultPage =  $( "#result_account_page" ).val();
                             var totalPages = Math.ceil(total / resultPage);
-                             if(page === 1){
+                              if(page === 1){
                                 maxPage = page + 2;
                                 totalPages = (maxPage < totalPages) ?  maxPage: totalPages;
                                 var pageList = $( '<ul class="pagination"></ul>');
-                                 for(i = page ; i <= totalPages; i++){
+                                  for(i = page ; i <= totalPages; i++){
                                     pagebutton = $( '<li class="page_account pages">'+ i +'</li>');
                                     pageList.append(pagebutton);
                                     addPageButton(pagebutton);
                                 }
-                                 $("#table_account_pagination").append(pageList);
+                                  $("#table_account_pagination").append(pageList);
                             }else if(page === totalPages){
                                 page = page - 2;
-                                 if(page < 1){
+                                  if(page < 1){
                                     page = 1;
                                 }
-                                 totalPages = ( page + 2 < totalPages) ?  (page + 2): totalPages;
+                                  totalPages = ( page + 2 < totalPages) ?  (page + 2): totalPages;
                                 var pageList = $( '<ul class="pagination"></ul>');
-                                 for(i = page ; i <= totalPages; i++){
+                                  for(i = page ; i <= totalPages; i++){
                                     pagebutton = $( '<li class="page_account pages">'+ i +'</li>');
                                     pageList.append(pagebutton);
                                     addPageButton(pagebutton);
                                 }
-                                 $("#table_account_pagination").append(pageList);
+                                  $("#table_account_pagination").append(pageList);
                             }else{
                                 page = page - 2;
-                                 if(page < 1){
+                                  if(page < 1){
                                     page = 1;
                                 }
-                                 totalPages = ( page + 4 < totalPages) ?  (page + 2): totalPages;
+                                  totalPages = ( page + 4 < totalPages) ?  (page + 2): totalPages;
                                 var pageList = $( '<ul class="pagination"></ul>');
-                                 for(i = page ; i <= totalPages; i++){
+                                  for(i = page ; i <= totalPages; i++){
                                     pagebutton = $( '<li class="page_account pages">'+ i +'</li>');
                                     pageList.append(pagebutton);
                                     addPageaButton(pagebutton);
                                 }
-                                 $("#table_account_pagination").append(pageList);
+                                  $("#table_account_pagination").append(pageList);
                             }
                         }
                         // Put the data into the element you care about.
-                     },
+                      },
                     // Fin
                     error: function (error) {
                         ReadError(error);
                     }
                 });
             }
-             function addPageaButton(pagebutton){
+              function addPageaButton(pagebutton){
                 pagebutton.click(function(){
                     page = $(this).text();
                     searchAccount(page);
                 })
             }
-             function selectAccount(type, id, address, butslect){
+              function selectAccount(type, id, address, butslect){
                 butslect.click(function(){
                     currency = $('#currency').val();
                     if(currency == 'BTC' || currency == 'LTC' || currency == 'ETH'){
@@ -4042,9 +4187,9 @@ $(document).ready(function () {
                     }
                 })
             }
-             $('#form_account_search').trigger("submit");
+              $('#form_account_search').trigger("submit");
         }
-         /*Account Management*/
+          /*Account Management*/
         /*
         function addAccount(butaccount){
             butaccount.click(function(){
@@ -4055,45 +4200,45 @@ $(document).ready(function () {
                 row2 = $('<tr><th id="table_account_header_type" style="cursor: pointer;">Type</th><th id="table_account_header_entity" style="cursor: pointer;">Entity</th><th id="table_account_header_address" style="cursor: pointer;">Address</th><th>Options</th></tr>');
                 tfoot = $('<tfoot><tr><th colspan="2" id="account_page"><select id="result_account_page"><option value="5" selected="selected">5</option><option value="10"  >10</option><option value="20">20</option><option value="50">50</option></select></th><th id="table_account_pagination" colspan="2"></th></tr></tfoot>');
                 tbody = $('<tbody id="table_account_content"></tbody>');
-                 clsbut = $("<span class='close'>&times;</span>");
+                  clsbut = $("<span class='close'>&times;</span>");
                 createacc = $("<button type='button' name='button' id='createacc'>Create</button>");
                 closeButton(clsbut, '#modalAccount');
                 createAccount(createacc);
-                 thead.append(row1);
+                  thead.append(row1);
                 thead.append(row2);
                 table.append(thead);
                 table.append(tfoot);
                 table.append(tbody);
                 box.append(table);
-                 $('.Modal').append(box);
+                  $('.Modal').append(box);
                 $('#modalAccount').append(createacc);
                 $('#modalAccount').prepend(clsbut);
-                 addTableManager();
-             });
+                  addTableManager();
+              });
         };
-         function createAccount(createacc){
+          function createAccount(createacc){
             createacc.click(function(){
                 box = $("<div class='modalContent' id='modalCreateAccount'><h3>Accounts</h3><form class='FundForm' id='AccountForm' enctype='multipart/form-data' ></form></div>");
                 alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Withdraw</strong></div>');
                 select1 = $("<div><label for='type'>Type</label><select id='type' class='form-control' name='type'><option value='bank'>Bank Account</option><option value='crypto'>CryptoCurrency</option></select></div>");
                 input1 = $("<div id='entyCont'><label for='entity'>Entity</label><input id='entity' name='entity' type='text' class='form-control' required></div>");
                 input2 = $("<div><label for='address'>Address</label><input id='address' name='address' type='text' class='form-control' required></div>");
-                 $('.Modal').append(box);
+                  $('.Modal').append(box);
                 $('#AccountForm').append(alert);
                 $('#AccountForm').append(select1);
                 $('#AccountForm').append(input1);
                 $('#AccountForm').append(input2);
                 $('#AccountForm').append("<div id='accButts'></div>");
-                 clsbut = $("<span class='close'>&times;</span>");
+                  clsbut = $("<span class='close'>&times;</span>");
                 closeButton(clsbut, '#modalCreateAccount');
                 makeBut = $("<button type='button' name='button' id='accCont'>Make</button>");
                 addMakeaButton(makeBut);
-                 $('#modalCreateAccount').prepend(clsbut);
+                  $('#modalCreateAccount').prepend(clsbut);
                 $('#accButts').append(makeBut);
                 changeEntity();
             });
         }
-         function changeEntity(){
+          function changeEntity(){
             $('#type').change(function(){
                 selection = $('#type').val();
                 if(selection == 'bank'){
@@ -4105,13 +4250,13 @@ $(document).ready(function () {
                 }
             })
         }
-         function addMakeaButton(makeBut){
+          function addMakeaButton(makeBut){
             $('#AccountForm').validate({
                 rules: {
                     entity:{
                         required: true,
                         minlength: 2,
-                     },
+                      },
                     account:{
                         required: true,
                         minlength: 8,
@@ -4127,22 +4272,22 @@ $(document).ready(function () {
                     alterForm('#AccountForm', true);
                     $('#accCont').hide();
                     $('.alert').show();
-                     confirmBut = $("<button type='button' name='button' id='accConf'>Confirm</button>");
+                      confirmBut = $("<button type='button' name='button' id='accConf'>Confirm</button>");
                     backBut = $("<button type='button' name='button' id='accBack'>Back</button>");
                     backButton(backBut, '#AccountForm', 'acc');
                     confirmaButton(confirmBut);
-                     $('#accButts').append(confirmBut);
+                      $('#accButts').append(confirmBut);
                     $('#accButts').append(backBut);
-                 }
+                  }
             })
         }
-         function confirmaButton(confirmBut){
+          function confirmaButton(confirmBut){
             confirmBut.click(function(){
-                     type = $('#type').val();
+                      type = $('#type').val();
                     entity = $('#entity').val();
                     address = $('#address').val();
-                     $.ajax({
-                         headers: { 'X-CSRF-Token' : $('meta[name=csrf-token]').attr('content') },
+                      $.ajax({
+                          headers: { 'X-CSRF-Token' : $('meta[name=csrf-token]').attr('content') },
                         url: '/account/create',
                         type: 'POST',
                         dataType: "json",
@@ -4152,7 +4297,7 @@ $(document).ready(function () {
                             closeModal('#modalCreateAccount');
                         }
                     })
-             })
+              })
         }
         */
 
@@ -4755,7 +4900,7 @@ $(document).ready(function () {
                             $('.alert').addClass('alert-success');
                             $('#newsAlertMod').modal('show');
                         },
-                        error: function error(_error22) {
+                        error: function error(_error23) {
                             $(this).removeClass('disabled');
                             $('.alert').append('An error has ocurred');
                             $('.alert').removeClass('alert-success');
@@ -4932,8 +5077,8 @@ $(document).ready(function () {
                     // Put the data into the element you care about.
                 },
                 // Fin
-                error: function error(_error23) {
-                    ReadError(_error23);
+                error: function error(_error24) {
+                    ReadError(_error24);
                 }
             });
         };
@@ -5005,7 +5150,7 @@ $(document).ready(function () {
                         $('.alert').addClass('alert-success');
                         $('#newsAlertMod').modal('show');
                     },
-                    error: function error(_error24) {
+                    error: function error(_error25) {
                         $(this).removeClass('disabled');
                         $('.alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
@@ -5110,7 +5255,7 @@ $(document).ready(function () {
                         $('.alert').addClass('alert-success');
                         $('#newsAlertMod').modal('show');
                     },
-                    error: function error(_error25) {
+                    error: function error(_error26) {
                         $(this).removeClass('disabled');
                         $('.alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
@@ -5175,7 +5320,7 @@ $(document).ready(function () {
                         $('.alert').addClass('alert-success');
                         $('#newsAlertMod').modal('show');
                     },
-                    error: function error(_error26) {
+                    error: function error(_error27) {
                         $(this).removeClass('disabled');
                         $('.alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
@@ -5576,8 +5721,8 @@ $(document).ready(function () {
                     // Put the data into the element you care about.
                 },
                 // Fin
-                error: function error(_error27) {
-                    ReadError(_error27);
+                error: function error(_error28) {
+                    ReadError(_error28);
                 }
             });
         };

@@ -93,6 +93,7 @@ body{
     <div class="modal-content modal-alternative content-alert">
         <div class="alert" style="margin: 0px;">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <p class="text-alert"></p>
         </div>
     </div>
 

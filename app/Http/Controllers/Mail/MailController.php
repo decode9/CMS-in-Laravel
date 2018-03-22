@@ -37,4 +37,5 @@ class MailController extends Controller
         Mail::to('info@kryptogroup.net')->send(new ContactWebsite($data));
 
     }
+
 }

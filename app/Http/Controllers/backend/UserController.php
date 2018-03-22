@@ -3,10 +3,14 @@
 namespace App\Http\Controllers\backend;
 
 use App\Http\Controllers\Controller;
+use App\Mail\newUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Mail;
 use App\User;
 use App\Role;
 use App\Currency;
@@ -145,6 +149,7 @@ class UserController extends Controller
         $password = bcrypt($request->password);
         $roles = $request->roles;
 
+        $data = ['email' => $email, 'password' => $request->password];
         $currencies = Currency::All();
 
         $fullname = ucfirst(strtolower($name)) . " " . ucfirst(strtolower($lastname));
@@ -167,6 +172,7 @@ class UserController extends Controller
         }
 
 
+
         foreach($roles as $role){
             $user->roles()->attach($role);
         }
@@ -175,13 +181,15 @@ class UserController extends Controller
             $user->clients()->attach($client);
         }
 
+        Mail::to($email)->send(new newUser($data));
         return response()->json(['message' => "success"], 202);
     }
 
     public function show(Request $request)
     {
         //
-        $user = Auth::User();
+        $auth = Auth::User();
+        $user = User::Where('id', $auth->id)->with('roles:slug')->first();
 
         return response()->json(['result' => $user], 202);
     }
@@ -194,6 +202,37 @@ class UserController extends Controller
      * @return \Illuminate\Http\Response
      */
 
+
+     public function picture(Request $request){
+
+       $request->validate([
+           'picture' => 'required',
+           'id' => 'required',
+       ]);
+
+       $id = $request->id;
+       $user = User::find($id);
+
+
+
+       if($user->image !== null){
+         Storage::delete(public_path() . '\\' .$user->image);
+       }
+       $pic = $request->picture;
+
+
+       $imageName = $id . ".png";
+
+       $path = public_path() . '\img\profile\\' . $imageName;
+
+       $pathS = '\img\profile\\' . $imageName;
+       Image::make(file_get_contents($pic))->save($path);
+
+       $user->image = $pathS;
+       $user->save();
+
+      return response()->json(['message' => "success"], 202);
+     }
     public function update(Request $request)
     {
         //

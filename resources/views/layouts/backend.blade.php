@@ -93,7 +93,7 @@
                 @else
                 <li><a href="{{ route('home') }}"><span class="glyphicon glyphicon-home" style='font-size:30px;'></span></a></li>
                 <li class="dropdown">
-                  <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class=""><img src="{{ url('/') }}/img/icons/user.png" width="32" alt="" height="auto"></span> {{ Auth::user()->name }}
+                  <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class=""><img class="imageIcon" src="{{ url('/') }}/img/icons/user.png" width="32" alt="" height="auto"></span> {{ Auth::user()->name }}
                     <span class="caret"></span>
                   </a>
                   <ul class="dropdown-menu">
@@ -172,10 +172,12 @@
     </div>
     <!-- Scripts -->
     <script src="{{ url('/') }}/js/jquery.min.js"></script>
+    <script src="{{ url('/') }}/js/cropit.js"></script>
     <script src="{{ url('/') }}/vendor/Chart.js"></script>
     <script src="{{ url('/') }}/vendor/bootstrap/js/bootstrap.min.js"></script>
     <script src="{{ url('/') }}/vendor/validator/jquery.validate.js"></script>
     <script src="{{ url('/') }}/vendor/validator/additional-methods.min.js"></script>
+
     <script src="{{ asset('js/mainbackEnd.js') }}"></script>
 </body>
 </html>

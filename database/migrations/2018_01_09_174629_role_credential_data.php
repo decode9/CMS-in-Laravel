@@ -19,7 +19,7 @@ class RoleCredentialData extends Migration
 
         $roleB = new Role;
         $roleB->name = "Basic User";
-        $roleB->slug = "Basic";
+        $roleB->slug = "Basic User";
         $roleB->code = "010";
         $roleB->description = "This role is the default for all users and it will only give little access.";
         $roleB->save();
@@ -28,7 +28,7 @@ class RoleCredentialData extends Migration
 
         $roleAdmin = new Role;
         $roleAdmin->name = "Admin User";
-        $roleAdmin->slug = "Admin";
+        $roleAdmin->slug = "Administrator";
         $roleAdmin->code = "901";
         $roleAdmin->description = "This role will grant all access";
         $roleAdmin->save();
@@ -44,14 +44,14 @@ class RoleCredentialData extends Migration
 
         $roleClientTr = new Role;
         $roleClientTr->name = "Client Trader User";
-        $roleClientTr->slug = "Client Trader";
+        $roleClientTr->slug = "Client in trading";
         $roleClientTr->code = "030";
         $roleClientTr->description = "This role grant Access to clients for traders";
         $roleClientTr->save();
 
         $roleClientMn = new Role;
         $roleClientMn->name = "Client Mining User";
-        $roleClientMn->slug = "Client Mining";
+        $roleClientMn->slug = "Client in mining";
         $roleClientMn->code = "040";
         $roleClientMn->description = "This role grant Access to clients for Mining";
         $roleClientMn->save();

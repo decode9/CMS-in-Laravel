@@ -228,3 +228,71 @@ a:hover{
 .nav{
   font-family: florence;
 }
+.profilePic{
+  border: 1px solid #395b71;
+
+}
+
+input.cropit-image-input {
+  visibility: hidden;
+}
+.cropit-preview{
+  width: 150px;
+  height: 150px;
+}
+.slider {
+    -webkit-appearance: none;
+    width: 70% !important;
+    height: 5px;
+    margin-top: 6px;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+.slider:hover {
+    opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #395b71;
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    background: #395b71;
+    cursor: pointer;
+}
+.cropit-controls{
+  top: 10px;
+  padding: 10px 15px;
+  background-color: #65616142;
+  box-shadow: inset 0px 0px 1px 0px black;
+}
+.icon{
+  margin: 0px 10px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.icon-right {
+    transform: scaleX(-1);
+    -moz-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    -ms-transform: scaleX(-1);
+}
+
+.imageIcon{
+  border-radius: 50px;
+}

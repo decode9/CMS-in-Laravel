@@ -38,7 +38,17 @@
                                 @endif
                             </div>
                         </div>
+                        <div class="form-group">
+                          <div class="col-md-6 col-md-offset-4">
+                            {!! NoCaptcha::display(['data-theme' => 'dark']) !!}
+                          </div>
 
+                        </div>
+                        @if ($errors->has('g-recaptcha-response'))
+                        <span class="help-block">
+                          <strong>{{ $errors->first('g-recaptcha-response') }}</strong>
+                        </span>
+                        @endif
                         <div class="form-group">
                             <div class="col-md-6 col-md-offset-4">
                                 <div class="checkbox">
@@ -66,4 +76,5 @@
         </div>
     </div>
 </div>
+ {!! NoCaptcha::renderJs('en') !!}
 @endsection

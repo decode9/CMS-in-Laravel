@@ -13,6 +13,7 @@
 
 /* Jorge Bastidas Code */
 
+
 $(document).ready(function(){
 
     /* Global PathName Variable */
@@ -261,6 +262,22 @@ $(document).ready(function(){
 
     /* Print Recipients deposits or withdraw Recipients */
 
+    function profilePhoto(){
+      $.ajax({
+          headers: {
+              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+          },
+          url: "/users/profile",
+          type: 'post',
+          success: function (data) {
+            user = data.result;
+            if(user.image !== null){
+              $('.imageIcon').attr('src', user.image);
+            }
+          }
+      })
+    }
+
     function printRecipient(user, data, symbol, type , printbut ){
         printbut.click(function(){
             if(type == "deposit"){
@@ -321,7 +338,7 @@ $(document).ready(function(){
     /* End Common Functions */
 
     /*Begin DashBoard Functions*/
-
+    profilePhoto();
     if(pathname.toString() == '/home'){
       Chart.defaults.global.defaultFontColor = 'white';
       Chart.defaults.global.defaultFontFamily = 'florence';
@@ -787,6 +804,7 @@ $(document).ready(function(){
     if(pathname.toString() == '/profile'){
         $('.listprofile').addClass('active');
         function profile(){
+
             $.ajax({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -796,41 +814,144 @@ $(document).ready(function(){
                 success: function (data) {
                     user = data.result;
                     var name = user.name.split(' ');
-                    $('.panel-body').empty();
-                        box = $("<form class='UserForm' id='UserForm' enctype='multipart/form-data' ></form>");
-                        alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the User</strong></div>');
-                        inputI = $('<input id="id" name="id" style="display: none;" type="text" class="form-control" value="'+ user.id +'" required>');
-                        inputN = $('<div><label for="name">Name<label></div><div><input id="name" name="name" type="text" class="form-control" placeholder="Name" value="'+ name[0] +'" required disabled></div>');
-                        inputL = $('<div><label for="lastname">Last Name<label></div><div><input id="lastname" name="lastname" type="text" class="form-control" placeholder="Last Name" value="'+ name[1] +'" required disabled></div>');
-                        inputE = $('<div><label for="email">Email<label></div><div><input id="email" name="email" type="text" class="form-control" placeholder="Email" value="'+ user.email +'" required disabled></div>');
-                        inputP = $('<div class="PasswordBox" style="display:none;"><div><label for="password">Password<label></div><div><input id="password" name="password" type="password" class="form-control" placeholder="Password" disabled></div></div>');
-                        inputPC = $('<div class="PasswordBox" style="display:none;"><div><label for="passwordConf">Confirm Password<label></div><div><input id="passwordConf" name="passwordConf" type="password" class="form-control" placeholder="Confirm Password" disabled></div></div>');
+                    firstname = name[0];
+                    lastname = name[1];
+                    title = user.roles[0].slug;
+                    email = user.email;
 
-                        $('.panel-body').append(box);
-                        $('#UserForm').append(inputI);
-                        $('#UserForm').append(inputN);
-                        $('#UserForm').append(inputL);
-                        $('#UserForm').append(inputU);
-                        $('#UserForm').append(inputE);
-                        $('#UserForm').append(inputP);
-                        $('#UserForm').append(inputPC);
+                    if(user.image !== null){
+                      image = user.image;
+                      $('#profilePic').attr("src", image);
+                    }
 
-                        $('#UserForm').append('<div class="profButts"></div>');
-                        editBut = $("<button type='button' class='btn btn-alternative' name='button' id='profedit'>Edit Data</button>");
-                        makeBut = $("<button type='button' class='btn btn-alternative' name='button' id='profCont' style='display:none;'>Make</button>");
-                        peBut = $("<button type='button' class='btn btn-alternative' name='button' id='profPass' style='display:none;'>Change Password</button>");
-                        passwordEditUser(peBut);
-                        editProfile(editBut, '#UserForm');
-                        addMakeprofileButton(makeBut);
-                        $('.profButts').append(editBut);
-                        $('.profButts').append(makeBut);
-                        $('.profButts').append(peBut);
+                    $('#name').empty();
+                    $('#lastname').empty();
+                    $('#title').empty();
+                    $('#email').empty();
 
+                    $('#name').append(firstname);
+                    $('#lastname').append(lastname);
+                    $('#title').append(title);
+                    $('#email').append(email);
+                    button = $('<button type="button" class="btn btn-alternative btn-edit" data-toggle="modal" data-target="#profileMod" name="button">Edit Information</button>');
+                    editProfile(button, user);
+                    $('.btn-edit').remove();
+                    $('.basicInfo').append(button);
 
                 }
             })
 
 
+        }
+
+        $('.btn-photo').click(function(){
+            box = $('<div id="image-cropper" class="text-center"></div>');
+            divpreview = $('<div class="cropit-preview" style="margin: 0 auto; display:block;"></div>');
+            controls = $('<div class="cropit-controls col-sm-12"></div>');
+            rotation = $('<div class="col-sm-4 text-center"><span class="glyphicon glyphicon-repeat icon icon-right rotate-ccw-btn"></span><span class="glyphicon glyphicon-repeat icon rotate-cw-btn"></span></div>');
+            range = $('<div class="col-sm-8"></div>')
+            inputrange = $('<span class="glyphicon glyphicon-picture icon small" style="float:left; margin-top:2px;"></span><input type="range" class="slider cropit-image-zoom-input" style="float:left;" /><span class="glyphicon icon glyphicon-picture" style="float:left;"></span>');
+            inputimg = $('<input type="file" class="cropit-image-input" />');
+            btnimg = $('<div class="btn btn-alternative btn-select-image text-center">Select Photo</div>');
+
+            $('.modal-title').empty();
+            $('.modal-body').empty();
+            $('.modal-footer').empty();
+
+            $('.modal-title').append('Upload Photo');
+
+            controls.append(rotation);
+            range.append(inputrange);
+            controls.append(range);
+
+
+
+            box.append(divpreview);
+            box.append(controls);
+            box.append(inputimg);
+            box.append(btnimg);
+
+
+            $('.modal-body').append(box);
+
+            $('.modal-footer').append("<div id='profButts'></div>");
+
+            closebut = $('<button type="button" class="btn btn-alternative" data-dismiss="modal">Close</button>');
+            makeBut = $("<button type='button' class='btn btn-alternative' name='button' id='profCont'>Upload</button>");
+
+            cropt();
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url: "/users/profile",
+                type: 'post',
+                success: function (data) {
+                    user = data.result;
+                    uploadPicture(makeBut, user.id);
+                }
+            })
+
+
+            $('#profButts').append(makeBut);
+            $('#profButts').append(closebut);
+        })
+
+        function uploadPicture(but, id){
+          but.click(function(){
+            var imageData = $('#image-cropper').cropit('export');
+            var formData = new FormData();
+            formData.append('picture', imageData);
+            formData.append('id', id);
+
+            $.ajax({
+              headers: {
+                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+              },
+        	     url: "/profile/upload/picture",
+			         type: "POST",
+			         data: formData,
+	             contentType: false,
+    	         processData:false,
+               success: function(data){
+                   $('#profileMod').modal('hide');
+                   $('.text-alert').empty();
+                   $('.text-alert').append('Photo Upload Successfully');
+                   $('.alert').removeClass('alert-warning');
+                   $('.alert').removeClass('alert-danger');
+                   $('.alert').addClass('alert-success');
+                   $('#profileAlertMod').modal('show');
+                   profile();
+                   profilePhoto();
+               },
+               error: function (error) {
+                   $(this).removeClass('disabled');
+                   $('.text-alert').empty();
+                   $('.text-alert').append('An error has ocurred');
+                   $('.alert').removeClass('alert-success');
+                   $('.alert').removeClass('alert-danger');
+                   $('.alert').addClass('alert-warning');
+                   $('#profileAlertMod').modal('show');
+               }
+	          });
+          })
+        }
+        function cropt(){
+          $('#image-cropper').cropit();
+
+          // When user clicks select image button,
+          // open select file dialog programmatically
+          $('.btn-select-image').click(function() {
+            $('.cropit-image-input').click();
+          });
+
+          // Handle rotation
+          $('.rotate-cw-btn').click(function() {
+            $('#image-cropper').cropit('rotateCW');
+          });
+          $('.rotate-ccw-btn').click(function() {
+            $('#image-cropper').cropit('rotateCCW');
+          });
         }
 
         function passwordEditUser(pebutton){
@@ -839,19 +960,41 @@ $(document).ready(function(){
             })
         }
 
-        function editProfile(edit, form){
+        function editProfile(edit, user){
           edit.click(function(){
-            if($(this).hasClass('clicked')){
-              alterForm(form, true);
-              $(this).removeClass('clicked');
-              $('#profCont').hide();
-              $('#profPass').hide();
-            }else{
-              alterForm(form, false);
-              $(this).addClass('clicked');
-              $('#profCont').show();
-              $('#profPass').show();
-            }
+            var name = user.name.split(' ');
+            box = $("<form class='ProfileForm' id='ProfileForm' enctype='multipart/form-data' ></form>");
+            alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Currency</strong></div>');
+            inputN = $('<div class="form-group"><label for="name">Name</label><input id="nameI" name="name" type="text" class="form-control" placeholder="Name" value="'+name[0]+'" required></div>');
+            inputS = $('<div class="form-group"><label for="lastname">Lastname</label><input id="lastnameI" name="lastname" value="'+name[1]+'" type="text" class="form-control" placeholder="Lastname" required></div>');
+            inputA = $('<div class="form-group"><label for="email">Email</label><input id="emailI" name="email" type="text" class="form-control" placeholder="Email" value="'+user.email+'" required></div></div>');
+            inputP = $('<div class="PasswordBox form-group" style="display:none;"><label for="password">Password</label><input id="passwordI" name="password" type="password" class="form-control" placeholder="Password" required></div>');
+            inputPC = $('<div class="PasswordBox form-group" style="display:none;"><label for="passwordConf">Confirm Password</label><input id="passwordConfI" name="passwordConf" type="password" class="form-control" placeholder="Confirm Password" required></div>');
+
+            $('.modal-title').empty();
+            $('.modal-body').empty();
+            $('.modal-footer').empty();
+            $('.modal-title').append('Edit Basic Information');
+            $('.modal-body').append(box);
+
+            $('#ProfileForm').append(alert);
+            $('#ProfileForm').append(inputN);
+            $('#ProfileForm').append(inputS);
+            $('#ProfileForm').append(inputA);
+            $('#ProfileForm').append(inputP);
+            $('#ProfileForm').append(inputPC);
+
+            $('.modal-footer').append("<div id='profButts'></div>");
+            peBut = $("<button type='button' name='button' class='btn btn-alternative' id='profPass'>Change Password</button>");
+            closebut = $('<button type="button" class="btn btn-alternative" data-dismiss="modal">Close</button>');
+            makeBut = $("<button type='button' class='btn btn-alternative' name='button' id='profCont'>Make</button>");
+
+            addMakeprofileButton(makeBut);
+            passwordEditUser(peBut);
+
+            $('#profButts').append(makeBut);
+            $('#profButts').append(peBut);
+            $('#profButts').append(closebut);
 
           })
         }
@@ -884,11 +1027,6 @@ $(document).ready(function(){
                         minlength: 2,
                         lettersonly: true,
                     },
-                    username:{
-                        required: true,
-                        minlength: 4,
-                        username: true,
-                    },
                     email:{
                         required: true,
                         email: true,
@@ -906,18 +1044,19 @@ $(document).ready(function(){
 
             });
             makeBut.click(function(e){
-                if($('#UserForm').valid()){
-                    alterForm('#UserForm', true);
+                if($('#ProfileForm').valid()){
+                    alterForm('#ProfileForm', true);
                     $('#profCont').hide();
                     $('#profPass').hide();
                     $('#profedit').hide();
                     $('.alert').show();
                     confirmBut = $("<button type='button' name='button' class='btn btn-alternative-success btn-alternative' id='profConf'>Confirm</button>");
                     backBut = $("<button type='button' name='button' class='btn btn-alternative' id='profBack'>Back</button>");
-                    backButton(backBut, '#UserForm', 'prof');
+                    backButton(backBut, '#ProfileForm', 'prof');
                     confirmEuserButton(confirmBut);
-                    $('.profButts').append(confirmBut);
-                    $('.profButts').append(backBut);
+                    $('#profButts').prepend(backBut);
+                    $('#profButts').prepend(confirmBut);
+
 
                 }
             })
@@ -927,12 +1066,11 @@ $(document).ready(function(){
         function confirmEuserButton(confirmBut){
             confirmBut.click(function(){
                 $(this).addClass('disabled');
-                name = $('#name').val();
-                lastname = $('#lastname').val();
-                username = $('#username').val();
-                email = $('#email').val();
-                password = $('#password').val();
-                confirm = $('#passwordConf').val();
+                name = $('#nameI').val();
+                lastname = $('#lastnameI').val();
+                email = $('#emailI').val();
+                password = $('#passwordI').val();
+                confirm = $('#passwordConfI').val();
                 id = $('#id').val();
 
                 $.ajax({
@@ -940,12 +1078,25 @@ $(document).ready(function(){
                     url: '/users/profile/update',
                     type: 'POST',
                     dataType: "json",
-                    data: {id: id,name: name, lastname: lastname, username: username, email:email, password:password, password_confirmation:confirm},
+                    data: {id: id, name: name, lastname: lastname,  email:email, password:password, password_confirmation:confirm},
                     success: function(data){
+                        $('#profileMod').modal('hide');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('Information Change Successfully');
+                        $('.alert').removeClass('alert-warning');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-success');
+                        $('#profileAlertMod').modal('show');
                         profile();
                     },
-                    error: function(error){
+                    error: function (error) {
                         $(this).removeClass('disabled');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('An error has ocurred');
+                        $('.alert').removeClass('alert-success');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-warning');
+                        $('#profileAlertMod').modal('show');
                     }
                 })
             })
@@ -1162,7 +1313,6 @@ $(document).ready(function(){
             $('#UserForm').append(alert);
             $('#UserForm').append(inputN);
             $('#UserForm').append(inputL);
-            $('#UserForm').append(inputU);
             $('#UserForm').append(inputE);
             $('#UserForm').append(inputP);
             $('#UserForm').append(inputPC);
@@ -1350,7 +1500,8 @@ $(document).ready(function(){
                         success: function(data){
                             $('#form_user_search').trigger("submit");
                             $('#userMod').modal('hide');
-                            $('.alert').append('User Created Sucessfully');
+                            $('.text-alert').empty();
+                            $('.text-alert').append('User Created Sucessfully');
                             $('.alert').removeClass('alert-warning');
                             $('.alert').removeClass('alert-danger');
                             $('.alert').addClass('alert-success');
@@ -1358,7 +1509,8 @@ $(document).ready(function(){
                         },
                         error: function (error) {
                             $(this).removeClass('disabled');
-                            $('.alert').append('An error has ocurred');
+                            $('.text-alert').empty();
+                            $('.text-alert').append('An error has ocurred');
                             $('.alert').removeClass('alert-success');
                             $('.alert').removeClass('alert-danger');
                             $('.alert').addClass('alert-warning');
@@ -1392,7 +1544,6 @@ $(document).ready(function(){
                 $('#UserForm').append(inputI);
                 $('#UserForm').append(inputN);
                 $('#UserForm').append(inputL);
-                $('#UserForm').append(inputU);
                 $('#UserForm').append(inputE);
                 $('#UserForm').append(inputP);
                 $('#UserForm').append(inputPC);
@@ -1545,7 +1696,8 @@ $(document).ready(function(){
                     success: function(data){
                         $('#form_user_search').trigger("submit");
                         $('#userMod').modal('hide');
-                        $('.alert').append('User Edited Sucessfully');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('User Edited Sucessfully');
                         $('.alert').removeClass('alert-warning');
                         $('.alert').removeClass('alert-danger');
                         $('.alert').addClass('alert-success');
@@ -1553,7 +1705,8 @@ $(document).ready(function(){
                     },
                     error: function(error){
                       $(this).removeClass('disabled');
-                      $('.alert').append('An error has ocurred');
+                      $('.text-alert').empty();
+                      $('.text-alert').append('An error has ocurred');
                       $('.alert').removeClass('alert-success');
                       $('.alert').removeClass('alert-danger');
                       $('.alert').addClass('alert-warning');
@@ -1605,7 +1758,8 @@ $(document).ready(function(){
                     success: function(data){
                         $('#form_user_search').trigger("submit");
                         $('#userMod').modal('hide');
-                        $('.alert').append('User Deleted Sucessfully');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('User Deleted Sucessfully');
                         $('.alert').removeClass('alert-warning');
                         $('.alert').removeClass('alert-danger');
                         $('.alert').addClass('alert-success');
@@ -1613,7 +1767,8 @@ $(document).ready(function(){
                     },
                     error: function(error){
                       $(this).removeClass('disabled');
-                      $('.alert').append('An error has ocurred');
+                      $('.text-alert').empty();
+                      $('.text-alert').append('An error has ocurred');
                       $('.alert').removeClass('alert-success');
                       $('.alert').removeClass('alert-danger');
                       $('.alert').addClass('alert-warning');
@@ -1940,7 +2095,8 @@ $(document).ready(function(){
                     success: function(data){
                         $('#form_currency_search').trigger("submit");
                         $('#currencyMod').modal('hide');
-                        $('.alert').append('Currency Created Sucessfully');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('Currency Created Sucessfully');
                         $('.alert').removeClass('alert-warning');
                         $('.alert').removeClass('alert-danger');
                         $('.alert').addClass('alert-success');
@@ -1948,7 +2104,8 @@ $(document).ready(function(){
                     },
                     error: function (error) {
                         $(this).removeClass('disabled');
-                        $('.alert').append('An error has ocurred');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
                         $('.alert').removeClass('alert-danger');
                         $('.alert').addClass('alert-warning');
@@ -2110,7 +2267,8 @@ $(document).ready(function(){
                     success: function(data){
                         $('#form_currency_search').trigger("submit");
                         $('#currencyMod').modal('hide');
-                        $('.alert').append('Currency Edited Sucessfully');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('Currency Edited Sucessfully');
                         $('.alert').removeClass('alert-warning');
                         $('.alert').removeClass('alert-danger');
                         $('.alert').addClass('alert-success');
@@ -2118,7 +2276,8 @@ $(document).ready(function(){
                     },
                     error: function (error) {
                         $(this).removeClass('disabled');
-                        $('.alert').append('An error has ocurred');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
                         $('.alert').removeClass('alert-danger');
                         $('.alert').addClass('alert-warning');
@@ -2170,7 +2329,8 @@ $(document).ready(function(){
                     success: function(data){
                         $('#form_currency_search').trigger("submit");
                         $('#currencyMod').modal('hide');
-                        $('.alert').append('Currency Deleted Sucessfully');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('Currency Deleted Sucessfully');
                         $('.alert').removeClass('alert-warning');
                         $('.alert').removeClass('alert-danger');
                         $('.alert').addClass('alert-success');
@@ -2178,7 +2338,8 @@ $(document).ready(function(){
                     },
                     error: function (error) {
                         $(this).removeClass('disabled');
-                        $('.alert').append('An error has ocurred');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
                         $('.alert').removeClass('alert-danger');
                         $('.alert').addClass('alert-warning');
