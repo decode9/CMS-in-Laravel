@@ -42,7 +42,10 @@ body{
                                     <div class="form-group" style='width:70px'>
                                       <select id="result_client_page" class='form-control'>
                                           <option value="5">5</option>
-                                          <option value="10" selected="selected">10</option>
+                                          <option value="10">10</option>
+                                          <option value="20">20</option>
+                                          <option value="30" selected="selected">30</option>
+                                          <option value="40">40</option>
                                       </select>
                                     </div>
                                   </th>

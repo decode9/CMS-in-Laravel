@@ -957,6 +957,7 @@ $(document).ready(function () {
                 box = $("<form class='ProfileForm' id='ProfileForm' enctype='multipart/form-data' ></form>");
                 alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Currency</strong></div>');
                 inputN = $('<div class="form-group"><label for="name">Name</label><input id="nameI" name="name" type="text" class="form-control" placeholder="Name" value="' + name[0] + '" required></div>');
+                inputI = $('<input id="idI" name="lastname" value="' + user.id + '" type="text" class="form-control" placeholder="Lastname" required style="display:none;">');
                 inputS = $('<div class="form-group"><label for="lastname">Lastname</label><input id="lastnameI" name="lastname" value="' + name[1] + '" type="text" class="form-control" placeholder="Lastname" required></div>');
                 inputA = $('<div class="form-group"><label for="email">Email</label><input id="emailI" name="email" type="text" class="form-control" placeholder="Email" value="' + user.email + '" required></div></div>');
                 inputP = $('<div class="PasswordBox form-group" style="display:none;"><label for="password">Password</label><input id="passwordI" name="password" type="password" class="form-control" placeholder="Password" required></div>');
@@ -969,6 +970,8 @@ $(document).ready(function () {
                 $('.modal-body').append(box);
 
                 $('#ProfileForm').append(alert);
+
+                $('#ProfileForm').append(inputI);
                 $('#ProfileForm').append(inputN);
                 $('#ProfileForm').append(inputS);
                 $('#ProfileForm').append(inputA);
@@ -1059,8 +1062,8 @@ $(document).ready(function () {
                 email = $('#emailI').val();
                 password = $('#passwordI').val();
                 confirm = $('#passwordConfI').val();
-                id = $('#id').val();
-
+                id = $('#idI').val();
+                console.log(lastname);
                 $.ajax({
                     headers: { 'X-CSRF-Token': $('meta[name=csrf-token]').attr('content') },
                     url: '/users/profile/update',
@@ -2001,7 +2004,7 @@ $(document).ready(function () {
                     symbol: {
                         required: true,
                         minlength: 3,
-                        maxlength: 4,
+                        maxlength: 6,
                         lettersonly: true
                     },
                     type: {
@@ -2178,6 +2181,7 @@ $(document).ready(function () {
                     symbol: {
                         required: true,
                         minlength: 2,
+                        maxlength: 6,
                         lettersonly: true
                     },
                     type: {
@@ -4580,8 +4584,8 @@ $(document).ready(function () {
                         $('#iniCont').hide();
                         $('.alert').show();
 
-                        confirmBut = $("<button type='button' class='btn btn-success' name='button' id='iniConf'>Confirm</button>");
-                        backBut = $("<button type='button' class='btn btn-primary' name='button' id='iniBack'>Back</button>");
+                        confirmBut = $("<button type='button' class='btn btn-alternative-success btn-alternative' name='button' id='iniConf'>Confirm</button>");
+                        backBut = $("<button type='button' class='btn btn-alternative' name='button' id='iniBack'>Back</button>");
                         backButton(backBut, '#InitialForm', 'ini');
                         confirmiButton(confirmBut);
                         $('#iniButts').prepend(backBut);

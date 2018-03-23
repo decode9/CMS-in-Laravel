@@ -1,8 +1,9 @@
 @extends('layouts.frontend')
 @section('content')
     <div class="welcome">
-            <h1>Welcome To</h1>
-            <h2>Fundus Valer</h2>
+            <div class="image">
+                <img src="/img/krypto.png"  width="100%" height="auto"alt="">
+            </div>
             @guest
             <div class="btn btn-alternative">
                 <a href="{{route('login')}}">Log In</a>

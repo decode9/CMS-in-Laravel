@@ -223,7 +223,7 @@ class UserController extends Controller
 
        $imageName = $id . ".png";
 
-       $path = public_path() . '/img/profile/' . $imageName;
+       $path = base_path() . '/public/img/profile/' . $imageName;
 
        $pathS = '/img/profile/' . $imageName;
        Image::make(file_get_contents($pic))->save($path);
@@ -286,6 +286,7 @@ class UserController extends Controller
     {
         //
         $request->validate([
+            'id' => 'required',
             'name' => 'required| max:50',
             'lastname' => 'required| max:50',
             'email' => 'required|max:50',
@@ -303,10 +304,10 @@ class UserController extends Controller
 
         $fullname = ucfirst(strtolower($name)) . " " . ucfirst(strtolower($lastname));
 
+
         $user = User::Find($id);
 
         $user->name = $fullname;
-        $user->username = $request->username;
         $user->email = $request->email;
 
         if($request->password != ''){
