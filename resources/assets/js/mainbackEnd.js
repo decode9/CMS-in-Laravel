@@ -380,7 +380,7 @@ $(document).ready(function(){
 
                 list = '<div class="col-sm-12"><div class="col-sm-2 colorChart" id="colorChart'+i+'"><div class="color"></div></div><div class="col-sm-9 text-left"><h5 class="list-group-item-heading">'+symbol+'</h5><p class="small">Amount: '+formatNumber2.num(amount)+'</p><p class="small">percent: '+formatNumber2.num(balance.percent)+'%</p></div></div>';
                 list2 = $('<div class="col-sm-12 text-center folioList"></div>');
-                
+
                 symbol = $('<div class="col-sm-3"><h5>'+balance.name+'</h5></div>');
                 percents = parseInt(balance.percent);
                 progress = $('<div class="col-sm-3 divPro"><div class="progress"><div class="progress-bar progress-bar-striped" id="progress'+i+'" role="progressbar" aria-valuenow="'+percents+'" aria-valuemin="0" aria-valuemax="100" style="width:'+percents+'%">'+percents+'%</div></div></div>');
@@ -2543,268 +2543,6 @@ $(document).ready(function(){
             });
         };
 
-        function orderTableBalanceCryptoBy(by) {
-            if (orderBalanceCryptoBy === by) {
-                if (orderBalanceCryptoDirection === "") {
-                    orderBalanceCryptoDirection = "DESC";
-                } else {
-                    orderBalanceCryptoDirection = "";
-                }
-            } else {
-                orderBalanceCryptoBy = by;
-                orderBalanceCryptoDirection = "";
-            }
-            searchBalanceCrypto(1);
-        };
-
-        //Get Balance Currency Data
-
-        function searchBalanceCrypto(page) {
-
-            resultPage = $("#result_balance_crypto_page").val();
-
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: "/funds/crypto",
-                type: 'post',
-                data: { searchvalue: searchBalanceCryptoValue, page: page, orderBy: orderBalanceCryptoBy, orderDirection: orderBalanceCryptoDirection, resultPage: resultPage },
-                success: function success(data) {
-                    //Inicio
-                    var balances = data.result;
-
-                    if (balances.length == 0) {
-                        $("#table_balance_crypto_content").html("");
-                        $('#table_balance_crypto_content').append('<tr><td colspan="3">None</td></tr>');
-                    } else {
-                        // Put the data into the element you care about.
-                        $("#table_balance_crypto_content").html("");
-
-                        for (i = 0; i < balances.length; i++) {
-                            var balance = balances[i];
-
-                            // we have to make in steps to add the onclick event
-                            var rowResult = $('<tr></tr>');
-                            var colvalue_1 = $('<td>' + balance.symbol + '</td>');
-                            var colvalue_2 = $('<td>' + formatNumber.num(balance.amount) + '</td>');
-                            var colvalue_3 = $('<td>' + formatNumber2.num(balance.amount * balance.value) + '</td>');
-
-                            rowResult.append(colvalue_1);
-                            rowResult.append(colvalue_2);
-                            rowResult.append(colvalue_3);
-                            if(data.eaccess){
-                                var colvalue_4 = $('<td class="text-center"></td>');
-                                var buttEx = $('<button class="btn btn-sm btn-alternative" data-toggle="modal" data-target="#fundsMod" type="button">Exchange</button>');
-                                exchangeButton(buttEx, balance);
-                                colvalue_4.append(buttEx);
-                                rowResult.append(colvalue_4);
-                            }
-
-                            $("#table_balance_crypto_content").append(rowResult);
-                        }
-
-                        $("#table_balance_crypto_pagination").html("");
-
-                        page = parseInt(data.page);
-                        var total = data.total;
-                        var resultPage = $("#result_balance_crypto_page").val();
-                        var totalPages = Math.ceil(total / resultPage);
-
-                        if (page === 1) {
-                            maxPage = page + 2;
-                            totalPages = maxPage < totalPages ? maxPage : totalPages;
-                            var pageList = $('<ul class="pagination"></ul>');
-
-                            for (i = page; i <= totalPages; i++) {
-                                pagebutton = $('<li class="page_balance_crypto pages"><a href="#">' + i + '</a></li>');
-                                pageList.append(pagebutton);
-                                addPageBCRButton(pagebutton);
-                            }
-
-                            $("#table_balance_crypto_pagination").append(pageList);
-                        } else if (page === totalPages) {
-                            page = page - 2;
-
-                            if (page < 1) {
-                                page = 1;
-                            }
-
-                            totalPages = page + 2 < totalPages ? page + 2 : totalPages;
-                            var pageList = $('<ul class="pagination"></ul>');
-
-                            for (i = page; i <= totalPages; i++) {
-                                pagebutton = $('<li class="page_balance_crypto pages"><a href="#">' + i + '</a></li>');
-                                pageList.append(pagebutton);
-                                addPageBCRButton(pagebutton);
-                            }
-
-                            $("#table_balance_crypto_pagination").append(pageList);
-                        } else {
-                            page = page - 2;
-
-                            if (page < 1) {
-                                page = 1;
-                            }
-
-                            totalPages = page + 4 < totalPages ? page + 2 : totalPages;
-                            var pageList = $('<ul class="pagination"></ul>');
-
-                            for (i = page; i <= totalPages; i++) {
-                                pagebutton = $('<li class="page_balance_crypto pages"><a href="#">' + i + '</a></li>');
-                                pageList.append(pagebutton);
-                                addPageBCRButton(pagebutton);
-                            }
-
-                            $("#table_balance_crypto_pagination").append(pageList);
-                        }
-                    }
-                },
-                // Fin
-                error: function error(_error6) {
-                    ReadError(_error6);
-                }
-            });
-        };
-
-        function addPageBCRButton(pagebutton) {
-            pagebutton.click(function () {
-                page = $(this).text();
-                searchBalanceCrypto(page);
-            });
-        };
-
-        function orderTableBalanceTokenBy(by) {
-            if (orderBalanceTokenBy === by) {
-                if (orderBalanceTokenDirection === "") {
-                    orderBalanceTokenDirection = "DESC";
-                } else {
-                    orderBalanceTokenDirection = "";
-                }
-            } else {
-                orderBalanceTokenBy = by;
-                orderBalanceTokenDirection = "";
-            }
-            searchBalanceToken(1);
-        };
-
-        //Get Balance Currency Data
-
-        function searchBalanceToken(page) {
-
-            resultPage = $("#result_balance_token_page").val();
-
-            $.ajax({
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                url: "/funds/token",
-                type: 'post',
-                data: { searchvalue: searchBalanceTokenValue, page: page, orderBy: orderBalanceTokenBy, orderDirection: orderBalanceTokenDirection, resultPage: resultPage },
-                success: function success(data) {
-                    //Inicio
-                    var balances = data.result;
-
-                    if (balances.length == 0) {
-                        $("#table_balance_token_content").html("");
-                        $('#table_balance_token_content').append('<tr><td colspan="3">None</td></tr>');
-                    } else {
-                        // Put the data into the element you care about.
-                        $("#table_balance_token_content").html("");
-
-                        for (i = 0; i < balances.length; i++) {
-                            var balance = balances[i];
-
-                            // we have to make in steps to add the onclick event
-                            var rowResult = $('<tr></tr>');
-                            var colvalue_1 = $('<td>' + balance.symbol + '</td>');
-                            var colvalue_2 = $('<td>' + formatNumber.num(balance.amount) + '</td>');
-                            var colvalue_3 = $('<td>' + formatNumber2.num(balance.amount * balance.value) + '</td>');
-
-                            rowResult.append(colvalue_1);
-                            rowResult.append(colvalue_2);
-                            rowResult.append(colvalue_3);
-                            if(data.eaccess){
-                                var colvalue_4 = $('<td class="text-center"></td>');
-                                var buttEx = $('<button class="btn btn-alternative btn-sm" data-toggle="modal" data-target="#fundsMod" type="button">Exchange</button>');
-                                exchangeButton(buttEx, balance);
-                                colvalue_4.append(buttEx);
-                                rowResult.append(colvalue_4);
-                            }
-
-                            $("#table_balance_token_content").append(rowResult);
-                        }
-
-                        $("#table_balance_token_pagination").html("");
-
-                        page = parseInt(data.page);
-                        var total = data.total;
-                        var resultPage = $("#result_balance_token_page").val();
-                        var totalPages = Math.ceil(total / resultPage);
-
-                        if (page === 1) {
-                            maxPage = page + 2;
-                            totalPages = maxPage < totalPages ? maxPage : totalPages;
-                            var pageList = $('<ul class="pagination"></ul>');
-
-                            for (i = page; i <= totalPages; i++) {
-                                pagebutton = $('<li class="page_balance_token pages"><a href="#">' + i + '</a></li>');
-                                pageList.append(pagebutton);
-                                addPageTButton(pagebutton);
-                            }
-
-                            $("#table_balance_token_pagination").append(pageList);
-                        } else if (page === totalPages) {
-                            page = page - 2;
-
-                            if (page < 1) {
-                                page = 1;
-                            }
-
-                            totalPages = page + 2 < totalPages ? page + 2 : totalPages;
-                            var pageList = $('<ul class="pagination"></ul>');
-
-                            for (i = page; i <= totalPages; i++) {
-                                pagebutton = $('<li class="page_balance_token pages"><a href="#">' + i + '</a></li>');
-                                pageList.append(pagebutton);
-                                addPageTButton(pagebutton);
-                            }
-
-                            $("#table_balance_token_pagination").append(pageList);
-                        } else {
-                            page = page - 2;
-
-                            if (page < 1) {
-                                page = 1;
-                            }
-
-                            totalPages = page + 4 < totalPages ? page + 2 : totalPages;
-                            var pageList = $('<ul class="pagination"></ul>');
-
-                            for (i = page; i <= totalPages; i++) {
-                                pagebutton = $('<li class="page_balance_token pages"><a href="#">' + i + '</a></li>');
-                                pageList.append(pagebutton);
-                                addPageTButton(pagebutton);
-                            }
-
-                            $("#table_balance_token_pagination").append(pageList);
-                        }
-                    }
-                },
-                // Fin
-                error: function error(_error6) {
-                    ReadError(_error6);
-                }
-            });
-        };
-
-        function addPageTButton(pagebutton) {
-            pagebutton.click(function () {
-                page = $(this).text();
-                searchBalanceToken(page);
-            });
-        };
-
         /*End Funds Balances*/
 
         /*Exchange Currencies*/
@@ -3002,7 +2740,8 @@ $(document).ready(function(){
                         success: function(data){
 
                           $('#fundsMod').modal('hide');
-                          $('.alert').append('Exchange Made Sucessfully');
+                          $('.text-alert').empty();
+                          $('.text-alert').append('Exchange Made Sucessfully');
                           $('.alert').removeClass('alert-warning');
                           $('.alert').removeClass('alert-danger');
                           $('.alert').addClass('alert-success');
@@ -3018,7 +2757,8 @@ $(document).ready(function(){
                         },
                         error: function (error) {
                             $(this).removeClass('disabled');
-                            $('.alert').append('An error has ocurred');
+                            $('.text-alert').empty();
+                            $('.text-alert').append('An error has ocurred');
                             $('.alert').removeClass('alert-success');
                             $('.alert').removeClass('alert-danger');
                             $('.alert').addClass('alert-warning');
@@ -3559,7 +3299,8 @@ $(document).ready(function(){
                         success: function(data){
 
                           $('#fundsMod').modal('hide');
-                          $('.alert').append('Validation Made Sucessfully');
+                          $('.text-alert').empty();
+                          $('.text-alert').append('Validation Made Sucessfully');
                           $('.alert').removeClass('alert-warning');
                           $('.alert').removeClass('alert-danger');
                           $('.alert').addClass('alert-success');
@@ -3575,7 +3316,8 @@ $(document).ready(function(){
                         },
                         error: function (error) {
                             $(this).removeClass('disabled');
-                            $('.alert').append('An error has ocurred');
+                            $('.text-alert').empty();
+                            $('.text-alert').append('An error has ocurred');
                             $('.alert').removeClass('alert-success');
                             $('.alert').removeClass('alert-danger');
                             $('.alert').addClass('alert-warning');
@@ -3627,7 +3369,8 @@ $(document).ready(function(){
                     data: {id: id},
                     success: function(data){
                       $('#fundsMod').modal('hide');
-                      $('.alert').append('Transaction Deleted Sucessfully');
+                      $('.text-alert').empty();
+                      $('.text-alert').append('Transaction Deleted Sucessfully');
                       $('.alert').removeClass('alert-warning');
                       $('.alert').removeClass('alert-danger');
                       $('.alert').addClass('alert-success');
@@ -3643,7 +3386,8 @@ $(document).ready(function(){
                     },
                     error: function (error) {
                         $(this).removeClass('disabled');
-                        $('.alert').append('An error has ocurred');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
                         $('.alert').removeClass('alert-danger');
                         $('.alert').addClass('alert-warning');
@@ -4573,62 +4317,9 @@ $(document).ready(function(){
             searchBalanceCurrency(1);
         });
 
-        $('#table_balance_crypto_header_symbol').click(function (e) {
-            orderTableBalanceCryptoBy('currencies.symbol');
-        });
-
-        $('#table_balance_crypto_header_amount').click(function (e) {
-            orderTableBalanceCryptoBy('amount');
-        });
-
-        $('#table_balance_crypto_header_equivalent').click(function (e) {
-            orderTableBalanceCryptoBy('value');
-        });
-
-        var orderBalanceCryptoBy = "";
-        var orderBalanceCryptoDirection = "";
-        var searchBalanceCryptoValue = "";
-
-        $("#form_balance_crypto_search").submit(function (e) {
-            e.preventDefault();
-            //DESC
-            searchBalanceCryptoValue = $("#search_balance_crypto_value").val();
-            searchBalanceCrypto(1);
-        });
-
-        $('#table_balance_token_header_symbol').click(function (e) {
-            orderTableBalanceTokenBy('currencies.symbol');
-        });
-
-        $('#table_balance_token_header_amount').click(function (e) {
-            orderTableBalanceTokenBy('amount');
-        });
-
-        $('#table_balance_token_header_equivalent').click(function (e) {
-            orderTableBalanceTokenBy('value');
-        });
-
-        var orderBalanceTokenBy = "";
-        var orderBalanceTokenDirection = "";
-        var searchBalanceTokenValue = "";
-
-        $("#form_balance_token_search").submit(function (e) {
-            e.preventDefault();
-            //DESC
-            searchBalanceTokenValue = $("#search_balance_token_value").val();
-            searchBalanceToken(1);
-        });
-
         $('#result_balance_currency_page').change(function () {
             $('#form_balance_currency_search').trigger("submit");
         });
-        $('#result_balance_crypto_page').change(function () {
-            $('#form_balance_crypto_search').trigger("submit");
-        });
-        $('#result_balance_token_page').change(function () {
-            $('#form_balance_token_search').trigger("submit");
-        });
-
         $('#result_transaction_page').change(function () {
             $('#form_transaction_search').trigger("submit");
         });
@@ -4643,8 +4334,6 @@ $(document).ready(function(){
         })*/
 
         $('#form_balance_currency_search').trigger("submit");
-        $('#form_balance_crypto_search').trigger("submit");
-        $('#form_balance_token_search').trigger("submit");
         $('#form_transaction_search').trigger("submit");
         $('#form_pending_transaction_search').trigger("submit");
         totalBalance();
@@ -5094,7 +4783,8 @@ $(document).ready(function(){
                             success: function(data){
                                 $('#form_client_search').trigger("submit");
                                 $('#newsMod').modal('hide');
-                                $('.alert').append('Initial Invest Sucessfully');
+                                $('.text-alert').empty();
+                                $('.text-alert').append('Initial Invest Sucessfully');
                                 $('.alert').removeClass('alert-warning');
                                 $('.alert').removeClass('alert-danger');
                                 $('.alert').addClass('alert-success');
@@ -5102,7 +4792,8 @@ $(document).ready(function(){
                             },
                             error: function (error) {
                                 $(this).removeClass('disabled');
-                                $('.alert').append('An error has ocurred');
+                                $('.text-alert').empty();
+                                $('.text-alert').append('An error has ocurred');
                                 $('.alert').removeClass('alert-success');
                                 $('.alert').removeClass('alert-danger');
                                 $('.alert').addClass('alert-warning');
@@ -5384,7 +5075,8 @@ $(document).ready(function(){
                       success: function(data){
                           $('#form_newsletter_search').trigger("submit");
                           $('#newsMod').modal('hide');
-                          $('.alert').append('Newsletter Created Sucessfully');
+                          $('.text-alert').empty();
+                          $('.text-alert').append('Newsletter Created Sucessfully');
                           $('.alert').removeClass('alert-warning');
                           $('.alert').removeClass('alert-danger');
                           $('.alert').addClass('alert-success');
@@ -5392,7 +5084,8 @@ $(document).ready(function(){
                       },
                       error: function (error) {
                           $(this).removeClass('disabled');
-                          $('.alert').append('An error has ocurred');
+                          $('.text-alert').empty();
+                          $('.text-alert').append('An error has ocurred');
                           $('.alert').removeClass('alert-success');
                           $('.alert').removeClass('alert-danger');
                           $('.alert').addClass('alert-warning');
@@ -5486,7 +5179,8 @@ $(document).ready(function(){
                     success: function(data){
                         $('#form_newsletter_search').trigger("submit");
                         $('#newsMod').modal('hide');
-                        $('.alert').append('Newsletter Edited Sucessfully');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('Newsletter Edited Sucessfully');
                         $('.alert').removeClass('alert-warning');
                         $('.alert').removeClass('alert-danger');
                         $('.alert').addClass('alert-success');
@@ -5494,7 +5188,8 @@ $(document).ready(function(){
                     },
                     error: function (error) {
                         $(this).removeClass('disabled');
-                        $('.alert').append('An error has ocurred');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
                         $('.alert').removeClass('alert-danger');
                         $('.alert').addClass('alert-warning');
@@ -5548,7 +5243,8 @@ $(document).ready(function(){
                   success: function(data){
                       $('#form_newsletter_search').trigger("submit");
                       $('#newsMod').modal('hide');
-                      $('.alert').append('Newsletter Deleted Sucessfully');
+                      $('.text-alert').empty();
+                      $('.text-alert').append('Newsletter Deleted Sucessfully');
                       $('.alert').removeClass('alert-warning');
                       $('.alert').removeClass('alert-danger');
                       $('.alert').addClass('alert-success');
@@ -5556,7 +5252,8 @@ $(document).ready(function(){
                   },
                   error: function (error) {
                       $(this).removeClass('disabled');
-                      $('.alert').append('An error has ocurred');
+                      $('.text-alert').empty();
+                      $('.text-alert').append('An error has ocurred');
                       $('.alert').removeClass('alert-success');
                       $('.alert').removeClass('alert-danger');
                       $('.alert').addClass('alert-warning');
@@ -5576,7 +5273,7 @@ $(document).ready(function(){
     /* End Newsletter Functions */
 
     /* Begin Orders Functions */
-
+/*
      if(pathname.toString() == '/orders'){
 
          function selectCurrencyOrder(button, currency){
@@ -5758,7 +5455,7 @@ $(document).ready(function(){
          }
 
 
-         /*Search Orders Table*/
+         /*Search Orders Table
          $('#table_order_header_amount_out').click(function (e) {
              orderTableOrderBy('amount_out');
          });

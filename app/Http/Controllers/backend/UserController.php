@@ -216,16 +216,16 @@ class UserController extends Controller
 
 
        if($user->image !== null){
-         Storage::delete(public_path() . '\\' .$user->image);
+         Storage::delete(public_path() . '/' .$user->image);
        }
        $pic = $request->picture;
 
 
        $imageName = $id . ".png";
 
-       $path = public_path() . '\img\profile\\' . $imageName;
+       $path = public_path() . '/img/profile/' . $imageName;
 
-       $pathS = '\img\profile\\' . $imageName;
+       $pathS = '/img/profile/' . $imageName;
        Image::make(file_get_contents($pic))->save($path);
 
        $user->image = $pathS;

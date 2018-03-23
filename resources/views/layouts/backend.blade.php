@@ -8,7 +8,7 @@
         <!-- CSRF Token -->
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ config('app.name', 'LatamBlock') }}</title>
 
         <!-- Styles -->
         <link rel="stylesheet" href="{{ url('/') }}/vendor/bootstrap/css/bootstrap.min.css">
@@ -35,7 +35,6 @@
 
                   @guest
                   <li><a href="{{ route('login') }}">Login</a></li>
-                  <li><a href="{{ route('register') }}">Register</a></li>
                   @else
                   <li><a href="{{ route('home') }}"><span class="glyphicon glyphicon-home"></span></a></li>
                   <li class="dropdown">
@@ -89,7 +88,6 @@
               <ul class="nav navbar-nav navbar-right">
                 @guest
                 <li><a href="{{ route('login') }}">Login</a></li>
-                <li><a href="{{ route('register') }}">Register</a></li>
                 @else
                 <li><a href="{{ route('home') }}"><span class="glyphicon glyphicon-home" style='font-size:30px;'></span></a></li>
                 <li class="dropdown">
