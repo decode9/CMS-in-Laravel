@@ -315,7 +315,10 @@ $(document).ready(function () {
     }
 
     /* Operation Modal Print, Modal for prints recipients */
-
+    function takeHeight() {
+        height = $('.row.content').height();
+        $('.row.content').css('height', height);
+    }
     function opModalPrint(message, data, symbol, user, type) {
         modal = "<div class='Modal' id='opModal' style='display:none;'><div class='modalContent' id='modalop'><h3>Success</h3><p>" + message + "</p></div></div>";
         var printbut = $("<button type='button' name='button' id='opPrint'>Receipt</button>");
@@ -412,6 +415,8 @@ $(document).ready(function () {
 
     /*Begin DashBoard Functions*/
     profilePhoto();
+    takeHeight();
+
     if (pathname.toString() == '/home') {
         var balance = function balance() {
             $.ajax({
@@ -438,7 +443,6 @@ $(document).ready(function () {
                         list = '<div class="col-sm-12"><div class="col-sm-2 colorChart" id="colorChart' + i + '"><div class="color"></div></div><div class="col-sm-9 text-left"><h5 class="list-group-item-heading">' + symbol + '</h5><p class="small">Amount: ' + formatNumber2.num(amount) + '</p><p class="small">percent: ' + formatNumber2.num(balance.percent) + '%</p></div></div>';
                         list2 = $('<div class="col-sm-12 text-center folioList"></div>');
 
-                        img = $('<div class="col-sm-1"><img src="' + balance.img + '"width="32" height="32" /></div>');
                         symbol = $('<div class="col-sm-3"><h5>' + balance.name + '</h5></div>');
                         percents = parseInt(balance.percent);
                         progress = $('<div class="col-sm-3 divPro"><div class="progress"><div class="progress-bar progress-bar-striped" id="progress' + i + '" role="progressbar" aria-valuenow="' + percents + '" aria-valuemin="0" aria-valuemax="100" style="width:' + percents + '%">' + percents + '%</div></div></div>');
@@ -661,6 +665,8 @@ $(document).ready(function () {
                             viewNews(readM, newsletter);
                         }
                         slide(prev, next);
+                        slideD(prev, next);
+                        slideR(prev, next);
                         $('.date-container').append(prev);
                         $('.date-container').append(next);
                     }
@@ -683,6 +689,7 @@ $(document).ready(function () {
 
         var slide = function slide(prev, next) {
             var slideIndex = 1;
+
             showSlides(slideIndex);
 
             // Next/previous controls
@@ -713,6 +720,10 @@ $(document).ready(function () {
                 }
                 slides[slideIndex - 1].style.display = "block";
             }
+        };
+
+        var slideD = function slideD(prev, next) {
+            var slideIndex = 1;
 
             showSlidesD(slideIndex);
 
@@ -744,6 +755,10 @@ $(document).ready(function () {
                 }
                 slides[slideIndex - 1].style.display = "block";
             }
+        };
+
+        var slideR = function slideR(prev, next) {
+            var slideIndex = 1;
 
             showSlidesR(slideIndex);
 
@@ -818,11 +833,15 @@ $(document).ready(function () {
 
 
         lineChart('#daily', 'daily');
+
         lineChart('#weekly', 'weekly');
+
         lineChart('#monthly', 'monthly');
 
         $('#daily').trigger('click');
+
         newsletter();
+
         balance();
     }
 
@@ -910,8 +929,7 @@ $(document).ready(function () {
         };
 
         var cropt = function cropt() {
-            $('#image-cropper').cropit();
-
+            $('#image-cropper').cropit({ imageBackground: true });
             // When user clicks select image button,
             // open select file dialog programmatically
             $('.btn-select-image').click(function () {
@@ -1076,14 +1094,14 @@ $(document).ready(function () {
 
 
         $('.btn-photo').click(function () {
-            box = $('<div id="image-cropper" class="text-center"></div>');
+            box = $('<div id="image-cropper" class="text-center" style="padding: 50px 0px;" ></div>');
             divpreview = $('<div class="cropit-preview" style="margin: 0 auto; display:block;"></div>');
             controls = $('<div class="cropit-controls col-sm-12"></div>');
             rotation = $('<div class="col-sm-4 text-center"><span class="glyphicon glyphicon-repeat icon icon-right rotate-ccw-btn"></span><span class="glyphicon glyphicon-repeat icon rotate-cw-btn"></span></div>');
             range = $('<div class="col-sm-8"></div>');
             inputrange = $('<span class="glyphicon glyphicon-picture icon small" style="float:left; margin-top:2px;"></span><input type="range" class="slider cropit-image-zoom-input" style="float:left;" /><span class="glyphicon icon glyphicon-picture" style="float:left;"></span>');
             inputimg = $('<input type="file" class="cropit-image-input" />');
-            btnimg = $('<div class="btn btn-alternative btn-select-image text-center">Select Photo</div>');
+            btnimg = $('<div class="text-center"><button type="button" class="btn btn-alternative btn-select-image text-center">Select Photo</button></div>');
 
             $('.modal-title').empty();
             $('.modal-body').empty();
@@ -1096,11 +1114,12 @@ $(document).ready(function () {
             controls.append(range);
 
             box.append(divpreview);
-            box.append(controls);
             box.append(inputimg);
-            box.append(btnimg);
+            box.append(controls);
 
             $('.modal-body').append(box);
+
+            $('.modal-body').append(btnimg);
 
             $('.modal-footer').append("<div id='profButts'></div>");
 
@@ -1420,7 +1439,8 @@ $(document).ready(function () {
                     success: function success(data) {
                         $('#form_user_search').trigger("submit");
                         $('#userMod').modal('hide');
-                        $('.alert').append('User Created Sucessfully');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('User Created Sucessfully');
                         $('.alert').removeClass('alert-warning');
                         $('.alert').removeClass('alert-danger');
                         $('.alert').addClass('alert-success');
@@ -1428,7 +1448,8 @@ $(document).ready(function () {
                     },
                     error: function error(_error7) {
                         $(this).removeClass('disabled');
-                        $('.alert').append('An error has ocurred');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
                         $('.alert').removeClass('alert-danger');
                         $('.alert').addClass('alert-warning');
@@ -1618,7 +1639,8 @@ $(document).ready(function () {
                     success: function success(data) {
                         $('#form_user_search').trigger("submit");
                         $('#userMod').modal('hide');
-                        $('.alert').append('User Edited Sucessfully');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('User Edited Sucessfully');
                         $('.alert').removeClass('alert-warning');
                         $('.alert').removeClass('alert-danger');
                         $('.alert').addClass('alert-success');
@@ -1626,7 +1648,8 @@ $(document).ready(function () {
                     },
                     error: function error(_error9) {
                         $(this).removeClass('disabled');
-                        $('.alert').append('An error has ocurred');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
                         $('.alert').removeClass('alert-danger');
                         $('.alert').addClass('alert-warning');
@@ -1682,7 +1705,8 @@ $(document).ready(function () {
                     success: function success(data) {
                         $('#form_user_search').trigger("submit");
                         $('#userMod').modal('hide');
-                        $('.alert').append('User Deleted Sucessfully');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('User Deleted Sucessfully');
                         $('.alert').removeClass('alert-warning');
                         $('.alert').removeClass('alert-danger');
                         $('.alert').addClass('alert-success');
@@ -1690,7 +1714,8 @@ $(document).ready(function () {
                     },
                     error: function error(_error10) {
                         $(this).removeClass('disabled');
-                        $('.alert').append('An error has ocurred');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
                         $('.alert').removeClass('alert-danger');
                         $('.alert').addClass('alert-warning');
@@ -2030,7 +2055,8 @@ $(document).ready(function () {
                     success: function success(data) {
                         $('#form_currency_search').trigger("submit");
                         $('#currencyMod').modal('hide');
-                        $('.alert').append('Currency Created Sucessfully');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('Currency Created Sucessfully');
                         $('.alert').removeClass('alert-warning');
                         $('.alert').removeClass('alert-danger');
                         $('.alert').addClass('alert-success');
@@ -2038,7 +2064,8 @@ $(document).ready(function () {
                     },
                     error: function error(_error12) {
                         $(this).removeClass('disabled');
-                        $('.alert').append('An error has ocurred');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
                         $('.alert').removeClass('alert-danger');
                         $('.alert').addClass('alert-warning');
@@ -2205,7 +2232,8 @@ $(document).ready(function () {
                     success: function success(data) {
                         $('#form_currency_search').trigger("submit");
                         $('#currencyMod').modal('hide');
-                        $('.alert').append('Currency Edited Sucessfully');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('Currency Edited Sucessfully');
                         $('.alert').removeClass('alert-warning');
                         $('.alert').removeClass('alert-danger');
                         $('.alert').addClass('alert-success');
@@ -2213,7 +2241,8 @@ $(document).ready(function () {
                     },
                     error: function error(_error13) {
                         $(this).removeClass('disabled');
-                        $('.alert').append('An error has ocurred');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
                         $('.alert').removeClass('alert-danger');
                         $('.alert').addClass('alert-warning');
@@ -2269,7 +2298,8 @@ $(document).ready(function () {
                     success: function success(data) {
                         $('#form_currency_search').trigger("submit");
                         $('#currencyMod').modal('hide');
-                        $('.alert').append('Currency Deleted Sucessfully');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('Currency Deleted Sucessfully');
                         $('.alert').removeClass('alert-warning');
                         $('.alert').removeClass('alert-danger');
                         $('.alert').addClass('alert-success');
@@ -2277,7 +2307,8 @@ $(document).ready(function () {
                     },
                     error: function error(_error14) {
                         $(this).removeClass('disabled');
-                        $('.alert').append('An error has ocurred');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
                         $('.alert').removeClass('alert-danger');
                         $('.alert').addClass('alert-warning');
@@ -4989,7 +5020,7 @@ $(document).ready(function () {
 
                             var rowResult = $('<tr></tr>');
                             var colvalue_1 = $('<td>' + newsletter.title + '</td>');
-                            var colvalue_2 = $('<td>' + newsletter.username + '</td>');
+                            var colvalue_2 = $('<td>' + newsletter.name + '</td>');
                             var colvalue_3 = $('<td>' + newsletter.message + '</td>');
                             var colvalue_4 = $('<td></td>');
 

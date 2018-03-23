@@ -115,7 +115,7 @@ body{
 }
 </style>
 @section('content')
-<div class="col-sm-12" style="text-align:center;">
+
   <div class="row">
     <div class="col-sm-12">
       <div class="panel panel-alternative">
@@ -140,7 +140,7 @@ body{
       </div>
     </div>
   </div>
-  <div class="row">
+  <div class="row text-center">
     <div class="col-sm-3">
       <div class="panel panel-alternative">
               <div class="panel-body" style="height:150px">
@@ -230,7 +230,7 @@ body{
       </div>
     </div>
   </div>
-</div>
+
 <div class="modal  fade" id="newsMod" role="dialog">
 <div class="modal-dialog">
 

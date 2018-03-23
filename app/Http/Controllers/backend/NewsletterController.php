@@ -33,7 +33,7 @@ class NewsletterController extends Controller
             $total = 0;
 
             //Select Users
-            $query = Newsletter::LeftJoin('users', 'newsletters.user_id', '=', 'users.id')->select('newsletters.*', 'username');
+            $query = Newsletter::LeftJoin('users', 'newsletters.user_id', '=', 'users.id')->select('newsletters.*', 'name');
             //Search by
 
             if($searchValue != '')
