@@ -2567,7 +2567,7 @@ $(document).ready(function(){
                 inputA = $('<div class="form-group"><label for="created">Allocated</label><input id="created" name="created" type="date" class="form-control" placeholder="Allocated" ></div>');
                 inputF = $('<div class="form-group statusch"><label for="funded">Funded</label><input id="funded" name="funded" type="date" class="form-control" placeholder="Funded" ></div>');
 
-                status = ['Complete', 'Pending'];
+                var status = ['Complete', 'Pending'];
 
 
                 $('.modal-title').empty();
@@ -2588,11 +2588,11 @@ $(document).ready(function(){
                 $('#ExchangeForm').append(inputF);
 
                 for(i = 0; i < status.length; i++){
-                    statu = status[i];
-                    if (statu == 'Complete') {
-                      option = $('<option value="'+statu+'" selected>'+statu+'</option>');
+                    stat = status[i];
+                    if (stat == 'Complete') {
+                      option = $('<option value="'+stat+'" selected>'+stat+'</option>');
                     }
-                    option = $('<option value="'+statu+'">'+statu+'</option>');
+                    option = $('<option value="'+stat+'">'+stat+'</option>');
                     $('#status').append(option);
                 }
 
