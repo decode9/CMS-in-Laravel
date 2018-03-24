@@ -87,8 +87,7 @@ class DashboardController extends Controller
                   $balance->value = $data[0]->price_usd;
                   $balance->value_btc = $data[0]->price_btc;
                   $symbol = $balance->symbol;
-                  $imgurl = $baseimg . $dataimg->Data->$symbol->ImageUrl;
-                  $balance->img = $imgurl;
+
               }else{
                   $balance->value = 0.1;
                   $balance->value_btc = 0.00001;
