@@ -1,343 +1,110 @@
+
+@font-face {
+    font-family: florence;
+    src: url(/fonts/Florsn17.ttf);
+}
+
 body{
     margin: 0px;
 }
-a{
+.navBack{
+    margin: 0px;
+}
+.navbar{
+    border-radius: 0px;
+    background-color:#112e3d !important;
+    font-family: florence;
+}
+.page{
+    background-image: url('/img/background.jpeg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: -webkit-fill-available;
+}
+.dropdown-menu {
+    border-radius: 0px;
+    background-color: #395b71;
+}
+.image{
+    width: 500px;
+    margin: 0 auto;
+}
+.dropdown-menu>li>a {
+    color: white;
+}
+.row.content{
+    height: auto;
+}
+.linePrices {
+height: 30px;
+width: 100%;
+margin: 0 auto;
+position: absolute;
+overflow: hidden;
+-webkit-transform: translate3d(0, 0, 0);
+transform: translate3d(0, 0, 0);
+color: white;
+background-color: #7387a533;
+font-family: florence;
+border-top: 0.5px solid #0d2049;
+}
+
+.welcome{
+    width: 50%;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+    top: 33%;
+    font-family: florence;
+    color: white;
+}
+
+.welcome h1{
+    margin: 0px;
+    font-size: 70px;
+    text-shadow: -2px 1px 9px black;
+    text-rendering: optimizeLegibility;
+}
+.welcome h2{
+    font-size: 60px;
+    text-shadow: -2px 1px 9px black;
+    text-rendering: optimizeLegibility;
+}
+.btn-alternative{
+    font-size: 30px;
+    color: white;
+    font-family: florence;
+    text-shadow: 0px 0px 20px black;
+}
+
+.btn-alternative:hover{
+
+}
+.btn-alternative a{
+    color: white;
+    transition: all 0.5s;
+}
+.btn-alternative a:hover{
+    transition: all 0.5s;
     text-decoration: none;
-}
-header{
-    height: 100px;
-    width: 100%;
-    position: fixed;
-    background-color: rgba(255,255,255, 0.9);
-    z-index: 1;
-}
-/** TEMPORAL STYLE **/
-/**Header Styles**/
-.mainLogoFront{
-    width: 357px;
-    height: 100px;
-    margin: 0 auto;
-}
-.mainLogoFront img{
-    margin: 3.25px auto;
-}
-.menuFront{
-    float: right;
-    position: relative;
-    top: -35px;
-    right: 30px;
-}
-.menuHeader{
-    list-style: none;
-    width: 354px;
-    padding: 0;
-    margin: 0;
-}
-.menuHeader li{
-    float: left;
-    padding: 0px 10px;
-}
-.userAction{
-    float: right;
-    position: relative;
-    top: -90px;
-    left: 315px;
-}
-.menuUser{
-    width: 120px;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-.menuLogin{
-    width: 130px;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-}
-.menuLogin li{
-    float: left;
-    padding: 0 10px;
-}
-.menuItem p{
-    margin: 0;
-    float: right;
-}
-.menuItem{
-    cursor: pointer;
-}
-.submenuItem{
-    list-style: none;
-    text-align: center;
-    padding: 0;
-    background-color: rgba(255,255,255,0.7);
-    border-radius: 3px;
-}
-.content{
-    position: relative;
-    top:100px;
-}
-.firstBanner{
-   background: url(http://kryptogroup.local/img/underconstruc.jpg) no-repeat fixed center;
-   -webkit-background-size: cover;
-   -moz-background-size: cover;
-   -o-background-size: cover;
-   background-size: cover;
-   height: 1000px;
-   width: 100%;
-   text-align: center;
-}
-.firstBanner img{
-    width: 30%;
-    position: relative;
-    top: 160px;
-    display: none;
+    color: #112e3d;
 }
 
-.secondBanner{
-    background: url(http://kryptogroup.local/img/finance.jpg) no-repeat fixed center;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
-    height: 700px;
-    width: 100%;
-    text-align: center;
-}
-.secondContainer{
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.3);
-}
-.secondBanner h2{
-    font-size: 88px;
-    font-family: sans-serif;
-    font-weight: bold;
-    color: white;
-    width: 900px;
-    position: relative;
-    margin: 0 auto;
-    top: 26%;
-}
-.secondBanner p{
-    font-size: 20px;
-    font-family: sans-serif;
-    font-weight: bold;
-    position: relative;
-    color: white;
-    top: 23%;
-}
-.thirdBanner{
-    height: 700px;
-    width: 100%;
-}
-.thirdContainer{
-    width: 1000px;
-    margin: 0 auto;
-    height: 500px;
-    position: relative;
-    top:110px;
-}
-.textBox{
-    float: right;
-    width: 460px;
-    text-align: center;
-    font-family: sans-serif;
-    color: #141c4c;
-    position: relative;
-    top:30px;
-}
-.textBox h2{
-    font-size: 48px;
-    color: #141c4c;
-}
-.textBox p{
-    line-height: 1.875em;
-    letter-spacing: normal;
-    font-size: 17px;
-}
-.textBox ul{
-    list-style-type: disc;
-    padding-left: 1.3em;
-    list-style-position: inside;
-    line-height: 1.875em;
+.linePrices .mover-1 {
+    width: max-content;
+    -webkit-animation: moveSlideshow 70s linear infinite;
+    animation: moveSlideshow 70s linear infinite;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
 }
 
-.fourthContainer{
-    background: url(http://kryptogroup.local/img/blokchain.png) no-repeat fixed center;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
-    height: 700px;
-    width: 100%;
-    text-align: center;
+@-webkit-keyframes moveSlideshow {
+	100% {
+		transform: translateX(-66.6666%);
+	}
 }
-.fourthContainer h2{
-    color: #141c4c;
-    font-size: 48px;
-    font-family: sans-serif;
-    margin: 0;
-    position: relative;
-    top: 30px;
-}
-.formContact{
-    position: relative;
-    top: 70px;
-    width: 1000px;
-    margin: 0 auto;
-}
-.contactForm{
-    width: 940px;
-    margin: 0 auto;
-}
-.contactForm input{
-    width: 99.6%;
-    height: 30px;
-    padding: 5px;
-    border: 1px solid #141c4c;
-    color: #141c4c;
-    margin-bottom: 5px;
-    font-size: 16px;
-    font-family: sans-serif;
-    background: rgba(255,255,255,0);
-}
-input::-webkit-input-placeholder,
-textarea::-webkit-input-placeholder {
-  color: #141c4c;
-}
-input:-moz-placeholder,
-textarea:-moz-placeholder {
-  color: #141c4c;
-}
-input::-moz-placeholder,
-textarea::-moz-placeholder {
-  color: #141c4c;
-}
-input:-ms-input-placeholder,
-textarea:-ms-input-placeholder {
-  color: #141c4c;
-}
-.contactForm input[placeholder]{
-    color: #141c4c;
-}
-.contactForm textarea{
-    width: 99.6%;
-    height: 118px;
-    padding: 5px;
-    border: 1px solid #141c4c;
-    color: #141c4c;
-    margin-bottom: 5px;
-    font-size: 16px;
-    font-family: sans-serif;
-    background: rgba(255,255,255,0);
-}
-.formContact button{
-    background-color: rgba(20, 28, 76, 1);
-    color: white;
-    font-size: 16px;
-    font-family: sans-serif;
-    padding: 5px;
-    border: 0;
-    height: 37px;
-    float: right;
-    position: relative;
-    right: 21px;
-    cursor: pointer;
-}
-.response{
-    position: relative;
-    top:120px;
-    width: 100%;
-}
-#success{
-    width: 300px;
-    margin: 0 auto;
-    color: #141c4c;
-    font-family: sans-serif;
-}
-#error{
-    width: 300px;
-    margin: 0 auto;
-    color: #bb1717;
-    font-family: sans-serif;
-}
-@media screen and (max-width: 1020px){
-    .secondBanner h2{
-        width: 700px;
-        font-size: 70px;
-    }
-    .thirdContainer{
-        width: 700px;
-    }
-    .thirdContainer img{
-        width: 350px;
-        top: 90px;
-        position: relative;
-    }
-    .textBox{
-        top:0px;
-        width: 320px;
-    }
-    .formContact{
-        width: 700px;
-    }
-    .contactForm{
-        width: 700px;
-    }
-}
-@media screen and (max-width: 719px){
-    .secondBanner h2{
-        width: 100%;
-        font-size: 60px;
-    }
-    .thirdBanner{
-        height: auto;
-        padding: 20px 0px;
-    }
-    .thirdContainer{
-        top: 0px;
-        width: 100%;
-        height: 100%;
-    }
-    .thirdContainer img{
-        width: auto;
-        height: 400px;
-        float: none;
-        display: block;
-        margin: 0 auto;
-        top:0px;
-    }
-    .textBox{
-        top:0px;
-        width: 90%;
-        padding: 0px 5%;
-        float: none;
-    }
-    .formContact{
-        width: 100%;
-    }
-    .contactForm{
-        width: 90%;
-    }
-    .fourthContainer{
-        width: 100%;
-    }
-}
-/**END TEMPORAL STYLE**/
-.newsContainer{
-    width: 60%;
-    max-width: 60%;
-    height: 350px;
-    max-height: 350px;
-    position: relative;
-    margin: 0 auto;
-    top: 15px;
-}
-.newsContainer img{
-    max-width: inherit;
-    max-height: inherit;
-    position: relative;
-    margin: 0 auto;
-    display: block;
-}
+
+@keyframes moveSlideshow {
+	100% {
+		transform: translateX(-66.6666%);
+	}

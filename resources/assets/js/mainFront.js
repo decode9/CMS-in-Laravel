@@ -14,7 +14,11 @@ $(document).ready(function(){
                 }
                 $(this).find(".submenuItem").slideToggle('200', 'linear');
         })
+
+
         $window = $('window');
+
+
         $('.parallax').each(function() {
             var $scroll = $(this);
 
@@ -46,5 +50,32 @@ $(document).ready(function(){
                     $('#error').show();
                 },
             })
+        })
+        plus = 1;
+        $.ajax({
+            type:"GET",
+            url: "https://api.coinmarketcap.com/v1/ticker/?limit=20",
+            datatype: "json",
+            success: function(coins){
+
+                for(i = 0; i < coins.length; i++){
+			if(!(coins[i].name == "Bitcoin Cash")){
+                    Name = coins[i].name + " ("+ coins[i].symbol + ")";
+                    price = "$" +coins[i].price_usd + " USD" + " <span id='stats"+plus+"'> (" + coins[i].percent_change_24h + "%) </span>";
+                    upDown = parseFloat(coins[i].percent_change_24h);
+
+                    trace = "<p style='float:left; margin: 6px 20px'>" + Name + " " + price + "</p>"
+
+                    $('.mover-1').append(trace);
+
+                    if(upDown > 0){
+                        $('#stats'+plus).css('color', "green");
+                    }else{
+                        $('#stats'+plus).css('color', "red");
+                    }
+                    plus ++;
+                    }
+                }
+            }
         })
 })

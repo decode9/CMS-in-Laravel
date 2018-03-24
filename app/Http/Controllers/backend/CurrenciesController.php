@@ -152,7 +152,7 @@ class CurrenciesController extends Controller
         //
         $request->validate([
             'name' => 'required| max:20',
-            'symbol' => 'required| max:4',
+            'symbol' => 'required| max:6',
             'type' => 'required|max:20',
             'value' => 'required|max:20'
         ]);
@@ -203,7 +203,7 @@ class CurrenciesController extends Controller
         $request->validate([
             'id' => 'required',
             'name' => 'required| max:20',
-            'symbol' => 'required| max:3',
+            'symbol' => 'required| max:6',
             'type' => 'required|max:20',
 
         ]);

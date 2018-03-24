@@ -295,11 +295,19 @@ class ClientsController extends Controller
 
              $pool = Fund::where('user_id', null )->where('type', 'initial')->first();
              $newamount = $pool->amount - $fund->amount;
-             $newamount = $pool->amount + $amount;
+             $newamount = $newamount + $amount;
 
              $poolf = Fund::find($pool->id);
              $poolf->amount = $newamount;
              $poolf->save();
+
+             $balance = Balance::where('user_id', null)->where('currency_id', '2')->first();
+             $newbalance = $balance->amount - $fund->amount;
+             $newbalance = $newbalance + $amount;
+
+             $balancef = Balance::find($balance->id);
+             $balance->amount = $newbalance;
+             $balance->save();
          }else{
              $fund = new Fund;
              $pool = Fund::where('user_id', null)->where('type', 'initial')->first();
