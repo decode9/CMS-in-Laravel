@@ -621,6 +621,8 @@ class FundsController extends Controller
           'cin' => 'required',
       ]);
 
+      $status = $request->status;
+
       $cout = $request->cout;
       $cin = $request->cin;
 
@@ -641,12 +643,12 @@ class FundsController extends Controller
 
       if($aout < $valid->amount){
         $order = new FundOrder;
-        if(isset($ain)){
+        if($status == 'Complete'){
           $balance = Balance::find($valid->id);
           $newbalance = $balance->amount - $aout;
           $balance->amount = $newbalance;
           $order->in_amount = $ain;
-          $order->status = 'complete';
+          $order->status = $status;
           $balancen = Balance::find($change->id);
           $newbalancen = $balancen->amount + $ain;
           $balancen->amount = $newbalancen;
@@ -656,7 +658,7 @@ class FundsController extends Controller
           $balancen->save();
         }else{
           $order->in_amount = 0;
-          $order->status = 'pending';
+          $order->status = $status;
           $order->rate = 0;
         }
         $order->reference = $ref;
