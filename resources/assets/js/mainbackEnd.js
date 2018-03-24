@@ -380,7 +380,7 @@ $(document).ready(function(){
 
                 list = '<div class="col-sm-12"><div class="col-sm-2 colorChart" id="colorChart'+i+'"><div class="color"></div></div><div class="col-sm-9 text-left"><h5 class="list-group-item-heading">'+symbol+'</h5><p class="small">Amount: '+formatNumber2.num(amount)+'</p><p class="small">percent: '+formatNumber2.num(balance.percent)+'%</p></div></div>';
                 list2 = $('<div class="col-sm-12 text-center folioList"></div>');
-                
+
                 symbol = $('<div class="col-sm-3"><h5>'+balance.name+'</h5></div>');
                 percents = parseInt(balance.percent);
                 progress = $('<div class="col-sm-3 divPro"><div class="progress"><div class="progress-bar progress-bar-striped" id="progress'+i+'" role="progressbar" aria-valuenow="'+percents+'" aria-valuemin="0" aria-valuemax="100" style="width:'+percents+'%">'+percents+'%</div></div></div>');
@@ -2383,6 +2383,7 @@ $(document).ready(function(){
     /* Begin Funds Functions */
 
     if(pathname.toString() == '/funds'){
+
         $('.listfund').addClass('active');
         /*Funds Balances*/
 
@@ -2816,12 +2817,16 @@ $(document).ready(function(){
                 alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Exchange</strong></div>');
                 labelA = $('<div class="form-group"><label>Available Balance: <span id="availableB"></span></label></div>');
                 selectO = $('<div class="form-group"><label for="selectout" >Change For:</label><select id="out" class="form-control" name="selectout"></select></div>');
+                selectS = $('<div class="form-group"><label for="status">Status</label><select id="status" class="form-control" name="status"></select></div>');
                 inputO = $('<div class="form-group"><label for="valueout">Value</label><input id="valueout" name="valueout" type="text" class="form-control" placeholder="Value Out" required></div>');
                 inputIC = $('<input id="currencyin" name="currencyin" type="text" class="form-control" required value="'+currency.symbol+'" style="display:none;" disabled>');
-                inputI = $('<div class="form-group"><label for="valuein">Value In</label><input id="valuein" name="valuein" type="text" class="form-control" placeholder="Value In" ></div>');
-                inputR = $('<div class="form-group"><label for="rate">Exchange Rate</label><input id="rate" name="rate" type="text" class="form-control" placeholder="Exchange Rate" ></div>');
+                inputI = $('<div class="form-group statusch"><label for="valuein">Value In</label><input id="valuein" name="valuein" type="text" class="form-control" placeholder="Value In" ></div>');
+                inputR = $('<div class="form-group statusch"><label for="rate">Exchange Rate</label><input id="rate" name="rate" type="text" class="form-control" placeholder="Exchange Rate" ></div>');
                 inputA = $('<div class="form-group"><label for="created">Allocated</label><input id="created" name="created" type="date" class="form-control" placeholder="Allocated" ></div>');
-                inputF = $('<div class="form-group"><label for="funded">Funded</label><input id="funded" name="funded" type="date" class="form-control" placeholder="Funded" ></div>');
+                inputF = $('<div class="form-group statusch"><label for="funded">Funded</label><input id="funded" name="funded" type="date" class="form-control" placeholder="Funded" ></div>');
+
+                status = ['Complete', 'Pending'];
+
 
                 $('.modal-title').empty();
                 $('.modal-body').empty();
@@ -2832,12 +2837,24 @@ $(document).ready(function(){
                 $('#ExchangeForm').append(alert);
                 $('#ExchangeForm').append(labelA);
                 $('#ExchangeForm').append(selectO);
+                $('#ExchangeForm').append(selectS);
                 $('#ExchangeForm').append(inputO);
                 $('#ExchangeForm').append(inputIC);
                 $('#ExchangeForm').append(inputI);
                 $('#ExchangeForm').append(inputR);
                 $('#ExchangeForm').append(inputA);
                 $('#ExchangeForm').append(inputF);
+
+                for(i = 0; i < status.length; i++){
+                    statu = status[i];
+                    if (statu == 'Complete') {
+                      option = $('<option value="'+statu+'" selected>'+statu+'</option>');
+                    }
+                    option = $('<option value="'+statu+'">'+statu+'</option>');
+                    $('#status').append(option);
+                }
+
+
 
                 $.ajax({
                     headers: {
@@ -2873,7 +2890,7 @@ $(document).ready(function(){
 
                 exchangeInValue('#valueout', '#rate', '#valuein');
                 exchangeInValue('#valueout', '#valuein', '#rate');
-
+                statusChange('#status');
                 makeBut = $("<button type='button' class='btn btn-alternative' name='button' id='exCont'>Make</button>");
                 addMakeExButton(makeBut);
                 closebut = $('<button type="button" class="btn btn-alternative" data-dismiss="modal">Close</button>');
@@ -2881,7 +2898,18 @@ $(document).ready(function(){
                 $('#exButts').append(closebut);
 
                 $('#out').trigger("change");
-        })
+              })
+        }
+
+        function statusChange(status){
+          $(status).change(function(){
+            statu = $(this).val();
+            if(statu == 'Pending'){
+              $('.statusch').hide();
+            }else{
+                $('.statusch').show();
+            }
+          })
         }
 
         function availableBalance(selection){
@@ -2976,11 +3004,14 @@ $(document).ready(function(){
         function confirmExButton(confirmBut){
             confirmBut.click(function(){
               $(this).addClass('disabled');
+
                 currencyout = $('#out').val();
+
                 currencyin = $('#currencyin').val();
 
                 amountout = $('#valueout').val();
 
+                status = $('#status').val();
 
                 amountin = $('#valuein').val();
 
@@ -2998,7 +3029,7 @@ $(document).ready(function(){
                         url: '/funds/exchange',
                         type: 'POST',
                         dataType: "json",
-                        data: {cout : currencyout, cin : currencyin, aout : amountout, ain : amountin, rate: rate, created:created, funded: funded},
+                        data: {cout : currencyout, cin : currencyin, aout : amountout, ain : amountin, rate: rate, created:created, funded: funded, status: status},
                         success: function(data){
 
                           $('#fundsMod').modal('hide');
