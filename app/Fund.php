@@ -11,10 +11,14 @@ class Fund extends Model
     use SoftDeletes;
 
     protected $dates = ['deleted_at'];
-    protected $guarded = ['amount', 'amount', 'amount'];
+    protected $guarded = ['amount'];
 
     public function user(){
         return $this->belongsTo('App\User', 'user_id');
+    }
+
+    public function period(){
+        return $this->belongsTo('App\Period', 'period_id');
     }
 
     public function currency(){

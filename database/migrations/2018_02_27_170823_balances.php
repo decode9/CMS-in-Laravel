@@ -20,10 +20,6 @@ class Balances   extends Migration
                 ['currency_id' => '4',  'type' => 'fund', 'amount' => '0'],
                 ['currency_id' => '5',  'type' => 'fund', 'amount' => '0'],
         ]);
-
-        DB::table('funds')->insert([
-                ['currency_id' => '2', 'reference' => 'initial', 'type' => 'initial', 'active' => '1' , 'amount' => '0', 'comment' => 'initial'],
-        ]);
     }
 
     /**

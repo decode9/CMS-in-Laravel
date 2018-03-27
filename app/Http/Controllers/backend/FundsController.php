@@ -128,9 +128,9 @@ class FundsController extends Controller
 
      private function percent($user){
              if($user->hasRole('30')){
-                     $userInitial = $user->funds()->where('type', 'initial')->first();
+                     $userInitial = $user->funds()->where('type', 'initial')->get()->last();
                      $userInvest = $userInitial->amount;
-                     $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->first();
+                     $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->get()->last();
                      $fundInvest = $fundInitial->amount;
                      $percent = $userInvest / $fundInvest;
                      return $percent;

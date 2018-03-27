@@ -11,7 +11,7 @@ use App\Fund;
 use App\FundOrder;
 use App\User;
 use App\Balance;
-
+use App\Period;
 
 class ClientsController extends Controller
 {
@@ -27,9 +27,9 @@ class ClientsController extends Controller
      */
      private function percent($user){
              if($user->hasRole('30')){
-                     $userInitial = $user->funds()->where('type', 'initial')->first();
+                     $userInitial = $user->funds()->where('type', 'initial')->get()->last();
                      $userInvest = $userInitial->amount;
-                     $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->first();
+                     $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->get()->last();
                      $fundInvest = $fundInitial->amount;
                      $percent = $userInvest / $fundInvest;
                      return $percent;
@@ -290,16 +290,28 @@ class ClientsController extends Controller
 
          $hasini = $user->funds()->where('type', 'initial')->first();
 
+         $period = Period::All()->last();
+
+
          if(isset($hasini)){
              $fund = Fund::find($hasini->id);
 
-             $pool = Fund::where('user_id', null )->where('type', 'initial')->first();
+             $pool = Fund::where('user_id', null )->where('type', 'initial')->where('period_id', $period->id)->first();
              $newamount = $pool->amount - $fund->amount;
              $newamount = $newamount + $amount;
 
              $poolf = Fund::find($pool->id);
              $poolf->amount = $newamount;
              $poolf->save();
+
+             $newPamount = $period->open_amount - $fund->amount;
+             $newPamount = $newPamount + $amount;
+
+             $periodf = Period::find($period->id);
+             $periodf->open_amount = $newamount;
+             $periodf->save();
+
+
 
              $balance = Balance::where('user_id', null)->where('currency_id', '2')->first();
              $newbalance = $balance->amount - $fund->amount;
@@ -310,11 +322,21 @@ class ClientsController extends Controller
              $balance->save();
          }else{
              $fund = new Fund;
+
              $pool = Fund::where('user_id', null)->where('type', 'initial')->first();
              $newamount = $pool->amount + $amount;
+
              $poolf = Fund::find($pool->id);
              $poolf->amount = $newamount;
              $poolf->save();
+
+
+             $newPamount = $period->open_amount + $amount;
+
+             $periodf = Period::find($period->id);
+             $periodf->open_amount = $newamount;
+             $periodf->save();
+
 
              $balance = Balance::where('user_id', null)->where('currency_id', '2')->first();
              $newbalance = $balance->amount + $amount;
@@ -331,6 +353,7 @@ class ClientsController extends Controller
          $fund->type = "initial";
          $fund->created_at = $date;
          $fund->user()->associate($id);
+         $fund->period()->associate($period->id);
          $fund->currency()->associate($currency);
 
          $fund->save();

@@ -890,6 +890,8 @@ $(document).ready(function () {
 
         var uploadPicture = function uploadPicture(but, id) {
             but.click(function () {
+                $(this).addClass('disabled');
+                $(this).prop('disabled', true);
                 var imageData = $('#image-cropper').cropit('export');
                 var formData = new FormData();
                 formData.append('picture', imageData);
@@ -917,6 +919,7 @@ $(document).ready(function () {
                     },
                     error: function error(_error) {
                         $(this).removeClass('disabled');
+                        $(this).prop('disabled', false);
                         $('.text-alert').empty();
                         $('.text-alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
@@ -1057,6 +1060,7 @@ $(document).ready(function () {
         var confirmEuserButton = function confirmEuserButton(confirmBut) {
             confirmBut.click(function () {
                 $(this).addClass('disabled');
+                $(this).prop('disabled', true);
                 name = $('#nameI').val();
                 lastname = $('#lastnameI').val();
                 email = $('#emailI').val();
@@ -1082,6 +1086,7 @@ $(document).ready(function () {
                     },
                     error: function error(_error2) {
                         $(this).removeClass('disabled');
+                        $(this).prop('disabled', false);
                         $('.text-alert').empty();
                         $('.text-alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
@@ -1418,6 +1423,7 @@ $(document).ready(function () {
         var confirmuserButton = function confirmuserButton(confirmBut) {
             confirmBut.click(function () {
                 $(this).addClass('disabled');
+                $(this).prop('disabled', true);
                 name = $('#name').val();
                 lastname = $('#lastname').val();
                 username = $('#username').val();
@@ -1451,6 +1457,7 @@ $(document).ready(function () {
                     },
                     error: function error(_error7) {
                         $(this).removeClass('disabled');
+                        $(this).prop('disabled', false);
                         $('.text-alert').empty();
                         $('.text-alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
@@ -1619,6 +1626,7 @@ $(document).ready(function () {
         var _confirmEuserButton = function _confirmEuserButton(confirmBut) {
             confirmBut.click(function () {
                 $(this).addClass('disabled');
+                $(this).prop('disabled', true);
                 name = $('#name').val();
                 lastname = $('#lastname').val();
                 username = $('#username').val();
@@ -1651,6 +1659,7 @@ $(document).ready(function () {
                     },
                     error: function error(_error9) {
                         $(this).removeClass('disabled');
+                        $(this).prop('disabled', false);
                         $('.text-alert').empty();
                         $('.text-alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
@@ -1697,6 +1706,7 @@ $(document).ready(function () {
         var DeleteUserButton = function DeleteUserButton(delButt) {
             delButt.click(function () {
                 $(this).addClass('disabled');
+                $(this).prop('disabled', true);
                 id = $('#id').val();
 
                 $.ajax({
@@ -1717,6 +1727,7 @@ $(document).ready(function () {
                     },
                     error: function error(_error10) {
                         $(this).removeClass('disabled');
+                        $(this).prop('disabled', false);
                         $('.text-alert').empty();
                         $('.text-alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
@@ -2041,6 +2052,7 @@ $(document).ready(function () {
         var confirmcurrencyButton = function confirmcurrencyButton(confirmBut) {
             confirmBut.click(function () {
                 $(this).addClass('disabled');
+                $(this).prop('disabled', true);
                 name = $('#name').val();
                 symbol = $('#symbol').val();
                 type = $('#type').val();
@@ -2067,6 +2079,7 @@ $(document).ready(function () {
                     },
                     error: function error(_error12) {
                         $(this).removeClass('disabled');
+                        $(this).prop('disabled', false);
                         $('.text-alert').empty();
                         $('.text-alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
@@ -2217,6 +2230,7 @@ $(document).ready(function () {
         var confirmEcurrencyButton = function confirmEcurrencyButton(confirmBut) {
             confirmBut.click(function () {
                 $(this).addClass('disabled');
+                $(this).prop('disabled', true);
                 id = $('#id').val();
                 name = $('#name').val();
                 symbol = $('#symbol').val();
@@ -2245,6 +2259,7 @@ $(document).ready(function () {
                     },
                     error: function error(_error13) {
                         $(this).removeClass('disabled');
+                        $(this).prop('disabled', false);
                         $('.text-alert').empty();
                         $('.text-alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
@@ -2291,6 +2306,7 @@ $(document).ready(function () {
         var DeleteCurrencyButton = function DeleteCurrencyButton(delButt) {
             delButt.click(function () {
                 $(this).addClass('disabled');
+                $(this).prop('disabled', true);
                 id = $('#id').val();
 
                 $.ajax({
@@ -2311,6 +2327,7 @@ $(document).ready(function () {
                     },
                     error: function error(_error14) {
                         $(this).removeClass('disabled');
+                        $(this).prop('disabled', false);
                         $('.text-alert').empty();
                         $('.text-alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
@@ -2764,7 +2781,7 @@ $(document).ready(function () {
         var confirmExButton = function confirmExButton(confirmBut) {
             confirmBut.click(function () {
                 $(this).addClass('disabled');
-
+                $(this).prop('disabled', true);
                 currencyout = $('#out').val();
 
                 currencyin = $('#currencyin').val();
@@ -2808,6 +2825,7 @@ $(document).ready(function () {
                     },
                     error: function error(_error17) {
                         $(this).removeClass('disabled');
+                        $(this).prop('disabled', false);
                         $('.text-alert').empty();
                         $('.text-alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
@@ -3247,6 +3265,7 @@ $(document).ready(function () {
         var confirmVExButton = function confirmVExButton(confirmBut) {
             confirmBut.click(function () {
                 $(this).addClass('disabled');
+                $(this).prop('disabled', true);
                 currencyout = $('#out').val();
                 id = $('#transid').val();
                 currencyin = $('#currencyin').val();
@@ -3285,6 +3304,7 @@ $(document).ready(function () {
                     },
                     error: function error(_error21) {
                         $(this).removeClass('disabled');
+                        $(this).prop('disabled', false);
                         $('.text-alert').empty();
                         $('.text-alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
@@ -3331,6 +3351,7 @@ $(document).ready(function () {
         var DeleteTxButton = function DeleteTxButton(delButt) {
             delButt.click(function () {
                 $(this).addClass('disabled');
+                $(this).prop('disabled', true);
                 id = $('#id').val();
 
                 $.ajax({
@@ -3357,6 +3378,7 @@ $(document).ready(function () {
                     },
                     error: function error(_error22) {
                         $(this).removeClass('disabled');
+                        $(this).prop('disabled', false);
                         $('.text-alert').empty();
                         $('.text-alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
@@ -4236,6 +4258,403 @@ $(document).ready(function () {
     /* Begin Client Functions */
 
     if (pathname.toString() == '/clients') {
+        var orderTablePeriodBy = function orderTablePeriodBy(by) {
+            if (orderClientBy === by) {
+                if (orderPeriodDirection === "") {
+                    orderPeriodDirection = "DESC";
+                } else {
+                    orderPeriodDirection = "";
+                }
+            } else {
+                orderPeriodBy = by;
+                orderPeriodDirection = "";
+            }
+            searchPeriod(1);
+        };
+
+        //Get Period Data
+
+        var searchPeriod = function searchPeriod(page) {
+
+            resultPage = $("#result_period_page").val();
+
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url: "/periods",
+                type: 'post',
+                data: { searchvalue: searchPeriodValue, page: page, orderBy: orderPeriodBy, orderDirection: orderPeriodDirection, resultPage: resultPage },
+                success: function success(data) {
+                    //Inicio
+                    var periods = data.result;
+
+                    if (periods.length == 0) {
+                        $("#table_period_content").html("");
+                        $('#table_period_content').append('<tr><td colspan="7">None</td></tr>');
+                    } else {
+                        // Put the data into the element you care about.
+                        $("#table_period_content").html("");
+
+                        for (i = 0; i < periods.length; i++) {
+                            var period = periods[i];
+
+                            // we have to make in steps to add the onclick event
+                            var rowResult = $('<tr></tr>');
+                            var colvalue_1 = $('<td>' + period.id + '</td>');
+                            var colvalue_2 = $('<td>' + period.open_date + '</td>');
+                            var colvalue_3 = $('<td>' + formatNumber2.num(period.open_amount) + '</td>');
+                            if (period.close_amount == 0) {
+                                var colvalue_4 = $('<td>00-00-0000</td>');
+                                var colvalue_5 = $('<td>0</td>');
+                                var colvalue_6 = $('<td class="text-center">0<br/>0%</td>');
+                            } else {
+                                var colvalue_4 = $('<td>' + period.close_date + '</td>');
+                                var colvalue_5 = $('<td>' + formatNumber2.num(period.close_amount) + '</td>');
+
+                                var change = period.close_amount - period.open_amount;
+                                var Pchange = period.close_amount / period.open_amount * 100;
+
+                                var colvalue_6 = $('<td class="text-center">' + formatNumber2.num(change) + '<br/>' + formatNumber2.num(Pchange) + '%</td>');
+                            }
+                            var colvalue_7 = $('<td class="text-center"></td>');
+                            var buttonS = $('<button class="btn btn-alternative-success btn-alternative btn-sm" data-toggle="modal" data-target="#clientMod" type="button">Close Period</button>');
+                            var buttonI = $('<button class="btn btn-alternative-danger btn-alternative btn-sm" data-toggle="modal" data-target="#clientMod" type="button">Delete</button>');
+
+                            addEditPeriodClick(buttonS, period);
+                            addMakeDperiodButton(buttonI, period);
+
+                            colvalue_7.append(buttonS);
+                            colvalue_7.append(buttonI);
+
+                            rowResult.append(colvalue_1);
+                            rowResult.append(colvalue_2);
+                            rowResult.append(colvalue_3);
+                            rowResult.append(colvalue_4);
+                            rowResult.append(colvalue_5);
+                            rowResult.append(colvalue_6);
+                            rowResult.append(colvalue_7);
+
+                            $("#table_period_content").append(rowResult);
+                        }
+
+                        $("#table_period_pagination").html("");
+
+                        page = parseInt(data.page);
+                        var total = data.total;
+                        var resultPage = $("#result_client_page").val();
+                        var totalPages = Math.ceil(total / resultPage);
+
+                        if (page === 1) {
+                            maxPage = page + 2;
+                            totalPages = maxPage < totalPages ? maxPage : totalPages;
+                            var pageList = $('<ul class="pagination"></ul>');
+
+                            for (i = page; i <= totalPages; i++) {
+                                pagebutton = $('<li class="page_period pages"><a href="#">' + i + '</a></li>');
+                                pageList.append(pagebutton);
+                                addPagePDButton(pagebutton);
+                            }
+
+                            $("#table_period_pagination").append(pageList);
+                        } else if (page === totalPages) {
+                            page = page - 2;
+
+                            if (page < 1) {
+                                page = 1;
+                            }
+
+                            totalPages = page + 2 < totalPages ? page + 2 : totalPages;
+                            var pageList = $('<ul class="pagination"></ul>');
+
+                            for (i = page; i <= totalPages; i++) {
+                                pagebutton = $('<li class="page_period pages"><a href="#">' + i + '</a></li>');
+                                pageList.append(pagebutton);
+                                addPagePDButton(pagebutton);
+                            }
+
+                            $("#table_period_pagination").append(pageList);
+                        } else {
+                            page = page - 2;
+
+                            if (page < 1) {
+                                page = 1;
+                            }
+
+                            totalPages = page + 4 < totalPages ? page + 2 : totalPages;
+                            var pageList = $('<ul class="pagination"></ul>');
+
+                            for (i = page; i <= totalPages; i++) {
+                                pagebutton = $('<li class="page_period pages"><a href="#">' + i + '</a></li>');
+                                pageList.append(pagebutton);
+                                addPagePDButton(pagebutton);
+                            }
+
+                            $("#table_period_pagination").append(pageList);
+                        }
+                    }
+                },
+                // Fin
+                error: function error(error) {
+                    ReadError(error);
+                }
+            });
+        };
+
+        var addPagePDButton = function addPagePDButton(pagebutton) {
+            pagebutton.click(function () {
+                page = $(this).text();
+                searchPeriod(page);
+            });
+        };
+
+        var addMakePeriodButton = function addMakePeriodButton(makeBut) {
+
+            $('#PeriodForm').validate({
+                rules: {
+                    opend: {
+                        required: true,
+                        date: true
+                    }
+                }
+            });
+
+            makeBut.click(function (e) {
+                if ($('#PeriodForm').valid()) {
+
+                    alterForm('#PeriodForm', true);
+
+                    $('#periodCont').hide();
+                    $('.alert').show();
+                    confirmBut = $("<button type='button' name='button' class='btn btn-alternative-success btn-alternative' id='periodConf'>Confirm</button>");
+                    backBut = $("<button type='button' name='button' class='btn btn-alternative' id='periodBack'>Back</button>");
+                    backButton(backBut, '#PeriodForm', 'period');
+                    confirmperiodButton(confirmBut);
+                    $('#periodButts').prepend(backBut);
+                    $('#periodButts').prepend(confirmBut);
+                }
+            });
+        };
+
+        /* Confirm User For Creation */
+
+
+        var confirmperiodButton = function confirmperiodButton(confirmBut) {
+            confirmBut.click(function () {
+                $(this).addClass('disabled');
+                $(this).prop('disabled', true);
+                opend = $('#opend').val();
+
+                $.ajax({
+
+                    headers: { 'X-CSRF-Token': $('meta[name=csrf-token]').attr('content') },
+                    url: '/periods/create',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { openD: opend },
+                    success: function success(data) {
+                        $('#form_period_search').trigger("submit");
+                        $('#clientMod').modal('hide');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('Period Created Sucessfully');
+                        $('.alert').removeClass('alert-warning');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-success');
+                        $('#clientAlertMod').modal('show');
+                    },
+                    error: function error(_error23) {
+                        $(this).removeClass('disabled');
+                        $(this).prop('disabled', false);
+                        $('.text-alert').empty();
+                        $('.text-alert').append('An error has ocurred');
+                        $('.alert').removeClass('alert-success');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-warning');
+                        $('#clientAlertMod').modal('show');
+                    }
+                });
+            });
+        };
+
+        /*Edit Button With Modal edition for Users*/
+
+
+        var addEditPeriodClick = function addEditPeriodClick(buttonEdit, period) {
+            buttonEdit.click(function () {
+                box = $("<form class='PeriodForm' id='PeriodForm' enctype='multipart/form-data' ></form>");
+                alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Period Date</strong></div>');
+                inputI = $('<input id="id" name="id" type="text" class="form-control" value="' + period.id + '" style="display:none;" required>');
+                inputN = $('<div class="form-group"><label for="title">Close Date</label><input id="closed" name="closed" type="date" class="form-control" placeholder="Close Date" required></div>');
+                inputA = $('<div class="form-group"><label for="title">Close Amount</label><input id="closea" name="closea" type="text" class="form-control" placeholder="Close Amount" required></div>');
+
+                $('.modal-title').empty();
+                $('.modal-body').empty();
+                $('.modal-footer').empty();
+
+                $('.modal-title').append('Close Period');
+                $('.modal-body').append(box);
+
+                $('#PeriodForm').append(alert);
+                $('#PeriodForm').append(inputI);
+                $('#PeriodForm').append(inputN);
+                $('#PeriodForm').append(inputA);
+
+                $('.modal-footer').append("<div id='periodButts'></div>");
+
+                closeBut = $('<button type="button" class="btn btn-alternative" data-dismiss="modal">Close</button>');
+                makeBut = $("<button type='button' name='button' class='btn btn-alternative' id='periodCont'>Make</button>");
+                addMakeEPeriodButton(makeBut);
+
+                $('#periodButts').append(makeBut);
+                $('#periodButts').append(closeBut);
+            });
+        };
+
+        /* Make User Button For editing */
+
+
+        var addMakeEPeriodButton = function addMakeEPeriodButton(makeBut) {
+
+            $('#PeriodForm').validate({
+                rules: {
+                    closed: {
+                        required: true,
+                        minlength: 2
+                    },
+                    closea: {
+                        required: true,
+                        minlength: 2
+                    }
+                }
+            });
+            makeBut.click(function (e) {
+                if ($('#PeriodForm').valid()) {
+
+                    alterForm('#PeriodForm', true);
+
+                    $('#periodCont').hide();
+                    $('.alert').show();
+                    confirmBut = $("<button type='button' class='btn btn-alternative-success btn-alternative' name='button' id='periodConf'>Confirm</button>");
+                    backBut = $("<button type='button' class='btn btn-alternative' name='button' id='periodBack'>Back</button>");
+                    backButton(backBut, '#PeriodForm', 'period');
+                    confirmEperiodButton(confirmBut);
+                    $('#periodButts').prepend(backBut);
+                    $('#periodButts').prepend(confirmBut);
+                }
+            });
+        };
+
+        /* Confirm Button For Editing User */
+
+
+        var confirmEperiodButton = function confirmEperiodButton(confirmBut) {
+            confirmBut.click(function () {
+                $(this).addClass('disabled');
+                $(this).prop('disabled', true);
+                id = $('#id').val();
+                closed = $('#closed').val();
+                closea = $('#closea').val();
+
+                $.ajax({
+
+                    headers: { 'X-CSRF-Token': $('meta[name=csrf-token]').attr('content') },
+                    url: '/periods/update',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { id: id, closeD: closed, closeA: closea },
+                    success: function success(data) {
+                        $('#form_period_search').trigger("submit");
+                        $('#clientMod').modal('hide');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('Period closed Sucessfully');
+                        $('.alert').removeClass('alert-warning');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-success');
+                        $('#clientAlertMod').modal('show');
+                    },
+                    error: function error(_error24) {
+                        $(this).removeClass('disabled');
+                        $(this).prop('disabled', false);
+                        $('.text-alert').empty();
+                        $('.text-alert').append('An error has ocurred');
+                        $('.alert').removeClass('alert-success');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-warning');
+                        $('#clientAlertMod').modal('show');
+                    }
+                });
+            });
+        };
+
+        /* Delete Function For User */
+
+
+        var addMakeDperiodButton = function addMakeDperiodButton(delButt, period) {
+            delButt.click(function () {
+                box = $("<form class='PeriodForm' id='PeriodForm' enctype='multipart/form-data'></form>");
+                alert = $('<h4><strong>Are You Sure for delete period open in ' + period.open_date + '?</strong></h4>');
+                inputI = $('<input id="id" name="id" style="display: none;" type="text" class="form-control" value="' + period.id + '" required>');
+
+                $('.modal-title').empty();
+                $('.modal-body').empty();
+                $('.modal-footer').empty();
+                $('.modal-title').append('Delete Newsletter');
+                $('.modal-body').append(box);
+
+                $('#PeriodForm').append(alert);
+                $('#PeriodForm').append(inputI);
+
+                $('.modal-footer').append("<div id='periodButts'></div>");
+
+                closeBut = $('<button type="button" class="btn btn-alternative" data-dismiss="modal">Close</button>');
+                makeBut = $("<button type='button' name='button' class='btn btn-alternative-danger btn-alternative' id='periodCont'>Delete</button>");
+
+                DeletePeriodButton(makeBut);
+
+                $('#periodButts').append(makeBut);
+                $('#periodButts').append(closeBut);
+            });
+        };
+
+        /* Confirmation Of User Deletion */
+
+
+        var DeletePeriodButton = function DeletePeriodButton(delButt) {
+            delButt.click(function () {
+                $(this).addClass('disabled');
+                $(this).prop('disabled', true);
+                id = $('#id').val();
+
+                $.ajax({
+                    headers: { 'X-CSRF-Token': $('meta[name=csrf-token]').attr('content') },
+                    url: '/periods/delete',
+                    type: 'POST',
+                    dataType: "json",
+                    data: { id: id },
+                    success: function success(data) {
+                        $('#form_period_search').trigger("submit");
+                        $('#clientMod').modal('hide');
+                        $('.text-alert').empty();
+                        $('.text-alert').append('Period Deleted Sucessfully');
+                        $('.alert').removeClass('alert-warning');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-success');
+                        $('#clientAlertMod').modal('show');
+                    },
+                    error: function error(_error25) {
+                        $(this).removeClass('disabled');
+                        $(this).prop('disabled', false);
+                        $('.text-alert').empty();
+                        $('.text-alert').append('An error has ocurred');
+                        $('.alert').removeClass('alert-success');
+                        $('.alert').removeClass('alert-danger');
+                        $('.alert').addClass('alert-warning');
+                        $('#clientAlertMod').modal('show');
+                    }
+                });
+            });
+        };
+
         var orderTableClientBy = function orderTableClientBy(by) {
             if (orderClientBy === by) {
                 if (orderClientDirection === "") {
@@ -4625,6 +5044,7 @@ $(document).ready(function () {
             function confirmiButton(confirmBut) {
                 confirmBut.click(function () {
                     $(this).addClass('disabled');
+                    $(this).prop('disabled', true);
                     amount = $('#initial').val().replace(/\./g, '');
                     amount = amount.replace(/,/g, '.');
                     date = $('#created').val();
@@ -4637,22 +5057,23 @@ $(document).ready(function () {
                         data: { amount: amount, id: user.id, date: date },
                         success: function success(data) {
                             $('#form_client_search').trigger("submit");
-                            $('#newsMod').modal('hide');
+                            $('#clientMod').modal('hide');
                             $('.text-alert').empty();
                             $('.text-alert').append('Initial Invest Sucessfully');
                             $('.alert').removeClass('alert-warning');
                             $('.alert').removeClass('alert-danger');
                             $('.alert').addClass('alert-success');
-                            $('#newsAlertMod').modal('show');
+                            $('#clientsAlertMod').modal('show');
                         },
-                        error: function error(_error23) {
+                        error: function error(_error26) {
                             $(this).removeClass('disabled');
+                            $(this).prop('disabled', false);
                             $('.text-alert').empty();
                             $('.text-alert').append('An error has ocurred');
                             $('.alert').removeClass('alert-success');
                             $('.alert').removeClass('alert-danger');
                             $('.alert').addClass('alert-warning');
-                            $('#newsAlertMod').modal('show');
+                            $('#clientAlertMod').modal('show');
                         }
                     });
                 });
@@ -4661,6 +5082,69 @@ $(document).ready(function () {
 
         $('.listclient').addClass('active');
         /*Search Client Table*/
+
+        $('#table_period_header_open_date').click(function (e) {
+            orderTablePeriodBy('open_date');
+        });
+
+        $('#table_period_header_open_amount').click(function (e) {
+            orderTablePeriodBy('open_amount');
+        });
+
+        $('#table_period_header_close_date').click(function (e) {
+            orderTablePeriodBy('close_date');
+        });
+
+        $('#table_period_header_close_amount').click(function (e) {
+            orderTablePeriodBy('close_amount');
+        });
+
+        var orderPeriodBy = "";
+        var orderPeriodDirection = "";
+        var searchPeriodValue = "";
+
+        ;;
+
+        ;
+
+        $('.btn-create-Pe').click(function () {
+
+            box = $("<form class='PeriodForm' id='PeriodForm' enctype='multipart/form-data' ></form>");
+            alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Period Date</strong></div>');
+            inputN = $('<div class="form-group"><label for="title">Open Date</label><input id="opend" name="opend" type="date" class="form-control" placeholder="Open Date" required></div>');
+
+            $('.modal-title').empty();
+            $('.modal-body').empty();
+            $('.modal-footer').empty();
+
+            $('.modal-title').append('Create Period');
+            $('.modal-body').append(box);
+
+            $('#PeriodForm').append(alert);
+            $('#PeriodForm').append(inputN);
+
+            $('.modal-footer').append("<div id='periodButts'></div>");
+
+            closeBut = $('<button type="button" class="btn btn-alternative" data-dismiss="modal">Close</button>');
+            makeBut = $("<button type='button' name='button' class='btn btn-alternative' id='periodCont'>Make</button>");
+            addMakePeriodButton(makeBut);
+
+            $('#periodButts').append(makeBut);
+            $('#periodButts').append(closeBut);
+        });
+
+        $("#form_period_search").submit(function (e) {
+            e.preventDefault();
+            //DESC
+            searchPeriodValue = $("#search_period_value").val();
+            searchPeriod(1);
+        });
+
+        $('#result_period_page').change(function () {
+            $('#form_period_search').trigger("submit");
+        });
+
+        $('#form_period_search').trigger("submit");
 
         $('#table_client_header_name').click(function (e) {
             orderTableClientBy('name');
@@ -4823,8 +5307,8 @@ $(document).ready(function () {
                     // Put the data into the element you care about.
                 },
                 // Fin
-                error: function error(_error24) {
-                    ReadError(_error24);
+                error: function error(_error27) {
+                    ReadError(_error27);
                 }
             });
         };
@@ -4877,6 +5361,7 @@ $(document).ready(function () {
         var confirmnewsButton = function confirmnewsButton(confirmBut) {
             confirmBut.click(function () {
                 $(this).addClass('disabled');
+                $(this).prop('disabled', true);
                 title = $('#title').val();
                 message = $('#message').val();
 
@@ -4897,8 +5382,9 @@ $(document).ready(function () {
                         $('.alert').addClass('alert-success');
                         $('#newsAlertMod').modal('show');
                     },
-                    error: function error(_error25) {
+                    error: function error(_error28) {
                         $(this).removeClass('disabled');
+                        $(this).prop('disabled', false);
                         $('.text-alert').empty();
                         $('.text-alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
@@ -4983,6 +5469,7 @@ $(document).ready(function () {
         var confirmEnewsButton = function confirmEnewsButton(confirmBut) {
             confirmBut.click(function () {
                 $(this).addClass('disabled');
+                $(this).prop('disabled', true);
                 id = $('#id').val();
                 title = $('#title').val();
                 message = $('#message').val();
@@ -5004,8 +5491,9 @@ $(document).ready(function () {
                         $('.alert').addClass('alert-success');
                         $('#newsAlertMod').modal('show');
                     },
-                    error: function error(_error26) {
+                    error: function error(_error29) {
                         $(this).removeClass('disabled');
+                        $(this).prop('disabled', false);
                         $('.text-alert').empty();
                         $('.text-alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');
@@ -5053,6 +5541,7 @@ $(document).ready(function () {
         var DeleteNewsButton = function DeleteNewsButton(delButt) {
             delButt.click(function () {
                 $(this).addClass('disabled');
+                $(this).prop('disabled', true);
                 id = $('#id').val();
 
                 $.ajax({
@@ -5071,8 +5560,9 @@ $(document).ready(function () {
                         $('.alert').addClass('alert-success');
                         $('#newsAlertMod').modal('show');
                     },
-                    error: function error(_error27) {
+                    error: function error(_error30) {
                         $(this).removeClass('disabled');
+                        $(this).prop('disabled', false);
                         $('.text-alert').empty();
                         $('.text-alert').append('An error has ocurred');
                         $('.alert').removeClass('alert-success');

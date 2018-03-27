@@ -23,9 +23,9 @@ class DashboardController extends Controller
 
     private function percent($user){
             if($user->hasRole('30')){
-                    $userInitial = $user->funds()->where('type', 'initial')->first();
+                    $userInitial = $user->funds()->where('type', 'initial')->get()->last();
                     $userInvest = $userInitial->amount;
-                    $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->first();
+                    $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->get()->last();
                     $fundInvest = $fundInitial->amount;
                     $percent = $userInvest / $fundInvest;
                     return $percent;
@@ -69,7 +69,7 @@ class DashboardController extends Controller
     public function balance(Request $request){
       $user = Auth::User();
       $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('amount', '>', '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.amount', 'value', 'symbol', 'name')->get();
-      $initial = Fund::Where('user_id', null)->where('funds.type', 'initial')->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('amount', 'symbol', 'funds.created_at')->first();
+      $initial = Fund::Where('user_id', null)->where('funds.type', 'initial')->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('amount', 'symbol', 'funds.created_at')->get()->last();
       $usd = 0;
       $btc = 0;
       $chart['symbol'] = [];
