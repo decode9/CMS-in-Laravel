@@ -115,7 +115,7 @@ class VerifyHistory extends Command
               $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
               foreach($balances as $balance){
                   if($balance->amount > 0){
-                      $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initstamp);
+                      $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initWstamp);
                       $data = json_decode($json);
                       $symbol = $balance->symbol;
                       $balance->value = $data->$symbol->USD;
@@ -148,7 +148,7 @@ class VerifyHistory extends Command
               $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
               foreach($balances as $balance){
                   if($balance->amount > 0){
-                      $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initstamp);
+                      $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initMstamp);
                       $data = json_decode($json);
                       $symbol = $balance->symbol;
                       $balance->value = $data->$symbol->USD;
@@ -230,7 +230,7 @@ class VerifyHistory extends Command
           $balancesG = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
           foreach($balancesG as $balance){
               if($balance->amount > 0){
-                  $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initGstamp);
+                  $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initGWstamp);
                   $data = json_decode($json);
                   $symbol = $balance->symbol;
                   $balance->value = $data->$symbol->USD;
@@ -261,7 +261,7 @@ class VerifyHistory extends Command
           $balancesG = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
           foreach($balancesG as $balance){
               if($balance->amount > 0){
-                  $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initGstamp);
+                  $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initGMstamp);
                   $data = json_decode($json);
                   $symbol = $balance->symbol;
                   $balance->value = $data->$symbol->USD;
