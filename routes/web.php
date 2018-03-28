@@ -32,9 +32,10 @@ Route::post('/mailcontact', 'Mail\MailController@contactMail')->name('contact.ma
 
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/profile', 'backend\ViewsController@profile')->name('profile')->middleware('auth.per:0');
-Route::post('/dashboard/balance', 'backend\DashboardController@balance')->name('dashboard.balance')->middleware('auth.per:0');;
-Route::post('/dashboard/newsletter', 'backend\DashboardController@newsletter')->name('dashboard.newsletter')->middleware('auth.per:0');;
-Route::post('/dashboard/charts', 'backend\DashboardController@historyChart')->name('dashboard.chart')->middleware('auth.per:0');;
+Route::post('/dashboard/balance', 'backend\DashboardController@balance')->name('dashboard.balance')->middleware('auth.per:0');
+Route::post('/dashboard/newsletter', 'backend\DashboardController@newsletter')->name('dashboard.newsletter')->middleware('auth.per:0');
+Route::post('/dashboard/charts', 'backend\DashboardController@historyChart')->name('dashboard.chart')->middleware('auth.per:0');
+Route::post('/dashboard/periods', 'backend\DashboardController@periods')->name('dashboard.periods')->middleware('auth.per:0');
 
 //USER ADMINISTRATION BACKEND
 

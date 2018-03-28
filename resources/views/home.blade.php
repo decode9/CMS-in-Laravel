@@ -115,7 +115,34 @@ body{
 }
 </style>
 @section('content')
-
+<div class="row">
+  <div class="col-sm-12">
+    <div class="panel panel-alternative">
+      <div class="panel-heading">
+        <h4>Periods</h4>
+      </div>
+      <div class="panel-body periods text-center">
+        <div class="row" style="border-bottom: 1px solid;">
+          <div class="col-sm-2">
+            <p>Open Date</p>
+          </div>
+          <div class="col-sm-3">
+            <p>Open Amount</p>
+          </div>
+          <div class="col-sm-2">
+            <p>Close Date</p>
+          </div>
+          <div class="col-sm-3">
+            <p>Close Amount</p>
+          </div>
+          <div class="col-sm-2">
+            <p>Diff Change</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
   <div class="row">
     <div class="col-sm-12">
       <div class="panel panel-alternative">
@@ -230,6 +257,7 @@ body{
       </div>
     </div>
   </div>
+
 
 <div class="modal  fade" id="newsMod" role="dialog">
 <div class="modal-dialog">

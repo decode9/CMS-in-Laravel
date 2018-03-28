@@ -345,6 +345,7 @@ $(document).ready(function(){
     takeHeight();
 
     if(pathname.toString() == '/home'){
+
       Chart.defaults.global.defaultFontColor = 'white';
       Chart.defaults.global.defaultFontFamily = 'florence';
       function balance(){
@@ -384,7 +385,7 @@ $(document).ready(function(){
                 symbol = $('<div class="col-sm-3"><h5>'+balance.name+'</h5></div>');
                 percents = parseInt(balance.percent);
                 progress = $('<div class="col-sm-3 divPro"><div class="progress"><div class="progress-bar progress-bar-striped" id="progress'+i+'" role="progressbar" aria-valuenow="'+percents+'" aria-valuemin="0" aria-valuemax="100" style="width:'+percents+'%">'+percents+'%</div></div></div>');
-                amount = $('<div class="col-sm-3"><h5>'+formatnumber.num(balance.amount)+' '+ balance.symbol +'</h5></div>');
+                amount = $('<div class="col-sm-3"><h5>'+formatNumber.num(balance.amount)+' '+ balance.symbol +'</h5></div>');
                 va = $('<div class="col-sm-3"><h5>$ '+formatNumber2.num(chart['amount'][i])+'</h5></div>');
 
                 list2.append(symbol);
@@ -803,6 +804,47 @@ $(document).ready(function(){
         })
       }
 
+      function periods(){
+        $.ajax({
+          headers: {
+              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+          },
+          url: "/dashboard/periods",
+          type: 'post',
+          success: function (data) {
+            periods = data.result;
+            for(i = 0; i < periods.open_date.length; i++){
+              opend = periods.open_date[i];
+              opena = periods.open_amount[i];
+              closed = periods.close_date[i];
+              closea = periods.close_amount[i];
+              change = periods.diff_change[i];
+              box = $('<div class="row" style="margin-top: 10px;"></div>');
+
+              boxod = $('<div class="col-sm-2">'+opend+'</div>');
+              boxoa = $('<div class="col-sm-3">'+formatNumber2.num(opena)+'</div>');
+
+              if(closea == 0){
+                boxcd = $('<div class="col-sm-2">Open Period</div>');
+                boxca = $('<div class="col-sm-3">Open Period</div>');
+                boxch = $('<div class="col-sm-2">Open Period</div>');
+              }else{
+                boxcd = $('<div class="col-sm-2">'+closed+'</div>');
+                boxca = $('<div class="col-sm-2">'+formatNumber2.num(closea)+'</div>');
+                boxch = $('<div class="col-sm-2">'+formatNumber2.num(change)+'%</div>');
+              }
+
+              box.append(boxod);
+              box.append(boxoa);
+              box.append(boxcd);
+              box.append(boxca);
+              box.append(boxch);
+
+              $('.periods').append(box);
+            }
+          },
+        });
+      }
 
       lineChart('#daily', 'daily');
 
@@ -813,7 +855,7 @@ $(document).ready(function(){
       $('#daily').trigger('click');
 
       newsletter();
-
+      periods();
       balance();
     }
 

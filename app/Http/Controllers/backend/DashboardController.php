@@ -12,6 +12,7 @@ use App\Balance;
 use App\FundOrder;
 use App\Newsletter;
 use App\History;
+use App\Period;
 
 class DashboardController extends Controller
 {
@@ -69,7 +70,7 @@ class DashboardController extends Controller
     public function balance(Request $request){
       $user = Auth::User();
       $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('amount', '>', '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.amount', 'value', 'symbol', 'name')->get();
-      $initial = Fund::Where('user_id', null)->where('funds.type', 'initial')->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('amount', 'symbol', 'funds.created_at')->get()->last();
+      $initial = Fund::Where('user_id', null)->where('funds.type', 'initial')->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('amount', 'symbol', 'funds.created_at')->first();
       $usd = 0;
       $btc = 0;
       $chart['symbol'] = [];
@@ -164,14 +165,13 @@ class DashboardController extends Controller
 
     public function newsletter(){
 
-      $newsletters = Newsletter::LeftJoin('users', 'newsletters.user_id', '=', 'users.id')->select('newsletters.*', 'name')->get();
+      $newsletters = Newsletter::LeftJoin('users', 'newsletters.user_id', '=', 'users.id')->select('newsletters.*', 'name')->orderBy('newsletters.created_at')->get();
 
       foreach($newsletters as $newsletter){
         $date = $newsletter->created_at->toFormattedDateString();;
         $newsletter->date = $date;
       }
       return response()->json(['result' => $newsletters], 202);
-
     }
 
     public function historyChart(Request $request){
@@ -193,6 +193,50 @@ class DashboardController extends Controller
       }
 
       return response()->json(['result' => $chart], 202);
+    }
+
+    public function periods(){
+      $user = Auth::user();
+
+      $periods['open_date'] = [];
+      $periods['open_amount'] = [];
+      $periods['close_date'] = [];
+      $periods['close_amount'] = [];
+      $periods['diff_change'] = [];
+
+      if($user->hasRole(30)){
+        $query = $user->funds();
+        foreach ($query as $fund) {
+          $percentu = $this->percent($user);
+          $period = $fund->period();
+
+          $openA = $period->open_amount * $percentu;
+          $closeA = $period->close_amount * $percentu;
+
+          $profit = $closeA - $openA;
+
+          $percent = ($profit / $openA) * 100;
+
+          array_push($periods['open_date'], $period->open_date);
+          array_push($periods['open_amount'], $openA);
+          array_push($periods['close_date'], $period->close_date);
+          array_push($periods['close_amount'], $closeA);
+          array_push($periods['diff_change'], $percent);
+        }
+      }else{
+        $query = Fund::where('user_id', null)->where('funds.type', 'initial')->get();
+        foreach ($query as $fund) {
+          $period = $fund->period()->get();
+          $profit = $period[0]->close_amount - $period[0]->open_amount;
+          $percent = ($profit / $period[0]->open_amount) * 100;
+          array_push($periods['open_date'], $period[0]->open_date);
+          array_push($periods['open_amount'], $period[0]->open_amount);
+          array_push($periods['close_date'], $period[0]->close_date);
+          array_push($periods['close_amount'], $period[0]->close_amount);
+          array_push($periods['diff_change'], $percent);
+        }
+      }
+      return response()->json(['result' => $periods], 202);
     }
 
 }
