@@ -56,7 +56,7 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'noreply@krypto.services'),
+        'address' => env('MAIL_FROM_ADDRESS', 'noreply@krypto.finance'),
         'name' => env('MAIL_FROM_NAME', 'NoReply'),
     ],
 
@@ -84,9 +84,9 @@ return [
     |
     */
 
-    'username' => env('noreply@krypto.services'),
+    'username' => env('noreply@krypto.finance'),
 
-    'password' => env('Welcome.01'),
+    'password' => env('4nd3rr3s'),
 
     /*
     |--------------------------------------------------------------------------
