@@ -56,7 +56,7 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'noreply@kryptogroup.net'),
+        'address' => env('MAIL_FROM_ADDRESS', 'noreply@krypto.services'),
         'name' => env('MAIL_FROM_NAME', 'NoReply'),
     ],
 
@@ -71,7 +71,7 @@ return [
     |
     */
 
-    'encryption' => env('MAIL_ENCRYPTION', 'tls'),
+    'encryption' => env('MAIL_ENCRYPTION', 'ssl'),
 
     /*
     |--------------------------------------------------------------------------
@@ -84,7 +84,7 @@ return [
     |
     */
 
-    'username' => env('noreply@kryptogroup.net'),
+    'username' => env('noreply@krypto.services'),
 
     'password' => env('Welcome.01'),
 
