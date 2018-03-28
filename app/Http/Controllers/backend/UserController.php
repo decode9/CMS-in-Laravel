@@ -182,6 +182,7 @@ class UserController extends Controller
         }
 
         Mail::to($email)->send(new newUser($data));
+
         return response()->json(['message' => "success"], 202);
     }
 
