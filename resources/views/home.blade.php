@@ -115,6 +115,7 @@ body{
 }
 </style>
 @section('content')
+@if(!(Auth::User()->hasRole('30')))
 <div class="row">
   <div class="col-sm-12">
     <div class="panel panel-alternative">
@@ -122,27 +123,39 @@ body{
         <h4>Periods</h4>
       </div>
       <div class="panel-body periods text-center">
-        <div class="row" style="border-bottom: 1px solid;">
-          <div class="col-sm-2">
-            <p>Open Date</p>
-          </div>
-          <div class="col-sm-3">
-            <p>Open Amount</p>
-          </div>
-          <div class="col-sm-2">
-            <p>Close Date</p>
-          </div>
-          <div class="col-sm-3">
-            <p>Close Amount</p>
-          </div>
-          <div class="col-sm-2">
-            <p>Diff Change</p>
-          </div>
-        </div>
+        <table id="table_period" class="table ">
+            <thead class="thead-default">
+                <tr style="text-align: center;">
+                    <th id="table_period_header_open_date" style="cursor: pointer;text-align: center;">Open Date</th>
+                    <th id="table_period_header_open_amount" style="cursor: pointer;text-align: center;">Open Amount</th>
+                    <th id="table_period_header_close_date" style="cursor: pointer;text-align: center;">Close Date</th>
+                    <th id="table_period_header_close_amount" style="cursor: pointer;text-align: center;">Close Amount</th>
+                    <th id="table_period_header_diff_change" style="cursor: pointer;text-align: center;">Diff Change</th>
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <th colspan="3" id="period_page">
+                        <div class="form-group" style="width:70px;">
+                            <select id="result_period_page" class="form-control">
+                                <option value="5" selected>5</option>
+                                <option value="10">10</option>
+                                <option value="15">15</option>
+                            </select>
+                        </div>
+                    </th>
+                    <th id="table_period_pagination" class="text-right" colspan="4"></th>
+                </tr>
+            </tfoot>
+            <tbody id="table_period_content" style="text-align: center;">
+            </tbody>
+        </table>
       </div>
     </div>
   </div>
 </div>
+@endif
+
   <div class="row">
     <div class="col-sm-12">
       <div class="panel panel-alternative">

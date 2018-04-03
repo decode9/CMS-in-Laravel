@@ -10,4 +10,16 @@ class Period extends Model
     public function funds(){
         return $this->hasMany('App\Fund');
     }
+
+    public function balances(){
+        return $this->hasMany('App\Balance');
+    }
+
+    public function fundOrders(){
+        return $this->hasMany('App\FundOrder');
+    }
+
+    public function users(){
+        return $this->belongsToMany('App\User');
+    }
 }

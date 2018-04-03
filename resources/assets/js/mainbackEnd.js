@@ -804,47 +804,164 @@ $(document).ready(function(){
         })
       }
 
-      function periods(){
-        $.ajax({
-          headers: {
-              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-          },
-          url: "/dashboard/periods",
-          type: 'post',
-          success: function (data) {
-            periods = data.result;
-            for(i = 0; i < periods.open_date.length; i++){
-              opend = periods.open_date[i];
-              opena = periods.open_amount[i];
-              closed = periods.close_date[i];
-              closea = periods.close_amount[i];
-              change = periods.diff_change[i];
-              box = $('<div class="row" style="margin-top: 10px;"></div>');
+      $('#table_period_header_open_date').click(function (e) {
+          orderTablePeriodBy('open_date');
+      });
 
-              boxod = $('<div class="col-sm-2">'+opend+'</div>');
-              boxoa = $('<div class="col-sm-3">'+formatNumber2.num(opena)+'</div>');
+      $('#table_period_header_open_amount').click(function (e) {
+          orderTablePeriodBy('open_amount');
+      });
 
-              if(closea == 0){
-                boxcd = $('<div class="col-sm-2">Open Period</div>');
-                boxca = $('<div class="col-sm-3">Open Period</div>');
-                boxch = $('<div class="col-sm-2">Open Period</div>');
-              }else{
-                boxcd = $('<div class="col-sm-2">'+closed+'</div>');
-                boxca = $('<div class="col-sm-2">'+formatNumber2.num(closea)+'</div>');
-                boxch = $('<div class="col-sm-2">'+formatNumber2.num(change)+'%</div>');
+      $('#table_period_header_close_date').click(function (e) {
+          orderTablePeriodBy('close_date');
+      });
+
+      $('#table_period_header_close_amount').click(function (e) {
+          orderTablePeriodBy('close_amount');
+      });
+
+      var orderPeriodBy = "";
+      var orderPeriodDirection = "";
+      var searchPeriodValue = "";
+
+      function orderTablePeriodBy(by) {
+          if (orderClientBy === by) {
+              if (orderPeriodDirection === "") {
+                  orderPeriodDirection = "DESC";
+              } else {
+                  orderPeriodDirection = "";
               }
+          } else {
+              orderPeriodBy = by;
+              orderPeriodDirection = "";
+          }
+          searchPeriod(1);
+      };
 
-              box.append(boxod);
-              box.append(boxoa);
-              box.append(boxcd);
-              box.append(boxca);
-              box.append(boxch);
+      //Get Period Data
 
-              $('.periods').append(box);
-            }
-          },
-        });
-      }
+      function searchPeriod(page) {
+
+          resultPage = $("#result_period_page").val();
+
+          $.ajax({
+              headers: {
+                  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+              },
+              url: "/dashboard/periods",
+              type: 'post',
+              data: { searchvalue: searchPeriodValue, page: page, orderBy: orderPeriodBy, orderDirection: orderPeriodDirection, resultPage: resultPage },
+              success: function success(data) {
+                  //Inicio
+                  var periods = data.result;
+
+                  if (periods.length == 0) {
+                      $("#table_period_content").html("");
+                      $('#table_period_content').append('<tr><td colspan="7">None</td></tr>');
+                  } else {
+                      // Put the data into the element you care about.
+                      $("#table_period_content").html("");
+
+                      for (i = 0; i < periods.length; i++) {
+                          var period = periods[i];
+
+                          // we have to make in steps to add the onclick event
+                          var rowResult = $('<tr></tr>');
+                          var colvalue_1 = $('<td>' + period.open_date + '</td>');
+                          var colvalue_2 = $('<td>' + formatNumber2.num(period.open_amount) + '</td>');
+                          if(period.close_amount == 0){
+                            var colvalue_3 = $('<td>0000-00-00</td>');
+                            var colvalue_4 = $('<td>0</td>');
+                            var colvalue_5 = $('<td class="text-center">0<br/>0%</td>');
+                          }else{
+                            var colvalue_3 = $('<td>'+ period.close_date +'</td>');
+                            var colvalue_4 = $('<td>' + formatNumber2.num(period.close_amount) + '</td>');
+
+                            var change = period.close_amount - period.open_amount;
+                            var Pchange = (change / period.open_amount) * 100;
+
+                            var colvalue_5 = $('<td class="text-center">'+formatNumber2.num(change)+'<br/>'+formatNumber2.num(Pchange)+'%</td>');
+                          }
+
+                          rowResult.append(colvalue_1);
+                          rowResult.append(colvalue_2);
+                          rowResult.append(colvalue_3);
+                          rowResult.append(colvalue_4);
+                          rowResult.append(colvalue_5);
+
+                          $("#table_period_content").append(rowResult);
+                      }
+
+                      $("#table_period_pagination").html("");
+
+                      page = parseInt(data.page);
+                      var total = data.total;
+                      var resultPage = $("#result_client_page").val();
+                      var totalPages = Math.ceil(total / resultPage);
+
+                      if (page === 1) {
+                          maxPage = page + 2;
+                          totalPages = maxPage < totalPages ? maxPage : totalPages;
+                          var pageList = $('<ul class="pagination"></ul>');
+
+                          for (i = page; i <= totalPages; i++) {
+                              pagebutton = $('<li class="page_period pages"><a href="#">' + i + '</a></li>');
+                              pageList.append(pagebutton);
+                              addPagePDButton(pagebutton);
+                          }
+
+                          $("#table_period_pagination").append(pageList);
+                      } else if (page === totalPages) {
+                          page = page - 2;
+
+                          if (page < 1) {
+                              page = 1;
+                          }
+
+                          totalPages = page + 2 < totalPages ? page + 2 : totalPages;
+                          var pageList = $('<ul class="pagination"></ul>');
+
+                          for (i = page; i <= totalPages; i++) {
+                              pagebutton = $('<li class="page_period pages"><a href="#">' + i + '</a></li>');
+                              pageList.append(pagebutton);
+                              addPagePDButton(pagebutton);
+                          }
+
+                          $("#table_period_pagination").append(pageList);
+                      } else {
+                          page = page - 2;
+
+                          if (page < 1) {
+                              page = 1;
+                          }
+
+                          totalPages = page + 4 < totalPages ? page + 2 : totalPages;
+                          var pageList = $('<ul class="pagination"></ul>');
+
+                          for (i = page; i <= totalPages; i++) {
+                              pagebutton = $('<li class="page_period pages"><a href="#">' + i + '</a></li>');
+                              pageList.append(pagebutton);
+                              addPagePDButton(pagebutton);
+                          }
+
+                          $("#table_period_pagination").append(pageList);
+                      }
+                  }
+              },
+              // Fin
+              error: function error(error) {
+                  ReadError(error);
+              }
+          });
+
+      };
+
+      function addPagePDButton(pagebutton) {
+          pagebutton.click(function () {
+              page = $(this).text();
+              searchPeriod(page);
+          });
+      };
 
       lineChart('#daily', 'daily');
 
@@ -855,7 +972,7 @@ $(document).ready(function(){
       $('#daily').trigger('click');
 
       newsletter();
-      periods();
+      searchPeriod(1);
       balance();
     }
 
@@ -2618,6 +2735,7 @@ $(document).ready(function(){
                 box = $("<form class='ExchangeForm' id='ExchangeForm' enctype='multipart/form-data' ></form>");
                 alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Exchange</strong></div>');
                 labelA = $('<div class="form-group"><label>Available Balance: <span id="availableB"></span></label></div>');
+                selectP = $('<div class="form-group"><label for="selectper" >Period:</label><select id="period" class="form-control" name="period"></select></div>');
                 selectO = $('<div class="form-group"><label for="selectout" >Change For:</label><select id="out" class="form-control" name="selectout"></select></div>');
                 selectS = $('<div class="form-group"><label for="status">Status</label><select id="status" class="form-control" name="status"></select></div>');
                 inputO = $('<div class="form-group"><label for="valueout">Value</label><input id="valueout" name="valueout" type="text" class="form-control" placeholder="Value Out" required></div>');
@@ -2638,6 +2756,7 @@ $(document).ready(function(){
 
                 $('#ExchangeForm').append(alert);
                 $('#ExchangeForm').append(labelA);
+                $('#ExchangeForm').append(selectP);
                 $('#ExchangeForm').append(selectO);
                 $('#ExchangeForm').append(selectS);
                 $('#ExchangeForm').append(inputO);
@@ -2656,7 +2775,33 @@ $(document).ready(function(){
                     $('#status').append(option);
                 }
 
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    url: "/funds/periods",
+                    type: 'post',
+                    datatype: 'json',
+                    success: function (data) {
+                        //Inicio
+                        periods = data.data;
+                        for(i=0;i < periods.length;i++)
+                        {
+                            var period = periods[i];
+                            if(i == 0){
+                                var option = '<option value="'+period.id+'" selected>Open In '+ period.open_date +'</option>';
+                            }else{
+                              var option = '<option value="'+period.id+'">Open In '+ period.open_date +'</option>';
+                            }
 
+                            $('#period').append(option);
+                        }
+                    },
+                    // Fin
+                    error: function (error) {
+                        ReadError(error);
+                    }
+                })
 
                 $.ajax({
                     headers: {
@@ -2687,6 +2832,7 @@ $(document).ready(function(){
                     }
                 })
                 availableBalance('#out');
+                availableBalance('#period');
 
                 $('.modal-footer').append("<div id='exButts'></div>");
 
@@ -2716,7 +2862,8 @@ $(document).ready(function(){
 
         function availableBalance(selection){
             $(selection).change(function(){
-                currency = $(this).val();
+                currency = $('#out').val();
+                period = $('#period').val();
                 $.ajax({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -2724,11 +2871,11 @@ $(document).ready(function(){
                     url: "/funds/available",
                     type: 'post',
                     datatype: 'json',
-                    data: {currency: currency},
+                    data: {currency: currency, period: period},
                     success: function (data) {
                         //Inicio
                         currenc = data.data;
-                        amount = formatNumber.num(currenc.amount)
+                        amount = formatNumber.num(currenc.amount);
                         $('#availableB').html('');
                         $('#availableB').append(amount);
 
@@ -2764,7 +2911,9 @@ $(document).ready(function(){
                             minlength: 1,
                             number: true,
                         },
-
+                        period:{
+                          required: true,
+                        },
                         valuein:{
 
                             number: true,
@@ -2817,6 +2966,7 @@ $(document).ready(function(){
 
                 amountin = $('#valuein').val();
 
+                period = $('#period').val();
 
                 rate = $('#rate').val();
 
@@ -2831,7 +2981,7 @@ $(document).ready(function(){
                         url: '/funds/exchange',
                         type: 'POST',
                         dataType: "json",
-                        data: {cout : currencyout, cin : currencyin, aout : amountout, ain : amountin, rate: rate, created:created, funded: funded, status: status},
+                        data: {periodId: period, cout : currencyout, cin : currencyin, aout : amountout, ain : amountin, rate: rate, created:created, funded: funded, status: status},
                         success: function(data){
 
                           $('#fundsMod').modal('hide');
@@ -4525,7 +4675,7 @@ $(document).ready(function(){
                               var colvalue_5 = $('<td>' + formatNumber2.num(period.close_amount) + '</td>');
 
                               var change = period.close_amount - period.open_amount;
-                              var Pchange = (period.close_amount / period.open_amount) * 100;
+                              var Pchange = (change / period.open_amount) * 100;
 
                               var colvalue_6 = $('<td class="text-center">'+formatNumber2.num(change)+'<br/>'+formatNumber2.num(Pchange)+'%</td>');
                             }
@@ -4725,7 +4875,7 @@ $(document).ready(function(){
               box = $("<form class='PeriodForm' id='PeriodForm' enctype='multipart/form-data' ></form>");
               alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Period Date</strong></div>');
               inputI = $('<input id="id" name="id" type="text" class="form-control" value="'+period.id+'" style="display:none;" required>');
-              inputN = $('<div class="form-group"><label for="title">Close Date</label><input id="closed" name="closed" type="date" class="form-control" placeholder="Close Date" required></div>');
+              inputN = $('<div class="form-group"><label for="closed">Close Date</label><input id="closeDate" name="closedate" type="date" class="form-control" placeholder="Close Date" required></div>');
               inputA = $('<div class="form-group"><label for="title">Close Amount</label><input id="closea" name="closea" type="text" class="form-control" placeholder="Close Amount" required></div>');
 
               $('.modal-title').empty();
@@ -4758,8 +4908,9 @@ $(document).ready(function(){
 
           $('#PeriodForm').validate({
               rules: {
-                  closed:{
+                  closedate:{
                       required: true,
+                      date:true,
                       minlength: 2,
                   },
                   closea:{
@@ -4793,16 +4944,16 @@ $(document).ready(function(){
             $(this).addClass('disabled');
             $(this).prop('disabled', true);
                   id = $('#id').val();
-                  closed = $('#closed').val();
+                  closeda = $('#closeDate').val();
                   closea = $('#closea').val();
-
+                  console.log(closeda);
                   $.ajax({
 
                       headers: { 'X-CSRF-Token' : $('meta[name=csrf-token]').attr('content') },
                       url: '/periods/update',
                       type: 'POST',
                       dataType: "json",
-                      data: {id: id, closeD : closed, closeA: closea},
+                      data: {id: id, closeD : closeda, closeA: closea},
                       success: function(data){
                           $('#form_period_search').trigger("submit");
                           $('#clientMod').modal('hide');

@@ -91,7 +91,18 @@ class PeriodController extends Controller
       $period->close_amount = 0;
       $period->save();
 
-      $currency = Currency::Where('symbol', 'USD')->first();
+      $currency1 = Currency::Where('symbol', 'USD')->first();
+
+      $currencies = Currency::All();
+
+      foreach ($currencies as $currency) {
+          $balance = new Balance;
+          $balance->type = 'fund';
+          $balance->currency()->associate($currency);
+          $balance->period()->associate($period);
+          $balance->amount = 0;
+          $balance->save();
+      }
 
       $fund = new Fund;
       $fund->amount = 0;
@@ -100,7 +111,7 @@ class PeriodController extends Controller
       $fund->comment = 'Initial Invest';
       $fund->type = "initial";
       $fund->created_at = $openD;
-      $fund->currency()->associate($currency);
+      $fund->currency()->associate($currency1);
       $fund->period()->associate($period);
       $fund->save();
 
@@ -118,9 +129,49 @@ class PeriodController extends Controller
       $closeA = $request->closeA;
 
       $period = Period::Find($request->id);
+
+
+
       $period->close_date = $closeD;
       $period->close_amount = $closeA;
+
       $period->save();
+
+      $users = $period->users()->get();
+
+      $periodN = new Period;
+      $periodN->open_date = $closeD;
+      $periodN->open_amount = $closeA;
+      $periodN->close_amount = 0;
+
+      $periodN->save();
+      foreach($users as $user){
+        $periodN->users()->attach($user);
+      }
+      $periodN->save();
+      $currency1 = Currency::Where('symbol', 'USD')->first();
+
+      $currencies = Currency::All();
+
+      foreach ($currencies as $currency) {
+          $balance = new Balance;
+          $balance->type = 'fund';
+          $balance->currency()->associate($currency);
+          $balance->period()->associate($periodN);
+          $balance->amount = 0;
+          $balance->save();
+      }
+
+      $fund = new Fund;
+      $fund->amount = 0;
+      $fund->reference = 'initial';
+      $fund->active = 1;
+      $fund->comment = 'Initial Invest';
+      $fund->type = "initial";
+      $fund->created_at = $closeD;
+      $fund->currency()->associate($currency1);
+      $fund->period()->associate($periodN);
+      $fund->save();
 
       return response()->json(['message' => 'success'], 202);
     }
@@ -132,10 +183,16 @@ class PeriodController extends Controller
 
       $id = $request->id;
 
-      $fund = Fund::where('period_id', $id)->where('user_id', null)->first();
+      $funds = Fund::where('period_id', $id)->where('user_id', null)->get();
+      $balances = Balance::where('period_id', $id)->where('user_id', null)->get();
 
-      $fundD = Fund::find($fund->id);
-      $fundD->delete();
+      foreach($balances as $balance){
+        $balance->delete();
+      }
+
+      foreach($funds as $fund){
+        $fund->delete();
+      }
 
       $period = Period::Find($id);
       $period->delete();

@@ -42,6 +42,10 @@ class User extends Authenticatable
         return $this->belongsToMany('App\Role');
     }
 
+    public function periods(){
+        return $this->belongsToMany('App\Period');
+    }
+
     public function accounts(){
         return $this->hasMany('App\Account');
     }

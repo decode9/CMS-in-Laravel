@@ -21,6 +21,8 @@ class CreateUsersTable extends Migration
             $table->string('image')->nullable();
             $table->rememberToken();
             $table->timestamps();
+
+            $table->foreign('period_id')->references('id')->on('periods');
         });
     }
 

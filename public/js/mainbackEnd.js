@@ -828,51 +828,171 @@ $(document).ready(function () {
             });
         };
 
-        var _periods = function periods() {
+        var orderTablePeriodBy = function orderTablePeriodBy(by) {
+            if (orderClientBy === by) {
+                if (orderPeriodDirection === "") {
+                    orderPeriodDirection = "DESC";
+                } else {
+                    orderPeriodDirection = "";
+                }
+            } else {
+                orderPeriodBy = by;
+                orderPeriodDirection = "";
+            }
+            searchPeriod(1);
+        };
+
+        //Get Period Data
+
+        var searchPeriod = function searchPeriod(page) {
+
+            resultPage = $("#result_period_page").val();
+
             $.ajax({
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 url: "/dashboard/periods",
                 type: 'post',
+                data: { searchvalue: searchPeriodValue, page: page, orderBy: orderPeriodBy, orderDirection: orderPeriodDirection, resultPage: resultPage },
                 success: function success(data) {
-                    _periods = data.result;
-                    for (i = 0; i < _periods.open_date.length; i++) {
-                        opend = _periods.open_date[i];
-                        opena = _periods.open_amount[i];
-                        closed = _periods.close_date[i];
-                        closea = _periods.close_amount[i];
-                        change = _periods.diff_change[i];
-                        box = $('<div class="row" style="margin-top: 10px;"></div>');
+                    //Inicio
+                    var periods = data.result;
 
-                        boxod = $('<div class="col-sm-2">' + opend + '</div>');
-                        boxoa = $('<div class="col-sm-3">' + formatNumber2.num(opena) + '</div>');
+                    if (periods.length == 0) {
+                        $("#table_period_content").html("");
+                        $('#table_period_content').append('<tr><td colspan="7">None</td></tr>');
+                    } else {
+                        // Put the data into the element you care about.
+                        $("#table_period_content").html("");
 
-                        if (closea == 0) {
-                            boxcd = $('<div class="col-sm-2">Open Period</div>');
-                            boxca = $('<div class="col-sm-3">Open Period</div>');
-                            boxch = $('<div class="col-sm-2">Open Period</div>');
-                        } else {
-                            boxcd = $('<div class="col-sm-2">' + closed + '</div>');
-                            boxca = $('<div class="col-sm-2">' + formatNumber2.num(closea) + '</div>');
-                            boxch = $('<div class="col-sm-2">' + formatNumber2.num(change) + '%</div>');
+                        for (i = 0; i < periods.length; i++) {
+                            var period = periods[i];
+
+                            // we have to make in steps to add the onclick event
+                            var rowResult = $('<tr></tr>');
+                            var colvalue_1 = $('<td>' + period.open_date + '</td>');
+                            var colvalue_2 = $('<td>' + formatNumber2.num(period.open_amount) + '</td>');
+                            if (period.close_amount == 0) {
+                                var colvalue_3 = $('<td>0000-00-00</td>');
+                                var colvalue_4 = $('<td>0</td>');
+                                var colvalue_5 = $('<td class="text-center">0<br/>0%</td>');
+                            } else {
+                                var colvalue_3 = $('<td>' + period.close_date + '</td>');
+                                var colvalue_4 = $('<td>' + formatNumber2.num(period.close_amount) + '</td>');
+
+                                var change = period.close_amount - period.open_amount;
+                                var Pchange = change / period.open_amount * 100;
+
+                                var colvalue_5 = $('<td class="text-center">' + formatNumber2.num(change) + '<br/>' + formatNumber2.num(Pchange) + '%</td>');
+                            }
+
+                            rowResult.append(colvalue_1);
+                            rowResult.append(colvalue_2);
+                            rowResult.append(colvalue_3);
+                            rowResult.append(colvalue_4);
+                            rowResult.append(colvalue_5);
+
+                            $("#table_period_content").append(rowResult);
                         }
 
-                        box.append(boxod);
-                        box.append(boxoa);
-                        box.append(boxcd);
-                        box.append(boxca);
-                        box.append(boxch);
+                        $("#table_period_pagination").html("");
 
-                        $('.periods').append(box);
+                        page = parseInt(data.page);
+                        var total = data.total;
+                        var resultPage = $("#result_client_page").val();
+                        var totalPages = Math.ceil(total / resultPage);
+
+                        if (page === 1) {
+                            maxPage = page + 2;
+                            totalPages = maxPage < totalPages ? maxPage : totalPages;
+                            var pageList = $('<ul class="pagination"></ul>');
+
+                            for (i = page; i <= totalPages; i++) {
+                                pagebutton = $('<li class="page_period pages"><a href="#">' + i + '</a></li>');
+                                pageList.append(pagebutton);
+                                addPagePDButton(pagebutton);
+                            }
+
+                            $("#table_period_pagination").append(pageList);
+                        } else if (page === totalPages) {
+                            page = page - 2;
+
+                            if (page < 1) {
+                                page = 1;
+                            }
+
+                            totalPages = page + 2 < totalPages ? page + 2 : totalPages;
+                            var pageList = $('<ul class="pagination"></ul>');
+
+                            for (i = page; i <= totalPages; i++) {
+                                pagebutton = $('<li class="page_period pages"><a href="#">' + i + '</a></li>');
+                                pageList.append(pagebutton);
+                                addPagePDButton(pagebutton);
+                            }
+
+                            $("#table_period_pagination").append(pageList);
+                        } else {
+                            page = page - 2;
+
+                            if (page < 1) {
+                                page = 1;
+                            }
+
+                            totalPages = page + 4 < totalPages ? page + 2 : totalPages;
+                            var pageList = $('<ul class="pagination"></ul>');
+
+                            for (i = page; i <= totalPages; i++) {
+                                pagebutton = $('<li class="page_period pages"><a href="#">' + i + '</a></li>');
+                                pageList.append(pagebutton);
+                                addPagePDButton(pagebutton);
+                            }
+
+                            $("#table_period_pagination").append(pageList);
+                        }
                     }
+                },
+                // Fin
+                error: function error(error) {
+                    ReadError(error);
                 }
+            });
+        };
+
+        var addPagePDButton = function addPagePDButton(pagebutton) {
+            pagebutton.click(function () {
+                page = $(this).text();
+                searchPeriod(page);
             });
         };
 
         Chart.defaults.global.defaultFontColor = 'white';
         Chart.defaults.global.defaultFontFamily = 'florence';
 
+
+        $('#table_period_header_open_date').click(function (e) {
+            orderTablePeriodBy('open_date');
+        });
+
+        $('#table_period_header_open_amount').click(function (e) {
+            orderTablePeriodBy('open_amount');
+        });
+
+        $('#table_period_header_close_date').click(function (e) {
+            orderTablePeriodBy('close_date');
+        });
+
+        $('#table_period_header_close_amount').click(function (e) {
+            orderTablePeriodBy('close_amount');
+        });
+
+        var orderPeriodBy = "";
+        var orderPeriodDirection = "";
+        var searchPeriodValue = "";
+
+        ;;
+
+        ;
 
         lineChart('#daily', 'daily');
 
@@ -883,7 +1003,7 @@ $(document).ready(function () {
         $('#daily').trigger('click');
 
         newsletter();
-        _periods();
+        searchPeriod(1);
         balance();
     }
 
@@ -2642,6 +2762,7 @@ $(document).ready(function () {
                 box = $("<form class='ExchangeForm' id='ExchangeForm' enctype='multipart/form-data' ></form>");
                 alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Exchange</strong></div>');
                 labelA = $('<div class="form-group"><label>Available Balance: <span id="availableB"></span></label></div>');
+                selectP = $('<div class="form-group"><label for="selectper" >Period:</label><select id="period" class="form-control" name="period"></select></div>');
                 selectO = $('<div class="form-group"><label for="selectout" >Change For:</label><select id="out" class="form-control" name="selectout"></select></div>');
                 selectS = $('<div class="form-group"><label for="status">Status</label><select id="status" class="form-control" name="status"></select></div>');
                 inputO = $('<div class="form-group"><label for="valueout">Value</label><input id="valueout" name="valueout" type="text" class="form-control" placeholder="Value Out" required></div>');
@@ -2661,6 +2782,7 @@ $(document).ready(function () {
 
                 $('#ExchangeForm').append(alert);
                 $('#ExchangeForm').append(labelA);
+                $('#ExchangeForm').append(selectP);
                 $('#ExchangeForm').append(selectO);
                 $('#ExchangeForm').append(selectS);
                 $('#ExchangeForm').append(inputO);
@@ -2678,6 +2800,33 @@ $(document).ready(function () {
                     option = $('<option value="' + stat + '">' + stat + '</option>');
                     $('#status').append(option);
                 }
+
+                $.ajax({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    url: "/funds/periods",
+                    type: 'post',
+                    datatype: 'json',
+                    success: function success(data) {
+                        //Inicio
+                        periods = data.data;
+                        for (i = 0; i < periods.length; i++) {
+                            var period = periods[i];
+                            if (i == 0) {
+                                var option = '<option value="' + period.id + '" selected>Open In ' + period.open_date + '</option>';
+                            } else {
+                                var option = '<option value="' + period.id + '">Open In ' + period.open_date + '</option>';
+                            }
+
+                            $('#period').append(option);
+                        }
+                    },
+                    // Fin
+                    error: function error(_error15) {
+                        ReadError(_error15);
+                    }
+                });
 
                 $.ajax({
                     headers: {
@@ -2702,11 +2851,12 @@ $(document).ready(function () {
                         }
                     },
                     // Fin
-                    error: function error(_error15) {
-                        ReadError(_error15);
+                    error: function error(_error16) {
+                        ReadError(_error16);
                     }
                 });
                 availableBalance('#out');
+                availableBalance('#period');
 
                 $('.modal-footer').append("<div id='exButts'></div>");
 
@@ -2736,7 +2886,8 @@ $(document).ready(function () {
 
         var availableBalance = function availableBalance(selection) {
             $(selection).change(function () {
-                currency = $(this).val();
+                currency = $('#out').val();
+                period = $('#period').val();
                 $.ajax({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -2744,7 +2895,7 @@ $(document).ready(function () {
                     url: "/funds/available",
                     type: 'post',
                     datatype: 'json',
-                    data: { currency: currency },
+                    data: { currency: currency, period: period },
                     success: function success(data) {
                         //Inicio
                         currenc = data.data;
@@ -2753,8 +2904,8 @@ $(document).ready(function () {
                         $('#availableB').append(amount);
                     },
                     // Fin
-                    error: function error(_error16) {
-                        ReadError(_error16);
+                    error: function error(_error17) {
+                        ReadError(_error17);
                     }
                 });
             });
@@ -2782,7 +2933,9 @@ $(document).ready(function () {
                             minlength: 1,
                             number: true
                         },
-
+                        period: {
+                            required: true
+                        },
                         valuein: {
 
                             number: true
@@ -2834,6 +2987,8 @@ $(document).ready(function () {
 
                 amountin = $('#valuein').val();
 
+                period = $('#period').val();
+
                 rate = $('#rate').val();
 
                 created = $('#created').val();
@@ -2847,7 +3002,7 @@ $(document).ready(function () {
                     url: '/funds/exchange',
                     type: 'POST',
                     dataType: "json",
-                    data: { cout: currencyout, cin: currencyin, aout: amountout, ain: amountin, rate: rate, created: created, funded: funded, status: status },
+                    data: { periodId: period, cout: currencyout, cin: currencyin, aout: amountout, ain: amountin, rate: rate, created: created, funded: funded, status: status },
                     success: function success(data) {
 
                         $('#fundsMod').modal('hide');
@@ -2865,7 +3020,7 @@ $(document).ready(function () {
                         $('#form_pending_transaction_search').trigger("submit");
                         totalBalance();
                     },
-                    error: function error(_error17) {
+                    error: function error(_error18) {
                         $(this).removeClass('disabled');
                         $(this).prop('disabled', false);
                         $('.text-alert').empty();
@@ -3019,8 +3174,8 @@ $(document).ready(function () {
                     }
                 },
                 // Fin
-                error: function error(_error18) {
-                    ReadError(_error18);
+                error: function error(_error19) {
+                    ReadError(_error19);
                 }
             });
         };
@@ -3169,8 +3324,8 @@ $(document).ready(function () {
                     }
                 },
                 // Fin
-                error: function error(_error19) {
-                    ReadError(_error19);
+                error: function error(_error20) {
+                    ReadError(_error20);
                 }
             });
         };
@@ -3233,8 +3388,8 @@ $(document).ready(function () {
                         }
                     },
                     // Fin
-                    error: function error(_error20) {
-                        ReadError(_error20);
+                    error: function error(_error21) {
+                        ReadError(_error21);
                     }
                 });
                 availableBalance('#out');
@@ -3344,7 +3499,7 @@ $(document).ready(function () {
                         $('#form_pending_transaction_search').trigger("submit");
                         totalBalance();
                     },
-                    error: function error(_error21) {
+                    error: function error(_error22) {
                         $(this).removeClass('disabled');
                         $(this).prop('disabled', false);
                         $('.text-alert').empty();
@@ -3418,7 +3573,7 @@ $(document).ready(function () {
                         $('#form_pending_transaction_search').trigger("submit");
                         totalBalance();
                     },
-                    error: function error(_error22) {
+                    error: function error(_error23) {
                         $(this).removeClass('disabled');
                         $(this).prop('disabled', false);
                         $('.text-alert').empty();
@@ -4300,7 +4455,7 @@ $(document).ready(function () {
     /* Begin Client Functions */
 
     if (pathname.toString() == '/clients') {
-        var orderTablePeriodBy = function orderTablePeriodBy(by) {
+        var _orderTablePeriodBy = function _orderTablePeriodBy(by) {
             if (orderClientBy === by) {
                 if (orderPeriodDirection === "") {
                     orderPeriodDirection = "DESC";
@@ -4311,12 +4466,12 @@ $(document).ready(function () {
                 orderPeriodBy = by;
                 orderPeriodDirection = "";
             }
-            searchPeriod(1);
+            _searchPeriod(1);
         };
 
         //Get Period Data
 
-        var searchPeriod = function searchPeriod(page) {
+        var _searchPeriod = function _searchPeriod(page) {
 
             resultPage = $("#result_period_page").val();
 
@@ -4355,7 +4510,7 @@ $(document).ready(function () {
                                 var colvalue_5 = $('<td>' + formatNumber2.num(period.close_amount) + '</td>');
 
                                 var change = period.close_amount - period.open_amount;
-                                var Pchange = period.close_amount / period.open_amount * 100;
+                                var Pchange = change / period.open_amount * 100;
 
                                 var colvalue_6 = $('<td class="text-center">' + formatNumber2.num(change) + '<br/>' + formatNumber2.num(Pchange) + '%</td>');
                             }
@@ -4395,7 +4550,7 @@ $(document).ready(function () {
                             for (i = page; i <= totalPages; i++) {
                                 pagebutton = $('<li class="page_period pages"><a href="#">' + i + '</a></li>');
                                 pageList.append(pagebutton);
-                                addPagePDButton(pagebutton);
+                                _addPagePDButton(pagebutton);
                             }
 
                             $("#table_period_pagination").append(pageList);
@@ -4412,7 +4567,7 @@ $(document).ready(function () {
                             for (i = page; i <= totalPages; i++) {
                                 pagebutton = $('<li class="page_period pages"><a href="#">' + i + '</a></li>');
                                 pageList.append(pagebutton);
-                                addPagePDButton(pagebutton);
+                                _addPagePDButton(pagebutton);
                             }
 
                             $("#table_period_pagination").append(pageList);
@@ -4429,7 +4584,7 @@ $(document).ready(function () {
                             for (i = page; i <= totalPages; i++) {
                                 pagebutton = $('<li class="page_period pages"><a href="#">' + i + '</a></li>');
                                 pageList.append(pagebutton);
-                                addPagePDButton(pagebutton);
+                                _addPagePDButton(pagebutton);
                             }
 
                             $("#table_period_pagination").append(pageList);
@@ -4443,10 +4598,10 @@ $(document).ready(function () {
             });
         };
 
-        var addPagePDButton = function addPagePDButton(pagebutton) {
+        var _addPagePDButton = function _addPagePDButton(pagebutton) {
             pagebutton.click(function () {
                 page = $(this).text();
-                searchPeriod(page);
+                _searchPeriod(page);
             });
         };
 
@@ -4504,7 +4659,7 @@ $(document).ready(function () {
                         $('.alert').addClass('alert-success');
                         $('#clientAlertMod').modal('show');
                     },
-                    error: function error(_error23) {
+                    error: function error(_error24) {
                         $(this).removeClass('disabled');
                         $(this).prop('disabled', false);
                         $('.text-alert').empty();
@@ -4526,7 +4681,7 @@ $(document).ready(function () {
                 box = $("<form class='PeriodForm' id='PeriodForm' enctype='multipart/form-data' ></form>");
                 alert = $('<div class="alert alert-success" style="display: none;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Please Check Your Information and Confirm the Period Date</strong></div>');
                 inputI = $('<input id="id" name="id" type="text" class="form-control" value="' + period.id + '" style="display:none;" required>');
-                inputN = $('<div class="form-group"><label for="title">Close Date</label><input id="closed" name="closed" type="date" class="form-control" placeholder="Close Date" required></div>');
+                inputN = $('<div class="form-group"><label for="closed">Close Date</label><input id="closeDate" name="closedate" type="date" class="form-control" placeholder="Close Date" required></div>');
                 inputA = $('<div class="form-group"><label for="title">Close Amount</label><input id="closea" name="closea" type="text" class="form-control" placeholder="Close Amount" required></div>');
 
                 $('.modal-title').empty();
@@ -4559,8 +4714,9 @@ $(document).ready(function () {
 
             $('#PeriodForm').validate({
                 rules: {
-                    closed: {
+                    closedate: {
                         required: true,
+                        date: true,
                         minlength: 2
                     },
                     closea: {
@@ -4594,16 +4750,16 @@ $(document).ready(function () {
                 $(this).addClass('disabled');
                 $(this).prop('disabled', true);
                 id = $('#id').val();
-                closed = $('#closed').val();
+                closeda = $('#closeDate').val();
                 closea = $('#closea').val();
-
+                console.log(closeda);
                 $.ajax({
 
                     headers: { 'X-CSRF-Token': $('meta[name=csrf-token]').attr('content') },
                     url: '/periods/update',
                     type: 'POST',
                     dataType: "json",
-                    data: { id: id, closeD: closed, closeA: closea },
+                    data: { id: id, closeD: closeda, closeA: closea },
                     success: function success(data) {
                         $('#form_period_search').trigger("submit");
                         $('#clientMod').modal('hide');
@@ -4614,7 +4770,7 @@ $(document).ready(function () {
                         $('.alert').addClass('alert-success');
                         $('#clientAlertMod').modal('show');
                     },
-                    error: function error(_error24) {
+                    error: function error(_error25) {
                         $(this).removeClass('disabled');
                         $(this).prop('disabled', false);
                         $('.text-alert').empty();
@@ -4683,7 +4839,7 @@ $(document).ready(function () {
                         $('.alert').addClass('alert-success');
                         $('#clientAlertMod').modal('show');
                     },
-                    error: function error(_error25) {
+                    error: function error(_error26) {
                         $(this).removeClass('disabled');
                         $(this).prop('disabled', false);
                         $('.text-alert').empty();
@@ -5107,7 +5263,7 @@ $(document).ready(function () {
                             $('.alert').addClass('alert-success');
                             $('#clientsAlertMod').modal('show');
                         },
-                        error: function error(_error26) {
+                        error: function error(_error27) {
                             $(this).removeClass('disabled');
                             $(this).prop('disabled', false);
                             $('.text-alert').empty();
@@ -5126,19 +5282,19 @@ $(document).ready(function () {
         /*Search Client Table*/
 
         $('#table_period_header_open_date').click(function (e) {
-            orderTablePeriodBy('open_date');
+            _orderTablePeriodBy('open_date');
         });
 
         $('#table_period_header_open_amount').click(function (e) {
-            orderTablePeriodBy('open_amount');
+            _orderTablePeriodBy('open_amount');
         });
 
         $('#table_period_header_close_date').click(function (e) {
-            orderTablePeriodBy('close_date');
+            _orderTablePeriodBy('close_date');
         });
 
         $('#table_period_header_close_amount').click(function (e) {
-            orderTablePeriodBy('close_amount');
+            _orderTablePeriodBy('close_amount');
         });
 
         var orderPeriodBy = "";
@@ -5179,7 +5335,7 @@ $(document).ready(function () {
             e.preventDefault();
             //DESC
             searchPeriodValue = $("#search_period_value").val();
-            searchPeriod(1);
+            _searchPeriod(1);
         });
 
         $('#result_period_page').change(function () {
@@ -5349,8 +5505,8 @@ $(document).ready(function () {
                     // Put the data into the element you care about.
                 },
                 // Fin
-                error: function error(_error27) {
-                    ReadError(_error27);
+                error: function error(_error28) {
+                    ReadError(_error28);
                 }
             });
         };
@@ -5424,7 +5580,7 @@ $(document).ready(function () {
                         $('.alert').addClass('alert-success');
                         $('#newsAlertMod').modal('show');
                     },
-                    error: function error(_error28) {
+                    error: function error(_error29) {
                         $(this).removeClass('disabled');
                         $(this).prop('disabled', false);
                         $('.text-alert').empty();
@@ -5533,7 +5689,7 @@ $(document).ready(function () {
                         $('.alert').addClass('alert-success');
                         $('#newsAlertMod').modal('show');
                     },
-                    error: function error(_error29) {
+                    error: function error(_error30) {
                         $(this).removeClass('disabled');
                         $(this).prop('disabled', false);
                         $('.text-alert').empty();
@@ -5602,7 +5758,7 @@ $(document).ready(function () {
                         $('.alert').addClass('alert-success');
                         $('#newsAlertMod').modal('show');
                     },
-                    error: function error(_error30) {
+                    error: function error(_error31) {
                         $(this).removeClass('disabled');
                         $(this).prop('disabled', false);
                         $('.text-alert').empty();

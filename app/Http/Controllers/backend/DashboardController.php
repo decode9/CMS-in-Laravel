@@ -24,9 +24,9 @@ class DashboardController extends Controller
 
     private function percent($user){
             if($user->hasRole('30')){
-                    $userInitial = $user->funds()->where('type', 'initial')->get()->last();
+                    $userInitial = $user->funds()->where('type', 'initial')->first();
                     $userInvest = $userInitial->amount;
-                    $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->get()->last();
+                    $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', $userInitial->period_id)->first();
                     $fundInvest = $fundInitial->amount;
                     $percent = $userInvest / $fundInvest;
                     return $percent;
@@ -69,8 +69,13 @@ class DashboardController extends Controller
 
     public function balance(Request $request){
       $user = Auth::User();
-      $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('amount', '>', '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.amount', 'value', 'symbol', 'name')->get();
-      $initial = Fund::Where('user_id', null)->where('funds.type', 'initial')->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('amount', 'symbol', 'funds.created_at')->first();
+      if($user->hasRole('30')){
+        $period = $user->periods()->first();
+        $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->where('amount', '>', '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.amount', 'value', 'symbol', 'name')->get();
+        $initial = Fund::Where('user_id', null)->where('funds.type', 'initial')->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('amount', 'symbol', 'funds.created_at')->first();
+      }
+      $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', 0)->where('amount', '>', '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.amount', 'value', 'symbol', 'name')->get();
+      $initial = Fund::Where('user_id', null)->where('funds.type', 'initial')->where('period_id', 0)->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('amount', 'symbol', 'funds.created_at')->first();
       $usd = 0;
       $btc = 0;
       $chart['symbol'] = [];
@@ -198,42 +203,27 @@ class DashboardController extends Controller
     public function periods(){
       $user = Auth::user();
 
-      $periods['open_date'] = [];
-      $periods['open_amount'] = [];
-      $periods['close_date'] = [];
-      $periods['close_amount'] = [];
-      $periods['diff_change'] = [];
-
       if($user->hasRole(30)){
-        $query = $user->funds();
-        foreach ($query as $fund) {
-          $percentu = $this->percent($user);
-          $period = $fund->period();
+        $percent = $this->percent($user);
 
-          $openA = $period->open_amount * $percentu;
-          $closeA = $period->close_amount * $percentu;
+        $periods = $user->periods()->get();
 
-          $profit = $closeA - $openA;
+        foreach($periods as $period){
+          $fund = $user->funds()->where('type', 'initial')->first();
 
-          $percent = ($profit / $openA) * 100;
+          $period->open_amount = $fund->amount;
+          if($period->close_amount !== 0){
+            $period->close_amount = $period->close_amount * $percent;
+            $change = ($period->close_amount / $period->open_amount) * 100;
+            $period->diff_change = $change;
+          }
 
-          array_push($periods['open_date'], $period->open_date);
-          array_push($periods['open_amount'], $openA);
-          array_push($periods['close_date'], $period->close_date);
-          array_push($periods['close_amount'], $closeA);
-          array_push($periods['diff_change'], $percent);
         }
       }else{
-        $query = Fund::where('user_id', null)->where('funds.type', 'initial')->get();
-        foreach ($query as $fund) {
-          $period = $fund->period()->get();
-          $profit = $period[0]->close_amount - $period[0]->open_amount;
-          $percent = ($profit / $period[0]->open_amount) * 100;
-          array_push($periods['open_date'], $period[0]->open_date);
-          array_push($periods['open_amount'], $period[0]->open_amount);
-          array_push($periods['close_date'], $period[0]->close_date);
-          array_push($periods['close_amount'], $period[0]->close_amount);
-          array_push($periods['diff_change'], $percent);
+        $periods = Period::all();
+        foreach($periods as $period){
+          $change = ($period->close_amount / $period->open_amount) * 100;
+          $period->diff_change = $change;
         }
       }
       return response()->json(['result' => $periods], 202);

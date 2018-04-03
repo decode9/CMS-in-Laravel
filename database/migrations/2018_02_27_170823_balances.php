@@ -14,11 +14,14 @@ class Balances   extends Migration
     public function up()
     {
         DB::table('balances')->insert([
-                ['currency_id' => '1',  'type' => 'fund', 'amount' => '0'],
-                ['currency_id' => '2',  'type' => 'fund', 'amount' => '0'],
-                ['currency_id' => '3',  'type' => 'fund', 'amount' => '0'],
-                ['currency_id' => '4',  'type' => 'fund', 'amount' => '0'],
-                ['currency_id' => '5',  'type' => 'fund', 'amount' => '0'],
+                ['currency_id' => '1',  'type' => 'fund', 'amount' => '0', 'period_id' => '0'],
+                ['currency_id' => '2',  'type' => 'fund', 'amount' => '0', 'period_id' => '0'],
+                ['currency_id' => '3',  'type' => 'fund', 'amount' => '0', 'period_id' => '0'],
+                ['currency_id' => '4',  'type' => 'fund', 'amount' => '0', 'period_id' => '0'],
+                ['currency_id' => '5',  'type' => 'fund', 'amount' => '0', 'period_id' => '0'],
+        ]);
+        DB::table('funds')->insert([
+                ['currency_id' => '2',  'type' => 'initial', 'amount' => '0', 'period_id' => '0', 'comment' => 'initial invest', 'reference' => 'initial', 'active' => '1'],
         ]);
     }
 

@@ -43,9 +43,9 @@ class dailyHistory extends Command
 
      private function percent($user){
              if($user->hasRole('30')){
-                     $userInitial = $user->funds()->where('type', 'initial')->get()->last();
+                     $userInitial = $user->funds()->where('type', 'initial')->first();
                      $userInvest = $userInitial->amount;
-                     $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->get()->last();
+                     $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', $userInitial->period_id)->first();
                      $fundInvest = $fundInitial->amount;
                      $percent = $userInvest / $fundInvest;
                      return $percent;
