@@ -21,7 +21,7 @@ class Balances   extends Migration
                 ['currency_id' => '5',  'type' => 'fund', 'amount' => '0'],
         ]);
         DB::table('funds')->insert([
-                ['currency_id' => '2',  'type' => 'initial', 'amount' => '0', 'period_id' => '0', 'comment' => 'initial invest', 'reference' => 'initial', 'active' => '1'],
+                ['currency_id' => '2',  'type' => 'initial', 'amount' => '0' 'comment' => 'initial invest', 'reference' => 'initial', 'active' => '1'],
         ]);
     }
 
