@@ -42,9 +42,9 @@ class weeklyHistory extends Command
      */
      private function percent($user){
              if($user->hasRole('30')){
-                     $userInitial = $user->funds()->where('type', 'initial')->get()->last();
+                     $userInitial = $user->funds()->where('type', 'initial')->first();
                      $userInvest = $userInitial->amount;
-                     $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->get()->last();
+                     $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', $userInitial->period_id)->first();
                      $fundInvest = $fundInitial->amount;
                      $percent = $userInvest / $fundInvest;
                      return $percent;
@@ -68,7 +68,7 @@ class weeklyHistory extends Command
               $initial = $user->histories()->where('type', 'weekly')->get()->last();
 
               $initialT = Carbon::parse($initial->register);
-
+              $period = $user->periods()->first();
               $diffD = $initialT->diffInWeeks($today);
 
               $init = $initialT;
@@ -77,7 +77,7 @@ class weeklyHistory extends Command
                 $init = $init->addDays(1);
                 $sum = 0;
                 $initstamp = $init->timestamp;
-                $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+                $balances = Balance::Where('balances.type', 'fund')->where('user_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
                   foreach($balances as $balance){
                       if($balance->amount > 0){
                           $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initstamp);
@@ -117,7 +117,7 @@ class weeklyHistory extends Command
                 $initG = $initG->addDays(1);
                 $sum = 0;
                 $initstamp = $initG->timestamp;
-                $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+                $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
                   foreach($balances as $balance){
                       if($balance->amount > 0){
                           $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initstamp);

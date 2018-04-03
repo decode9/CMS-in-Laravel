@@ -66,7 +66,7 @@ class dailyHistory extends Command
 
               $percent = $this->percent($user);
               $initial = $user->histories()->where('type', 'daily')->get()->last();
-
+              $period = $user->periods()->first();
               $initialT = Carbon::parse($initial->register);
 
               $diffD = $initialT->diffInDays($today);
@@ -77,7 +77,7 @@ class dailyHistory extends Command
                 $init = $init->addDays(1);
                 $sum = 0;
                 $initstamp = $init->timestamp;
-                $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+                $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
                   foreach($balances as $balance){
                       if($balance->amount > 0){
                           $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initstamp);
@@ -117,7 +117,7 @@ class dailyHistory extends Command
                 $initG = $initG->addDays(1);
                 $sum = 0;
                 $initstamp = $initG->timestamp;
-                $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+                $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
                   foreach($balances as $balance){
                       if($balance->amount > 0){
                           $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initstamp);

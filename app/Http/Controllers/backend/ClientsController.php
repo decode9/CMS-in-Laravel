@@ -79,7 +79,7 @@ class ClientsController extends Controller
           $period = $user->periods()->first();
           $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
         }else{
-          $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', 0)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+          $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
         }
         $usd = 0;
         $btc = 0;
@@ -209,7 +209,7 @@ class ClientsController extends Controller
            $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
            //Search by
          }else{
-           $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', 0)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
+           $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
            //Search by
          }
 
@@ -318,7 +318,7 @@ class ClientsController extends Controller
              $poolfP->amount = $newamountP;
              $poolfP->save();
 
-             $pool = Fund::where('user_id', null )->where('type', 'initial')->where('period_id', 0)->first();
+             $pool = Fund::where('user_id', null )->where('type', 'initial')->where('period_id', null)->first();
              $newamount = $pool->amount - $fund->amount;
              $newamount = $newamount + $amount;
 
@@ -335,7 +335,7 @@ class ClientsController extends Controller
 
 
 
-             $balance = Balance::where('user_id', null)->where('currency_id', '2')->first();
+             $balance = Balance::where('user_id', null)->where('period_id', null)->where('currency_id', '2')->first();
              $newbalance = $balance->amount - $fund->amount;
              $newbalance = $newbalance + $amount;
 
@@ -353,7 +353,7 @@ class ClientsController extends Controller
          }else{
              $fund = new Fund;
 
-             $pool = Fund::where('user_id', null)->where('type', 'initial')->where('period_id', 0)->first();
+             $pool = Fund::where('user_id', null)->where('type', 'initial')->where('period_id', null)->first();
              $newamount = $pool->amount + $amount;
 
              $poolf = Fund::find($pool->id);
@@ -373,7 +373,7 @@ class ClientsController extends Controller
              $periodf->open_amount = $newamount;
              $periodf->save();
 
-             $balance = Balance::where('user_id', null)->where('period_id', 0)->where('currency_id', '2')->first();
+             $balance = Balance::where('user_id', null)->where('period_id', null)->where('currency_id', '2')->first();
              $newbalance = $balance->amount + $amount;
 
              $balanceP = Balance::where('user_id', null)->where('period_id', $period->id)->where('currency_id', '2')->first();
