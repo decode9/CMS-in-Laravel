@@ -177,7 +177,6 @@ class CurrenciesController extends Controller
             $balance = new Balance;
             $balance->amount = 0;
             $balance->type = 'fund';
-            $balance->period_id = 0;
             $balance->currency()->associate($currency);
             $balance->save();
           foreach ($periods as $period) {
