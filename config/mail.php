@@ -84,9 +84,9 @@ return [
     |
     */
 
-    'username' => env('noreplykryptofinance@gmail.com'),
+    'username' => env('MAIL_USERNAME','no-reply-krypto@outlook.com'),
 
-    'password' => env('fflsijplcyrwcoyt'),
+    'password' => env('MAIL_PASSWORD', 'Luisbas12'),
 
     /*
     |--------------------------------------------------------------------------
