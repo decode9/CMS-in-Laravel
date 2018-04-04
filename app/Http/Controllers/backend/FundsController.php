@@ -355,7 +355,7 @@ class FundsController extends Controller
 
 
          if($user->hasRole('30')){
-           $periods = $user->periods()->get());
+           $periods = $user->periods()->get();
            $count = 0;
            foreach ($periods as $period) {
                $transactions = array();
