@@ -24,9 +24,12 @@ class DashboardController extends Controller
 
     private function percent($user){
             if($user->hasRole('30')){
-                    $userInitial = $user->funds()->where('type', 'initial')->first();
-                    $userInvest = $userInitial->amount;
-                    $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', $userInitial->period_id)->first();
+                    $userInitials = $user->funds()->where('type', 'initial')->get();
+                    $userInvest = 0;
+                    foreach($userInitials as $initial){
+                        $userInvest += $initial->amount;
+                    }
+                    $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', null)->first();
                     $fundInvest = $fundInitial->amount;
                     $percent = $userInvest / $fundInvest;
                     return $percent;

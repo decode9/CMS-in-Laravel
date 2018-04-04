@@ -88,11 +88,25 @@ class FundsController extends Controller
         $balances = array();
 
         if($user->hasRole('30')){
-          $period = $user->periods()->first();
-          $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+          $periods = $user->periods()->get();
+          foreach($periods as $period){
+              $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+              foreach($balancesP as $balance){
+                  $balances[$count] = new \stdClass();
+                  if(property_exists($balances[$count], 'amount')){
+                      $balances[$count]->amount = $balance->amount;
+                      $balances[$count]->value = $balance->value;
+                      $balances[$count]->symbol = $balance->symbol;
+                      $balances[$count]->type = $balance->type;
+                      $balances[$count]->name = $balance->name;
+                  }
+              }
+          }
+
         }else{
           $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
         }
+
         $usd = 0;
         $btc = 0;
 
@@ -148,14 +162,18 @@ class FundsController extends Controller
 
      private function percent($user){
              if($user->hasRole('30')){
-                     $userInitial = $user->funds()->where('type', 'initial')->first();
-                     $userInvest = $userInitial->amount;
-                     $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', $userInitial->period_id)->first();
+                     $userInitials = $user->funds()->where('type', 'initial')->get();
+                     $userInvest = 0;
+                     foreach($userInitials as $initial){
+                         $userInvest += $initial->amount;
+                     }
+                     $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', null)->first();
                      $fundInvest = $fundInitial->amount;
                      $percent = $userInvest / $fundInvest;
                      return $percent;
              }
      }
+
      public function indexCurrency(Request $request){
 
          $user = Auth::User();
@@ -167,58 +185,116 @@ class FundsController extends Controller
          $total = 0;
 
 
-         //Select Witdraws of the use
+         $balancesCurrency = array();
+
          if($user->hasRole('30')){
-           $periods = $user->periods()->first();
-           $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
+           $periods = $user->periods()->get();
+           foreach($periods as $period){
+               $count = 0;
+               $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
+
+               if($searchValue != '')
+               {
+                       $query->Where(function($query) use($searchValue){
+                           $query->Where('symbol', 'like', '%'.$searchValue.'%')
+                           ->orWhere('amount', 'like', '%'.$searchValue.'%')
+                           ->orWhere('value', 'like', '%'.$searchValue.'%');
+                       });
+               }
+
+               //Order By
+
+               if($orderBy != '')
+               {
+                   if($orderDirection != '')
+                   {
+                       $query->orderBy($orderBy, 'desc');
+                   }else{
+                       $query->orderBy($orderBy);
+                   }
+               }else if($orderDirection != ''){
+                   $query->orderBy('balances.amount');
+               }else{
+                    $query->orderBy('balances.amount', 'desc');
+               }
+
+               if($resultPage == null || $resultPage == 0)
+               {
+                   $resultPage = 10;
+               }
+
+               //Get Total of fees
+               $total  =  $query->get()->count();
+
+               if($page > 1)
+               {
+                    $query->offset(    ($page -  1)   *    $resultPage);
+               }
+
+
+               $query->limit($resultPage);
+               $balancesCurrencyP  =  $query->get();
+
+               foreach($balancesCurrencyP as $balance){
+                   $balancesCurrency[$count] = new \stdClass();
+                   if(property_exists($balancesCurrency[$count], 'amount')){
+                       $balancesCurrency[$count]->amount = $balance->amount;
+                       $balancesCurrency[$count]->value = $balance->value;
+                       $balancesCurrency[$count]->symbol = $balance->symbol;
+                       $balancesCurrency[$count]->type = $balance->type;
+                       $balancesCurrency[$count]->name = $balance->name;
+                   }
+               }
+
+           }
+
+           //Search by
          }else{
            $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
            //Search by
+           if($searchValue != '')
+           {
+                   $query->Where(function($query) use($searchValue){
+                       $query->Where('symbol', 'like', '%'.$searchValue.'%')
+                       ->orWhere('amount', 'like', '%'.$searchValue.'%')
+                       ->orWhere('value', 'like', '%'.$searchValue.'%');
+                   });
+           }
 
+           //Order By
+
+           if($orderBy != '')
+           {
+               if($orderDirection != '')
+               {
+                   $query->orderBy($orderBy, 'desc');
+               }else{
+                   $query->orderBy($orderBy);
+               }
+           }else if($orderDirection != ''){
+               $query->orderBy('balances.amount');
+           }else{
+                $query->orderBy('balances.amount', 'desc');
+           }
+
+           if($resultPage == null || $resultPage == 0)
+           {
+               $resultPage = 10;
+           }
+
+           //Get Total of fees
+           $total  =  $query->get()->count();
+
+           if($page > 1)
+           {
+                $query->offset(    ($page -  1)   *    $resultPage);
+           }
+
+
+           $query->limit($resultPage);
+           $balancesCurrency  =  $query->get();
 
          }
-
-         if($searchValue != '')
-         {
-                 $query->Where(function($query) use($searchValue){
-                     $query->Where('symbol', 'like', '%'.$searchValue.'%')
-                     ->orWhere('amount', 'like', '%'.$searchValue.'%')
-                     ->orWhere('value', 'like', '%'.$searchValue.'%');
-                 });
-         }
-
-         //Order By
-
-         if($orderBy != '')
-         {
-             if($orderDirection != '')
-             {
-                 $query->orderBy($orderBy, 'desc');
-             }else{
-                 $query->orderBy($orderBy);
-             }
-         }else if($orderDirection != ''){
-             $query->orderBy('balances.amount');
-         }else{
-              $query->orderBy('balances.amount', 'desc');
-         }
-
-         if($resultPage == null || $resultPage == 0)
-         {
-             $resultPage = 10;
-         }
-
-         //Get Total of fees
-         $total  =  $query->get()->count();
-
-         if($page > 1)
-         {
-              $query->offset(    ($page -  1)   *    $resultPage);
-         }
-
-
-         $query->limit($resultPage);
-         $balancesCurrency  =  $query->get();
 
          foreach($balancesCurrency as $balance){
              if($balance->symbol == "USD"){
