@@ -420,7 +420,7 @@ class FundsController extends Controller
                        $transactions[$count]->updated_at = $transaction->updated_at;
                        $transactions[$count]->rate = $transaction->rate;
                    }
-                   $count += 1
+                   $count += 1;
                }
 
            }
@@ -579,7 +579,7 @@ class FundsController extends Controller
                        $transactions[$count]->updated_at = $transaction->updated_at;
                        $transactions[$count]->rate = $transaction->rate;
                    }
-                   $count += 1
+                   $count += 1;
                }
 
            }
