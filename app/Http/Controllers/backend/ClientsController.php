@@ -204,7 +204,7 @@ class ClientsController extends Controller
              if(isset($funds)){
                  $user->amount = 0;
                  foreach($funds as $fund){
-                     $user->amount += $funds->amount;
+                     $user->amount += $fund->amount;
                  }
              }else{
                  $user->amount = 0;
