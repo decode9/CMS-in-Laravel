@@ -90,6 +90,7 @@ class FundsController extends Controller
         if($user->hasRole('30')){
           $periods = $user->periods()->get();
           foreach($periods as $period){
+              $count = 0;
               $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
               foreach($balancesP as $balance){
                   $balances[$count] = new \stdClass();
@@ -99,7 +100,11 @@ class FundsController extends Controller
                       $balances[$count]->symbol = $balance->symbol;
                       $balances[$count]->type = $balance->type;
                       $balances[$count]->name = $balance->name;
+                      $balances[$count]->value_btc = 0;
+                  }else{
+                     $balances[$count]->amount += $balance->amount;
                   }
+                  $count += 1;
               }
           }
 
@@ -243,7 +248,10 @@ class FundsController extends Controller
                        $balancesCurrency[$count]->symbol = $balance->symbol;
                        $balancesCurrency[$count]->type = $balance->type;
                        $balancesCurrency[$count]->name = $balance->name;
+                   }else{
+                       $balancesCurrency[$count]->amount += $balance->amount;
                    }
+                   $count += 1;
                }
 
            }
@@ -344,59 +352,129 @@ class FundsController extends Controller
          $orderDirection = $request->orderDirection;
          $total = 0;
 
+
+
          if($user->hasRole('30')){
-           $period = $user->periods()->first();
-           $query = FundOrder::where('user_id', null)->where('period_id', $period->id)->where('status', 'complete')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
+           $periods = $user->periods()->get());
+           $count = 0;
+           foreach ($periods as $period) {
+               $transactions = array();
+               $query = FundOrder::where('user_id', null)->where('period_id', $period->id)->where('status', 'complete')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
+               if($searchValue != '')
+               {
+                       $query->Where(function($query) use($searchValue){
+                           $query->Where('out_amount', 'like', '%'.$searchValue.'%')
+                           ->orWhere('in_amount', 'like', '%'.$searchValue.'%')
+                           ->orWhere('status', 'like', '%'.$searchValue.'%')
+                           ->orWhere('fund_orders.created_at', 'like', '%'.$searchValue.'%')
+                           ->orWhere('currencies.symbol', 'like', '%'.$searchValue.'%');
+                       });
+               }
+
+
+               //Order By
+
+               if($orderBy != '')
+               {
+                   if($orderDirection != '')
+                   {
+                       $query->orderBy($orderBy, 'desc');
+                   }else{
+                       $query->orderBy($orderBy);
+                   }
+               }else if($orderDirection != ''){
+                   $query->orderBy('fund_orders.created_at', 'desc');
+               }else{
+                    $query->orderBy('fund_orders.created_at');
+               }
+
+               if($resultPage == null || $resultPage == 0)
+               {
+                   $resultPage = 10;
+               }
+
+               //Get Total of fees
+               $total  =  $query->get()->count();
+
+               if($page > 1)
+               {
+                    $query->offset(    ($page -  1)   *    $resultPage);
+               }
+
+
+               $query->limit($resultPage);
+
+               $transactionsP  =  $query->get();
+
+               foreach($transactionsP as $transaction){
+                   $transactions[$count] = new \stdClass();
+                   if(!(property_exists($transactions[$count], 'out_amount'))){
+                       $transactions[$count]->out_amount = $transaction->out_amount;
+                       $transactions[$count]->out_currency = $transaction->out_currency;
+                       $transactions[$count]->in_amount = $transaction->in_amount;
+                       $transactions[$count]->in_currency = $transaction->in_currency;
+                       $transactions[$count]->symbol = $transaction->symbol;
+                       $transactions[$count]->created_at = $transaction->created_at;
+                       $transactions[$count]->reference = $transaction->reference;
+                       $transactions[$count]->status = $transaction->status;
+                       $transactions[$count]->updated_at = $transaction->updated_at;
+                       $transactions[$count]->rate = $transaction->rate;
+                   }
+                   $count += 1
+               }
+
+           }
          }else{
            $query = FundOrder::where('user_id', null)->where('status', 'complete')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
            //Search by
+           if($searchValue != '')
+           {
+                   $query->Where(function($query) use($searchValue){
+                       $query->Where('out_amount', 'like', '%'.$searchValue.'%')
+                       ->orWhere('in_amount', 'like', '%'.$searchValue.'%')
+                       ->orWhere('status', 'like', '%'.$searchValue.'%')
+                       ->orWhere('fund_orders.created_at', 'like', '%'.$searchValue.'%')
+                       ->orWhere('currencies.symbol', 'like', '%'.$searchValue.'%');
+                   });
+           }
+
+
+           //Order By
+
+           if($orderBy != '')
+           {
+               if($orderDirection != '')
+               {
+                   $query->orderBy($orderBy, 'desc');
+               }else{
+                   $query->orderBy($orderBy);
+               }
+           }else if($orderDirection != ''){
+               $query->orderBy('fund_orders.created_at', 'desc');
+           }else{
+                $query->orderBy('fund_orders.created_at');
+           }
+
+           if($resultPage == null || $resultPage == 0)
+           {
+               $resultPage = 10;
+           }
+
+           //Get Total of fees
+           $total  =  $query->get()->count();
+
+           if($page > 1)
+           {
+                $query->offset(    ($page -  1)   *    $resultPage);
+           }
+
+
+           $query->limit($resultPage);
+
+           $transactions  =  $query->get();
          }
 
-         if($searchValue != '')
-         {
-                 $query->Where(function($query) use($searchValue){
-                     $query->Where('out_amount', 'like', '%'.$searchValue.'%')
-                     ->orWhere('in_amount', 'like', '%'.$searchValue.'%')
-                     ->orWhere('status', 'like', '%'.$searchValue.'%')
-                     ->orWhere('fund_orders.created_at', 'like', '%'.$searchValue.'%')
-                     ->orWhere('currencies.symbol', 'like', '%'.$searchValue.'%');
-                 });
-         }
 
-
-         //Order By
-
-         if($orderBy != '')
-         {
-             if($orderDirection != '')
-             {
-                 $query->orderBy($orderBy, 'desc');
-             }else{
-                 $query->orderBy($orderBy);
-             }
-         }else if($orderDirection != ''){
-             $query->orderBy('fund_orders.created_at', 'desc');
-         }else{
-              $query->orderBy('fund_orders.created_at');
-         }
-
-         if($resultPage == null || $resultPage == 0)
-         {
-             $resultPage = 10;
-         }
-
-         //Get Total of fees
-         $total  =  $query->get()->count();
-
-         if($page > 1)
-         {
-              $query->offset(    ($page -  1)   *    $resultPage);
-         }
-
-
-         $query->limit($resultPage);
-
-         $transactions  =  $query->get();
 
          if($user->hasRole('30')){
              $percent = $this->percent($user);
@@ -436,58 +514,124 @@ class FundsController extends Controller
          $transactions = array();
 
          if($user->hasRole('30')){
-           $period = $user->periods()->first();
-           $query = FundOrder::where('user_id', null)->where('period_id', $period->id)->where('status', 'pending')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
+           $periods = $user->periods()->get());
+           $count = 0;
+           foreach ($periods as $period) {
+               $transactions = array();
+               $query = FundOrder::where('user_id', null)->where('period_id', $period->id)->where('status', 'complete')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
+               if($searchValue != '')
+               {
+                       $query->Where(function($query) use($searchValue){
+                           $query->Where('out_amount', 'like', '%'.$searchValue.'%')
+                           ->orWhere('in_amount', 'like', '%'.$searchValue.'%')
+                           ->orWhere('status', 'like', '%'.$searchValue.'%')
+                           ->orWhere('fund_orders.created_at', 'like', '%'.$searchValue.'%')
+                           ->orWhere('currencies.symbol', 'like', '%'.$searchValue.'%');
+                       });
+               }
+
+
+               //Order By
+
+               if($orderBy != '')
+               {
+                   if($orderDirection != '')
+                   {
+                       $query->orderBy($orderBy, 'desc');
+                   }else{
+                       $query->orderBy($orderBy);
+                   }
+               }else if($orderDirection != ''){
+                   $query->orderBy('fund_orders.created_at', 'desc');
+               }else{
+                    $query->orderBy('fund_orders.created_at');
+               }
+
+               if($resultPage == null || $resultPage == 0)
+               {
+                   $resultPage = 10;
+               }
+
+               //Get Total of fees
+               $total  =  $query->get()->count();
+
+               if($page > 1)
+               {
+                    $query->offset(    ($page -  1)   *    $resultPage);
+               }
+
+
+               $query->limit($resultPage);
+
+               $transactionsP  =  $query->get();
+
+               foreach($transactionsP as $transaction){
+                   $transactions[$count] = new \stdClass();
+                   if(!(property_exists($transactions[$count], 'out_amount'))){
+                       $transactions[$count]->out_amount = $transaction->out_amount;
+                       $transactions[$count]->out_currency = $transaction->out_currency;
+                       $transactions[$count]->in_amount = $transaction->in_amount;
+                       $transactions[$count]->in_currency = $transaction->in_currency;
+                       $transactions[$count]->symbol = $transaction->symbol;
+                       $transactions[$count]->created_at = $transaction->created_at;
+                       $transactions[$count]->reference = $transaction->reference;
+                       $transactions[$count]->status = $transaction->status;
+                       $transactions[$count]->updated_at = $transaction->updated_at;
+                       $transactions[$count]->rate = $transaction->rate;
+                   }
+                   $count += 1
+               }
+
+           }
          }else{
            $query = FundOrder::where('user_id', null)->where('status', 'pending')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
            //Search by
+           if($searchValue != '')
+           {
+                   $query->Where(function($query) use($searchValue){
+                       $query->Where('out_amount', 'like', '%'.$searchValue.'%')
+                       ->orWhere('in_amount', 'like', '%'.$searchValue.'%')
+                       ->orWhere('status', 'like', '%'.$searchValue.'%')
+                       ->orWhere('fund_orders.created_at', 'like', '%'.$searchValue.'%')
+                       ->orWhere('currencies.symbol', 'like', '%'.$searchValue.'%');
+                   });
+           }
+
+
+           //Order By
+
+           if($orderBy != '')
+           {
+               if($orderDirection != '')
+               {
+                   $query->orderBy($orderBy, 'desc');
+               }else{
+                   $query->orderBy($orderBy);
+               }
+           }else if($orderDirection != ''){
+               $query->orderBy('fund_orders.created_at', 'desc');
+           }else{
+                $query->orderBy('fund_orders.created_at');
+           }
+
+           if($resultPage == null || $resultPage == 0)
+           {
+               $resultPage = 10;
+           }
+
+           //Get Total of fees
+           $total  =  $query->get()->count();
+
+           if($page > 1)
+           {
+                $query->offset(    ($page -  1)   *    $resultPage);
+           }
+
+
+           $query->limit($resultPage);
+
+           $transactions  =  $query->get();
          }
-
-         if($searchValue != '')
-         {
-                 $query->Where(function($query) use($searchValue){
-                     $query->Where('out_amount', 'like', '%'.$searchValue.'%')
-                     ->orWhere('in_amount', 'like', '%'.$searchValue.'%')
-                     ->orWhere('status', 'like', '%'.$searchValue.'%')
-                     ->orWhere('fund_orders.created_at', 'like', '%'.$searchValue.'%')
-                     ->orWhere('currencies.symbol', 'like', '%'.$searchValue.'%');
-                 });
-         }
-
-
-         //Order By
-
-         if($orderBy != '')
-         {
-             if($orderDirection != '')
-             {
-                 $query->orderBy($orderBy, 'desc');
-             }else{
-                 $query->orderBy($orderBy);
-             }
-         }else if($orderDirection != ''){
-             $query->orderBy('fund_orders.created_at', 'desc');
-         }else{
-              $query->orderBy('fund_orders.created_at');
-         }
-
-         if($resultPage == null || $resultPage == 0)
-         {
-             $resultPage = 10;
-         }
-
-         //Get Total of fees
-         $total  =  $query->get()->count();
-
-         if($page > 1)
-         {
-              $query->offset(    ($page -  1)   *    $resultPage);
-         }
-
-
-         $query->limit($resultPage);
-
-         $transactions  =  $query->get();
 
          if($user->hasRole('30')){
              $percent = $this->percent($user);

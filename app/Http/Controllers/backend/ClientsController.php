@@ -90,7 +90,11 @@ class ClientsController extends Controller
                       $balances[$count]->symbol = $balance->symbol;
                       $balances[$count]->type = $balance->type;
                       $balances[$count]->name = $balance->name;
+                      $balances[$count]->value_btc = 0;
+                  }else{
+                      $balances[$count]->amount += $balance->amount;
                   }
+                  $count += 1;
               }
           }
 
@@ -279,7 +283,10 @@ class ClientsController extends Controller
                        $balancesCurrency[$count]->symbol = $balance->symbol;
                        $balancesCurrency[$count]->type = $balance->type;
                        $balancesCurrency[$count]->name = $balance->name;
+                   }else{
+                       $balancesCurrency[$count]->amount += $balance->amount;
                    }
+                   $count += 1;
                }
 
            }

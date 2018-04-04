@@ -65,7 +65,7 @@ class VerifyHistory extends Command
 
       foreach($users as $user){
         if($user->histories()->first() == null){
-          $period = $user->periods()->first();
+          $periods = $user->periods()->get();
             $percent = $this->percent($user);
             $initial = $user->funds()->where('type', 'initial')->where('period_id', $period->id)->first();
             $initialT = $initial->created_at;
@@ -82,7 +82,24 @@ class VerifyHistory extends Command
             for($i = 0;$i <= $diffD; $i++){
               $sum = 0;
               $initstamp = $init->timestamp;
-              $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+              foreach ($periods as $period) {
+                  $count = 0;
+                  $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+                  foreach($balancesP as $balance){
+                      $balances[$count] = new \stdClass();
+                      if(property_exists($balances[$count], 'amount')){
+                          $balances[$count]->amount = $balance->amount;
+                          $balances[$count]->value = $balance->value;
+                          $balances[$count]->symbol = $balance->symbol;
+                          $balances[$count]->type = $balance->type;
+                          $balances[$count]->name = $balance->name;
+                          $balances[$count]->value_btc = 0;
+                      }else{
+                         $balances[$count]->amount += $balance->amount;
+                      }
+                      $count += 1;
+                  }
+              }
               foreach($balances as $balance){
                   if($balance->amount > 0){
                       $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initstamp);
@@ -115,7 +132,24 @@ class VerifyHistory extends Command
             for($i = 0;$i <= $diffW; $i++){
               $sum = 0;
               $initWstamp = $initW->timestamp;
-              $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+              foreach ($periods as $period) {
+                  $count = 0;
+                  $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+                  foreach($balancesP as $balance){
+                      $balances[$count] = new \stdClass();
+                      if(property_exists($balances[$count], 'amount')){
+                          $balances[$count]->amount = $balance->amount;
+                          $balances[$count]->value = $balance->value;
+                          $balances[$count]->symbol = $balance->symbol;
+                          $balances[$count]->type = $balance->type;
+                          $balances[$count]->name = $balance->name;
+                          $balances[$count]->value_btc = 0;
+                      }else{
+                         $balances[$count]->amount += $balance->amount;
+                      }
+                      $count += 1;
+                  }
+              }
               foreach($balances as $balance){
                   if($balance->amount > 0){
                       $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initWstamp);
@@ -148,7 +182,24 @@ class VerifyHistory extends Command
             for($i = 0;$i <= $diffM; $i++){
               $sum = 0;
               $initMstamp = $initM->timestamp;
-              $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+              foreach ($periods as $period) {
+                  $count = 0;
+                  $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+                  foreach($balancesP as $balance){
+                      $balances[$count] = new \stdClass();
+                      if(property_exists($balances[$count], 'amount')){
+                          $balances[$count]->amount = $balance->amount;
+                          $balances[$count]->value = $balance->value;
+                          $balances[$count]->symbol = $balance->symbol;
+                          $balances[$count]->type = $balance->type;
+                          $balances[$count]->name = $balance->name;
+                          $balances[$count]->value_btc = 0;
+                      }else{
+                         $balances[$count]->amount += $balance->amount;
+                      }
+                      $count += 1;
+                  }
+              }
               foreach($balances as $balance){
                   if($balance->amount > 0){
                       $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initMstamp);

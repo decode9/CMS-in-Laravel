@@ -73,9 +73,25 @@ class DashboardController extends Controller
     public function balance(Request $request){
       $user = Auth::User();
       if($user->hasRole('30')){
-        $period = $user->periods()->first();
-        $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->where('amount', '>', '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.amount', 'value', 'symbol', 'name')->get();
-        $initial = Fund::Where('user_id', null)->where('funds.type', 'initial')->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('amount', 'symbol', 'funds.created_at')->first();
+        $periods = $user->periods()->get();
+        foreach ($periods as $period) {
+            $count = 0;
+            $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->where('amount', '>', '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.amount', 'value', 'symbol', 'name')->get();
+            foreach($balancesP as $balance){
+                $balances[$count] = new \stdClass();
+                if(property_exists($balances[$count], 'amount')){
+                    $balances[$count]->amount = $balance->amount;
+                    $balances[$count]->value = $balance->value;
+                    $balances[$count]->symbol = $balance->symbol;
+                    $balances[$count]->name = $balance->name;
+                    $balances[$count]->value_btc = 0;
+                }else{
+                    $balances[$count]->amount += $balance->amount;
+                }
+                $count += 1;
+            }
+        }
+
       }
       $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->where('amount', '>', '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.amount', 'value', 'symbol', 'name')->get();
       $initial = Fund::Where('user_id', null)->where('funds.type', 'initial')->where('period_id', null)->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('amount', 'symbol', 'funds.created_at')->first();
@@ -83,9 +99,6 @@ class DashboardController extends Controller
       $btc = 0;
       $chart['symbol'] = [];
       $chart['amount'] = [];
-      $jsonimg = file_get_contents('https://www.cryptocompare.com/api/data/coinlist/');
-      $dataimg = json_decode($jsonimg);
-      $baseimg = $dataimg->BaseImageUrl;
 
       foreach($balances as $balance){
           if($balance->value == "coinmarketcap"){

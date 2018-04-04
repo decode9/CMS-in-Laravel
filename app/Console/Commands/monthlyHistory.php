@@ -70,17 +70,33 @@ class monthlyHistory extends Command
               $initial = $user->histories()->where('type', 'monthly')->get()->last();
 
               $initialT = Carbon::parse($initial->register);
-              $period = $user->periods()->first();
+              $periods = $user->periods()->get();
               $diffD = $initialT->diffInMonths($today);
 
               $init = $initialT;
 
               for($i = 1;$i <= $diffD; $i++){
-                $init = $init->addDays(1);
+                $init = $init->addMonths(1);
                 $sum = 0;
                 $initstamp = $init->timestamp;
-                $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
-                  foreach($balances as $balance){
+                foreach ($periods as $period) {
+                    $count = 0;
+                    $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+                    foreach($balancesP as $balance){
+                        $balances[$count] = new \stdClass();
+                        if(property_exists($balances[$count], 'amount')){
+                            $balances[$count]->amount = $balance->amount;
+                            $balances[$count]->value = $balance->value;
+                            $balances[$count]->symbol = $balance->symbol;
+                            $balances[$count]->type = $balance->type;
+                            $balances[$count]->name = $balance->name;
+                            $balances[$count]->value_btc = 0;
+                        }else{
+                           $balances[$count]->amount += $balance->amount;
+                        }
+                        $count += 1;
+                    }
+                }
                       if($balance->amount > 0){
                           $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initstamp);
                           $data = json_decode($json);
@@ -116,7 +132,7 @@ class monthlyHistory extends Command
 
               $initG = $initialGT;
               for($i = 1;$i <= $diffGD; $i++){
-                $initG = $initG->addDays(1);
+                $initG = $initG->addMonths(1);
                 $sum = 0;
                 $initstamp = $initG->timestamp;
                 $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
