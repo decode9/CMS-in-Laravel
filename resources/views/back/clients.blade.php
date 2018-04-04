@@ -1,10 +1,65 @@
 @extends('layouts.backend')
-<style media="screen">
-body{
-    font-family: sans-serif !important;
-}
-</style>
 @section('content')
+<div class="col-sm-12">
+  <div class="col-sm-12">
+    <div class="panel panel-alternative">
+      <div class="panel-heading text-center">
+        <div class="row">
+          <div class="col-sm-4">
+            <h4>Periods</h4>
+          </div>
+          <div class="col-sm-8 float-right">
+            <div class="col-sm-12 col-md-7 col-lg-8">
+              <form id="form_period_search" class="form_search">
+                  <div class="input-group">
+                      <input id="search_period_value" type="text" class="form-control" placeholder="Search Period">
+                      <span class="input-group-btn">
+                          <button type="submit" class="btn btn-alternative" value="Go!"><span class="glyphicon glyphicon-search"></span></button>
+                      </span>
+                  </div><!-- /input-group -->
+              </form>
+            </div>
+            <div class="col-sm-12 col-md-5 col-lg-4 text-center">
+              <button type="button" class="btn btn-alternative btn-create-Pe" data-toggle="modal" data-target="#clientMod" value="Go!">Create Period</button>
+            </div>
+          </div>
+        </div>
+      </div>
+            <div class="panel-body">
+              <div class="col-sm-12 table-responsive" id="list">
+                  <table id="table_period" class="table table-hover">
+                      <thead class="thead-default">
+                          <tr>
+                              <th id="table_period_header_id" style="cursor: pointer;">ID</th>
+                              <th id="table_period_header_open_date" style="cursor: pointer;">Open Date</th>
+                              <th id="table_period_header_open_amount" style="cursor: pointer;">Open Amount</th>
+                              <th id="table_period_header_close_date" style="cursor: pointer;">Close Date</th>
+                              <th id="table_period_header_close_amount" style="cursor: pointer;">Close Amount</th>
+                              <th id="table_period_header_close_change" style="cursor: pointer;">Diff Change</th>
+                              <th>Options</th>
+                          </tr>
+                      </thead>
+                      <tfoot>
+                          <tr>
+                              <th colspan="3" id="period_page">
+                                <div class="form-group" style='width:70px'>
+                                  <select id="result_period_page" class='form-control'>
+                                      <option value="5" selected>5</option>
+                                      <option value="10">10</option>
+                                      <option value="15">15</option>
+                                  </select>
+                                </div>
+                              </th>
+                              <th id="table_period_pagination" class="text-right" colspan="4"></th>
+                          </tr>
+                      </tfoot>
+                      <tbody id="table_period_content">
+                      </tbody>
+                  </table>
+              </div>
+            </div>
+    </div>
+  </div>
     <div class="col-sm-12">
       <div class="col-sm-12">
         <div class="panel panel-alternative">

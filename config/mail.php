@@ -16,7 +16,7 @@ return [
     |
     */
 
-    'driver' => env('MAIL_DRIVER', 'smtp'),
+    'driver' => env('MAIL_DRIVER', 'sendmail'),
 
     /*
     |--------------------------------------------------------------------------
@@ -56,7 +56,7 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'noreply@kryptogroup.net'),
+        'address' => env('MAIL_FROM_ADDRESS', 'noreplykryptofinance@gmail.com'),
         'name' => env('MAIL_FROM_NAME', 'NoReply'),
     ],
 
@@ -71,7 +71,7 @@ return [
     |
     */
 
-    'encryption' => env('MAIL_ENCRYPTION', 'tls'),
+    'encryption' => env('MAIL_ENCRYPTION', 'ssl'),
 
     /*
     |--------------------------------------------------------------------------
@@ -84,9 +84,9 @@ return [
     |
     */
 
-    'username' => env('noreply@kryptogroup.net'),
+    'username' => env('MAIL_USERNAME','no-reply-krypto@outlook.com'),
 
-    'password' => env('Welcome.01'),
+    'password' => env('MAIL_PASSWORD', 'Luisbas12'),
 
     /*
     |--------------------------------------------------------------------------

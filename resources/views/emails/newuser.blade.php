@@ -11,10 +11,10 @@
       <div class="col-sm-6">
         <div class="panel panel-alternative">
           <div class="panel-heading">
-            <h4>Welcome to LatamBlock</h4>
+            <h4>Welcome to Krypto</h4>
           </div>
           <div class="panel-body">
-            <p>Your user has been created in our system, to enter the system go to <a href="www.latamblock.io">www.latamblock.io</a></p>
+            <p>Your user has been created in our system, to enter the system go to <a href="www.krypto.finance">www.krypto.finance</a></p>
           </div>
         </div>
       </div>

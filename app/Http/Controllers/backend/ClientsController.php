@@ -11,7 +11,7 @@ use App\Fund;
 use App\FundOrder;
 use App\User;
 use App\Balance;
-
+use App\Period;
 
 class ClientsController extends Controller
 {
@@ -29,7 +29,7 @@ class ClientsController extends Controller
              if($user->hasRole('30')){
                      $userInitial = $user->funds()->where('type', 'initial')->first();
                      $userInvest = $userInitial->amount;
-                     $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->first();
+                     $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', $userInitial->period_id)->first();
                      $fundInvest = $fundInitial->amount;
                      $percent = $userInvest / $fundInvest;
                      return $percent;
@@ -73,7 +73,14 @@ class ClientsController extends Controller
 
      public function total(Request $request){
         $user = User::find($request->id);
-        $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+        $balances = array();
+
+        if($user->hasRole('30')){
+          $period = $user->periods()->first();
+          $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+        }else{
+          $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+        }
         $usd = 0;
         $btc = 0;
         foreach($balances as $balance){
@@ -195,17 +202,23 @@ class ClientsController extends Controller
          $orderDirection = $request->orderDirection;
          $total = 0;
 
-         //Select Witdraws of the user
-         $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
-         //Search by
+         $balancesCurrency = array();
+
+         if($user->hasRole('30')){
+           $period = $user->periods()->first();
+           $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
+           //Search by
+         }else{
+           $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
+           //Search by
+         }
 
          if($searchValue != '')
          {
                  $query->Where(function($query) use($searchValue){
                      $query->Where('symbol', 'like', '%'.$searchValue.'%')
                      ->orWhere('amount', 'like', '%'.$searchValue.'%')
-                     ->orWhere('value', 'like', '%'.$searchValue.'%')
-                     ->orWhere('balances.created_at', 'like', '%'.$searchValue.'%');
+                     ->orWhere('value', 'like', '%'.$searchValue.'%');
                  });
          }
 
@@ -241,6 +254,7 @@ class ClientsController extends Controller
 
          $query->limit($resultPage);
          $balancesCurrency  =  $query->get();
+
 
          foreach($balancesCurrency as $balance){
              if($balance->symbol == "USD"){
@@ -290,10 +304,21 @@ class ClientsController extends Controller
 
          $hasini = $user->funds()->where('type', 'initial')->first();
 
+         $period = Period::where('close_date', null)->first();
+
+
          if(isset($hasini)){
              $fund = Fund::find($hasini->id);
 
-             $pool = Fund::where('user_id', null )->where('type', 'initial')->first();
+             $poolP = Fund::where('user_id', null )->where('type', 'initial')->where('period_id', $period->id)->first();
+             $newamountP = $poolP->amount - $fund->amount;
+             $newamountP = $newamountP + $amount;
+
+             $poolfP = Fund::find($poolP->id);
+             $poolfP->amount = $newamountP;
+             $poolfP->save();
+
+             $pool = Fund::where('user_id', null )->where('type', 'initial')->where('period_id', null)->first();
              $newamount = $pool->amount - $fund->amount;
              $newamount = $newamount + $amount;
 
@@ -301,23 +326,63 @@ class ClientsController extends Controller
              $poolf->amount = $newamount;
              $poolf->save();
 
-             $balance = Balance::where('user_id', null)->where('currency_id', '2')->first();
+             $newPamount = $period->open_amount - $fund->amount;
+             $newPamount = $newPamount + $amount;
+
+             $periodf = Period::find($period->id);
+             $periodf->open_amount = $newamount;
+             $periodf->save();
+
+
+
+             $balance = Balance::where('user_id', null)->where('period_id', null)->where('currency_id', '2')->first();
              $newbalance = $balance->amount - $fund->amount;
              $newbalance = $newbalance + $amount;
 
+             $balanceP = Balance::where('user_id', null)->where('period_id', $period->id)->where('currency_id', '2')->first();
+             $newbalanceP = $balanceP->amount - $fund->amount;
+             $newbalanceP = $newbalanceP + $amount;
+
+             $balancefP = Balance::find($balanceP->id);
+             $balancefP->amount = $newbalanceP;
+             $balancefP->save();
+
              $balancef = Balance::find($balance->id);
-             $balance->amount = $newbalance;
-             $balance->save();
+             $balancef->amount = $newbalance;
+             $balancef->save();
          }else{
              $fund = new Fund;
-             $pool = Fund::where('user_id', null)->where('type', 'initial')->first();
+
+             $pool = Fund::where('user_id', null)->where('type', 'initial')->where('period_id', null)->first();
              $newamount = $pool->amount + $amount;
+
              $poolf = Fund::find($pool->id);
              $poolf->amount = $newamount;
              $poolf->save();
 
-             $balance = Balance::where('user_id', null)->where('currency_id', '2')->first();
+             $poolP = Fund::where('user_id', null)->where('type', 'initial')->where('period_id', $period->id)->first();
+             $newamountP = $poolP->amount + $amount;
+
+             $poolfP = Fund::find($poolP->id);
+             $poolfP->amount = $newamountP;
+             $poolfP->save();
+
+             $newPamount = $period->open_amount + $amount;
+
+             $periodf = Period::find($period->id);
+             $periodf->open_amount = $newamount;
+             $periodf->save();
+
+             $balance = Balance::where('user_id', null)->where('period_id', null)->where('currency_id', '2')->first();
              $newbalance = $balance->amount + $amount;
+
+             $balanceP = Balance::where('user_id', null)->where('period_id', $period->id)->where('currency_id', '2')->first();
+             $newbalanceP = $balanceP->amount + $amount;
+
+
+             $balancefP = Balance::find($balanceP->id);
+             $balancefP->amount = $newbalanceP;
+             $balancefP->save();
 
              $balancef = Balance::find($balance->id);
              $balance->amount = $newbalance;
@@ -331,9 +396,13 @@ class ClientsController extends Controller
          $fund->type = "initial";
          $fund->created_at = $date;
          $fund->user()->associate($id);
+         $fund->period()->associate($period->id);
          $fund->currency()->associate($currency);
 
          $fund->save();
+
+          $user->periods()->attach($period->id);
+          $user->save();
 
          return response()->json(['result' => 'Success'], 202);
      }

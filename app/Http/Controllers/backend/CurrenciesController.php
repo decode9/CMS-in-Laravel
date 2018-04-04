@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\Currency;
 use App\User;
+use App\Period;
 use App\Balance;
 
 class CurrenciesController extends Controller
@@ -171,12 +172,23 @@ class CurrenciesController extends Controller
         $currency->value = $value;
         $currency->save();
 
+        $periods = Period::all();
 
             $balance = new Balance;
             $balance->amount = 0;
             $balance->type = 'fund';
+            $balance->period_id = 0;
             $balance->currency()->associate($currency);
             $balance->save();
+          foreach ($periods as $period) {
+            $balanceP = new Balance;
+            $balanceP->amount = 0;
+            $balanceP->type = 'fund';
+            $balanceP->currency()->associate($currency);
+            $balanceP->period()->associate($period);
+            $balanceP->save();
+          }
+
 
 
         return response()->json(['message' => "success"], 202);

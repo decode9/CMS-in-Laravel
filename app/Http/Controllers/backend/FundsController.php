@@ -12,6 +12,7 @@ use App\Balance;
 use App\FundOrder;
 use App\User;
 use App\History;
+use App\Period;
 use Carbon\Carbon;
 
 class FundsController extends Controller
@@ -31,6 +32,13 @@ class FundsController extends Controller
          $symbol = $request->currency;
 
          $balance = Currency::WhereNotIn('symbol', [$symbol] )->get();
+
+         return response()->json(['data' => $balance], 202);
+     }
+
+     public function periods(){
+
+         $balance = Period::All();
 
          return response()->json(['data' => $balance], 202);
      }
@@ -77,9 +85,20 @@ class FundsController extends Controller
 
 
         $user = Auth::User();
-        $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+        $balances = array();
+
+        if($user->hasRole('30')){
+          $period = $user->periods()->first();
+          $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+        }else{
+          $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+        }
         $usd = 0;
         $btc = 0;
+
+
+
+
         foreach($balances as $balance){
             if($balance->value == "coinmarketcap"){
               $url = 'api.coinmarketcap.com/v1/ticker/'. $balance->name;
@@ -120,8 +139,9 @@ class FundsController extends Controller
 
      public function available(Request $request){
          $symbol = $request->currency;
+         $period = $request->period;
 
-         $balance = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.symbol', $symbol )->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type')->first();
+         $balance = Balance::Where('balances.type', 'fund')->where('period_id', $period)->where('user_id', null)->where('currencies.symbol', $symbol )->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type')->first();
 
          return response()->json(['data' => $balance], 202);
      }
@@ -130,7 +150,7 @@ class FundsController extends Controller
              if($user->hasRole('30')){
                      $userInitial = $user->funds()->where('type', 'initial')->first();
                      $userInvest = $userInitial->amount;
-                     $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->first();
+                     $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', $userInitial->period_id)->first();
                      $fundInvest = $fundInitial->amount;
                      $percent = $userInvest / $fundInvest;
                      return $percent;
@@ -147,9 +167,16 @@ class FundsController extends Controller
          $total = 0;
 
 
-         //Select Witdraws of the user
-         $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
-         //Search by
+         //Select Witdraws of the use
+         if($user->hasRole('30')){
+           $periods = $user->periods()->first();
+           $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
+         }else{
+           $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
+           //Search by
+
+
+         }
 
          if($searchValue != '')
          {
@@ -241,9 +268,13 @@ class FundsController extends Controller
          $orderDirection = $request->orderDirection;
          $total = 0;
 
-         //Select Withdraws of the user
-         $query = FundOrder::where('user_id', null)->where('status', 'complete')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
-         //Search by
+         if($user->hasRole('30')){
+           $period = $user->periods()->first();
+           $query = FundOrder::where('user_id', null)->where('period_id', $period->id)->where('status', 'complete')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
+         }else{
+           $query = FundOrder::where('user_id', null)->where('status', 'complete')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
+           //Search by
+         }
 
          if($searchValue != '')
          {
@@ -326,9 +357,15 @@ class FundsController extends Controller
          $orderDirection = $request->orderDirection;
          $total = 0;
 
-         //Select Withdraws of the user
-         $query = FundOrder::where('user_id', null)->where('status', 'pending')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
-         //Search by
+         $transactions = array();
+
+         if($user->hasRole('30')){
+           $period = $user->periods()->first();
+           $query = FundOrder::where('user_id', null)->where('period_id', $period->id)->where('status', 'pending')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
+         }else{
+           $query = FundOrder::where('user_id', null)->where('status', 'pending')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
+           //Search by
+         }
 
          if($searchValue != '')
          {
@@ -542,7 +579,7 @@ class FundsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-
+/*
     public function store(Request $request)
     {
         //
@@ -570,7 +607,7 @@ class FundsController extends Controller
 
         return response()->json(['message' => 'Your Deposit #'. $fund->comment .' was processed successfully', 'deposit' => $fund, 'user' => $user->name, 'symbol' => $currency->symbol], 202);
     }
-
+*/
      private function generate($longitud) {
          $key = '';
          $pattern = '1234567890';
@@ -619,6 +656,7 @@ class FundsController extends Controller
           'cout' => 'required',
           'aout' => 'required| min:1',
           'cin' => 'required',
+          'periodId' => 'required',
       ]);
 
       $status = $request->status;
@@ -629,33 +667,54 @@ class FundsController extends Controller
       $aout = $request->aout;
       $ain = $request->ain;
 
+      $perid = $request->periodId;
+
       $rate = $request->rate;
       $created = $request->created;
       $funded = $request->funded;
 
-      $valid =  Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.symbol', $cout)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
-      $change = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.symbol', $cin)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
+      $valid =  Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', 0)->where('currencies.symbol', $cout)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
+      $change = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', 0)->where('currencies.symbol', $cin)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
+
+      $validP =  Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $perid)->where('currencies.symbol', $cout)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
+      $changeP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $perid)->where('currencies.symbol', $cin)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
+
+
       $idout = Currency::Where('symbol', $cout)->select('id')->first();
 
       $idin = Currency::Where('symbol', $cin)->select('id')->first();
 
       $ref = $this->generate(7);
 
-      if($aout < $valid->amount){
+      if($aout <= $validP->amount){
         $order = new FundOrder;
         if($status == 'Complete'){
           $balance = Balance::find($valid->id);
           $newbalance = $balance->amount - $aout;
           $balance->amount = $newbalance;
+
+          $balanceP = Balance::find($validP->id);
+          $newbalanceP = $balanceP->amount - $aout;
+          $balanceP->amount = $newbalanceP;
+
           $order->in_amount = $ain;
           $order->status = $status;
+
           $balancen = Balance::find($change->id);
           $newbalancen = $balancen->amount + $ain;
           $balancen->amount = $newbalancen;
+
+          $balancenP = Balance::find($changeP->id);
+          $newbalancenP = $balancenP->amount + $ain;
+          $balancenP->amount = $newbalancenP;
+
           $order->rate = $rate;
           $order->updated_at = $funded;
           $balance->save();
           $balancen->save();
+          $balanceP->save();
+          $balancenP->save();
+
         }else{
           $order->in_amount = 0;
           $order->status = $status;
@@ -665,6 +724,7 @@ class FundsController extends Controller
         $order->created_at = $created;
         $order->inCurrencyOrder()->associate($idin);
         $order->outCurrencyOrder()->associate($idout);
+        $order->period()->associate($perid);
         $order->out_amount = $aout;
       }else{
         return response()->json(['error' => 'You don\'t have enough funds'], 403);
@@ -684,19 +744,31 @@ class FundsController extends Controller
         $id = $request->id;
 
         $order = FundOrder::find($id);
-        $balancein = Balance::Where('currency_id', $order->out_currency)->where('user_id', null)->first();
+
+        $balanceinP = Balance::Where('currency_id', $order->out_currency)->where('user_id', null)->where('period_id', $order->period_id)->first();
+        $binP = Balance::find($balancein->id);
+        $balanceoutP = Balance::Where('currency_id', $order->in_currency)->where('user_id', null)->where('period_id', $order->period_id)->first();
+        $boutP = Balance::find($balanceout->id);
+
+        $balancein = Balance::Where('currency_id', $order->out_currency)->where('user_id', null)->where('period_id', 0)->first();
         $bin = Balance::find($balancein->id);
-        $balanceout = Balance::Where('currency_id', $order->in_currency)->where('user_id', null)->first();
+        $balanceout = Balance::Where('currency_id', $order->in_currency)->where('user_id', null)->where('period_id', 0)->first();
         $bout = Balance::find($balanceout->id);
 
         $newin = $bin->amount + $order->out_amount;
         $newout = $bout->amount - $order->in_amount;
 
-        $bin->amount =  $newin;
-        $bout->amount = $newout;
+        $newinP = $binP->amount + $order->out_amount;
+        $newoutP = $boutP->amount - $order->in_amount;
+
+        $binP->amount =  $newinP;
+        $boutP->amount = $newoutP;
 
         $bin->save();
         $bout->save();
+
+        $binP->save();
+        $boutP->save();
 
         $order->delete();
 
@@ -721,24 +793,43 @@ class FundsController extends Controller
       $id = $request->id;
       $rate = $request->rate;
 
-      $valid =  Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.symbol', $cout)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
-      $change = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.symbol', $cin)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
+      $order = FundOrder::find($id);
+
+      $valid =  Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', 0)->where('currencies.symbol', $cout)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
+      $change = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', 0)->where('currencies.symbol', $cin)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
+
+
+      $validP =  Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $order->period_id)->where('currencies.symbol', $cout)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
+      $changeP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $order->period_id)->where('currencies.symbol', $cin)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
+
+
       $idout = Currency::Where('symbol', $cout)->select('id')->first();
 
       $idin = Currency::Where('symbol', $cin)->select('id')->first();
 
 
-      if($aout < $valid->amount){
-        $order = FundOrder::find($id);
+      if($aout <= $validP->amount){
+
+
         $balance = Balance::find($valid->id);
         $newbalance = $balance->amount - $aout;
         $balance->amount = $newbalance;
 
+        $balanceP = Balance::find($validP->id);
+        $newbalanceP = $balanceP->amount - $aout;
+        $balanceP->amount = $newbalanceP;
+
         $order->in_amount = $ain;
         $order->status = 'complete';
+
         $balancen = Balance::find($change->id);
         $newbalancen = $balancen->amount + $ain;
         $balancen->amount = $newbalancen;
+
+        $balancenP = Balance::find($changeP->id);
+        $newbalancenP = $balancenP->amount + $ain;
+        $balancenP->amount = $newbalancenP;
+
         $order->rate = $rate;
       }else{
         return response()->json(['error' => 'You don\'t have enough funds'], 403);
@@ -747,6 +838,8 @@ class FundsController extends Controller
       $order->save();
       $balance->save();
       $balancen->save();
+      $balanceP->save();
+      $balancenP->save();
 
       return response()->json(['message' => 'Your Validation was processed successfully'], 202);
     }

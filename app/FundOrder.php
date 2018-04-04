@@ -18,4 +18,8 @@ class FundOrder extends Model
     public function user(){
         return $this->belongsTo('App\User');
     }
+
+    public function period(){
+        return $this->belongsTo('App\Period', 'period_id');
+    }
 }

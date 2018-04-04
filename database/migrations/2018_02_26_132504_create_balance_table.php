@@ -16,6 +16,7 @@ class CreateBalanceTable extends Migration
         Schema::create('balances', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->unsigned()->nullable();
+            $table->integer('period_id')->unsigned()->nullable();
             $table->integer('currency_id')->unsigned();
             $table->double('amount', 15, 8);
             $table->string('type');
@@ -23,6 +24,7 @@ class CreateBalanceTable extends Migration
 
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('currency_id')->references('id')->on('currencies');
+            $table->foreign('period_id')->references('id')->on('periods');
         });
     }
 
@@ -36,6 +38,7 @@ class CreateBalanceTable extends Migration
         Schema::table('balances', function($table){
             $table->dropForeign('balances_currency_id_foreign');
             $table->dropForeign('balances_user_id_foreign');
+            $table->dropForeign('balances_period_id_foreign');
         });
 
         Schema::dropIfExists('balance');

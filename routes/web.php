@@ -32,9 +32,10 @@ Route::post('/mailcontact', 'Mail\MailController@contactMail')->name('contact.ma
 
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/profile', 'backend\ViewsController@profile')->name('profile')->middleware('auth.per:0');
-Route::post('/dashboard/balance', 'backend\DashboardController@balance')->name('dashboard.balance')->middleware('auth.per:0');;
-Route::post('/dashboard/newsletter', 'backend\DashboardController@newsletter')->name('dashboard.newsletter')->middleware('auth.per:0');;
-Route::post('/dashboard/charts', 'backend\DashboardController@historyChart')->name('dashboard.chart')->middleware('auth.per:0');;
+Route::post('/dashboard/balance', 'backend\DashboardController@balance')->name('dashboard.balance')->middleware('auth.per:0');
+Route::post('/dashboard/newsletter', 'backend\DashboardController@newsletter')->name('dashboard.newsletter')->middleware('auth.per:0');
+Route::post('/dashboard/charts', 'backend\DashboardController@historyChart')->name('dashboard.chart')->middleware('auth.per:0');
+Route::post('/dashboard/periods', 'backend\DashboardController@periods')->name('dashboard.periods')->middleware('auth.per:0');
 
 //USER ADMINISTRATION BACKEND
 
@@ -69,6 +70,7 @@ Route::get('/news/delete/{id}', 'backend\NewsController@destroy')->name('destroy
 Route::get('/funds', "backend\ViewsController@funds")->name('funds')->middleware('auth.per:0150');
 Route::post('/funds/total', "backend\FundsController@total")->name('total.funds')->middleware('auth.per:0151');
 Route::post('/funds/currency', "backend\FundsController@indexCurrency")->name('currency.funds')->middleware('auth.per:0151');
+Route::post('/funds/periods', "backend\FundsController@periods")->name('periods.funds')->middleware('auth.per:0152');
 Route::post('/funds/currencies', "backend\FundsController@currencies")->name('currencies.funds')->middleware('auth.per:0152');
 Route::post('/funds/available', "backend\FundsController@available")->name('currencies.funds')->middleware('auth.per:0152');
 Route::post('/funds/exchange', "backend\FundsController@exchange")->name('exchange.funds')->middleware('auth.per:0152');
@@ -95,6 +97,10 @@ Route::post('/orders/balance', "backend\OrdersController@balance")->name('orders
 //Clients
 
 Route::get('/clients', "backend\ViewsController@clients")->name('clients')->middleware('auth.per:0250');
+Route::post('/periods', "backend\PeriodController@index")->name('clients.period')->middleware('auth.per:0251');
+Route::post('/periods/create', "backend\PeriodController@create")->name('clients.period.create')->middleware('auth.per:0252');
+Route::post('/periods/update', "backend\PeriodController@update")->name('clients.period.close')->middleware('auth.per:0253');
+Route::post('/periods/delete', "backend\PeriodController@destroy")->name('clients.period.delete')->middleware('auth.per:0254');
 Route::post('/clients/list', "backend\ClientsController@index")->name('clients.list')->middleware('auth.per:0251');
 Route::post('/clients/total', "backend\ClientsController@total")->name('total.funds')->middleware('auth.per:0251');
 Route::post('/clients/currency', "backend\ClientsController@indexCurrency")->name('currency.funds')->middleware('auth.per:0251');

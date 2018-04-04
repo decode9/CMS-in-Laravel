@@ -39,21 +39,14 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
     }
-/*
-    protected function validateLogin(Request $request)
+
+   protected function validateLogin(Request $request)
    {
        $this->validate($request, [
            $this->username() => 'required',
            'password' => 'required',
-           'g-recaptcha-response' => 'required|captcha'
-           // new rules here
+           'g-recaptcha-response' => 'required|captcha',
        ]);
-   }*/
-    public function rules()
-    {
-      return [
-        'title' => 'required|unique:posts|max:255',
-        'body' => 'required',
-      ];
-    }
+   }
+
 }
