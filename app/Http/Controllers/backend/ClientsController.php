@@ -84,7 +84,7 @@ class ClientsController extends Controller
               $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
               foreach($balancesP as $balance){
                   $balances[$count] = new \stdClass();
-                  if(property_exists($balances[$count], 'amount')){
+                  if(!(property_exists($balances[$count], 'amount'))){
                       $balances[$count]->amount = $balance->amount;
                       $balances[$count]->value = $balance->value;
                       $balances[$count]->symbol = $balance->symbol;
@@ -277,7 +277,7 @@ class ClientsController extends Controller
 
                foreach($balancesCurrencyP as $balance){
                    $balancesCurrency[$count] = new \stdClass();
-                   if(property_exists($balancesCurrency[$count], 'amount')){
+                   if(!(property_exists($balancesCurrency[$count], 'amount'))){
                        $balancesCurrency[$count]->amount = $balance->amount;
                        $balancesCurrency[$count]->value = $balance->value;
                        $balancesCurrency[$count]->symbol = $balance->symbol;
