@@ -110,7 +110,7 @@ class monthlyHistory extends Command
                          $na = 0;
                       }
                       $sum += $na;
-                  }
+
                   $history = new History;
                   $history->register = $init;
                   $history->amount = $sum;
@@ -119,7 +119,8 @@ class monthlyHistory extends Command
                   $history->save();
               }
             }
-          }
+        }
+
 
           $historical = History::Where('user_id', null)->where('type', 'monthly')->get()->last();
           $attributes = isset($historical->amount) ? true : false;
