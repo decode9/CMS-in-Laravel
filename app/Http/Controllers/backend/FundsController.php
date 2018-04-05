@@ -94,7 +94,7 @@ class FundsController extends Controller
               $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
               foreach($balancesP as $balance){
                   $balances[$count] = new \stdClass();
-                  if(property_exists($balances[$count], 'amount')){
+                  if(!(property_exists($balances[$count], 'amount'))){
                       $balances[$count]->amount = $balance->amount;
                       $balances[$count]->value = $balance->value;
                       $balances[$count]->symbol = $balance->symbol;
@@ -102,7 +102,7 @@ class FundsController extends Controller
                       $balances[$count]->name = $balance->name;
                       $balances[$count]->value_btc = 0;
                   }else{
-                     $balances[$count]->amount += $balance->amount;
+                     $balances[$count]->amount = $balances[$count]->amount + $balance->amount;
                   }
                   $count += 1;
               }
@@ -169,11 +169,13 @@ class FundsController extends Controller
              if($user->hasRole('30')){
                      $userInitials = $user->funds()->where('type', 'initial')->get();
                      $userInvest = 0;
+                     $fundInvest = 0;
                      foreach($userInitials as $initial){
                          $userInvest += $initial->amount;
+                         $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', $initial->period_id)->first();
+                         $fundInvest += $fundInitial->amount;
                      }
-                     $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', null)->first();
-                     $fundInvest = $fundInitial->amount;
+
                      $percent = $userInvest / $fundInvest;
                      return $percent;
              }
@@ -242,14 +244,14 @@ class FundsController extends Controller
 
                foreach($balancesCurrencyP as $balance){
                    $balancesCurrency[$count] = new \stdClass();
-                   if(property_exists($balancesCurrency[$count], 'amount')){
+                   if(!(property_exists($balancesCurrency[$count], 'amount'))){
                        $balancesCurrency[$count]->amount = $balance->amount;
                        $balancesCurrency[$count]->value = $balance->value;
                        $balancesCurrency[$count]->symbol = $balance->symbol;
                        $balancesCurrency[$count]->type = $balance->type;
                        $balancesCurrency[$count]->name = $balance->name;
                    }else{
-                       $balancesCurrency[$count]->amount += $balance->amount;
+                       $balancesCurrency[$count]->amount = $balancesCurrency[$count]->amount + $balance->amount;
                    }
                    $count += 1;
                }
@@ -514,7 +516,7 @@ class FundsController extends Controller
          $transactions = array();
 
          if($user->hasRole('30')){
-           $periods = $user->periods()->get());
+           $periods = $user->periods()->get();
            $count = 0;
            foreach ($periods as $period) {
                $transactions = array();

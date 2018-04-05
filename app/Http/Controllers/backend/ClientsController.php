@@ -29,11 +29,13 @@ class ClientsController extends Controller
              if($user->hasRole('30')){
                      $userInitials = $user->funds()->where('type', 'initial')->get();
                      $userInvest = 0;
+                     $fundInvest = 0;
                      foreach($userInitials as $initial){
                          $userInvest += $initial->amount;
+                         $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', $initial->period_id)->first();
+                         $fundInvest += $fundInitial->amount;
                      }
-                     $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', null)->first();
-                     $fundInvest = $fundInitial->amount;
+
                      $percent = $userInvest / $fundInvest;
                      return $percent;
              }
@@ -81,6 +83,7 @@ class ClientsController extends Controller
         if($user->hasRole('30')){
           $periods = $user->periods()->get();
           foreach($periods as $period){
+            $count = 0;
               $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
               foreach($balancesP as $balance){
                   $balances[$count] = new \stdClass();
@@ -92,7 +95,7 @@ class ClientsController extends Controller
                       $balances[$count]->name = $balance->name;
                       $balances[$count]->value_btc = 0;
                   }else{
-                      $balances[$count]->amount += $balance->amount;
+                      $balances[$count]->amount = $balances[$count]->amount + $balance->amount;
                   }
                   $count += 1;
               }
@@ -273,18 +276,19 @@ class ClientsController extends Controller
 
 
                $query->limit($resultPage);
+
                $balancesCurrencyP  =  $query->get();
 
-               foreach($balancesCurrencyP as $balance){
+               foreach($balancesCurrencyP as $balanceP){
                    $balancesCurrency[$count] = new \stdClass();
                    if(!(property_exists($balancesCurrency[$count], 'amount'))){
-                       $balancesCurrency[$count]->amount = $balance->amount;
-                       $balancesCurrency[$count]->value = $balance->value;
-                       $balancesCurrency[$count]->symbol = $balance->symbol;
-                       $balancesCurrency[$count]->type = $balance->type;
-                       $balancesCurrency[$count]->name = $balance->name;
+                       $balancesCurrency[$count]->amount = $balanceP->amount;
+                       $balancesCurrency[$count]->value = $balanceP->value;
+                       $balancesCurrency[$count]->symbol = $balanceP->symbol;
+                       $balancesCurrency[$count]->type = $balanceP->type;
+                       $balancesCurrency[$count]->name = $balanceP->name;
                    }else{
-                       $balancesCurrency[$count]->amount += $balance->amount;
+                       $balancesCurrency[$count]->amount = $balancesCurrency[$count]->amount + $balanceP->amount;
                    }
                    $count += 1;
                }
@@ -339,37 +343,37 @@ class ClientsController extends Controller
 
          }
 
-         foreach($balancesCurrency as $balance){
-             if($balance->symbol == "USD"){
-                $balance->value = 1;
+         foreach($balancesCurrency as $balancec){
+             if($balancec->symbol == "USD"){
+                $balancec->value = 1;
              }
-             if($balance->symbol == "VEF"){
-                $balance->value = 217200;
+             if($balancec->symbol == "VEF"){
+                $balancec->value = 217200;
              }
 
          }
-         foreach($balancesCurrency as $balance){
-             if($balance->value == "coinmarketcap"){
-               $url = 'api.coinmarketcap.com/v1/ticker/'. $balance->name;
+         foreach($balancesCurrency as $balancecs){
+             if($balancecs->value == "coinmarketcap"){
+               $url = 'api.coinmarketcap.com/v1/ticker/'. $balancecs->name;
                  if($this->url_exists($url)){
-                     $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $balance->name);
+                     $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $balancecs->name);
                      $data = json_decode($json);
-                     $balance->value = $data[0]->price_usd;
+                     $balancecs->value = $data[0]->price_usd;
                  }else{
-                     $balance->value = 0.1;
+                     $balancecs->value = 0.1;
                  }
              }
          }
 
          if($user->hasRole('30')){
              $percent = $this->percent($user);
-             foreach($balancesCurrency as $balance){
-                 $newbalance = $balance->amount * $percent;
-                 $balance->amount = $newbalance;
+             foreach($balancesCurrency as $balancecx){
+                 $newbalance = $balancecx->amount * $percent;
+                 $balancecx->amount = $newbalance;
              }
          }
 
-         return response()->json(['page' => $page, 'result' => $balancesCurrency, 'total' => $total,], 202);
+         return response()->json(['page' => $page, 'result' => $balancesCurrency, 'total' => $total], 202);
      }
 
      public function initial(Request $request){

@@ -26,11 +26,13 @@ class DashboardController extends Controller
             if($user->hasRole('30')){
                     $userInitials = $user->funds()->where('type', 'initial')->get();
                     $userInvest = 0;
+                    $fundInvest = 0;
                     foreach($userInitials as $initial){
                         $userInvest += $initial->amount;
+                        $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', $initial->period_id)->first();
+                        $fundInvest += $fundInitial->amount;
                     }
-                    $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', null)->first();
-                    $fundInvest = $fundInitial->amount;
+
                     $percent = $userInvest / $fundInvest;
                     return $percent;
             }
@@ -79,14 +81,14 @@ class DashboardController extends Controller
             $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->where('amount', '>', '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.amount', 'value', 'symbol', 'name')->get();
             foreach($balancesP as $balance){
                 $balances[$count] = new \stdClass();
-                if(property_exists($balances[$count], 'amount')){
+                if(!(property_exists($balances[$count], 'amount'))){
                     $balances[$count]->amount = $balance->amount;
                     $balances[$count]->value = $balance->value;
                     $balances[$count]->symbol = $balance->symbol;
                     $balances[$count]->name = $balance->name;
                     $balances[$count]->value_btc = 0;
                 }else{
-                    $balances[$count]->amount += $balance->amount;
+                    $balances[$count]->amount =$balances[$count]->amount + $balance->amount;
                 }
                 $count += 1;
             }
@@ -152,6 +154,7 @@ class DashboardController extends Controller
           $balance->percent = ($usdvalue / $usd) * 100;
           }
       }
+
       $initstamp = $initial->created_at->timestamp;
 
       $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=BTC&tsyms=USD&ts='.$initstamp);
