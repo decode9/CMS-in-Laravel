@@ -969,28 +969,27 @@ class FundsController extends Controller
 
         $balanceinP = Balance::Where('currency_id', $order->out_currency)->where('user_id', null)->where('period_id', $order->period_id)->first();
         $binP = Balance::find($balanceinP->id);
+        $newinP = $binP->amount + $order->out_amount;
+        $binP->amount =  $newinP;
+        $binP->save();
+
         $balanceoutP = Balance::Where('currency_id', $order->in_currency)->where('user_id', null)->where('period_id', $order->period_id)->first();
         $boutP = Balance::find($balanceoutP->id);
+        $newoutP = $boutP->amount - $order->in_amount;
+        $boutP->amount = $newoutP;
+        $boutP->save();
 
         $balancein = Balance::Where('currency_id', $order->out_currency)->where('user_id', null)->where('period_id', null)->first();
         $bin = Balance::find($balancein->id);
+        $newin = $bin->amount + $order->out_amount;
+        $bin->amount = $newin;
+        $bin->save();
+
         $balanceout = Balance::Where('currency_id', $order->in_currency)->where('user_id', null)->where('period_id', null)->first();
         $bout = Balance::find($balanceout->id);
-
-        $newin = $bin->amount + $order->out_amount;
         $newout = $bout->amount - $order->in_amount;
-
-        $newinP = $binP->amount + $order->out_amount;
-        $newoutP = $boutP->amount - $order->in_amount;
-
-        $binP->amount =  $newinP;
-        $boutP->amount = $newoutP;
-
-        $bin->save();
+        $bout->amount = $newout;
         $bout->save();
-
-        $binP->save();
-        $boutP->save();
 
         $order->delete();
 
