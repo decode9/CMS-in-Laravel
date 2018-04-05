@@ -968,9 +968,9 @@ class FundsController extends Controller
         $order = FundOrder::find($id);
 
         $balanceinP = Balance::Where('currency_id', $order->out_currency)->where('user_id', null)->where('period_id', $order->period_id)->first();
-        $binP = Balance::find($balancein->id);
+        $binP = Balance::find($balanceinP->id);
         $balanceoutP = Balance::Where('currency_id', $order->in_currency)->where('user_id', null)->where('period_id', $order->period_id)->first();
-        $boutP = Balance::find($balanceout->id);
+        $boutP = Balance::find($balanceoutP->id);
 
         $balancein = Balance::Where('currency_id', $order->out_currency)->where('user_id', null)->where('period_id', null)->first();
         $bin = Balance::find($balancein->id);
