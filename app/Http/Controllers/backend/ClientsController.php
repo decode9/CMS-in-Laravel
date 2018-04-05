@@ -30,7 +30,7 @@ class ClientsController extends Controller
                      $userInitials = $user->funds()->where('type', 'initial')->where('period_id', $period)->first();
 
                     $userInvest = $userInitials->amount;
-                    $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', $initial->period_id)->first();
+                    $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', $period)->first();
                     $fundInvest = $fundInitial->amount;
 
 
@@ -81,6 +81,7 @@ class ClientsController extends Controller
         if($user->hasRole('30')){
           $periods = $user->periods()->get();
           foreach($periods as $period){
+            $percent = $this->percent($user, $period->id);
             $count = 0;
               $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
               foreach($balancesP as $balance){
@@ -93,15 +94,20 @@ class ClientsController extends Controller
                       $balances[$count]->name = $balance->name;
                       $balances[$count]->value_btc = 0;
                   }else{
+                      $newbalance
                       $balances[$count]->amount = $balances[$count]->amount + $balance->amount;
                   }
                   $count += 1;
               }
+              foreach ($balances as $balance) {
+                $balance->amount =
+              }
           }
-
         }else{
           $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+
         }
+
         $usd = 0;
         $btc = 0;
         foreach($balances as $balance){
@@ -133,12 +139,10 @@ class ClientsController extends Controller
             $usdvalue = $balance->amount * $balance->value;
             $usd += $usdvalue;
             $btc += $btcvalue;
+
+
         }
-        if($user->hasRole('30')){
-            $percent = $this->percent($user);
-            $usd = $usd * $percent;
-            $btc = $btc * $percent;
-        }
+
          return response()->json(['usd' => $usd, 'btc' => $btc], 202);
      }
      public function index(Request $request){
@@ -231,6 +235,7 @@ class ClientsController extends Controller
          if($user->hasRole('30')){
            $periods = $user->periods()->get();
            foreach($periods as $period){
+             $percent = $this->percent($user, $period->id);
                $count = 0;
                $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
 
@@ -455,7 +460,7 @@ class ClientsController extends Controller
              $newPamount = $period->open_amount + $amount;
 
              $periodf = Period::find($period->id);
-             $periodf->open_amount = $newamount;
+             $periodf->open_amount = $newPamount;
              $periodf->save();
 
              $balance = Balance::where('user_id', null)->where('period_id', null)->where('currency_id', '2')->first();
