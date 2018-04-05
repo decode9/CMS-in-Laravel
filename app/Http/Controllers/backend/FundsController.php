@@ -895,8 +895,8 @@ class FundsController extends Controller
       $created = $request->created;
       $funded = $request->funded;
 
-      $valid =  Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', 0)->where('currencies.symbol', $cout)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
-      $change = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', 0)->where('currencies.symbol', $cin)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
+      $valid =  Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->where('currencies.symbol', $cout)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
+      $change = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->where('currencies.symbol', $cin)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
 
       $validP =  Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $perid)->where('currencies.symbol', $cout)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
       $changeP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $perid)->where('currencies.symbol', $cin)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
@@ -972,9 +972,9 @@ class FundsController extends Controller
         $balanceoutP = Balance::Where('currency_id', $order->in_currency)->where('user_id', null)->where('period_id', $order->period_id)->first();
         $boutP = Balance::find($balanceout->id);
 
-        $balancein = Balance::Where('currency_id', $order->out_currency)->where('user_id', null)->where('period_id', 0)->first();
+        $balancein = Balance::Where('currency_id', $order->out_currency)->where('user_id', null)->where('period_id', null)->first();
         $bin = Balance::find($balancein->id);
-        $balanceout = Balance::Where('currency_id', $order->in_currency)->where('user_id', null)->where('period_id', 0)->first();
+        $balanceout = Balance::Where('currency_id', $order->in_currency)->where('user_id', null)->where('period_id', null)->first();
         $bout = Balance::find($balanceout->id);
 
         $newin = $bin->amount + $order->out_amount;
@@ -1017,8 +1017,8 @@ class FundsController extends Controller
 
       $order = FundOrder::find($id);
 
-      $valid =  Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', 0)->where('currencies.symbol', $cout)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
-      $change = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', 0)->where('currencies.symbol', $cin)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
+      $valid =  Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->where('currencies.symbol', $cout)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
+      $change = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->where('currencies.symbol', $cin)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
 
 
       $validP =  Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $order->period_id)->where('currencies.symbol', $cout)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
