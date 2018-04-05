@@ -993,6 +993,7 @@ class FundsController extends Controller
 
         $order->delete();
 
+          return response()->json(['message' => 'Complete'], 202);
     }
 
     public function validateExchange(Request $request){
