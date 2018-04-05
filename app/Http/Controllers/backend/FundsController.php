@@ -127,8 +127,10 @@ class FundsController extends Controller
                     $balance->value = $data[0]->price_usd;
                     $balance->value_btc = $data[0]->price_btc;
                 }else{
-                    $balance->value = 0.1;
-                    $balance->value_btc = 0.00001;
+                  $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/ethereum');
+                  $data = json_decode($json);
+                  $balance->value = $data[0]->price_usd;
+                  $balance->value_btc = $data[0]->price_btc;
                 }
             }
 
@@ -324,7 +326,9 @@ class FundsController extends Controller
                      $data = json_decode($json);
                      $balance->value = $data[0]->price_usd;
                  }else{
-                     $balance->value = 0.1;
+                     $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/ethereum');
+                     $data = json_decode($json);
+                     $balance->value = $data[0]->price_usd;
                  }
              }
          }
