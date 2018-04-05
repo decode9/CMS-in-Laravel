@@ -145,10 +145,12 @@ class PeriodController extends Controller
       $periodN->close_amount = 0;
 
       $periodN->save();
+      /*
       foreach($users as $user){
         $periodN->users()->attach($user);
       }
       $periodN->save();
+      */
       $currency1 = Currency::Where('symbol', 'USD')->first();
 
       $currencies = Currency::All();
