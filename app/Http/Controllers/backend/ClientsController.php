@@ -25,16 +25,14 @@ class ClientsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-     private function percent($user){
+     private function percent($user, $period){
              if($user->hasRole('30')){
-                     $userInitials = $user->funds()->where('type', 'initial')->get();
-                     $userInvest = 0;
-                     $fundInvest = 0;
-                     foreach($userInitials as $initial){
-                         $userInvest += $initial->amount;
-                         $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', $initial->period_id)->first();
-                         $fundInvest += $fundInitial->amount;
-                     }
+                     $userInitials = $user->funds()->where('type', 'initial')->where('period_id', $period)->first();
+
+                    $userInvest = $userInitials->amount;
+                    $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', $initial->period_id)->first();
+                    $fundInvest = $fundInitial->amount;
+
 
                      $percent = $userInvest / $fundInvest;
                      return $percent;
