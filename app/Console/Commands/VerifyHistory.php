@@ -66,7 +66,6 @@ class VerifyHistory extends Command
       foreach($users as $user){
         if($user->histories()->first() == null){
           $periods = $user->periods()->get();
-            $percent = $this->percent($user);
             $initial = $user->funds()->where('type', 'initial')->where('period_id', $period->id)->first();
             $initialT = $initial->created_at;
             $initialTW = $initial->created_at;
