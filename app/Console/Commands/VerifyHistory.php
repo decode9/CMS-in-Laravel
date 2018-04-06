@@ -113,14 +113,17 @@ class VerifyHistory extends Command
                       $data = json_decode($json);
                       $symbol = $balance->symbol;
                       if(isset($data->Response)){
+                        $this->info('Daily: '. $balance->symbol . ' '. $data->Response);
                         if(strtolower($balance->symbol) == 'origin' || (strtolower($balance->symbol) == 'sdt' || strtolower($balance->symbol) == 'tari')){
                           $balance->value = 1;
                         }else{
                           $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initstamp);
                           $data = json_decode($json);
                           $balance->value = $data->ETH->USD;
+
                         }
                       }else{
+                        $this->info('Daily: '. $balance->symbol . ' value: '. $data->$symbol->USD);
                         $balance->value = $data->$symbol->USD;
                       }
 
@@ -178,10 +181,12 @@ class VerifyHistory extends Command
                     $data = json_decode($json);
                     $symbol = $balance->symbol;
                     if(isset($data->Response)){
+
                       if(strtolower($balance->symbol) == 'origin' || (strtolower($balance->symbol) == 'sdt' || strtolower($balance->symbol) == 'tari')){
                         $balance->value = 1;
                       }else{
                         $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initstamp);
+
                         $data = json_decode($json);
                         $balance->value = $data->ETH->USD;
                       }
