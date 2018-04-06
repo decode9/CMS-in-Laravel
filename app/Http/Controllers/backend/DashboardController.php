@@ -159,8 +159,15 @@ class DashboardController extends Controller
                   $symbol = $balance->symbol;
 
               }else{
-                  $balance->value = 0.1;
-                  $balance->value_btc = 0.00001;
+                if(strtolower($balance->name) == 'originprotocol' || (strtolower($balance->name) == 'send' || strtolower($balance->name) == 'tari')){
+                  $balance->value = 1;
+                  $balance->value_btc = 0.0000000000001;
+                }else{
+                  $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/ethereum');
+                  $data = json_decode($json);
+                  $balance->value = $data[0]->price_usd;
+                  $balance->value_btc = $data[0]->price_btc;
+                }
               }
           }
           array_push($chart['symbol'], $balance->symbol);
