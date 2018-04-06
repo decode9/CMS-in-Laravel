@@ -285,6 +285,7 @@ class FundsController extends Controller
            }
 
            //Search by
+           usort($balancesCurrency, $this->sorting($orderDirection, $orderBy));
          }else{
            $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
            //Search by
@@ -367,7 +368,7 @@ class FundsController extends Controller
              $eaccess = false;
          }
 
-        usort($balancesCurrency, $this->sorting($orderDirection, $orderBy));
+
 
          return response()->json(['page' => $page, 'result' => $balancesCurrency, 'total' => $total, 'eaccess' => $eaccess], 202);
      }
@@ -455,6 +456,7 @@ class FundsController extends Controller
                }
 
            }
+           usort($transactions, $this->sorting($orderDirection, $orderBy));
          }else{
            $query = FundOrder::where('user_id', null)->where('status', 'complete')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
            //Search by
@@ -516,7 +518,7 @@ class FundsController extends Controller
              $eaccess = false;
          }
 
-         usort($transactions, $this->sorting($orderDirection, $orderBy));
+
          //Get fees by month and year
 
          return response()->json(['page' => $page, 'result' => $transactions, 'total' => $total, 'eaccess' => $eaccess], 202);
@@ -605,6 +607,7 @@ class FundsController extends Controller
                }
 
            }
+           usort($transactions, $this->sorting($orderDirection, $orderBy));
          }else{
            $query = FundOrder::where('user_id', null)->where('status', 'pending')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
            //Search by
@@ -667,7 +670,6 @@ class FundsController extends Controller
          }
          //Get fees by month and year
 
-         usort($transactions, $this->sorting($orderDirection, $orderBy));
 
          return response()->json(['page' => $page, 'result' => $transactions, 'total' => $total, 'eaccess' => $eaccess], 202);
      }
