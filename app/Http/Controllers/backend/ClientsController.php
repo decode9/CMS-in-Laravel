@@ -73,6 +73,22 @@ class ClientsController extends Controller
          }
 
      }
+     private function sorting($order, $key) {
+       return function ($a, $b) use ($order, $key) {
+
+         if($order == 'DESC'){
+           return strnatcmp($a->$key, $b->$key);
+         }else{
+           if(empty($key)){
+              return strnatcmp($b->amount, $a->amount);
+           }else{
+              return strnatcmp($b->$key, $a->$key);
+           }
+
+         }
+
+       };
+     }
 
      public function total(Request $request){
         $user = User::find($request->id);
@@ -85,23 +101,26 @@ class ClientsController extends Controller
             $count = 0;
               $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
               foreach($balancesP as $balance){
+
+                if(empty($balances[$count])){
                   $balances[$count] = new \stdClass();
-                  if(!(property_exists($balances[$count], 'amount'))){
-                      $balances[$count]->amount = $balance->amount;
-                      $balances[$count]->value = $balance->value;
-                      $balances[$count]->symbol = $balance->symbol;
-                      $balances[$count]->type = $balance->type;
-                      $balances[$count]->name = $balance->name;
-                      $balances[$count]->value_btc = 0;
-                  }else{
-                      $newbalance
-                      $balances[$count]->amount = $balances[$count]->amount + $balance->amount;
+                  $balances[$count]->amount = $balance->amount  * $percent;
+                  $balances[$count]->value = $balance->value;
+                  $balances[$count]->symbol = $balance->symbol;
+                  $balances[$count]->type = $balance->type;
+                  $balances[$count]->name = $balance->name;
+                  $balances[$count]->value_btc = 0;
+                }else{
+                  foreach ($balances as $bal) {
+                    if($bal->symbol == $balance->symbol){
+                      $newBals = $bal->amount + ($balance->amount  * $percent);
+                      $bal->amount = $newBals;
+                    }
                   }
+                }
                   $count += 1;
               }
-              foreach ($balances as $balance) {
-                $balance->amount =
-              }
+
           }
         }else{
           $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
@@ -119,8 +138,15 @@ class ClientsController extends Controller
                     $balance->value = $data[0]->price_usd;
                     $balance->value_btc = $data[0]->price_btc;
                 }else{
-                    $balance->value = 0.1;
-                    $balance->value_btc = 0.00001;
+                  if(strtolower($balance->name) == 'originprotocol' || (strtolower($balance->name) == 'send' || strtolower($balance->name) == 'tari')){
+                    $balance->value = 1;
+                    $balance->value_btc = 0.0000000000001;
+                  }else{
+                    $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/ethereum');
+                    $data = json_decode($json);
+                    $balance->value = $data[0]->price_usd;
+                    $balance->value_btc = $data[0]->price_btc;
+                  }
                 }
             }
 
@@ -283,16 +309,25 @@ class ClientsController extends Controller
                $balancesCurrencyP  =  $query->get();
 
                foreach($balancesCurrencyP as $balanceP){
-                   $balancesCurrency[$count] = new \stdClass();
-                   if(!(property_exists($balancesCurrency[$count], 'amount'))){
-                       $balancesCurrency[$count]->amount = $balanceP->amount;
-                       $balancesCurrency[$count]->value = $balanceP->value;
-                       $balancesCurrency[$count]->symbol = $balanceP->symbol;
-                       $balancesCurrency[$count]->type = $balanceP->type;
-                       $balancesCurrency[$count]->name = $balanceP->name;
-                   }else{
-                       $balancesCurrency[$count]->amount = $balancesCurrency[$count]->amount + $balanceP->amount;
-                   }
+
+                  if(empty($balancesCurrency[$count])){
+
+                      $balancesCurrency[$count] = new \stdClass();
+                      $balancesCurrency[$count]->amount = $balanceP->amount * $percent;
+                      $balancesCurrency[$count]->value = $balanceP->value;
+                      $balancesCurrency[$count]->symbol = $balanceP->symbol;
+                      $balancesCurrency[$count]->type = $balanceP->type;
+                      $balancesCurrency[$count]->name = $balanceP->name;
+                  }else{
+                    foreach ($balancesCurrency as $value) {
+                      if($value->symbol == $balanceP->symbol){
+                        $newBal = $value->amount + ($balanceP->amount * $percent);
+                        $value->amount = $newBal;
+                      }
+
+                    }
+
+                  }
                    $count += 1;
                }
 
@@ -363,18 +398,18 @@ class ClientsController extends Controller
                      $data = json_decode($json);
                      $balancecs->value = $data[0]->price_usd;
                  }else{
-                     $balancecs->value = 0.1;
+                   if(strtolower($balance->name) == 'originprotocol' || (strtolower($balance->name) == 'send' || strtolower($balance->name) == 'tari')){
+                     $balance->value = 1;
+                   }else{
+                     $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/ethereum');
+                     $data = json_decode($json);
+                     $balance->value = $data[0]->price_usd;
+                   }
                  }
              }
          }
 
-         if($user->hasRole('30')){
-             $percent = $this->percent($user);
-             foreach($balancesCurrency as $balancecx){
-                 $newbalance = $balancecx->amount * $percent;
-                 $balancecx->amount = $newbalance;
-             }
-         }
+         usort($balancesCurrency, $this->sorting($orderDirection, $orderBy));
 
          return response()->json(['page' => $page, 'result' => $balancesCurrency, 'total' => $total], 202);
      }

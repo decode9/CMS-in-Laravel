@@ -81,29 +81,32 @@ class FundsController extends Controller
 
      public function total(Request $request){
        //
-
-
-
         $user = Auth::User();
         $balances = array();
 
         if($user->hasRole('30')){
           $periods = $user->periods()->get();
           foreach($periods as $period){
+            $percent = $this->percent($user, $period->id);
               $count = 0;
               $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
               foreach($balancesP as $balance){
+                if(empty($balances[$count])){
                   $balances[$count] = new \stdClass();
-                  if(!(property_exists($balances[$count], 'amount'))){
-                      $balances[$count]->amount = $balance->amount;
-                      $balances[$count]->value = $balance->value;
-                      $balances[$count]->symbol = $balance->symbol;
-                      $balances[$count]->type = $balance->type;
-                      $balances[$count]->name = $balance->name;
-                      $balances[$count]->value_btc = 0;
-                  }else{
-                     $balances[$count]->amount = $balances[$count]->amount + $balance->amount;
+                  $balances[$count]->amount = $balance->amount  * $percent;
+                  $balances[$count]->value = $balance->value;
+                  $balances[$count]->symbol = $balance->symbol;
+                  $balances[$count]->type = $balance->type;
+                  $balances[$count]->name = $balance->name;
+                  $balances[$count]->value_btc = 0;
+                }else{
+                  foreach ($balances as $bal) {
+                    if($bal->symbol == $balance->symbol){
+                      $newBals = $bal->amount + ($balance->amount  * $percent);
+                      $bal->amount = $newBals;
+                    }
                   }
+                }
                   $count += 1;
               }
           }
@@ -114,9 +117,6 @@ class FundsController extends Controller
 
         $usd = 0;
         $btc = 0;
-
-
-
 
         foreach($balances as $balance){
             if($balance->value == "coinmarketcap"){
@@ -155,11 +155,6 @@ class FundsController extends Controller
             $usd += $usdvalue;
             $btc += $btcvalue;
         }
-        if($user->hasRole('30')){
-            $percent = $this->percent($user);
-            $usd = $usd * $percent;
-            $btc = $btc * $percent;
-        }
          return response()->json(['usd' => $usd, 'btc' => $btc], 202);
      }
 
@@ -172,16 +167,31 @@ class FundsController extends Controller
          return response()->json(['data' => $balance], 202);
      }
 
-     private function percent($user){
+     private function sorting($order, $key) {
+       return function ($a, $b) use ($order, $key) {
+
+         if($order == 'DESC'){
+           return strnatcmp($a->$key, $b->$key);
+         }else{
+           if(empty($key)){
+              return strnatcmp($b->amount, $a->amount);
+           }else{
+              return strnatcmp($b->$key, $a->$key);
+           }
+
+         }
+
+       };
+     }
+
+     private function percent($user, $period){
              if($user->hasRole('30')){
-                     $userInitials = $user->funds()->where('type', 'initial')->get();
-                     $userInvest = 0;
-                     $fundInvest = 0;
-                     foreach($userInitials as $initial){
-                         $userInvest += $initial->amount;
-                         $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', $initial->period_id)->first();
-                         $fundInvest += $fundInitial->amount;
-                     }
+                     $userInitials = $user->funds()->where('type', 'initial')->where('period_id', $period)->first();
+
+                    $userInvest = $userInitials->amount;
+                    $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', $period)->first();
+                    $fundInvest = $fundInitial->amount;
+
 
                      $percent = $userInvest / $fundInvest;
                      return $percent;
@@ -204,6 +214,7 @@ class FundsController extends Controller
          if($user->hasRole('30')){
            $periods = $user->periods()->get();
            foreach($periods as $period){
+             $percent = $this->percent($user, $period->id);
                $count = 0;
                $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
 
@@ -250,16 +261,24 @@ class FundsController extends Controller
                $balancesCurrencyP  =  $query->get();
 
                foreach($balancesCurrencyP as $balance){
-                   $balancesCurrency[$count] = new \stdClass();
-                   if(!(property_exists($balancesCurrency[$count], 'amount'))){
-                       $balancesCurrency[$count]->amount = $balance->amount;
-                       $balancesCurrency[$count]->value = $balance->value;
-                       $balancesCurrency[$count]->symbol = $balance->symbol;
-                       $balancesCurrency[$count]->type = $balance->type;
-                       $balancesCurrency[$count]->name = $balance->name;
-                   }else{
-                       $balancesCurrency[$count]->amount = $balancesCurrency[$count]->amount + $balance->amount;
+                 if(empty($balancesCurrency[$count])){
+
+                     $balancesCurrency[$count] = new \stdClass();
+                     $balancesCurrency[$count]->amount = $balanceP->amount * $percent;
+                     $balancesCurrency[$count]->value = $balanceP->value;
+                     $balancesCurrency[$count]->symbol = $balanceP->symbol;
+                     $balancesCurrency[$count]->type = $balanceP->type;
+                     $balancesCurrency[$count]->name = $balanceP->name;
+                 }else{
+                   foreach ($balancesCurrency as $value) {
+                     if($value->symbol == $balanceP->symbol){
+                       $newBal = $value->amount + ($balanceP->amount * $percent);
+                       $value->amount = $newBal;
+                     }
+
                    }
+
+                 }
                    $count += 1;
                }
 
@@ -341,18 +360,14 @@ class FundsController extends Controller
                  }
              }
          }
-         if($user->hasRole('30')){
-             $percent = $this->percent($user);
-             foreach($balancesCurrency as $balance){
-                 $newbalance = $balance->amount * $percent;
-                 $balance->amount = $newbalance;
-             }
-         }
+
          if($user->hasRole('20') || $user->hasRole('901')){
              $eaccess = true;
          }else{
              $eaccess = false;
          }
+
+        usort($balancesCurrency, $this->sorting($orderDirection, $orderBy));
 
          return response()->json(['page' => $page, 'result' => $balancesCurrency, 'total' => $total, 'eaccess' => $eaccess], 202);
      }
@@ -373,6 +388,7 @@ class FundsController extends Controller
            $periods = $user->periods()->get();
            $count = 0;
            foreach ($periods as $period) {
+             $percent = $this->percent($user, $period->id);
                $transactions = array();
                $query = FundOrder::where('user_id', null)->where('period_id', $period->id)->where('status', 'complete')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
                if($searchValue != '')
@@ -423,10 +439,10 @@ class FundsController extends Controller
 
                foreach($transactionsP as $transaction){
                    $transactions[$count] = new \stdClass();
-                   if(!(property_exists($transactions[$count], 'out_amount'))){
-                       $transactions[$count]->out_amount = $transaction->out_amount;
+                   if(empty($transactions[$count])){
+                       $transactions[$count]->out_amount = $transaction->out_amount * $percent;
                        $transactions[$count]->out_currency = $transaction->out_currency;
-                       $transactions[$count]->in_amount = $transaction->in_amount;
+                       $transactions[$count]->in_amount = $transaction->in_amount * $percent;
                        $transactions[$count]->in_currency = $transaction->in_currency;
                        $transactions[$count]->symbol = $transaction->symbol;
                        $transactions[$count]->created_at = $transaction->created_at;
@@ -489,18 +505,6 @@ class FundsController extends Controller
            $transactions  =  $query->get();
          }
 
-
-
-         if($user->hasRole('30')){
-             $percent = $this->percent($user);
-             foreach($transactions as $transaction){
-                 $newamountin = $transaction->in_amount * $percent;
-                 $newamountout = $transaction->out_amount * $percent;
-                 $transaction->in_amount = $newamountin;
-                 $transaction->out_amount = $newamountout;
-             }
-         }
-
          foreach($transactions as $transaction){
              $currency = Currency::find($transaction->out_currency);
              $transaction->out_symbol = $currency->symbol;
@@ -511,6 +515,8 @@ class FundsController extends Controller
          }else{
              $eaccess = false;
          }
+
+         usort($transactions, $this->sorting($orderDirection, $orderBy));
          //Get fees by month and year
 
          return response()->json(['page' => $page, 'result' => $transactions, 'total' => $total, 'eaccess' => $eaccess], 202);
@@ -532,6 +538,7 @@ class FundsController extends Controller
            $periods = $user->periods()->get();
            $count = 0;
            foreach ($periods as $period) {
+             $percent = $this->percent($user, $period->id);
                $transactions = array();
                $query = FundOrder::where('user_id', null)->where('period_id', $period->id)->where('status', 'complete')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
                if($searchValue != '')
@@ -582,10 +589,10 @@ class FundsController extends Controller
 
                foreach($transactionsP as $transaction){
                    $transactions[$count] = new \stdClass();
-                   if(!(property_exists($transactions[$count], 'out_amount'))){
-                       $transactions[$count]->out_amount = $transaction->out_amount;
+                   if(empty($transactions[$count])){
+                       $transactions[$count]->out_amount = $transaction->out_amount * $percent;
                        $transactions[$count]->out_currency = $transaction->out_currency;
-                       $transactions[$count]->in_amount = $transaction->in_amount;
+                       $transactions[$count]->in_amount = $transaction->in_amount * $percent;
                        $transactions[$count]->in_currency = $transaction->in_currency;
                        $transactions[$count]->symbol = $transaction->symbol;
                        $transactions[$count]->created_at = $transaction->created_at;
@@ -648,16 +655,6 @@ class FundsController extends Controller
            $transactions  =  $query->get();
          }
 
-         if($user->hasRole('30')){
-             $percent = $this->percent($user);
-             foreach($transactions as $transaction){
-                 $newamountin = $transaction->in_amount * $percent;
-                 $newamountout = $transaction->out_amount * $percent;
-                 $transaction->in_amount = $newamountin;
-                 $transaction->out_amount = $newamountout;
-             }
-         }
-
          foreach($transactions as $transaction){
              $currency = Currency::find($transaction->out_currency);
              $transaction->out_symbol = $currency->symbol;
@@ -669,6 +666,8 @@ class FundsController extends Controller
              $eaccess = false;
          }
          //Get fees by month and year
+
+         usort($transactions, $this->sorting($orderDirection, $orderBy));
 
          return response()->json(['page' => $page, 'result' => $transactions, 'total' => $total, 'eaccess' => $eaccess], 202);
      }

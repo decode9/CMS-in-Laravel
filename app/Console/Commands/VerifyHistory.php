@@ -41,16 +41,14 @@ class VerifyHistory extends Command
      * @return mixed
      */
 
-     private function percent($user){
+     private function percent($user, $period){
              if($user->hasRole('30')){
-                     $userInitials = $user->funds()->where('type', 'initial')->get();
-                     $userInvest = 0;
-                     $fundInvest = 0;
-                     foreach($userInitials as $initial){
-                         $userInvest += $initial->amount;
-                         $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', $initial->period_id)->first();
-                         $fundInvest += $fundInitial->amount;
-                     }
+                     $userInitials = $user->funds()->where('type', 'initial')->where('period_id', $period)->first();
+
+                    $userInvest = $userInitials->amount;
+                    $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', $period)->first();
+                    $fundInvest = $fundInitial->amount;
+
 
                      $percent = $userInvest / $fundInvest;
                      return $percent;
@@ -82,23 +80,30 @@ class VerifyHistory extends Command
             $init = $initialT;
 
             for($i = 0;$i <= $diffD; $i++){
+              $balances = array();
               $sum = 0;
               $initstamp = $init->timestamp;
               foreach ($periods as $period) {
+                $percent = $this->percent($user, $period->id);
                   $count = 0;
                   $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
                   foreach($balancesP as $balance){
+                    if(empty($balances[$count])){
                       $balances[$count] = new \stdClass();
-                      if(!(property_exists($balances[$count], 'amount'))){
-                          $balances[$count]->amount = $balance->amount;
-                          $balances[$count]->value = $balance->value;
-                          $balances[$count]->symbol = $balance->symbol;
-                          $balances[$count]->type = $balance->type;
-                          $balances[$count]->name = $balance->name;
-                          $balances[$count]->value_btc = 0;
-                      }else{
-                         $balances[$count]->amount = $balances[$count]->amount + $balance->amount;
+                      $balances[$count]->amount = $balance->amount  * $percent;
+                      $balances[$count]->value = $balance->value;
+                      $balances[$count]->symbol = $balance->symbol;
+                      $balances[$count]->type = $balance->type;
+                      $balances[$count]->name = $balance->name;
+                      $balances[$count]->value_btc = 0;
+                    }else{
+                      foreach ($balances as $bal) {
+                        if($bal->symbol == $balance->symbol){
+                          $newBals = $bal->amount + ($balance->amount  * $percent);
+                          $bal->amount = $newBals;
+                        }
                       }
+                    }
                       $count += 1;
                   }
               }
@@ -108,10 +113,7 @@ class VerifyHistory extends Command
                       $data = json_decode($json);
                       $symbol = $balance->symbol;
                       $balance->value = $data->$symbol->USD;
-
-                      $newamount = $balance->amount * $percent;
-                      $na = $newamount * $balance->value;
-
+                      $na = $balance->amount * $balance->value;
                   }else{
                      $na = 0;
                   }
@@ -132,22 +134,30 @@ class VerifyHistory extends Command
 
             $initW = $initialTW;
             for($i = 0;$i <= $diffW; $i++){
+              $balances = array();
               $sum = 0;
               $initWstamp = $initW->timestamp;
               foreach ($periods as $period) {
+                $percent = $this->percent($user, $period->id);
                   $count = 0;
                   $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
                   foreach($balancesP as $balance){
                       $balances[$count] = new \stdClass();
-                      if(!(property_exists($balances[$count], 'amount'))){
-                          $balances[$count]->amount = $balance->amount;
-                          $balances[$count]->value = $balance->value;
-                          $balances[$count]->symbol = $balance->symbol;
-                          $balances[$count]->type = $balance->type;
-                          $balances[$count]->name = $balance->name;
-                          $balances[$count]->value_btc = 0;
+                      if(empty($balances[$count])){
+                        $balances[$count] = new \stdClass();
+                        $balances[$count]->amount = $balance->amount  * $percent;
+                        $balances[$count]->value = $balance->value;
+                        $balances[$count]->symbol = $balance->symbol;
+                        $balances[$count]->type = $balance->type;
+                        $balances[$count]->name = $balance->name;
+                        $balances[$count]->value_btc = 0;
                       }else{
-                         $balances[$count]->amount = $balances[$count]->amount + $balance->amount;
+                        foreach ($balances as $bal) {
+                          if($bal->symbol == $balance->symbol){
+                            $newBals = $bal->amount + ($balance->amount  * $percent);
+                            $bal->amount = $newBals;
+                          }
+                        }
                       }
                       $count += 1;
                   }
@@ -158,9 +168,7 @@ class VerifyHistory extends Command
                       $data = json_decode($json);
                       $symbol = $balance->symbol;
                       $balance->value = $data->$symbol->USD;
-
-                      $newamount = $balance->amount * $percent;
-                      $na = $newamount * $balance->value;
+                      $na = $balance->amount  * $balance->value;
 
                   }else{
                      $na = 0;
@@ -182,22 +190,30 @@ class VerifyHistory extends Command
 
             $initM = $initialTM;
             for($i = 0;$i <= $diffM; $i++){
+              $balances = array();
               $sum = 0;
               $initMstamp = $initM->timestamp;
               foreach ($periods as $period) {
+                $percent = $this->percent($user, $period->id);
                   $count = 0;
                   $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
                   foreach($balancesP as $balance){
                       $balances[$count] = new \stdClass();
-                      if(!(property_exists($balances[$count], 'amount'))){
-                          $balances[$count]->amount = $balance->amount;
-                          $balances[$count]->value = $balance->value;
-                          $balances[$count]->symbol = $balance->symbol;
-                          $balances[$count]->type = $balance->type;
-                          $balances[$count]->name = $balance->name;
-                          $balances[$count]->value_btc = 0;
+                      if(empty($balances[$count])){
+                        $balances[$count] = new \stdClass();
+                        $balances[$count]->amount = $balance->amount  * $percent;
+                        $balances[$count]->value = $balance->value;
+                        $balances[$count]->symbol = $balance->symbol;
+                        $balances[$count]->type = $balance->type;
+                        $balances[$count]->name = $balance->name;
+                        $balances[$count]->value_btc = 0;
                       }else{
-                         $balances[$count]->amount = $balances[$count]->amount + $balance->amount;
+                        foreach ($balances as $bal) {
+                          if($bal->symbol == $balance->symbol){
+                            $newBals = $bal->amount + ($balance->amount  * $percent);
+                            $bal->amount = $newBals;
+                          }
+                        }
                       }
                       $count += 1;
                   }
@@ -208,9 +224,7 @@ class VerifyHistory extends Command
                       $data = json_decode($json);
                       $symbol = $balance->symbol;
                       $balance->value = $data->$symbol->USD;
-
-                      $newamount = $balance->amount * $percent;
-                      $na = $newamount * $balance->value;
+                      $na = $balance->amount * $balance->value;
 
                   }else{
                      $na = 0;

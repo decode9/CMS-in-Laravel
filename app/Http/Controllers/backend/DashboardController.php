@@ -22,16 +22,31 @@ class DashboardController extends Controller
         $this->middleware('auth');
     }
 
-    private function percent($user){
+    private function sorting($order, $key) {
+      return function ($a, $b) use ($order, $key) {
+
+        if($order == 'DESC'){
+          return strnatcmp($a->$key, $b->$key);
+        }else{
+          if(empty($key)){
+             return strnatcmp($b->amount, $a->amount);
+          }else{
+             return strnatcmp($b->$key, $a->$key);
+          }
+
+        }
+
+      };
+    }
+
+    private function percent($user, $period){
             if($user->hasRole('30')){
-                    $userInitials = $user->funds()->where('type', 'initial')->get();
-                    $userInvest = 0;
-                    $fundInvest = 0;
-                    foreach($userInitials as $initial){
-                        $userInvest += $initial->amount;
-                        $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', $initial->period_id)->first();
-                        $fundInvest += $fundInitial->amount;
-                    }
+                    $userInitials = $user->funds()->where('type', 'initial')->where('period_id', $period)->first();
+
+                   $userInvest = $userInitials->amount;
+                   $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', $period)->first();
+                   $fundInvest = $fundInitial->amount;
+
 
                     $percent = $userInvest / $fundInvest;
                     return $percent;
@@ -75,28 +90,59 @@ class DashboardController extends Controller
     public function balance(Request $request){
       $user = Auth::User();
       if($user->hasRole('30')){
+
+        $balances = array();
+        $initial = new \stdClass();
         $periods = $user->periods()->get();
+        $orderBy = 'amount';
+        $orderDirection = '';
         foreach ($periods as $period) {
+
+            $percent = $this->percent($user, $period->id);
+            $initialsP = $user->funds()->where('type', 'initial')->where('period_id', $period->id)->first();
             $count = 0;
+            $ci = 0;
+
             $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->where('amount', '>', '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.amount', 'value', 'symbol', 'name')->get();
+
+            foreach ($initialsP as $initialP) {
+              if(property_exists($initial, 'amount')){
+                $newini = $initial->amount + $initialP->amount;
+                $initial->amount = $newini;
+              }else{
+                $initial->amount = $initialP->amount;
+                $initial->symbol = 'USD';
+                $initial->created_at = $initialP->created_at;
+              }
+            }
+
+
             foreach($balancesP as $balance){
+              if(empty($balances[$count])){
                 $balances[$count] = new \stdClass();
-                if(!(property_exists($balances[$count], 'amount'))){
-                    $balances[$count]->amount = $balance->amount;
-                    $balances[$count]->value = $balance->value;
-                    $balances[$count]->symbol = $balance->symbol;
-                    $balances[$count]->name = $balance->name;
-                    $balances[$count]->value_btc = 0;
-                }else{
-                    $balances[$count]->amount =$balances[$count]->amount + $balance->amount;
+                $balances[$count]->amount = $balance->amount  * $percent;
+                $balances[$count]->value = $balance->value;
+                $balances[$count]->symbol = $balance->symbol;
+                $balances[$count]->type = $balance->type;
+                $balances[$count]->name = $balance->name;
+                $balances[$count]->value_btc = 0;
+              }else{
+                foreach ($balances as $bal) {
+                  if($bal->symbol == $balance->symbol){
+                    $newBals = $bal->amount + ($balance->amount  * $percent);
+                    $bal->amount = $newBals;
+                  }
                 }
+              }
                 $count += 1;
             }
         }
-
+        usort($balancesCurrency, $this->sorting($orderDirection, $orderBy));
+      }else{
+        $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->where('amount', '>', '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.amount', 'value', 'symbol', 'name')->get();
+        $initial = Fund::Where('user_id', null)->where('funds.type', 'initial')->where('period_id', null)->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('amount', 'symbol', 'funds.created_at')->first();
       }
-      $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->where('amount', '>', '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.amount', 'value', 'symbol', 'name')->get();
-      $initial = Fund::Where('user_id', null)->where('funds.type', 'initial')->where('period_id', null)->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('amount', 'symbol', 'funds.created_at')->first();
+
       $usd = 0;
       $btc = 0;
       $chart['symbol'] = [];
@@ -132,27 +178,17 @@ class DashboardController extends Controller
             $balance->value_btc = $data[0]->price_usd;
             $btcvalue = $balance->amount / $balance->value_btc;
           }
+
           $usdvalue = $balance->amount * $balance->value;
-          if($user->hasRole('30')){
-            $percent = $this->percent($user);
-            $camount = $usdvalue * $percent;
-            array_push($chart['amount'], $camount);
-          }else{
           array_push($chart['amount'], $usdvalue);
-          }
+
 
           $usd += $usdvalue;
           $btc += $btcvalue;
       }
       foreach ($balances as $balance) {
           $usdvalue = $balance->amount * $balance->value;
-          if($user->hasRole('30')){
-            $percent = $this->percent($user);
-            $camount = $usdvalue * $percent;
-            $balance->percent = ($camount / $usd) * 100;
-          }else{
           $balance->percent = ($usdvalue / $usd) * 100;
-          }
       }
 
       $initstamp = $initial->created_at->timestamp;
@@ -163,21 +199,6 @@ class DashboardController extends Controller
       $btcU = $data->BTC->USD;
 
       $btcI = $initial->amount / $btcU;
-
-      if($user->hasRole('30')){
-          $percent = $this->percent($user);
-          foreach($balances as $balance){
-            $newamount = $balance->amount * $percent;
-            $balance->amount = $newamount;
-          }
-          $newinitial = $initial->amount * $percent;
-          $initial->amount = $newinitial;
-          $usd = $usd * $percent;
-          $btc = $btc * $percent;
-          $btcI = $btcI * $percent;
-      }
-
-
 
        $profit = $usd - $initial->amount;
        $Tpercent = $profit / $initial->amount;
