@@ -112,7 +112,7 @@ class VerifyHistory extends Command
                       $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initstamp);
                       $data = json_decode($json);
                       $symbol = $balance->symbol;
-                      if($data->response == 'Error'){
+                      if(isset($data->response)){
                         if(strtolower($balance->symbol) == 'origin' || (strtolower($balance->symbol) == 'sdt' || strtolower($balance->symbol) == 'tari')){
                           $balance->value = 1;
                         }else{
@@ -178,7 +178,7 @@ class VerifyHistory extends Command
                     $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initstamp);
                     $data = json_decode($json);
                     $symbol = $balance->symbol;
-                    if($data->response == 'Error'){
+                    if(isset($data->response)){
                       if(strtolower($balance->symbol) == 'origin' || (strtolower($balance->symbol) == 'sdt' || strtolower($balance->symbol) == 'tari')){
                         $balance->value = 1;
                       }else{
@@ -244,7 +244,7 @@ class VerifyHistory extends Command
                     $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initstamp);
                     $data = json_decode($json);
                     $symbol = $balance->symbol;
-                    if($data->response == 'Error'){
+                    if(isset($data->response)){
                       if(strtolower($balance->symbol) == 'origin' || (strtolower($balance->symbol) == 'sdt' || strtolower($balance->symbol) == 'tari')){
                         $balance->value = 1;
                       }else{
@@ -303,7 +303,7 @@ class VerifyHistory extends Command
                 $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initstamp);
                 $data = json_decode($json);
                 $symbol = $balance->symbol;
-                if($data->response == 'Error'){
+                if(isset($data->response)){
                   if(strtolower($balance->symbol) == 'origin' || (strtolower($balance->symbol) == 'sdt' || strtolower($balance->symbol) == 'tari')){
                     $balance->value = 1;
                   }else{
@@ -344,7 +344,7 @@ class VerifyHistory extends Command
                 $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initstamp);
                 $data = json_decode($json);
                 $symbol = $balance->symbol;
-                if($data->response == 'Error'){
+                if(isset($data->response)){
                   if(strtolower($balance->symbol) == 'origin' || (strtolower($balance->symbol) == 'sdt' || strtolower($balance->symbol) == 'tari')){
                     $balance->value = 1;
                   }else{
@@ -385,7 +385,7 @@ class VerifyHistory extends Command
                 $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initstamp);
                 $data = json_decode($json);
                 $symbol = $balance->symbol;
-                if($data->response == 'Error'){
+                if(isset($data->response)){
                   if(strtolower($balance->symbol) == 'origin' || (strtolower($balance->symbol) == 'sdt' || strtolower($balance->symbol) == 'tari')){
                     $balance->value = 1;
                   }else{
