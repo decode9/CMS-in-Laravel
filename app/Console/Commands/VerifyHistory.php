@@ -66,7 +66,8 @@ class VerifyHistory extends Command
       foreach($users as $user){
         if($user->histories()->first() == null){
           $periods = $user->periods()->get();
-            $initial = $user->funds()->where('type', 'initial')->where('period_id', $period->id)->first();
+          $peri = $user->periods()->first();
+            $initial = $user->funds()->where('type', 'initial')->where('period_id', $peri->id)->first();
             $initialT = $initial->created_at;
             $initialTW = $initial->created_at;
             $initialTM = $initial->created_at;
