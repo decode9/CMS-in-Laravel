@@ -128,6 +128,7 @@ class VerifyHistory extends Command
                       }
 
                       $na = $balance->amount * $balance->value;
+                      $this->info('Daily: '. $balance->symbol . ' amount: '. $balance->amount . 'newAmount: ' . $na);
                   }else{
                      $na = 0;
                   }
