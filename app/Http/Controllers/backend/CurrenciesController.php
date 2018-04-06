@@ -131,7 +131,7 @@ class CurrenciesController extends Controller
                         $data = json_decode($json);
                         $currency->value = $data[0]->price_usd;
                     }else{
-                        $currency->value = 0.1;
+                        $currency->value = 1;
                     }
 
                 }
