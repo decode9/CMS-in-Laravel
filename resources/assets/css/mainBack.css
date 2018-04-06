@@ -362,3 +362,17 @@ input.cropit-image-zoom-input {
 #image-cropper {
   overflow: hidden;
 }
+.container-fluid{
+      margin-bottom: 50px;
+}
+
+footer{
+    width: 100%;
+    padding: 10px;
+    height: 50px;
+    color: white;
+    position: fixed;
+    bottom: 0px;
+    z-index: 100;
+    background-color: #132a3a;
+}

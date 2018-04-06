@@ -167,6 +167,16 @@
           @endguest
 
         </div>
+        <footer>
+          <div class="col-sm-12 float-right">
+            <div class="col-sm-6">
+              <p>This system is in test, if you see a problem please contact us through postmaster@krypto.finance</p>
+            </div>
+            <div class="col-sm-6">
+              <p>Copyright (c) 2018 Copyright KryptoGroup All Rights Reserved.</p>
+            </div>
+          </div>
+        </footer>
     </div>
     <!-- Scripts -->
     <script src="{{ url('/') }}/js/jquery.min.js"></script>
