@@ -107,11 +107,7 @@ class weeklyHistory extends Command
                 }
                   foreach($balances as $balance){
                       if($balance->amount > 0){
-                        if($balance->symbol == 'NPXS'){
-                          $symbol = 'PXS';
-                        }else{
                           $symbol = $balance->symbol;
-                        }
                         $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$symbol.'&tsyms=USD&ts='.$initstamp);
                         $data = json_decode($json);
                         $symbol = $balance->symbol;
@@ -160,11 +156,9 @@ class weeklyHistory extends Command
                 $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
                   foreach($balances as $balance){
                       if($balance->amount > 0){
-                        if($balance->symbol == 'NPXS'){
-                          $symbol = 'PXS';
-                        }else{
+
                           $symbol = $balance->symbol;
-                        }
+
                         $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$symbol.'&tsyms=USD&ts='.$initGstamp);
                         $data = json_decode($json);
                         if(isset($data->response)){

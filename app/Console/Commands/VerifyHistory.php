@@ -109,11 +109,7 @@ class VerifyHistory extends Command
               }
               foreach($balances as $balance){
                   if($balance->amount > 0){
-                      if($balance->symbol == 'NPXS'){
-                        $symbol = 'PXS';
-                      }else{
                         $symbol = $balance->symbol;
-                      }
                       $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$symbol.'&tsyms=USD&ts='.$initstamp);
                       $data = json_decode($json);
 
@@ -122,10 +118,13 @@ class VerifyHistory extends Command
                         if(strtolower($symbol) == 'origin' || (strtolower($symbol) == 'sdt' || strtolower($symbol) == 'tari')){
                           $balance->value = 1;
                         }else{
-                          $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initstamp);
-                          $data = json_decode($json);
-                          $balance->value = $data->ETH->USD;
-
+                          if(strtolower($symbol) == 'npxs'){
+                            $balance->value = 0.001;
+                          }else{
+                            $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initstamp);
+                            $data = json_decode($json);
+                            $balance->value = $data->ETH->USD;
+                          }
                         }
                       }else{
                         $this->info('Daily: '. $balance->symbol . ' value: '. $data->$symbol->USD);
@@ -183,11 +182,7 @@ class VerifyHistory extends Command
               }
               foreach($balances as $balance){
                   if($balance->amount > 0){
-                    if($balance->symbol == 'NPXS'){
-                      $symbol = 'PXS';
-                    }else{
                       $symbol = $balance->symbol;
-                    }
                     $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$symbol.'&tsyms=USD&ts='.$initstamp);
                     $data = json_decode($json);
                     if(isset($data->Response)){
@@ -195,10 +190,13 @@ class VerifyHistory extends Command
                       if(strtolower($balance->symbol) == 'origin' || (strtolower($balance->symbol) == 'sdt' || strtolower($balance->symbol) == 'tari')){
                         $balance->value = 1;
                       }else{
-                        $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initstamp);
-
-                        $data = json_decode($json);
-                        $balance->value = $data->ETH->USD;
+                        if(strtolower($symbol) == 'npxs'){
+                          $balance->value = 0.001;
+                        }else{
+                          $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initstamp);
+                          $data = json_decode($json);
+                          $balance->value = $data->ETH->USD;
+                        }
                       }
                     }else{
                       $balance->value = $data->$symbol->USD;
@@ -254,20 +252,20 @@ class VerifyHistory extends Command
               }
               foreach($balances as $balance){
                   if($balance->amount > 0){
-                    if($balance->symbol == 'NPXS'){
-                      $symbol = 'PXS';
-                    }else{
                       $symbol = $balance->symbol;
-                    }
                     $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$symbol.'&tsyms=USD&ts='.$initstamp);
                     $data = json_decode($json);
                     if(isset($data->Response)){
                       if(strtolower($balance->symbol) == 'origin' || (strtolower($balance->symbol) == 'sdt' || strtolower($balance->symbol) == 'tari')){
                         $balance->value = 1;
                       }else{
-                        $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initstamp);
-                        $data = json_decode($json);
-                        $balance->value = $data->ETH->USD;
+                        if(strtolower($symbol) == 'npxs'){
+                          $balance->value = 0.001;
+                        }else{
+                          $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initstamp);
+                          $data = json_decode($json);
+                          $balance->value = $data->ETH->USD;
+                        }
                       }
                     }else{
                       $balance->value = $data->$symbol->USD;
@@ -317,20 +315,20 @@ class VerifyHistory extends Command
           $balancesG = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
           foreach($balancesG as $balance){
               if($balance->amount > 0){
-                if($balance->symbol == 'NPXS'){
-                  $symbol = 'PXS';
-                }else{
                   $symbol = $balance->symbol;
-                }
                 $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$symbol.'&tsyms=USD&ts='.$initGstamp);
                 $data = json_decode($json);
                 if(isset($data->Response)){
                   if(strtolower($balance->symbol) == 'origin' || (strtolower($balance->symbol) == 'sdt' || strtolower($balance->symbol) == 'tari')){
                     $balance->value = 1;
                   }else{
-                    $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initGstamp);
-                    $data = json_decode($json);
-                    $balance->value = $data->ETH->USD;
+                    if(strtolower($symbol) == 'npxs'){
+                      $balance->value = 0.001;
+                    }else{
+                      $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initstamp);
+                      $data = json_decode($json);
+                      $balance->value = $data->ETH->USD;
+                    }
                   }
                 }else{
                   $balance->value = $data->$symbol->USD;
@@ -361,20 +359,20 @@ class VerifyHistory extends Command
           $balancesG = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
           foreach($balancesG as $balance){
               if($balance->amount > 0){
-                if($balance->symbol == 'NPXS'){
-                  $symbol = 'PXS';
-                }else{
                   $symbol = $balance->symbol;
-                }
                 $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$symbol.'&tsyms=USD&ts='.$initGWstamp);
                 $data = json_decode($json);
                 if(isset($data->Response)){
                   if(strtolower($balance->symbol) == 'origin' || (strtolower($balance->symbol) == 'sdt' || strtolower($balance->symbol) == 'tari')){
                     $balance->value = 1;
                   }else{
-                    $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initGWstamp);
-                    $data = json_decode($json);
-                    $balance->value = $data->ETH->USD;
+                    if(strtolower($symbol) == 'npxs'){
+                      $balance->value = 0.001;
+                    }else{
+                      $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initstamp);
+                      $data = json_decode($json);
+                      $balance->value = $data->ETH->USD;
+                    }
                   }
                 }else{
                   $balance->value = $data->$symbol->USD;
@@ -406,20 +404,20 @@ class VerifyHistory extends Command
           $balancesG = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
           foreach($balancesG as $balance){
               if($balance->amount > 0){
-                if($balance->symbol == 'NPXS'){
-                  $symbol = 'PXS';
-                }else{
                   $symbol = $balance->symbol;
-                }
                 $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$symbol.'&tsyms=USD&ts='.$initGMstamp);
                 $data = json_decode($json);
                 if(isset($data->Response)){
                   if(strtolower($balance->symbol) == 'origin' || (strtolower($balance->symbol) == 'sdt' || strtolower($balance->symbol) == 'tari')){
                     $balance->value = 1;
                   }else{
-                    $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initGMstamp);
-                    $data = json_decode($json);
-                    $balance->value = $data->ETH->USD;
+                    if(strtolower($symbol) == 'npxs'){
+                      $balance->value = 0.001;
+                    }else{
+                      $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initstamp);
+                      $data = json_decode($json);
+                      $balance->value = $data->ETH->USD;
+                    }
                   }
                 }else{
                   $balance->value = $data->$symbol->USD;
