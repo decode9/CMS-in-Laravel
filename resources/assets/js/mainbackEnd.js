@@ -379,7 +379,7 @@ $(document).ready(function(){
                 var amount = chart['amount'][i];
                 var symbol = chart['symbol'][i];
 
-                list = '<div class="col-sm-12"><div class="col-sm-2 colorChart" id="colorChart'+i+'"><div class="color"></div></div><div class="col-sm-9 text-left"><h5 class="list-group-item-heading">'+symbol+'</h5><p class="small">Amount: '+formatNumber2.num(amount)+'</p><p class="small">percent: '+formatNumber2.num(balance.percent)+'%</p></div></div>';
+                list = '<div class="col-sm-6" style="padding:0px; margin-bottom: 6px;"><div class="col-sm-12" style="padding:0px;"><div class="col-sm-6 colorChart" style="padding:0px;" id="colorChart'+i+'"><div class="color"></div></div><div class="col-sm-6" style="padding:0px;"><h5 class="list-group-item-heading text-center">'+symbol+'</h5></div></div><div class="col-sm-12 text-center" style="padding:0px;"><p class="small">Amount: '+formatNumber2.num(amount)+'</p><p class="small">percent: '+formatNumber2.num(balance.percent)+'%</p></div></div>';
                 list2 = $('<div class="col-sm-12 text-center folioList"></div>');
 
                 symbol = $('<div class="col-sm-3"><h5>'+balance.name+'</h5></div>');

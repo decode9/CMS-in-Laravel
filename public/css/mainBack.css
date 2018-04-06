@@ -171,7 +171,7 @@ a:hover{
     border-color: #395b71;
 }
 .colorChart{
-    height: 20px;
+    height: 10px;
 }
 .list-gr p{
     margin: 0px;
@@ -302,6 +302,54 @@ input.cropit-image-input {
   color: white;
 }
 
+.list-gr{
+  height: 240px;
+  overflow-x: hidden;
+}
+
+.list-gr::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+.list-gr::-webkit-scrollbar-track {
+	box-shadow : inset 0px 0px 3px 0px black;
+    background: #1b6396f2;
+}
+
+/* Handle */
+.list-gr::-webkit-scrollbar-thumb {
+    background: #0f1d27f2;
+}
+
+/* Handle on hover */
+.list-gr::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.myPortfolio{
+  height: 250px;
+  overflow-x: hidden;
+}
+.myPortfolio::-webkit-scrollbar {
+    width: 10px;
+}
+
+/* Track */
+.myPortfolio::-webkit-scrollbar-track {
+	box-shadow : inset 0px 0px 3px 0px black;
+    background: #1b6396f2;
+}
+
+/* Handle */
+.myPortfolio::-webkit-scrollbar-thumb {
+    background: #0f1d27f2;
+}
+
+/* Handle on hover */
+.myPortfolio::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
 /*
  * If the slider or anything else is covered by the background image,
  * use relative or absolute position on it
