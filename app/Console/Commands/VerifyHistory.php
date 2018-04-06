@@ -112,7 +112,7 @@ class VerifyHistory extends Command
                       $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$balance->symbol.'&tsyms=USD&ts='.$initstamp);
                       $data = json_decode($json);
                       if($balance->symbol == 'NPXS'){
-                        $symbol = 'PXS'
+                        $symbol = 'PXS';
                       }else{
                         $symbol = $balance->symbol;
                       }
