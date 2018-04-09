@@ -311,7 +311,6 @@ class ClientsController extends Controller
                foreach($balancesCurrencyP as $balanceP){
 
                   if(empty($balancesCurrency[$count])){
-
                       $balancesCurrency[$count] = new \stdClass();
                       $balancesCurrency[$count]->amount = $balanceP->amount * $percent;
                       $balancesCurrency[$count]->value = $balanceP->value;
@@ -398,12 +397,12 @@ class ClientsController extends Controller
                      $data = json_decode($json);
                      $balancecs->value = $data[0]->price_usd;
                  }else{
-                   if(strtolower($balance->name) == 'originprotocol' || (strtolower($balance->name) == 'send' || strtolower($balance->name) == 'tari')){
-                     $balance->value = 1;
+                   if(strtolower($balancecs->name) == 'originprotocol' || (strtolower($balancecs->name) == 'send' || strtolower($balancecs->name) == 'tari')){
+                     $balancecs->value = 1;
                    }else{
                      $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/ethereum');
                      $data = json_decode($json);
-                     $balance->value = $data[0]->price_usd;
+                     $balancecs->value = $data[0]->price_usd;
                    }
                  }
              }

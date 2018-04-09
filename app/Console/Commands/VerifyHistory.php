@@ -64,7 +64,7 @@ class VerifyHistory extends Command
       $today = Carbon::now();
 
       foreach($users as $user){
-        if($user->histories()->first() == null){
+        if($user->histories()->first() == null && $user->periods()->first() !== null){
           $periods = $user->periods()->get();
           $peri = $user->periods()->first();
             $initial = $user->funds()->where('type', 'initial')->where('period_id', $peri->id)->first();
@@ -109,7 +109,7 @@ class VerifyHistory extends Command
               }
               foreach($balances as $balance){
                   if($balance->amount > 0){
-                        $symbol = $balance->symbol;
+                      $symbol = $balance->symbol;
                       $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$symbol.'&tsyms=USD&ts='.$initstamp);
                       $data = json_decode($json);
 
@@ -292,7 +292,7 @@ class VerifyHistory extends Command
         }
       }
 
-      $historical = History::Where('user_id', null)->get();
+      $historical = History::Where('user_id', null)->first();
       $attributes = isset($historical->amount) ? false : true;
 
       if($attributes){

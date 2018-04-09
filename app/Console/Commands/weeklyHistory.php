@@ -65,13 +65,13 @@ class weeklyHistory extends Command
         $today = Carbon::now();
 
         foreach($users as $user){
-          if($user->histories()->first() !== null){
+          if($user->histories()->first() !== null && $user->periods()->first() !== null){
 
 
               $initial = $user->histories()->where('type', 'weekly')->get()->last();
 
               $initialT = Carbon::parse($initial->register);
-              $period = $user->periods()->first();
+              $periods = $user->periods()->get();
               $diffD = $initialT->diffInWeeks($today);
 
               $init = $initialT;
@@ -111,13 +111,17 @@ class weeklyHistory extends Command
                         $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$symbol.'&tsyms=USD&ts='.$initstamp);
                         $data = json_decode($json);
                         $symbol = $balance->symbol;
-                        if(isset($data->response)){
+                        if(isset($data->Response)){
                           if(strtolower($balance->symbol) == 'origin' || (strtolower($balance->symbol) == 'sdt' || strtolower($balance->symbol) == 'tari')){
                             $balance->value = 1;
                           }else{
-                            $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initstamp);
-                            $data = json_decode($json);
-                            $balance->value = $data->ETH->USD;
+                            if(strtolower($symbol) == 'npxs'){
+                              $balance->value = 0.001;
+                            }else{
+                              $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initstamp);
+                              $data = json_decode($json);
+                              $balance->value = $data->ETH->USD;
+                            }
                           }
                         }else{
                           $balance->value = $data->$symbol->USD;
@@ -161,13 +165,17 @@ class weeklyHistory extends Command
 
                         $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$symbol.'&tsyms=USD&ts='.$initGstamp);
                         $data = json_decode($json);
-                        if(isset($data->response)){
+                        if(isset($data->Response)){
                           if(strtolower($balance->symbol) == 'origin' || (strtolower($balance->symbol) == 'sdt' || strtolower($balance->symbol) == 'tari')){
                             $balance->value = 1;
                           }else{
-                            $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initGstamp);
-                            $data = json_decode($json);
-                            $balance->value = $data->ETH->USD;
+                            if(strtolower($symbol) == 'npxs'){
+                              $balance->value = 0.001;
+                            }else{
+                              $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initstamp);
+                              $data = json_decode($json);
+                              $balance->value = $data->ETH->USD;
+                            }
                           }
                         }else{
                           $balance->value = $data->$symbol->USD;
