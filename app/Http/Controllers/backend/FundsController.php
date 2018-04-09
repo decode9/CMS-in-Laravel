@@ -388,13 +388,14 @@ class FundsController extends Controller
          $total = 0;
 
 
-
+         $transactions = array();
          if($user->hasRole('30')){
            $periods = $user->periods()->get();
            $count = 0;
+
            foreach ($periods as $period) {
              $percent = $this->percent($user, $period->id);
-               $transactions = array();
+
                $query = FundOrder::where('user_id', null)->where('period_id', $period->id)->where('status', 'complete')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
                if($searchValue != '')
                {
@@ -509,14 +510,35 @@ class FundsController extends Controller
 
            $query->limit($resultPage);
 
-           $transactions  =  $query->get();
+           $transactionsP  =  $query->get();
+           $count = 0;
+           foreach($transactionsP as $transaction){
+
+               if(empty($transactions[$count])){
+                   $transactions[$count] = new \stdClass();
+                   $transactions[$count]->out_amount = $transaction->out_amount;
+                   $transactions[$count]->out_currency = $transaction->out_currency;
+                   $transactions[$count]->in_amount = $transaction->in_amount;
+                   $transactions[$count]->in_currency = $transaction->in_currency;
+                   $transactions[$count]->symbol = $transaction->symbol;
+                   $transactions[$count]->created_at = $transaction->created_at;
+                   $transactions[$count]->reference = $transaction->reference;
+                   $transactions[$count]->status = $transaction->status;
+                   $transactions[$count]->updated_at = $transaction->updated_at;
+                   $transactions[$count]->rate = $transaction->rate;
+               }
+               $count += 1;
+           }
+           usort($transactions, $this->sorting($orderDirection, $orderBy));
          }
 
          foreach($transactions as $transaction){
              $currency = Currency::find($transaction->out_currency);
              $transaction->out_symbol = $currency->symbol;
-             $transaction->created_at = $transaction->created_at->toFormattedDateString();
-             $transaction->updated_at = $transaction->updated_at->toFormattedDateString();
+             $newcreated = $transaction->created_at->toFormattedDateString();
+             $newupdated = $transaction->updated_at->toFormattedDateString();
+             $transaction->created_at = $newcreated;
+             $transaction->updated_at = $newupdated;
          }
 
          if($user->hasRole('20') || $user->hasRole('901')){
@@ -666,12 +688,35 @@ class FundsController extends Controller
 
            $query->limit($resultPage);
 
-           $transactions  =  $query->get();
+           $transactionsP  =  $query->get();
+           $count = 0;
+           foreach($transactionsP as $transaction){
+
+               if(empty($transactions[$count])){
+                   $transactions[$count] = new \stdClass();
+                   $transactions[$count]->out_amount = $transaction->out_amount;
+                   $transactions[$count]->out_currency = $transaction->out_currency;
+                   $transactions[$count]->in_amount = $transaction->in_amount;
+                   $transactions[$count]->in_currency = $transaction->in_currency;
+                   $transactions[$count]->symbol = $transaction->symbol;
+                   $transactions[$count]->created_at = $transaction->created_at;
+                   $transactions[$count]->reference = $transaction->reference;
+                   $transactions[$count]->status = $transaction->status;
+                   $transactions[$count]->updated_at = $transaction->updated_at;
+                   $transactions[$count]->rate = $transaction->rate;
+               }
+               $count += 1;
+           }
+           usort($transactions, $this->sorting($orderDirection, $orderBy));
          }
 
          foreach($transactions as $transaction){
              $currency = Currency::find($transaction->out_currency);
              $transaction->out_symbol = $currency->symbol;
+             $newcreated = $transaction->created_at->toFormattedDateString();
+             $newupdated = $transaction->updated_at->toFormattedDateString();
+             $transaction->created_at = $newcreated;
+             $transaction->updated_at = $newupdated;
          }
 
          if($user->hasRole('20') || $user->hasRole('901')){
