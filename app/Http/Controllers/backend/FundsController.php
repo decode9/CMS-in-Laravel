@@ -598,9 +598,9 @@ class FundsController extends Controller
                        $query->orderBy($orderBy);
                    }
                }else if($orderDirection != ''){
-                   $query->orderBy('fund_orders.created_at', 'desc');
+                   $query->orderBy('fund_orders.created_at');
                }else{
-                    $query->orderBy('fund_orders.created_at');
+                    $query->orderBy('fund_orders.created_at', 'desc');
                }
 
                if($resultPage == null || $resultPage == 0)
@@ -667,9 +667,9 @@ class FundsController extends Controller
                    $query->orderBy($orderBy);
                }
            }else if($orderDirection != ''){
-               $query->orderBy('fund_orders.created_at', 'desc');
+               $query->orderBy('fund_orders.created_at');
            }else{
-                $query->orderBy('fund_orders.created_at');
+                $query->orderBy('fund_orders.created_at', 'desc');
            }
 
            if($resultPage == null || $resultPage == 0)
