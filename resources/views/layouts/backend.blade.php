@@ -62,7 +62,7 @@
                     </a>
                   </li>
                   @endif
-                  @if(Auth::User()->getCredential(150))
+                  @if(Auth::User()->getCredential(250))
                   <li class="listcurrency"><a href="{{route('currencies')}}"><span class="glyphicon glyphicon-usd"></span> Currencies</a></li>
                   @endif
                   @if(Auth::User()->getCredential(150))
@@ -126,7 +126,7 @@
                     </a>
                   </li>
                   @endif
-                  @if(Auth::User()->getCredential(150))
+                  @if(Auth::User()->getCredential(250))
                   <li class="list listcurrency">
                     <a href="{{route('currencies')}}">
                       <img src="{{ url('/') }}/img/icons/currencies.png" width="32" alt="" height="auto">
@@ -172,7 +172,7 @@
             <div class="col-sm-6">
               <p>This system is in test, if you see a problem please contact us through postmaster@krypto.finance</p>
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-6 text-right">
               <p>Copyright (c) 2018 Copyright KryptoGroup All Rights Reserved.</p>
             </div>
           </div>

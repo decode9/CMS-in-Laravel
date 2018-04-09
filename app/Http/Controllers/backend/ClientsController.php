@@ -99,7 +99,7 @@ class ClientsController extends Controller
           foreach($periods as $period){
             $percent = $this->percent($user, $period->id);
             $count = 0;
-              $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+              $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->where('amount', '>' , '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
               foreach($balancesP as $balance){
 
                 if(empty($balances[$count])){
@@ -123,7 +123,7 @@ class ClientsController extends Controller
 
           }
         }else{
-          $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+          $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->where('amount', '>' , '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
 
         }
 
@@ -263,7 +263,7 @@ class ClientsController extends Controller
            foreach($periods as $period){
              $percent = $this->percent($user, $period->id);
                $count = 0;
-               $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
+               $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->where('amount', '>' , '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
 
                if($searchValue != '')
                {

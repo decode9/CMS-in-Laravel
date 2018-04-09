@@ -50,11 +50,11 @@ Route::post('/users/profile', 'backend\UserController@show')->name('users.show')
 Route::post('/profile/upload/picture', 'backend\UserController@picture')->name('profile.upload')->middleware('auth.per:0');
 Route::post('/users/profile/update', 'backend\UserController@updateProfile')->name('users.profileUpdate')->middleware('auth.per:0');
 
-Route::get('/currencies', 'backend\ViewsController@currencies')->name('currencies')->middleware('auth.per:0350');
-Route::post('/currencies', 'backend\CurrenciesController@index')->name('currencies.list')->middleware('auth.per:0351');
-Route::post('/currencies/create', 'backend\CurrenciesController@store')->name('currencies.create')->middleware('auth.per:0352');
-Route::post('/currencies/update', 'backend\CurrenciesController@update')->name('currencies.update')->middleware('auth.per:0353');
-Route::post('/currencies/delete', 'backend\CurrenciesController@destroy')->name('currencies.delete')->middleware('auth.per:0354');
+Route::get('/currencies', 'backend\ViewsController@currencies')->name('currencies')->middleware('auth.per:0250');
+Route::post('/currencies', 'backend\CurrenciesController@index')->name('currencies.list')->middleware('auth.per:0251');
+Route::post('/currencies/create', 'backend\CurrenciesController@store')->name('currencies.create')->middleware('auth.per:0252');
+Route::post('/currencies/update', 'backend\CurrenciesController@update')->name('currencies.update')->middleware('auth.per:0253');
+Route::post('/currencies/delete', 'backend\CurrenciesController@destroy')->name('currencies.delete')->middleware('auth.per:0254');
 
 //NEWS ADMINISTRATION BACKEND
 /*

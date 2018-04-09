@@ -3024,7 +3024,7 @@ $(document).ready(function(){
         });
 
         $('#table_transaction_header_amount_out').click(function (e) {
-          orderTableTransactionBy('amount_out');
+          orderTableTransactionBy('out_amount');
         });
 
         $('#table_transaction_header_rate').click(function (e) {
@@ -3032,7 +3032,7 @@ $(document).ready(function(){
         });
 
         $('#table_transaction_header_amount_in').click(function (e) {
-          orderTableTransactionBy('amount_in');
+          orderTableTransactionBy('in_amount');
         });
 
         $('#table_transaction_header_date').click(function (e) {
@@ -3213,7 +3213,7 @@ $(document).ready(function(){
         });
 
         $('#table_pending_transaction_header_amount_out').click(function (e) {
-          orderTablePendingTransactionBy('amount_out');
+          orderTablePendingTransactionBy('out_amount');
         });
 
         $('#table_pending_transaction_header_rate').click(function (e) {
@@ -3221,7 +3221,7 @@ $(document).ready(function(){
         });
 
         $('#table_pending_transaction_header_amount_in').click(function (e) {
-          orderTablePendingTransactionBy('amount_in');
+          orderTablePendingTransactionBy('in_amount');
         });
 
         $('#table_pending_transaction_header_date').click(function (e) {

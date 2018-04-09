@@ -89,7 +89,7 @@ class FundsController extends Controller
           foreach($periods as $period){
             $percent = $this->percent($user, $period->id);
               $count = 0;
-              $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+              $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->where('amount', '>' , '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
               foreach($balancesP as $balance){
                 if(empty($balances[$count])){
                   $balances[$count] = new \stdClass();
@@ -167,7 +167,7 @@ class FundsController extends Controller
          return response()->json(['data' => $balance], 202);
      }
 
-     private function sorting($order, $key) {
+     private function sorting($order, $key = 'created_at') {
        return function ($a, $b) use ($order, $key) {
 
          if($order == 'DESC'){
@@ -216,7 +216,7 @@ class FundsController extends Controller
            foreach($periods as $period){
              $percent = $this->percent($user, $period->id);
                $count = 0;
-               $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
+               $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->where('amount', '>' , '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
 
                if($searchValue != '')
                {
@@ -260,7 +260,7 @@ class FundsController extends Controller
                $query->limit($resultPage);
                $balancesCurrencyP  =  $query->get();
 
-               foreach($balancesCurrencyP as $balance){
+               foreach($balancesCurrencyP as $balanceP){
                  if(empty($balancesCurrency[$count])){
 
                      $balancesCurrency[$count] = new \stdClass();
@@ -380,6 +380,10 @@ class FundsController extends Controller
          $page = $request->page;
          $resultPage = $request->resultPage;
          $orderBy = $request->orderBy;
+
+         if(empty($orderBy)){
+             $orderBy = 'created_at';
+         }
          $orderDirection = $request->orderDirection;
          $total = 0;
 
@@ -439,8 +443,9 @@ class FundsController extends Controller
                $transactionsP  =  $query->get();
 
                foreach($transactionsP as $transaction){
-                   $transactions[$count] = new \stdClass();
+
                    if(empty($transactions[$count])){
+                       $transactions[$count] = new \stdClass();
                        $transactions[$count]->out_amount = $transaction->out_amount * $percent;
                        $transactions[$count]->out_currency = $transaction->out_currency;
                        $transactions[$count]->in_amount = $transaction->in_amount * $percent;
@@ -510,6 +515,8 @@ class FundsController extends Controller
          foreach($transactions as $transaction){
              $currency = Currency::find($transaction->out_currency);
              $transaction->out_symbol = $currency->symbol;
+             $transaction->created_at = $transaction->created_at->toFormattedDateString();
+             $transaction->updated_at = $transaction->updated_at->toFormattedDateString();
          }
 
          if($user->hasRole('20') || $user->hasRole('901')){
@@ -531,6 +538,9 @@ class FundsController extends Controller
          $page = $request->page;
          $resultPage = $request->resultPage;
          $orderBy = $request->orderBy;
+         if(empty($orderBy)){
+             $orderBy = 'created_at';
+         }
          $orderDirection = $request->orderDirection;
          $total = 0;
 
@@ -542,7 +552,7 @@ class FundsController extends Controller
            foreach ($periods as $period) {
              $percent = $this->percent($user, $period->id);
                $transactions = array();
-               $query = FundOrder::where('user_id', null)->where('period_id', $period->id)->where('status', 'complete')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
+               $query = FundOrder::where('user_id', null)->where('period_id', $period->id)->where('status', 'pending')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
                if($searchValue != '')
                {
                        $query->Where(function($query) use($searchValue){
@@ -590,17 +600,18 @@ class FundsController extends Controller
                $transactionsP  =  $query->get();
 
                foreach($transactionsP as $transaction){
-                   $transactions[$count] = new \stdClass();
+
                    if(empty($transactions[$count])){
+                       $transactions[$count] = new \stdClass();
                        $transactions[$count]->out_amount = $transaction->out_amount * $percent;
                        $transactions[$count]->out_currency = $transaction->out_currency;
                        $transactions[$count]->in_amount = $transaction->in_amount * $percent;
                        $transactions[$count]->in_currency = $transaction->in_currency;
                        $transactions[$count]->symbol = $transaction->symbol;
-                       $transactions[$count]->created_at = $transaction->created_at;
+                       $transactions[$count]->created_at = $transaction->created_at->toFormattedDateString();
                        $transactions[$count]->reference = $transaction->reference;
                        $transactions[$count]->status = $transaction->status;
-                       $transactions[$count]->updated_at = $transaction->updated_at;
+                       $transactions[$count]->updated_at = $transaction->updated_at->toFormattedDateString();
                        $transactions[$count]->rate = $transaction->rate;
                    }
                    $count += 1;

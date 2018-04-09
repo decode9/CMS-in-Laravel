@@ -158,7 +158,10 @@
                                       <th colspan="1" id="balance_currency_page">
                                         <div class="form-group" style="width: 70px;">
                                           <select id="result_balance_currency_page" class="form-control">
-                                              <option value="5" selected="selected">5</option>
+                                              <option value="5">5</option>
+                                              <option value="10" selected="selected">10</option>
+                                              <option value="15">15</option>
+                                              <option value="20">20</option>
                                           </select>
                                         </div>
                                       </th>

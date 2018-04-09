@@ -92,29 +92,28 @@ class DashboardController extends Controller
       if($user->hasRole('30')){
 
         $balances = array();
-        $initial = new \stdClass();
         $periods = $user->periods()->get();
         $orderBy = 'amount';
         $orderDirection = '';
         foreach ($periods as $period) {
 
             $percent = $this->percent($user, $period->id);
-            $initialsP = $user->funds()->where('type', 'initial')->where('period_id', $period->id)->first();
+            $initialP = $user->funds()->where('type', 'initial')->where('period_id', $period->id)->first();
             $count = 0;
             $ci = 0;
 
             $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->where('amount', '>', '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.amount', 'value', 'symbol', 'name')->get();
 
-            foreach ($initialsP as $initialP) {
-              if(property_exists($initial, 'amount')){
+
+              if(!(empty($initial))){
                 $newini = $initial->amount + $initialP->amount;
                 $initial->amount = $newini;
               }else{
+                $initial = new \stdClass();
                 $initial->amount = $initialP->amount;
                 $initial->symbol = 'USD';
                 $initial->created_at = $initialP->created_at;
               }
-            }
 
 
             foreach($balancesP as $balance){
@@ -137,7 +136,7 @@ class DashboardController extends Controller
                 $count += 1;
             }
         }
-        usort($balancesCurrency, $this->sorting($orderDirection, $orderBy));
+        usort($balances, $this->sorting($orderDirection, $orderBy));
       }else{
         $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->where('amount', '>', '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.amount', 'value', 'symbol', 'name')->orderBy('amount', 'DESC')->get();
         $initial = Fund::Where('user_id', null)->where('funds.type', 'initial')->where('period_id', null)->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('amount', 'symbol', 'funds.created_at')->first();
