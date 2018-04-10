@@ -27,15 +27,12 @@ class ClientsController extends Controller
      */
      private function percent($user, $period){
              if($user->hasRole('30')){
-                     $userInitials = $user->funds()->where('type', 'initial')->where('period_id', $period)->first();
-
+                    $userInitials = $user->funds()->where('type', 'initial')->where('period_id', $period)->first();
                     $userInvest = $userInitials->amount;
                     $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', $period)->first();
                     $fundInvest = $fundInitial->amount;
-
-
-                     $percent = $userInvest / $fundInvest;
-                     return $percent;
+                    $percent = $userInvest / $fundInvest;
+                    return $percent;
              }
      }
      private function url_exists( $url = NULL ) {
@@ -95,40 +92,59 @@ class ClientsController extends Controller
         $balances = array();
 
         if($user->hasRole('30')){
-          $periods = $user->periods()->get();
-          foreach($periods as $period){
-            $percent = $this->percent($user, $period->id);
-            $count = 0;
-              $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->where('amount', '>' , '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
-              foreach($balancesP as $balance){
+          $period = $user->periods()->get()->last();
+          $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->where('amount', '>' , '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+          $percent = $this->percent($user, $period->id);
+          $count = 0;
 
-                if(empty($balances[$count])){
-                  $balances[$count] = new \stdClass();
-                  $balances[$count]->amount = $balance->amount  * $percent;
-                  $balances[$count]->value = $balance->value;
-                  $balances[$count]->symbol = $balance->symbol;
-                  $balances[$count]->type = $balance->type;
-                  $balances[$count]->name = $balance->name;
-                  $balances[$count]->value_btc = 0;
-                }else{
-                  foreach ($balances as $bal) {
-                    if($bal->symbol == $balance->symbol){
-                      $newBals = $bal->amount + ($balance->amount  * $percent);
-                      $bal->amount = $newBals;
-                    }
+            foreach($balancesP as $balance){
+
+              if(empty($balances[$count])){
+                $balances[$count] = new \stdClass();
+                $balances[$count]->amount = $balance->amount  * $percent;
+                $balances[$count]->value = $balance->value;
+                $balances[$count]->symbol = $balance->symbol;
+                $balances[$count]->type = $balance->type;
+                $balances[$count]->name = $balance->name;
+                $balances[$count]->value_btc = 0;
+              }else{
+                foreach ($balances as $bal) {
+                  if($bal->symbol == $balance->symbol){
+                    $newBals = $bal->amount + ($balance->amount  * $percent);
+                    $bal->amount = $newBals;
                   }
                 }
-                  $count += 1;
               }
+                $count += 1;
+            }
 
-          }
         }else{
-          $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->where('amount', '>' , '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
-
+          $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->where('amount', '>' , '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+          $count = 0;
+          foreach($balancesP as $balance){
+            if(empty($balances[$count])){
+              $balances[$count] = new \stdClass();
+              $balances[$count]->amount = $balance->amount;
+              $balances[$count]->value = $balance->value;
+              $balances[$count]->symbol = $balance->symbol;
+              $balances[$count]->type = $balance->type;
+              $balances[$count]->name = $balance->name;
+              $balances[$count]->value_btc = 0;
+            }else{
+              foreach ($balances as $bal) {
+                if($bal->symbol == $balance->symbol){
+                  $newBals = $bal->amount + $balance->amount;
+                  $bal->amount = $newBals;
+                }
+              }
+            }
+            $count += 1;
+          }
         }
 
         $usd = 0;
         $btc = 0;
+
         foreach($balances as $balance){
             if($balance->value == "coinmarketcap"){
               $url = 'api.coinmarketcap.com/v1/ticker/'. $balance->name;

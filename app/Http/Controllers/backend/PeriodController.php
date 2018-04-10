@@ -16,6 +16,17 @@ use App\Period;
 class PeriodController extends Controller
 {
     //
+    private function percent($user, $period){
+            if($user->hasRole('30')){
+                   $userInitials = $user->funds()->where('type', 'initial')->where('period_id', $period)->first();
+                   $userInvest = $userInitials->amount;
+                   $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', $period)->first();
+                   $fundInvest = $fundInitial->amount;
+                   $percent = $userInvest / $fundInvest;
+                   return $percent;
+            }
+    }
+
     public function index(Request $request){
 
         $searchValue = $request->searchvalue;
@@ -127,6 +138,8 @@ class PeriodController extends Controller
 
       $closeD = $request->closeD;
       $closeA = $request->closeA;
+      $currency1 = Currency::Where('symbol', 'USD')->first();
+      $currencies = Currency::All();
 
       $period = Period::Find($request->id);
 
@@ -145,16 +158,29 @@ class PeriodController extends Controller
       $periodN->close_amount = 0;
 
       $periodN->save();
-      /*
+
+
       foreach($users as $user){
+        $percent = $this->percent($user, $request->id);
+        $newAm = $closeA * $percent;
+
+        $newfund = new Fund;
+        $newfund->amount = $newAm;
+        $newfund->reference = 'initial';
+        $newfund->active = 1;
+        $newfund->comment = 'Initial Invest';
+        $newfund->type = "initial";
+        $newfund->created_at = $closeD;
+        $newfund->currency()->associate($currency1);
+        $newfund->period()->associate($periodN);
+        $newfund->user()->associate($user);
+        $newfund->save();
+
         $periodN->users()->attach($user);
+        $periodN->save();
       }
-      $periodN->save();
-      */
-      $currency1 = Currency::Where('symbol', 'USD')->first();
 
-      $currencies = Currency::All();
-
+      /*
       foreach ($currencies as $currency) {
           $balance = new Balance;
           $balance->type = 'fund';
@@ -163,9 +189,10 @@ class PeriodController extends Controller
           $balance->amount = 0;
           $balance->save();
       }
+      */
 
       $fund = new Fund;
-      $fund->amount = 0;
+      $fund->amount = $closeA;
       $fund->reference = 'initial';
       $fund->active = 1;
       $fund->comment = 'Initial Invest';
