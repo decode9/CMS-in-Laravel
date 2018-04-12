@@ -3,12 +3,18 @@
     font-family: florence;
     src: url(/fonts/Florsn17.ttf);
 }
-
+html{
+  height: calc(100%);
+}
 body{
     margin: 0px;
+    height: calc(100%);
 }
 .navBack{
     margin: 0px;
+}
+.container-fluid{
+  height: calc(100%);
 }
 .navbar{
     border-radius: 0px;
@@ -20,6 +26,7 @@ body{
     background-repeat: no-repeat;
     background-size: cover;
     height: -webkit-fill-available;
+    height: calc(100%);
 }
 .dropdown-menu {
     border-radius: 0px;
@@ -33,7 +40,7 @@ body{
     color: white;
 }
 .row.content{
-    height: auto;
+    height: calc(100%);
 }
 .linePrices {
 height: 30px;

@@ -39,17 +39,17 @@ class DashboardController extends Controller
       };
     }
 
-    private function percent($user, $period){
+    private function percent($user){
             if($user->hasRole('30')){
-                    $userInitials = $user->funds()->where('type', 'initial')->where('period_id', $period)->first();
-
-                   $userInvest = $userInitials->amount;
-                   $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', $period)->first();
+                   $userInitials = $user->funds()->where('type', 'initial')->get();
+                   $userInvest = 0;
+                   foreach ($userInitials as $initial) {
+                     $userInvest += $initial->amount;
+                   }
+                   $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', null)->first();
                    $fundInvest = $fundInitial->amount;
-
-
-                    $percent = $userInvest / $fundInvest;
-                    return $percent;
+                   $percent = $userInvest / $fundInvest;
+                   return $percent;
             }
     }
     private function url_exists( $url = NULL ) {
@@ -90,21 +90,17 @@ class DashboardController extends Controller
     public function balance(Request $request){
       $user = Auth::User();
       if($user->hasRole('30')){
-
         $balances = array();
-        $periods = $user->periods()->get();
         $orderBy = 'amount';
         $orderDirection = '';
-        foreach ($periods as $period) {
-
-            $percent = $this->percent($user, $period->id);
-            $initialP = $user->funds()->where('type', 'initial')->where('period_id', $period->id)->first();
+            $percent = $this->percent($user);
+            $initialsP = $user->funds()->where('type', 'initial')->get();
             $count = 0;
             $ci = 0;
 
-            $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->where('amount', '>', '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.amount', 'value', 'symbol', 'name')->get();
+            $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->where('amount', '>', '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.amount', 'value', 'symbol', 'name')->get();
 
-
+            foreach ($initialsP as $initialP) {
               if(!(empty($initial))){
                 $newini = $initial->amount + $initialP->amount;
                 $initial->amount = $newini;
@@ -114,7 +110,7 @@ class DashboardController extends Controller
                 $initial->symbol = 'USD';
                 $initial->created_at = $initialP->created_at;
               }
-
+            }
 
             foreach($balancesP as $balance){
               if(empty($balances[$count])){
@@ -135,7 +131,6 @@ class DashboardController extends Controller
               }
                 $count += 1;
             }
-        }
         usort($balances, $this->sorting($orderDirection, $orderBy));
       }else{
         $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->where('amount', '>', '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.amount', 'value', 'symbol', 'name')->orderBy('amount', 'DESC')->get();

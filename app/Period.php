@@ -11,9 +11,6 @@ class Period extends Model
         return $this->hasMany('App\Fund');
     }
 
-    public function balances(){
-        return $this->hasMany('App\Balance');
-    }
 
     public function fundOrders(){
         return $this->hasMany('App\FundOrder');

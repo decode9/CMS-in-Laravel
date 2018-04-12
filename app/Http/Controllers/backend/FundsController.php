@@ -85,11 +85,9 @@ class FundsController extends Controller
         $balances = array();
 
         if($user->hasRole('30')){
-          $periods = $user->periods()->get();
-          foreach($periods as $period){
-            $percent = $this->percent($user, $period->id);
+            $percent = $this->percent($user);
               $count = 0;
-              $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->where('amount', '>' , '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+              $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('amount', '>' , '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
               foreach($balancesP as $balance){
                 if(empty($balances[$count])){
                   $balances[$count] = new \stdClass();
@@ -109,10 +107,8 @@ class FundsController extends Controller
                 }
                   $count += 1;
               }
-          }
-
         }else{
-          $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+          $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
         }
 
         $usd = 0;
@@ -160,9 +156,8 @@ class FundsController extends Controller
 
      public function available(Request $request){
          $symbol = $request->currency;
-         $period = $request->period;
 
-         $balance = Balance::Where('balances.type', 'fund')->where('period_id', $period)->where('user_id', null)->where('currencies.symbol', $symbol )->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type')->first();
+         $balance = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.symbol', $symbol )->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type')->first();
 
          return response()->json(['data' => $balance], 202);
      }
@@ -171,7 +166,11 @@ class FundsController extends Controller
        return function ($a, $b) use ($order, $key) {
 
          if($order == 'DESC'){
-           return strnatcmp($a->$key, $b->$key);
+           if(empty($key)){
+              return strnatcmp($b->amount, $a->amount);
+           }else{
+              return strnatcmp($b->$key, $a->$key);
+           }
          }else{
            if(empty($key)){
               return strnatcmp($b->amount, $a->amount);
@@ -184,17 +183,17 @@ class FundsController extends Controller
        };
      }
 
-     private function percent($user, $period){
+     private function percent($user){
              if($user->hasRole('30')){
-                     $userInitials = $user->funds()->where('type', 'initial')->where('period_id', $period)->first();
-
-                    $userInvest = $userInitials->amount;
-                    $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', $period)->first();
+                    $userInitials = $user->funds()->where('type', 'initial')->get();
+                    $userInvest = 0;
+                    foreach ($userInitials as $initial) {
+                      $userInvest += $initial->amount;
+                    }
+                    $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', null)->first();
                     $fundInvest = $fundInitial->amount;
-
-
-                     $percent = $userInvest / $fundInvest;
-                     return $percent;
+                    $percent = $userInvest / $fundInvest;
+                    return $percent;
              }
      }
 
@@ -212,11 +211,9 @@ class FundsController extends Controller
          $balancesCurrency = array();
 
          if($user->hasRole('30')){
-           $periods = $user->periods()->get();
-           foreach($periods as $period){
-             $percent = $this->percent($user, $period->id);
+              $percent = $this->percent($user);
                $count = 0;
-               $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->where('amount', '>' , '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
+               $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('amount', '>' , '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
 
                if($searchValue != '')
                {
@@ -282,12 +279,10 @@ class FundsController extends Controller
                    $count += 1;
                }
 
-           }
-
            //Search by
            usort($balancesCurrency, $this->sorting($orderDirection, $orderBy));
          }else{
-           $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
+           $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
            //Search by
            if($searchValue != '')
            {
@@ -390,15 +385,10 @@ class FundsController extends Controller
 
          $transactions = array();
          if($user->hasRole('30')){
-           $periods = $user->periods()->get();
            $count = 0;
-
-           foreach ($periods as $period) {
-             $percent = $this->percent($user, $period->id);
-
-               $query = FundOrder::where('user_id', null)->where('period_id', $period->id)->where('status', 'complete')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
-               if($searchValue != '')
-               {
+           $percent = $this->percent($user);
+           $query = FundOrder::where('user_id', null)->where('status', 'complete')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
+           if($searchValue != ''){
                        $query->Where(function($query) use($searchValue){
                            $query->Where('out_amount', 'like', '%'.$searchValue.'%')
                            ->orWhere('in_amount', 'like', '%'.$searchValue.'%')
@@ -406,7 +396,7 @@ class FundsController extends Controller
                            ->orWhere('fund_orders.created_at', 'like', '%'.$searchValue.'%')
                            ->orWhere('currencies.symbol', 'like', '%'.$searchValue.'%');
                        });
-               }
+           }
 
 
                //Order By
@@ -420,9 +410,9 @@ class FundsController extends Controller
                        $query->orderBy($orderBy);
                    }
                }else if($orderDirection != ''){
-                   $query->orderBy('fund_orders.created_at', 'desc');
+                   $query->orderBy('fund_orders.created_at');
                }else{
-                    $query->orderBy('fund_orders.created_at');
+                    $query->orderBy('fund_orders.created_at', 'desc');
                }
 
                if($resultPage == null || $resultPage == 0)
@@ -461,7 +451,6 @@ class FundsController extends Controller
                    $count += 1;
                }
 
-           }
            usort($transactions, $this->sorting($orderDirection, $orderBy));
          }else{
            $query = FundOrder::where('user_id', null)->where('status', 'complete')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
@@ -489,9 +478,9 @@ class FundsController extends Controller
                    $query->orderBy($orderBy);
                }
            }else if($orderDirection != ''){
-               $query->orderBy('fund_orders.created_at', 'desc');
+               $query->orderBy('fund_orders.created_at');
            }else{
-                $query->orderBy('fund_orders.created_at');
+                $query->orderBy('fund_orders.created_at', 'desc');
            }
 
            if($resultPage == null || $resultPage == 0)
@@ -569,12 +558,10 @@ class FundsController extends Controller
          $transactions = array();
 
          if($user->hasRole('30')){
-           $periods = $user->periods()->get();
            $count = 0;
-           foreach ($periods as $period) {
-             $percent = $this->percent($user, $period->id);
+          $percent = $this->percent($user);
                $transactions = array();
-               $query = FundOrder::where('user_id', null)->where('period_id', $period->id)->where('status', 'pending')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
+               $query = FundOrder::where('user_id', null)->where('status', 'pending')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
                if($searchValue != '')
                {
                        $query->Where(function($query) use($searchValue){
@@ -639,7 +626,6 @@ class FundsController extends Controller
                    $count += 1;
                }
 
-           }
            usort($transactions, $this->sorting($orderDirection, $orderBy));
          }else{
            $query = FundOrder::where('user_id', null)->where('status', 'pending')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
@@ -965,12 +951,8 @@ class FundsController extends Controller
       $created = $request->created;
       $funded = $request->funded;
 
-      $valid =  Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->where('currencies.symbol', $cout)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
-      $change = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->where('currencies.symbol', $cin)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
-
-      $validP =  Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $perid)->where('currencies.symbol', $cout)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
-      $changeP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $perid)->where('currencies.symbol', $cin)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
-
+      $valid =  Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.symbol', $cout)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
+      $change = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.symbol', $cin)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
 
       $idout = Currency::Where('symbol', $cout)->select('id')->first();
 
@@ -985,10 +967,6 @@ class FundsController extends Controller
           $newbalance = $balance->amount - $aout;
           $balance->amount = $newbalance;
 
-          $balanceP = Balance::find($validP->id);
-          $newbalanceP = $balanceP->amount - $aout;
-          $balanceP->amount = $newbalanceP;
-
           $order->in_amount = $ain;
           $order->status = $status;
 
@@ -996,16 +974,10 @@ class FundsController extends Controller
           $newbalancen = $balancen->amount + $ain;
           $balancen->amount = $newbalancen;
 
-          $balancenP = Balance::find($changeP->id);
-          $newbalancenP = $balancenP->amount + $ain;
-          $balancenP->amount = $newbalancenP;
-
           $order->rate = $rate;
           $order->updated_at = $funded;
           $balance->save();
           $balancen->save();
-          $balanceP->save();
-          $balancenP->save();
 
         }else{
           $order->in_amount = 0;
@@ -1036,18 +1008,6 @@ class FundsController extends Controller
         $id = $request->id;
 
         $order = FundOrder::find($id);
-
-        $balanceinP = Balance::Where('currency_id', $order->out_currency)->where('user_id', null)->where('period_id', $order->period_id)->first();
-        $binP = Balance::find($balanceinP->id);
-        $newinP = $binP->amount + $order->out_amount;
-        $binP->amount =  $newinP;
-        $binP->save();
-
-        $balanceoutP = Balance::Where('currency_id', $order->in_currency)->where('user_id', null)->where('period_id', $order->period_id)->first();
-        $boutP = Balance::find($balanceoutP->id);
-        $newoutP = $boutP->amount - $order->in_amount;
-        $boutP->amount = $newoutP;
-        $boutP->save();
 
         $balancein = Balance::Where('currency_id', $order->out_currency)->where('user_id', null)->where('period_id', null)->first();
         $bin = Balance::find($balancein->id);
@@ -1091,10 +1051,6 @@ class FundsController extends Controller
       $change = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->where('currencies.symbol', $cin)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
 
 
-      $validP =  Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $order->period_id)->where('currencies.symbol', $cout)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
-      $changeP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $order->period_id)->where('currencies.symbol', $cin)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
-
-
       $idout = Currency::Where('symbol', $cout)->select('id')->first();
 
       $idin = Currency::Where('symbol', $cin)->select('id')->first();
@@ -1107,20 +1063,12 @@ class FundsController extends Controller
         $newbalance = $balance->amount - $aout;
         $balance->amount = $newbalance;
 
-        $balanceP = Balance::find($validP->id);
-        $newbalanceP = $balanceP->amount - $aout;
-        $balanceP->amount = $newbalanceP;
-
         $order->in_amount = $ain;
         $order->status = 'complete';
 
         $balancen = Balance::find($change->id);
         $newbalancen = $balancen->amount + $ain;
         $balancen->amount = $newbalancen;
-
-        $balancenP = Balance::find($changeP->id);
-        $newbalancenP = $balancenP->amount + $ain;
-        $balancenP->amount = $newbalancenP;
 
         $order->rate = $rate;
       }else{
@@ -1130,8 +1078,6 @@ class FundsController extends Controller
       $order->save();
       $balance->save();
       $balancen->save();
-      $balanceP->save();
-      $balancenP->save();
 
       return response()->json(['message' => 'Your Validation was processed successfully'], 202);
     }

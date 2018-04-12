@@ -105,7 +105,7 @@ class PeriodController extends Controller
       $currency1 = Currency::Where('symbol', 'USD')->first();
 
       $currencies = Currency::All();
-
+      /*
       foreach ($currencies as $currency) {
           $balance = new Balance;
           $balance->type = 'fund';
@@ -114,7 +114,7 @@ class PeriodController extends Controller
           $balance->amount = 0;
           $balance->save();
       }
-
+      */
       $fund = new Fund;
       $fund->amount = 0;
       $fund->reference = 'initial';
@@ -161,21 +161,6 @@ class PeriodController extends Controller
 
 
       foreach($users as $user){
-        $percent = $this->percent($user, $request->id);
-        $newAm = $closeA * $percent;
-
-        $newfund = new Fund;
-        $newfund->amount = $newAm;
-        $newfund->reference = 'initial';
-        $newfund->active = 1;
-        $newfund->comment = 'Initial Invest';
-        $newfund->type = "initial";
-        $newfund->created_at = $closeD;
-        $newfund->currency()->associate($currency1);
-        $newfund->period()->associate($periodN);
-        $newfund->user()->associate($user);
-        $newfund->save();
-
         $periodN->users()->attach($user);
         $periodN->save();
       }
@@ -192,7 +177,7 @@ class PeriodController extends Controller
       */
 
       $fund = new Fund;
-      $fund->amount = $closeA;
+      $fund->amount = 0;
       $fund->reference = 'initial';
       $fund->active = 1;
       $fund->comment = 'Initial Invest';
