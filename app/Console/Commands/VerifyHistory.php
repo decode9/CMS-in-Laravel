@@ -41,17 +41,17 @@ class VerifyHistory extends Command
      * @return mixed
      */
 
-     private function percent($user, $period){
+     private function percent($user){
              if($user->hasRole('30')){
-                     $userInitials = $user->funds()->where('type', 'initial')->where('period_id', $period)->first();
-
-                    $userInvest = $userInitials->amount;
-                    $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', $period)->first();
+                    $userInitials = $user->funds()->where('type', 'initial')->get();
+                    $userInvest = 0;
+                    foreach ($userInitials as $initial) {
+                      $userInvest += $initial->amount;
+                    }
+                    $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', null)->first();
                     $fundInvest = $fundInitial->amount;
-
-
-                     $percent = $userInvest / $fundInvest;
-                     return $percent;
+                    $percent = $userInvest / $fundInvest;
+                    return $percent;
              }
      }
 
@@ -65,8 +65,7 @@ class VerifyHistory extends Command
 
       foreach($users as $user){
         if($user->histories()->first() == null && $user->periods()->first() !== null){
-          $periods = $user->periods()->get();
-          $peri = $user->periods()->first();
+            $peri = $user->periods()->first();
             $initial = $user->funds()->where('type', 'initial')->where('period_id', $peri->id)->first();
             $initialT = $initial->created_at;
             $initialTW = $initial->created_at;
@@ -83,10 +82,9 @@ class VerifyHistory extends Command
               $balances = array();
               $sum = 0;
               $initstamp = $init->timestamp;
-              foreach ($periods as $period) {
-                $percent = $this->percent($user, $period->id);
+                $percent = $this->percent($user);
                   $count = 0;
-                  $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+                  $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
                   foreach($balancesP as $balance){
                     if(empty($balances[$count])){
                       $balances[$count] = new \stdClass();
@@ -106,7 +104,6 @@ class VerifyHistory extends Command
                     }
                       $count += 1;
                   }
-              }
               foreach($balances as $balance){
                   if($balance->amount > 0){
                       $symbol = $balance->symbol;
@@ -156,30 +153,28 @@ class VerifyHistory extends Command
               $balances = array();
               $sum = 0;
               $initWstamp = $initW->timestamp;
-              foreach ($periods as $period) {
-                $percent = $this->percent($user, $period->id);
-                  $count = 0;
-                  $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
-                  foreach($balancesP as $balance){
-                      if(empty($balances[$count])){
-                        $balances[$count] = new \stdClass();
-                        $balances[$count]->amount = $balance->amount  * $percent;
-                        $balances[$count]->value = $balance->value;
-                        $balances[$count]->symbol = $balance->symbol;
-                        $balances[$count]->type = $balance->type;
-                        $balances[$count]->name = $balance->name;
-                        $balances[$count]->value_btc = 0;
-                      }else{
-                        foreach ($balances as $bal) {
-                          if($bal->symbol == $balance->symbol){
-                            $newBals = $bal->amount + ($balance->amount  * $percent);
-                            $bal->amount = $newBals;
-                          }
-                        }
+              $percent = $this->percent($user);
+                $count = 0;
+                $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+                foreach($balancesP as $balance){
+                  if(empty($balances[$count])){
+                    $balances[$count] = new \stdClass();
+                    $balances[$count]->amount = $balance->amount  * $percent;
+                    $balances[$count]->value = $balance->value;
+                    $balances[$count]->symbol = $balance->symbol;
+                    $balances[$count]->type = $balance->type;
+                    $balances[$count]->name = $balance->name;
+                    $balances[$count]->value_btc = 0;
+                  }else{
+                    foreach ($balances as $bal) {
+                      if($bal->symbol == $balance->symbol){
+                        $newBals = $bal->amount + ($balance->amount  * $percent);
+                        $bal->amount = $newBals;
                       }
-                      $count += 1;
+                    }
                   }
-              }
+                    $count += 1;
+                }
               foreach($balances as $balance){
                   if($balance->amount > 0){
                       $symbol = $balance->symbol;
@@ -226,30 +221,28 @@ class VerifyHistory extends Command
               $balances = array();
               $sum = 0;
               $initMstamp = $initM->timestamp;
-              foreach ($periods as $period) {
-                $percent = $this->percent($user, $period->id);
-                  $count = 0;
-                  $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', $period->id)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
-                  foreach($balancesP as $balance){
-                      if(empty($balances[$count])){
-                        $balances[$count] = new \stdClass();
-                        $balances[$count]->amount = $balance->amount  * $percent;
-                        $balances[$count]->value = $balance->value;
-                        $balances[$count]->symbol = $balance->symbol;
-                        $balances[$count]->type = $balance->type;
-                        $balances[$count]->name = $balance->name;
-                        $balances[$count]->value_btc = 0;
-                      }else{
-                        foreach ($balances as $bal) {
-                          if($bal->symbol == $balance->symbol){
-                            $newBals = $bal->amount + ($balance->amount  * $percent);
-                            $bal->amount = $newBals;
-                          }
-                        }
+              $percent = $this->percent($user);
+                $count = 0;
+                $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+                foreach($balancesP as $balance){
+                  if(empty($balances[$count])){
+                    $balances[$count] = new \stdClass();
+                    $balances[$count]->amount = $balance->amount  * $percent;
+                    $balances[$count]->value = $balance->value;
+                    $balances[$count]->symbol = $balance->symbol;
+                    $balances[$count]->type = $balance->type;
+                    $balances[$count]->name = $balance->name;
+                    $balances[$count]->value_btc = 0;
+                  }else{
+                    foreach ($balances as $bal) {
+                      if($bal->symbol == $balance->symbol){
+                        $newBals = $bal->amount + ($balance->amount  * $percent);
+                        $bal->amount = $newBals;
                       }
-                      $count += 1;
+                    }
                   }
-              }
+                    $count += 1;
+                }
               foreach($balances as $balance){
                   if($balance->amount > 0){
                       $symbol = $balance->symbol;
@@ -312,7 +305,7 @@ class VerifyHistory extends Command
         for($i = 0;$i <= $diffGD; $i++){
           $sum = 0;
           $initGstamp = $initG->timestamp;
-          $balancesG = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+          $balancesG = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
           foreach($balancesG as $balance){
               if($balance->amount > 0){
                   $symbol = $balance->symbol;
@@ -356,7 +349,7 @@ class VerifyHistory extends Command
         for($i = 0;$i <= $diffGW; $i++){
           $sum = 0;
           $initGWstamp = $initGW->timestamp;
-          $balancesG = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+          $balancesG = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
           foreach($balancesG as $balance){
               if($balance->amount > 0){
                   $symbol = $balance->symbol;
@@ -401,7 +394,7 @@ class VerifyHistory extends Command
         for($i = 0;$i <= $diffGM; $i++){
           $sum = 0;
           $initGMstamp = $initGM->timestamp;
-          $balancesG = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+          $balancesG = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
           foreach($balancesG as $balance){
               if($balance->amount > 0){
                   $symbol = $balance->symbol;
