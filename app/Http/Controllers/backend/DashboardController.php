@@ -186,7 +186,7 @@ class DashboardController extends Controller
                 }
               }
           }
-          array_push($chart['symbol'], $balance->symbol);
+
           if($balance->symbol == "VEF"){
             $balance->value_btc = 238000;
             $btcvalue = 0;
@@ -203,7 +203,7 @@ class DashboardController extends Controller
           }
 
           $usdvalue = $balance->amount * $balance->value;
-          array_push($chart['amount'], $usdvalue);
+
 
 
           $usd += $usdvalue;
@@ -213,6 +213,12 @@ class DashboardController extends Controller
           $usdvalue = $balance->amount * $balance->value;
           $balance->percent = ($usdvalue / $usd) * 100;
           $balance->equivalent = $usdvalue;
+      }
+      usort($balances, $this->sorting('', 'equivalent'));
+
+      foreach ($balances as $balance) {
+        array_push($chart['amount'], $balance->equivalent);
+        array_push($chart['symbol'], $balance->symbol);
       }
 
       $initstamp = $initial->created_at->timestamp;
@@ -227,7 +233,7 @@ class DashboardController extends Controller
        $profit = $usd - $initial->amount;
        $Tpercent = $profit / $initial->amount;
        $Tpercent = $Tpercent * 100;
-       usort($balances, $this->sorting('', 'equivalent'));
+
       return response()->json(['result' => $balances, 'initial' => $initial, 'usd' => $usd, 'btc' => $btc, 'profit' => $profit, 'percent' => $Tpercent , 'chart' => $chart, 'initialb' => $btcI], 202);
     }
 
