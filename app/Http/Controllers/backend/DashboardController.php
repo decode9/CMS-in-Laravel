@@ -120,6 +120,8 @@ class DashboardController extends Controller
                 $balances[$count]->symbol = $balance->symbol;
                 $balances[$count]->type = $balance->type;
                 $balances[$count]->name = $balance->name;
+                $balances[$count]->equivalent = 0;
+                $balances[$count]->percent = 0;
                 $balances[$count]->value_btc = 0;
               }else{
                 foreach ($balances as $bal) {
@@ -131,9 +133,31 @@ class DashboardController extends Controller
               }
                 $count += 1;
             }
-        usort($balances, $this->sorting($orderDirection, $orderBy));
+
       }else{
-        $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('amount', '>', '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.amount', 'value', 'symbol', 'name')->orderBy('amount', 'DESC')->get();
+        $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('amount', '>', '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.amount', 'value', 'symbol', 'name')->orderBy('amount', 'DESC')->get();
+        $count = 0;
+        foreach($balancesP as $balance){
+          if(empty($balances[$count])){
+            $balances[$count] = new \stdClass();
+            $balances[$count]->amount = $balance->amount;
+            $balances[$count]->value = $balance->value;
+            $balances[$count]->symbol = $balance->symbol;
+            $balances[$count]->type = $balance->type;
+            $balances[$count]->name = $balance->name;
+            $balances[$count]->equivalent = 0;
+            $balances[$count]->percent = 0;
+            $balances[$count]->value_btc = 0;
+          }else{
+            foreach ($balances as $bal) {
+              if($bal->symbol == $balance->symbol){
+                $newBals = $bal->amount + $balance->amount;
+                $bal->amount = $newBals;
+              }
+            }
+          }
+            $count += 1;
+        }
         $initial = Fund::Where('user_id', null)->where('funds.type', 'initial')->where('period_id', null)->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('amount', 'symbol', 'funds.created_at')->first();
       }
 
@@ -190,6 +214,7 @@ class DashboardController extends Controller
       foreach ($balances as $balance) {
           $usdvalue = $balance->amount * $balance->value;
           $balance->percent = ($usdvalue / $usd) * 100;
+          $balance->equivalent = $usdvalue;
       }
 
       $initstamp = $initial->created_at->timestamp;
@@ -204,7 +229,7 @@ class DashboardController extends Controller
        $profit = $usd - $initial->amount;
        $Tpercent = $profit / $initial->amount;
        $Tpercent = $Tpercent * 100;
-
+       usort($balances, $this->sorting($orderDirection, 'equivalent'));
       return response()->json(['result' => $balances, 'initial' => $initial, 'usd' => $usd, 'btc' => $btc, 'profit' => $profit, 'percent' => $Tpercent , 'chart' => $chart, 'initialb' => $btcI], 202);
     }
 

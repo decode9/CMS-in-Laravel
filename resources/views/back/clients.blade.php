@@ -88,6 +88,7 @@
                                   <th id="table_client_header_name" style="cursor: pointer;">Name</th>
                                   <th id="table_client_header_email" style="cursor: pointer;">Email</th>
                                   <th id="table_client_header_initial" style="cursor: pointer;">Initial Invest</th>
+                                  <th id="table_client_header_percent" style="cursor: pointer;">Fund Percent</th>
                                   <th>Options</th>
                               </tr>
                           </thead>
@@ -104,7 +105,7 @@
                                       </select>
                                     </div>
                                   </th>
-                                  <th id="table_client_pagination" class="text-right" colspan="3"></th>
+                                  <th id="table_client_pagination" class="text-right" colspan="4"></th>
                               </tr>
                           </tfoot>
                           <tbody id="table_client_content">

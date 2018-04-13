@@ -101,7 +101,7 @@ class dailyHistory extends Command
 
         foreach($users as $user){
           if($user->histories()->first() !== null && $user->periods()->first() !== null){
-
+              $this->info('Start History Data For User '. $user->name);
               $initial = $user->histories()->where('type', 'daily')->get()->last();
               $periods = $user->periods()->get();
               $initialT = Carbon::parse($initial->register);
@@ -110,6 +110,7 @@ class dailyHistory extends Command
 
               $init = $initialT;
               for($i = 1;$i <= $diffD; $i++){
+                $this->info('Daily: Date '. $init->toFormattedDateString());
                 $balances = array();
                 $init = $init->addDays(1);
                 $sum = 0;
@@ -147,6 +148,7 @@ class dailyHistory extends Command
                         $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$symbol.'&tsyms=USD&ts='.$initstamp);
                         $data = json_decode($json);
                         if(isset($data->Response)){
+                          $this->info('Daily: '. $balance->symbol . ' '. $data->Response);
                           if(strtolower($balance->symbol) == 'origin' || (strtolower($balance->symbol) == 'sdt' || strtolower($balance->symbol) == 'tari')){
                             $balance->value = 1;
                           }else{
@@ -159,15 +161,17 @@ class dailyHistory extends Command
                             }
                           }
                         }else{
+                          $this->info('Daily: '. $balance->symbol . ' value: '. $data->$symbol->USD);
                           $balance->value = $data->$symbol->USD;
                         }
                           $na = $balance->amount * $balance->value;
-
+                          $this->info('Daily: '. $balance->symbol . ' amount: '. $balance->amount . ' newAmount: ' . $na);
                       }else{
                          $na = 0;
                       }
                       $sum += $na;
                   }
+                  $this->info('Daily: Date '. $init->toFormattedDateString(). ' Total: ' . $sum);
                   $history = new History;
                   $history->register = $init;
                   $history->amount = $sum;
@@ -175,6 +179,7 @@ class dailyHistory extends Command
                   $history->user()->associate($user);
                   $history->save();
               }
+              $this->info('End Daily Historical Data for '. $user->name);
             }
           }
 
@@ -182,13 +187,14 @@ class dailyHistory extends Command
           $attributes = isset($historical->amount) ? true : false;
 
           if($attributes){
-
+              $this->info('Start History Data For Fund');
               $initialGT = Carbon::parse($historical->register);
 
               $diffGD = $initialGT->diffInDays($today);
 
               $initG = $initialGT;
               for($i = 1;$i <= $diffGD; $i++){
+                $this->info('Daily: Date '. $initG->toFormattedDateString());
                 $initG = $initG->addDays(1);
                 $sum = 0;
                 $initGstamp = $initG->timestamp;
@@ -203,6 +209,7 @@ class dailyHistory extends Command
                         $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$symbol.'&tsyms=USD&ts='.$initGstamp);
                         $data = json_decode($json);
                         if(isset($data->Response)){
+                          $this->info('Daily: '. $balance->symbol . ' '. $data->Response);
                           if(strtolower($balance->symbol) == 'origin' || (strtolower($balance->symbol) == 'sdt' || strtolower($balance->symbol) == 'tari')){
                             $balance->value = 1;
                           }else{
@@ -215,15 +222,18 @@ class dailyHistory extends Command
                             }
                           }
                         }else{
+                          $this->info('Daily: '. $balance->symbol . ' value: '. $data->$symbol->USD);
                           $balance->value = $data->$symbol->USD;
                         }
 
                           $newamount = $balance->amount * $balance->value;
+                          $this->info('Daily: '. $balance->symbol . ' amount: '. $balance->amount . ' newAmount: ' . $newamount);
                       }else{
                          $newamount = 0;
                       }
                       $sum += $newamount;
                   }
+                  $this->info('Daily: Date '. $initG->toFormattedDateString(). ' Total: ' . $sum);
                   $history = new History;
                   $history->register = $initG;
                   $history->amount = $sum;

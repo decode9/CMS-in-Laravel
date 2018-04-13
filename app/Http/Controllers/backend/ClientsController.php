@@ -78,9 +78,9 @@ class ClientsController extends Controller
 
          if($order == 'DESC'){
            if(empty($key)){
-              return strnatcmp($b->amount, $a->amount);
+              return strnatcmp($a->amount, $b->amount);
            }else{
-              return strnatcmp($b->$key, $a->$key);
+              return strnatcmp($a->$key, $b->$key);
            }
          }else{
            if(empty($key)){
@@ -219,21 +219,6 @@ class ClientsController extends Controller
                  });
 
          }
-         //Order By
-
-         if($orderBy != '')
-         {
-             if($orderDirection != '')
-             {
-                 $query->orderBy($orderBy, 'desc');
-             }else{
-                 $query->orderBy($orderBy);
-             }
-         }else if($orderDirection != ''){
-             $query->orderBy('created_at');
-         }else{
-              $query->orderBy('created_at', 'desc');
-         }
 
          if($resultPage == null || $resultPage == 0)
          {
@@ -254,6 +239,7 @@ class ClientsController extends Controller
 
          foreach($users as $user){
              $funds = $user->funds()->where('type', 'initial')->get();
+             $percent = $this->percent($user);
              if(isset($funds)){
                  $user->amount = 0;
                  foreach($funds as $fund){
@@ -262,10 +248,25 @@ class ClientsController extends Controller
              }else{
                  $user->amount = 0;
              }
+             $user->percent = $percent * 100;
          }
-         //Get fees by month and year
 
-         return response()->json(['page' => $page, 'result' => $users,'total' => $total], 202);
+         //Get fees by month and year
+         $usersA = array();
+         $count = 0;
+         foreach ($users as $user) {
+           if(empty($usersA[$count])){
+               $usersA[$count] = new \stdClass();
+               $usersA[$count]->name = $user->name;
+               $usersA[$count]->amount = $user->amount;
+               $usersA[$count]->email = $user->email;
+               $usersA[$count]->percent = $user->percent;
+               $usersA[$count]->id = $user->id;
+           }
+            $count += 1;
+         }
+         usort($usersA, $this->sorting($orderDirection, $orderBy));
+         return response()->json(['page' => $page, 'result' => $usersA,'total' => $total], 202);
      }
 
      public function indexCurrency(Request $request){
@@ -294,21 +295,6 @@ class ClientsController extends Controller
                        });
                }
 
-               //Order By
-
-               if($orderBy != '')
-               {
-                   if($orderDirection != '')
-                   {
-                       $query->orderBy($orderBy, 'desc');
-                   }else{
-                       $query->orderBy($orderBy);
-                   }
-               }else if($orderDirection != ''){
-                   $query->orderBy('balances.amount');
-               }else{
-                    $query->orderBy('balances.amount', 'desc');
-               }
 
                if($resultPage == null || $resultPage == 0)
                {
@@ -337,6 +323,7 @@ class ClientsController extends Controller
                       $balancesCurrency[$count]->symbol = $balanceP->symbol;
                       $balancesCurrency[$count]->type = $balanceP->type;
                       $balancesCurrency[$count]->name = $balanceP->name;
+                      $balancesCurrency[$count]->equivalent = 0;
                   }else{
                     foreach ($balancesCurrency as $value) {
                       if($value->symbol == $balanceP->symbol){
@@ -361,22 +348,6 @@ class ClientsController extends Controller
                        ->orWhere('amount', 'like', '%'.$searchValue.'%')
                        ->orWhere('value', 'like', '%'.$searchValue.'%');
                    });
-           }
-
-           //Order By
-
-           if($orderBy != '')
-           {
-               if($orderDirection != '')
-               {
-                   $query->orderBy($orderBy, 'desc');
-               }else{
-                   $query->orderBy($orderBy);
-               }
-           }else if($orderDirection != ''){
-               $query->orderBy('balances.amount');
-           }else{
-                $query->orderBy('balances.amount', 'desc');
            }
 
            if($resultPage == null || $resultPage == 0)
@@ -424,6 +395,7 @@ class ClientsController extends Controller
                    }
                  }
              }
+             $balancecs->equivalent = $balancecs->amount * $balancecs->value;
          }
 
          usort($balancesCurrency, $this->sorting($orderDirection, $orderBy));

@@ -382,11 +382,11 @@ $(document).ready(function(){
                 list = '<div class="col-sm-6" style="padding:0px; margin-bottom: 6px;"><div class="col-sm-12" style="padding:0px;"><div class="col-sm-3 colorChart" style="padding:0px;" id="colorChart'+i+'"><div class="color"></div></div><div class="col-sm-9" style="padding:0px;"><h5 class="list-group-item-heading text-center">'+symbol+'</h5></div></div><div class="col-sm-12 text-center" style="padding:0px;"><p class="small">Amount: '+formatNumber2.num(amount)+'</p><p class="small">percent: '+formatNumber2.num(balance.percent)+'%</p></div></div>';
                 list2 = $('<div class="col-sm-12 text-center folioList"></div>');
 
-                symbol = $('<div class="col-sm-3"><h5>'+balance.name+'</h5></div>');
+                symbol = $('<div class="col-sm-3"><h5>'+symbol+'</h5></div>');
                 percents = parseInt(balance.percent);
                 progress = $('<div class="col-sm-3 divPro"><div class="progress"><div class="progress-bar progress-bar-striped" id="progress'+i+'" role="progressbar" aria-valuenow="'+percents+'" aria-valuemin="0" aria-valuemax="100" style="width:'+percents+'%">'+percents+'%</div></div></div>');
                 amount = $('<div class="col-sm-3"><h5>'+formatNumber.num(balance.amount)+' '+ balance.symbol +'</h5></div>');
-                va = $('<div class="col-sm-3"><h5>$ '+formatNumber2.num(chart['amount'][i])+'</h5></div>');
+                va = $('<div class="col-sm-3"><h5>$ '+formatNumber2.num(balance.equivalent)+'</h5></div>');
 
                 list2.append(symbol);
                 list2.append(progress);
@@ -2637,7 +2637,7 @@ $(document).ready(function(){
                             if(balance.symbol == 'VEF'){
                                 var colvalue_3 = $('<td>' + formatNumber2.num(balance.amount / balance.value) + '</td>');
                             }else{
-                                var colvalue_3 = $('<td>' + formatNumber2.num(balance.amount * balance.value)+ '</td>');
+                                var colvalue_3 = $('<td>' + formatNumber2.num(balance.equivalent)+ '</td>');
                             }
 
 
@@ -4553,7 +4553,7 @@ $(document).ready(function(){
         });
 
         $('#table_balance_currency_header_equivalent').click(function (e) {
-            orderTableBalanceCurrencyBy('value');
+            orderTableBalanceCurrencyBy('equivalent');
         });
 
         var orderBalanceCurrencyBy = "";
@@ -5065,6 +5065,12 @@ $(document).ready(function(){
         $('#table_client_header_email').click(function (e) {
             orderTableClientBy('email');
         });
+        $('#table_client_header_initial').click(function (e) {
+            orderTableClientBy('amount');
+        });
+        $('#table_client_header_percent').click(function (e) {
+            orderTableClientBy('percent');
+        });
 
         var orderClientBy = "";
         var orderClientDirection = "";
@@ -5113,22 +5119,24 @@ $(document).ready(function(){
 
                             // we have to make in steps to add the onclick event
                             var rowResult = $('<tr></tr>');
-                            var colvalue_1 = $('<td>' + client.name + '</td>');
-                            var colvalue_2 = $('<td>' + client.email + '</td>');
-                            var colvalue_3 = $('<td>'+ formatNumber2.num(client.amount) +'</td>');
-                            var colvalue_4 = $('<td class="text-center"></td>');
+                            var colvalue_1 = $('<td style="vertical-align: middle;">' + client.name + '</td>');
+                            var colvalue_2 = $('<td style="vertical-align: middle;">' + client.email + '</td>');
+                            var colvalue_3 = $('<td style="vertical-align: middle;">'+ formatNumber2.num(client.amount) +'</td>');
+                            var colvalue_4 = $('<td style="vertical-align: middle;">'+ formatNumber2.num(client.percent) +'%</td>');
+                            var colvalue_5 = $('<td class="text-center" style="vertical-align: middle;"></td>');
                             var buttonS = $('<button class="btn btn-alternative btn-sm" type="button">Select Client</button>');
                             var buttonI = $('<button class="btn btn-alternative-success btn-alternative btn-sm" data-toggle="modal" data-target="#clientMod" type="button">Initial Investment</button>');
                             selectClient(buttonS, client.id);
                             initialInvest(buttonI, client);
 
-                            colvalue_4.append(buttonS);
-                            colvalue_4.append(buttonI);
+                            colvalue_5.append(buttonS);
+                            colvalue_5.append(buttonI);
 
                             rowResult.append(colvalue_1);
                             rowResult.append(colvalue_2);
                             rowResult.append(colvalue_3);
                             rowResult.append(colvalue_4);
+                            rowResult.append(colvalue_5);
                             $("#table_client_content").append(rowResult);
                         }
 
@@ -5286,12 +5294,12 @@ $(document).ready(function(){
 
                                     // we have to make in steps to add the onclick event
                                     var rowResult = $('<tr></tr>');
-                                    var colvalue_1 = $('<td>' + balance.symbol + '</td>');
-                                    var colvalue_2 = $('<td>' + formatNumber2.num(balance.amount) + '</td>');
+                                    var colvalue_1 = $('<td style="vertical-align: middle;">' + balance.symbol + '</td>');
+                                    var colvalue_2 = $('<td style="vertical-align: middle;">' + formatNumber2.num(balance.amount) + '</td>');
                                     if(balance.symbol == 'VEF'){
-                                        var colvalue_3 = $('<td>' + formatNumber2.num(balance.amount / balance.value) + '</td>');
+                                        var colvalue_3 = $('<td style="vertical-align: middle;">' + formatNumber2.num(balance.amount / balance.value) + '</td>');
                                     }else{
-                                        var colvalue_3 = $('<td>' + formatNumber2.num(balance.amount * balance.value) + '</td>');
+                                        var colvalue_3 = $('<td style="vertical-align: middle;">' + formatNumber2.num(balance.equivalent) + '</td>');
                                     }
 
 
@@ -5382,7 +5390,7 @@ $(document).ready(function(){
                 });
 
                 $('#table_balance_currency_header_equivalent').click(function (e) {
-                    orderTableBalanceCurrencyBy('value');
+                    orderTableBalanceCurrencyBy('equivalent');
                 });
 
                 var orderBalanceCurrencyBy = "";

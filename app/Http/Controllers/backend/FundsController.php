@@ -125,7 +125,7 @@ class FundsController extends Controller
                 }else{
                   if(strtolower($balance->name) == 'originprotocol' || (strtolower($balance->name) == 'send' || strtolower($balance->name) == 'tari')){
                     $balance->value = 1;
-                    $balance->value_btc = 0.0000000000001;
+                    $balance->value_btc = 0.00000000001;
                   }else{
                     $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/ethereum');
                     $data = json_decode($json);
@@ -167,9 +167,9 @@ class FundsController extends Controller
 
          if($order == 'DESC'){
            if(empty($key)){
-              return strnatcmp($b->amount, $a->amount);
+              return strnatcmp($a->amount, $b->amount);
            }else{
-              return strnatcmp($b->$key, $a->$key);
+              return strnatcmp($a->$key, $b->$key);
            }
          }else{
            if(empty($key)){
@@ -224,22 +224,6 @@ class FundsController extends Controller
                        });
                }
 
-               //Order By
-
-               if($orderBy != '')
-               {
-                   if($orderDirection != '')
-                   {
-                       $query->orderBy($orderBy, 'desc');
-                   }else{
-                       $query->orderBy($orderBy);
-                   }
-               }else if($orderDirection != ''){
-                   $query->orderBy('balances.amount');
-               }else{
-                    $query->orderBy('balances.amount', 'desc');
-               }
-
                if($resultPage == null || $resultPage == 0)
                {
                    $resultPage = 10;
@@ -266,6 +250,7 @@ class FundsController extends Controller
                      $balancesCurrency[$count]->symbol = $balanceP->symbol;
                      $balancesCurrency[$count]->type = $balanceP->type;
                      $balancesCurrency[$count]->name = $balanceP->name;
+                     $balancesCurrency[$count]->equivalent = 0;
                  }else{
                    foreach ($balancesCurrency as $value) {
                      if($value->symbol == $balanceP->symbol){
@@ -279,8 +264,6 @@ class FundsController extends Controller
                    $count += 1;
                }
 
-           //Search by
-           usort($balancesCurrency, $this->sorting($orderDirection, $orderBy));
          }else{
            $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name');
            //Search by
@@ -324,7 +307,30 @@ class FundsController extends Controller
 
 
            $query->limit($resultPage);
-           $balancesCurrency  =  $query->get();
+           $balancesCurrencyP  =  $query->get();
+
+           foreach($balancesCurrencyP as $balanceP){
+             if(empty($balancesCurrency[$count])){
+
+                 $balancesCurrency[$count] = new \stdClass();
+                 $balancesCurrency[$count]->amount = $balanceP->amount;
+                 $balancesCurrency[$count]->value = $balanceP->value;
+                 $balancesCurrency[$count]->symbol = $balanceP->symbol;
+                 $balancesCurrency[$count]->type = $balanceP->type;
+                 $balancesCurrency[$count]->name = $balanceP->name;
+                 $balancesCurrency[$count]->equivalent = 0;
+             }else{
+               foreach ($balancesCurrency as $value) {
+                 if($value->symbol == $balanceP->symbol){
+                   $newBal = $value->amount + $balanceP->amount;
+                   $value->amount = $newBal;
+                 }
+
+               }
+
+             }
+               $count += 1;
+           }
 
          }
 
@@ -355,6 +361,7 @@ class FundsController extends Controller
                    }
                  }
              }
+             $balance->equivalent = $balance->amount * $balance->value;
          }
 
          if($user->hasRole('20') || $user->hasRole('901')){
@@ -363,7 +370,7 @@ class FundsController extends Controller
              $eaccess = false;
          }
 
-
+         usort($balancesCurrency, $this->sorting($orderDirection, $orderBy));
 
          return response()->json(['page' => $page, 'result' => $balancesCurrency, 'total' => $total, 'eaccess' => $eaccess], 202);
      }
