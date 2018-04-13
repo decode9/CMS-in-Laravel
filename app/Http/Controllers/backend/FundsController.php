@@ -276,21 +276,6 @@ class FundsController extends Controller
                    });
            }
 
-           //Order By
-
-           if($orderBy != '')
-           {
-               if($orderDirection != '')
-               {
-                   $query->orderBy($orderBy, 'desc');
-               }else{
-                   $query->orderBy($orderBy);
-               }
-           }else if($orderDirection != ''){
-               $query->orderBy('balances.amount');
-           }else{
-                $query->orderBy('balances.amount', 'desc');
-           }
 
            if($resultPage == null || $resultPage == 0)
            {

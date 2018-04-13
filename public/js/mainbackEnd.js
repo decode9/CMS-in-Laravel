@@ -4415,7 +4415,7 @@ $(document).ready(function () {
             orderTableBalanceCurrencyBy('equivalent');
         });
 
-        var orderBalanceCurrencyBy = "";
+        var orderBalanceCurrencyBy = "equivalent";
         var orderBalanceCurrencyDirection = "";
         var searchBalanceCurrencyValue = "";
 
