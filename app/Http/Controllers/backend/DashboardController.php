@@ -91,8 +91,6 @@ class DashboardController extends Controller
       $user = Auth::User();
       if($user->hasRole('30')){
         $balances = array();
-        $orderBy = 'amount';
-        $orderDirection = '';
             $percent = $this->percent($user);
             $initialsP = $user->funds()->where('type', 'initial')->get();
             $count = 0;
@@ -229,7 +227,7 @@ class DashboardController extends Controller
        $profit = $usd - $initial->amount;
        $Tpercent = $profit / $initial->amount;
        $Tpercent = $Tpercent * 100;
-       usort($balances, $this->sorting($orderDirection, 'equivalent'));
+       usort($balances, $this->sorting('', 'equivalent'));
       return response()->json(['result' => $balances, 'initial' => $initial, 'usd' => $usd, 'btc' => $btc, 'profit' => $profit, 'percent' => $Tpercent , 'chart' => $chart, 'initialb' => $btcI], 202);
     }
 
