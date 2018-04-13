@@ -308,7 +308,7 @@ class FundsController extends Controller
 
            $query->limit($resultPage);
            $balancesCurrencyP  =  $query->get();
-
+           $count = 0;
            foreach($balancesCurrencyP as $balanceP){
              if(empty($balancesCurrency[$count])){
 
