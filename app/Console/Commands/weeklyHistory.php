@@ -66,7 +66,7 @@ class weeklyHistory extends Command
 
         foreach($users as $user){
           if($user->histories()->first() !== null && $user->periods()->first() !== null){
-
+            $this->info('Start History Weekly Data For User '. $user->name);
 
               $initial = $user->histories()->where('type', 'weekly')->get()->last();
 
@@ -79,6 +79,7 @@ class weeklyHistory extends Command
               for($i = 1;$i <= $diffD; $i++){
                 $balances = array();
                 $init = $init->addWeeks(1);
+                $this->info('Weekly: Date '. $init->toFormattedDateString());
                 $sum = 0;
                 $initstamp = $init->timestamp;
                 $percent = $this->percent($user);
@@ -110,6 +111,7 @@ class weeklyHistory extends Command
                         $data = json_decode($json);
                         $symbol = $balance->symbol;
                         if(isset($data->Response)){
+                          $this->info('Weekly: '. $balance->symbol . ' '. $data->Response);
                           if(strtolower($balance->symbol) == 'origin' || (strtolower($balance->symbol) == 'sdt' || strtolower($balance->symbol) == 'tari')){
                             $balance->value = 1;
                           }else{
@@ -122,15 +124,23 @@ class weeklyHistory extends Command
                             }
                           }
                         }else{
-                          $balance->value = $data->$symbol->USD;
+                          $this->info('Weekly: '. $balance->symbol . ' value: '. $data->$symbol->USD);
+                          if(strtolower($symbol) == 'prs'){
+                            $json2 = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initstamp);
+                            $data2 = json_decode($json2);
+                            $balance->value = $data2->ETH->USD;
+                          }else{
+                            $balance->value = $data->$symbol->USD;
+                          }
                         }
                           $na = $balance->amount * $balance->value;
-
+                          $this->info('Weekly: '. $balance->symbol . ' amount: '. $balance->amount . ' newAmount: ' . $na);
                       }else{
                          $na = 0;
                       }
                       $sum += $na;
                   }
+                  $this->info('Weekly: Date '. $init->toFormattedDateString(). ' Total: ' . $sum);
                   $history = new History;
                   $history->register = $init;
                   $history->amount = $sum;
@@ -145,7 +155,7 @@ class weeklyHistory extends Command
           $attributes = isset($historical->amount) ? true : false;
 
           if($attributes){
-
+              $this->info('Start History Weekly Data For Fund');
               $initialGT = Carbon::parse($historical->created_at);
 
               $diffGD = $initialGT->diffInWeeks($today);
@@ -153,6 +163,7 @@ class weeklyHistory extends Command
               $initG = $initialGT;
               for($i = 1;$i <= $diffGD; $i++){
                 $initG = $initG->addWeeks(1);
+                $this->info('Weekly: Date '. $initG->toFormattedDateString());
                 $sum = 0;
                 $initGstamp = $initG->timestamp;
                 $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
@@ -164,27 +175,37 @@ class weeklyHistory extends Command
                         $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$symbol.'&tsyms=USD&ts='.$initGstamp);
                         $data = json_decode($json);
                         if(isset($data->Response)){
+                          $this->info('Weekly: '. $balance->symbol . ' '. $data->Response);
                           if(strtolower($balance->symbol) == 'origin' || (strtolower($balance->symbol) == 'sdt' || strtolower($balance->symbol) == 'tari')){
                             $balance->value = 1;
                           }else{
                             if(strtolower($symbol) == 'npxs'){
                               $balance->value = 0.001;
                             }else{
-                              $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initstamp);
+                              $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initGstamp);
                               $data = json_decode($json);
                               $balance->value = $data->ETH->USD;
                             }
                           }
                         }else{
-                          $balance->value = $data->$symbol->USD;
+                          $this->info('Weekly: '. $balance->symbol . ' value: '. $data->$symbol->USD);
+                          if(strtolower($symbol) == 'prs'){
+                            $json2 = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initGstamp);
+                            $data2 = json_decode($json2);
+                            $balance->value = $data2->ETH->USD;
+                          }else{
+                            $balance->value = $data->$symbol->USD;
+                          }
                         }
 
                           $newamount = $balance->amount * $balance->value;
+                          $this->info('Weekly: '. $balance->symbol . ' amount: '. $balance->amount . ' newAmount: ' . $newamount);
                       }else{
                          $newamount = 0;
                       }
                       $sum += $newamount;
                   }
+                  $this->info('Weekly: Date '. $initG->toFormattedDateString(). ' Total: ' . $sum);
                   $history = new History;
                   $history->register = $initG;
                   $history->amount = $sum;

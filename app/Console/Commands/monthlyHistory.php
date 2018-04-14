@@ -101,7 +101,7 @@ class monthlyHistory extends Command
 
         foreach($users as $user){
           if($user->histories()->first() !== null && $user->periods()->first() !== null){
-
+              $this->info('Start History Monthly Data For User '. $user->name);
               $initial = $user->histories()->where('type', 'monthly')->get()->last();
 
               $initialT = Carbon::parse($initial->register);
@@ -113,6 +113,7 @@ class monthlyHistory extends Command
               for($i = 1;$i <= $diffD; $i++){
                 $balances = array();
                 $init = $init->addMonths(1);
+                $this->info('Monthly: Date '. $init->toFormattedDateString());
                 $sum = 0;
                 $initstamp = $init->timestamp;
                 $percent = $this->percent($user);
@@ -143,27 +144,35 @@ class monthlyHistory extends Command
                         $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$symbol.'&tsyms=USD&ts='.$initstamp);
                         $data = json_decode($json);
                         if(isset($data->Response)){
+                          $this->info('Monthly: '. $balance->symbol . ' '. $data->Response);
                           if(strtolower($balance->symbol) == 'origin' || (strtolower($balance->symbol) == 'sdt' || strtolower($balance->symbol) == 'tari')){
                             $balance->value = 1;
                           }else{
                             if(strtolower($symbol) == 'npxs'){
                               $balance->value = 0.001;
                             }else{
+                              $this->info('Monthly: '. $balance->symbol . ' value: '. $data->$symbol->USD);
                               $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initstamp);
                               $data = json_decode($json);
                               $balance->value = $data->ETH->USD;
                             }
                           }
                         }else{
-                          $balance->value = $data->$symbol->USD;
+                          if(strtolower($symbol) == 'prs'){
+                            $json2 = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initstamp);
+                            $data2 = json_decode($json2);
+                            $balance->value = $data2->ETH->USD;
+                          }else{
+                            $balance->value = $data->$symbol->USD;
+                          }
                         }
                           $na = $balance->amount * $balance->value;
-
+                          $this->info('Monthly: '. $balance->symbol . ' amount: '. $balance->amount . ' newAmount: ' . $na);
                       }else{
                          $na = 0;
                       }
                       $sum += $na;
-
+                  $this->info('Monthly: Date '. $init->toFormattedDateString(). ' Total: ' . $sum);
                   $history = new History;
                   $history->register = $init;
                   $history->amount = $sum;
@@ -179,7 +188,7 @@ class monthlyHistory extends Command
           $attributes = isset($historical->amount) ? true : false;
 
           if($attributes){
-
+              $this->info('Start History Monthly Data For Fund');
               $initialGT = Carbon::parse($historical->register);
 
               $diffGD = $initialGT->diffInMonths($today);
@@ -187,6 +196,7 @@ class monthlyHistory extends Command
               $initG = $initialGT;
               for($i = 1;$i <= $diffGD; $i++){
                 $initG = $initG->addMonths(1);
+                $this->info('Monthly: Date '. $initG->toFormattedDateString());
                 $sum = 0;
                 $initGstamp = $initG->timestamp;
                 $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
@@ -195,28 +205,38 @@ class monthlyHistory extends Command
                           $symbol = $balance->symbol;
                         $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$symbol.'&tsyms=USD&ts='.$initGstamp);
                         $data = json_decode($json);
-                        if(isset($data->response)){
+                        if(isset($data->Response)){
+                          $this->info('Monthly: '. $balance->symbol . ' '. $data->Response);
                           if(strtolower($balance->symbol) == 'origin' || (strtolower($balance->symbol) == 'sdt' || strtolower($balance->symbol) == 'tari')){
                             $balance->value = 1;
                           }else{
                             if(strtolower($symbol) == 'npxs'){
                               $balance->value = 0.001;
                             }else{
-                              $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initstamp);
+                              $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initGstamp);
                               $data = json_decode($json);
                               $balance->value = $data->ETH->USD;
                             }
                           }
                         }else{
-                          $balance->value = $data->$symbol->USD;
+                          $this->info('Monthly: '. $balance->symbol . ' value: '. $data->$symbol->USD);
+                          if(strtolower($symbol) == 'prs'){
+                            $json2 = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initGstamp);
+                            $data2 = json_decode($json2);
+                            $balance->value = $data2->ETH->USD;
+                          }else{
+                            $balance->value = $data->$symbol->USD;
+                          }
                         }
 
                           $newamount = $balance->amount * $balance->value;
+                          $this->info('Monthly: '. $balance->symbol . ' amount: '. $balance->amount . ' newAmount: ' . $newamount);
                       }else{
                          $newamount = 0;
                       }
                       $sum += $newamount;
                   }
+                  $this->info('Monthly: Date '. $initG->toFormattedDateString(). ' Total: ' . $sum);
                   $history = new History;
                   $history->register = $initG;
                   $history->amount = $sum;

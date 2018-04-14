@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Crypt;
-use App\Mail\newUser;
+use App\Mail\WelcomeSystem;
 use App\User;
 
 class sendMail extends Command
@@ -47,8 +47,7 @@ class sendMail extends Command
         foreach($users as $user){
           $email = $user->email;
           //$decrypted = Crypt::decrypt($user->password);
-          $data = ['email' => 'correo', "password" => "12345"];
-          Mail::to($email)->send(new newUser($data));
+          Mail::to($email)->send(new WelcomeSystem());
         }
     }
 }

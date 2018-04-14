@@ -110,9 +110,9 @@ class dailyHistory extends Command
 
               $init = $initialT;
               for($i = 1;$i <= $diffD; $i++){
-                $this->info('Daily: Date '. $init->toFormattedDateString());
                 $balances = array();
                 $init = $init->addDays(1);
+                $this->info('Daily: Date '. $init->toFormattedDateString());
                 $sum = 0;
                 $initstamp = $init->timestamp;
                 $percent = $this->percent($user);
@@ -140,11 +140,7 @@ class dailyHistory extends Command
 
                   foreach($balances as $balance){
                       if($balance->amount > 0){
-                        if($balance->symbol == 'NPXS'){
-                          $symbol = 'PXS';
-                        }else{
                           $symbol = $balance->symbol;
-                        }
                         $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$symbol.'&tsyms=USD&ts='.$initstamp);
                         $data = json_decode($json);
                         if(isset($data->Response)){
@@ -162,7 +158,13 @@ class dailyHistory extends Command
                           }
                         }else{
                           $this->info('Daily: '. $balance->symbol . ' value: '. $data->$symbol->USD);
-                          $balance->value = $data->$symbol->USD;
+                          if(strtolower($symbol) == 'prs'){
+                            $json2 = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initstamp);
+                            $data2 = json_decode($json2);
+                            $balance->value = $data2->ETH->USD;
+                          }else{
+                            $balance->value = $data->$symbol->USD;
+                          }
                         }
                           $na = $balance->amount * $balance->value;
                           $this->info('Daily: '. $balance->symbol . ' amount: '. $balance->amount . ' newAmount: ' . $na);
@@ -201,11 +203,7 @@ class dailyHistory extends Command
                 $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
                   foreach($balances as $balance){
                       if($balance->amount > 0){
-                        if($balance->symbol == 'NPXS'){
-                          $symbol = 'PXS';
-                        }else{
-                          $symbol = $balance->symbol;
-                        }
+                        $symbol = $balance->symbol;
                         $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$symbol.'&tsyms=USD&ts='.$initGstamp);
                         $data = json_decode($json);
                         if(isset($data->Response)){
@@ -216,14 +214,20 @@ class dailyHistory extends Command
                             if(strtolower($symbol) == 'npxs'){
                               $balance->value = 0.001;
                             }else{
-                              $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initstamp);
+                              $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initGstamp);
                               $data = json_decode($json);
                               $balance->value = $data->ETH->USD;
                             }
                           }
                         }else{
                           $this->info('Daily: '. $balance->symbol . ' value: '. $data->$symbol->USD);
-                          $balance->value = $data->$symbol->USD;
+                          if(strtolower($symbol) == 'prs'){
+                            $json2 = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initGstamp);
+                            $data2 = json_decode($json2);
+                            $balance->value = $data2->ETH->USD;
+                          }else{
+                            $balance->value = $data->$symbol->USD;
+                          }
                         }
 
                           $newamount = $balance->amount * $balance->value;
