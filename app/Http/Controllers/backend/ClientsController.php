@@ -16,182 +16,268 @@ use App\Period;
 class ClientsController extends Controller
 {
 
-    public function __construct()
-    {
+    public function __construct(){
         $this->middleware('auth');
     }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-     private function percent($user){
-             if($user->hasRole('30')){
-                    $userInitials = $user->funds()->where('type', 'initial')->get();
-                    $userInvest = 0;
-                    foreach ($userInitials as $initial) {
-                      $userInvest += $initial->amount;
-                    }
-                    $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', null)->first();
-                    $fundInvest = $fundInitial->amount;
-                    $percent = $userInvest / $fundInvest;
-                    return $percent;
-             }
+
+    // Fund Percent Function for user with client roles
+    private function percent($user){
+
+     //Check if user has client role
+     if($user->hasRole('30')){
+
+       // Take Initial Invest From User
+       $userInitials = $user->funds()->where('type', 'initial')->get();
+       $userInvest = 0;
+       foreach ($userInitials as $initial) {
+         $userInvest += $initial->amount;
+       }
+
+       // Take Initial Invest From Fund
+       $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', null)->first();
+       $fundInvest = $fundInitial->amount;
+       $percent = $userInvest / $fundInvest;
+
+       // Return user Fund Percent
+       return $percent;
      }
-     private function url_exists( $url = NULL ) {
+    }
 
-         if( empty( $url ) ){
-             return false;
-         }
+    //Function for Check if a url have a successfully response
+    private function url_exists( $url = NULL ) {
 
-         $ch = curl_init( $url );
+      if(empty($url)){
+        return false;
+      }
 
-         //Establecer un tiempo de espera
-         curl_setopt( $ch, CURLOPT_TIMEOUT, 5 );
-         curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 5 );
+      $ch = curl_init( $url );
 
-         //establecer NOBODY en true para hacer una solicitud tipo HEAD
-         curl_setopt( $ch, CURLOPT_NOBODY, true );
-         //Permitir seguir redireccionamientos
-         curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
-         //recibir la respuesta como string, no output
-         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+      //Establecer un tiempo de espera
+      curl_setopt( $ch, CURLOPT_TIMEOUT, 5 );
+      curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 5 );
 
-         $data = curl_exec( $ch );
+      //establecer NOBODY en true para hacer una solicitud tipo HEAD
+      curl_setopt( $ch, CURLOPT_NOBODY, true );
+      //Permitir seguir redireccionamientos
+      curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
+      //recibir la respuesta como string, no output
+      curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 
-         //Obtener el código de respuesta
-         $httpcode = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-         //cerrar conexión
-         curl_close( $ch );
+      $data = curl_exec( $ch );
 
-         //Aceptar solo respuesta 200 (Ok), 301 (redirección permanente) o 302 (redirección temporal)
-         $accepted_response = array( 200, 301, 302 );
-         if( in_array( $httpcode, $accepted_response ) ) {
-             return true;
-         } else {
-             return false;
-         }
+      //Obtener el código de respuesta
+      $httpcode = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+      //cerrar conexión
+      curl_close( $ch );
+
+      //Aceptar solo respuesta 200 (Ok), 301 (redirección permanente) o 302 (redirección temporal)
+      $accepted_response = array( 200, 301, 302 );
+
+      if( in_array( $httpcode, $accepted_response ) ) {
+
+        return true;
+
+      } else {
+
+        return false;
+
+      }
 
      }
+
+     //Function for order arrays
      private function sorting($order, $key) {
+
        return function ($a, $b) use ($order, $key) {
 
          if($order == 'DESC'){
            if(empty($key)){
-              return strnatcmp($a->amount, $b->amount);
+
+             return strnatcmp($a->amount, $b->amount);
+
            }else{
+
               return strnatcmp($a->$key, $b->$key);
+
            }
+
          }else{
+
            if(empty($key)){
-              return strnatcmp($b->amount, $a->amount);
+
+             return strnatcmp($b->amount, $a->amount);
+
            }else{
-              return strnatcmp($b->$key, $a->$key);
+
+             return strnatcmp($b->$key, $a->$key);
+
            }
-
          }
-
        };
      }
 
+     //Get Total Balance in USD and BTC
      public function total(Request $request){
-        $user = User::find($request->id);
-        $balances = array();
 
-        if($user->hasRole('30')){
-          $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('amount', '>' , '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
-          $percent = $this->percent($user);
-          $count = 0;
+       //Select User
+       $user = User::find($request->id);
 
-            foreach($balancesP as $balance){
-              if(empty($balances[$count])){
-                $balances[$count] = new \stdClass();
-                $balances[$count]->amount = $balance->amount  * $percent;
-                $balances[$count]->value = $balance->value;
-                $balances[$count]->symbol = $balance->symbol;
-                $balances[$count]->type = $balance->type;
-                $balances[$count]->name = $balance->name;
-                $balances[$count]->value_btc = 0;
-              }else{
-                foreach ($balances as $bal) {
-                  if($bal->symbol == $balance->symbol){
-                    $newBals = $bal->amount + ($balance->amount  * $percent);
-                    $bal->amount = $newBals;
-                  }
-                }
-              }
-                $count += 1;
-            }
+       //Create $balances array
+       $balances = array();
 
-        }else{
-          $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('amount', '>' , '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
-          $count = 0;
-          foreach($balancesP as $balance){
-            if(empty($balances[$count])){
-              $balances[$count] = new \stdClass();
-              $balances[$count]->amount = $balance->amount;
-              $balances[$count]->value = $balance->value;
-              $balances[$count]->symbol = $balance->symbol;
-              $balances[$count]->type = $balance->type;
-              $balances[$count]->name = $balance->name;
-              $balances[$count]->value_btc = 0;
+       //Verify If User Has Client Role
+       if($user->hasRole('30')){
+
+         //Select Balances greater than 0
+         $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('amount', '>' , '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+
+         //Select User Percent
+         $percent = $this->percent($user);
+
+         //Assign $count variable
+         $count = 0;
+
+         foreach($balancesP as $balance){
+
+           //Verify if $balance array is empty
+           if(empty($balances[$count])){
+
+             //Create object in array
+             $balances[$count] = new \stdClass();
+
+             $balances[$count]->amount = $balance->amount  * $percent;
+             $balances[$count]->value = $balance->value;
+             $balances[$count]->symbol = $balance->symbol;
+             $balances[$count]->type = $balance->type;
+             $balances[$count]->name = $balance->name;
+             $balances[$count]->value_btc = 0;
+
+           }else{
+             //if $balance exist sum amount
+             foreach ($balances as $bal) {
+
+               if($bal->symbol == $balance->symbol){
+
+                 $newBals = $bal->amount + ($balance->amount  * $percent);
+                 $bal->amount = $newBals;
+
+               }
+             }
+           }
+           $count += 1;
+         }
+       }else{
+
+         $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('amount', '>' , '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+
+         $count = 0;
+
+         foreach($balancesP as $balance){
+
+           if(empty($balances[$count])){
+
+             $balances[$count] = new \stdClass();
+
+             $balances[$count]->amount = $balance->amount;
+             $balances[$count]->value = $balance->value;
+             $balances[$count]->symbol = $balance->symbol;
+             $balances[$count]->type = $balance->type;
+             $balances[$count]->name = $balance->name;
+             $balances[$count]->value_btc = 0;
+           }else{
+
+             foreach ($balances as $bal) {
+
+               if($bal->symbol == $balance->symbol){
+
+                 $newBals = $bal->amount + $balance->amount;
+                 $bal->amount = $newBals;
+
+               }
+             }
+
+           }
+
+           $count += 1;
+
+        }
+      }
+      //Declare $usd and $btc variables
+      $usd = 0;
+      $btc = 0;
+
+      //Loop $balances array
+      foreach($balances as $balance){
+        //Verify if value is through API
+        if($balance->value == "coinmarketcap"){
+
+          //Declare URL
+          $url = 'api.coinmarketcap.com/v1/ticker/'. $balance->name;
+
+          //Verify if url respond successfully
+          if($this->url_exists($url)){
+
+            //Take coinmarketcap API Data
+            $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $balance->name);
+            $data = json_decode($json);
+
+            //Assign Value as USD Price
+            $balance->value = $data[0]->price_usd;
+            $balance->value_btc = $data[0]->price_btc;
+
+          }else{
+            //Verify Name Balance
+            if(strtolower($balance->name) == 'originprotocol' || (strtolower($balance->name) == 'send' || strtolower($balance->name) == 'tari')){
+
+              //Assign Balance Value
+              $balance->value = 1;
+              $balance->value_btc = 0.0000000000001;
+
             }else{
-              foreach ($balances as $bal) {
-                if($bal->symbol == $balance->symbol){
-                  $newBals = $bal->amount + $balance->amount;
-                  $bal->amount = $newBals;
-                }
-              }
+
+              $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/ethereum');
+              $data = json_decode($json);
+
+              $balance->value = $data[0]->price_usd;
+              $balance->value_btc = $data[0]->price_btc;
             }
-            $count += 1;
           }
         }
 
-        $usd = 0;
-        $btc = 0;
+        if($balance->symbol == "VEF"){
 
-        foreach($balances as $balance){
-            if($balance->value == "coinmarketcap"){
-              $url = 'api.coinmarketcap.com/v1/ticker/'. $balance->name;
-                if($this->url_exists($url)){
-                    $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $balance->name);
-                    $data = json_decode($json);
-                    $balance->value = $data[0]->price_usd;
-                    $balance->value_btc = $data[0]->price_btc;
-                }else{
-                  if(strtolower($balance->name) == 'originprotocol' || (strtolower($balance->name) == 'send' || strtolower($balance->name) == 'tari')){
-                    $balance->value = 1;
-                    $balance->value_btc = 0.0000000000001;
-                  }else{
-                    $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/ethereum');
-                    $data = json_decode($json);
-                    $balance->value = $data[0]->price_usd;
-                    $balance->value_btc = $data[0]->price_btc;
-                  }
-                }
-            }
+          $balance->value_btc = 238000;
+          $btcvalue = 0;
 
-            if($balance->symbol == "VEF"){
-              $balance->value_btc = 238000;
-              $btcvalue = 0;
-            }else{
-              $btcvalue = $balance->amount * $balance->value_btc;
-            }
-            if($balance->symbol == "USD"){
-              $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/bitcoin');
-              $data = json_decode($json);
-              $balance->value_btc = $data[0]->price_usd;
-              $btcvalue = $balance->amount / $balance->value_btc;
-            }
-            $usdvalue = $balance->amount * $balance->value;
-            $usd += $usdvalue;
-            $btc += $btcvalue;
-
+        }else{
+          //Assign BTC value
+          $btcvalue = $balance->amount * $balance->value_btc;
 
         }
 
-         return response()->json(['usd' => $usd, 'btc' => $btc], 202);
+        if($balance->symbol == "USD"){
+
+          $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/bitcoin');
+          $data = json_decode($json);
+
+          $balance->value_btc = $data[0]->price_usd;
+          $btcvalue = $balance->amount / $balance->value_btc;
+
+        }
+
+
+        $usdvalue = $balance->amount * $balance->value;
+        
+        //Assign USD and BTC values
+        $usd += $usdvalue;
+        $btc += $btcvalue;
+      }
+
+      return response()->json(['usd' => $usd, 'btc' => $btc], 202);
+
      }
+
+
      public function index(Request $request){
 
          $user = Auth::User();

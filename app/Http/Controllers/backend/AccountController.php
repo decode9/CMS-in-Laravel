@@ -8,10 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use App\Account;
 
-
-
-class AccountController extends Controller
-{
+class AccountController extends Controller{
 
     public function __construct()
     {
@@ -22,10 +19,11 @@ class AccountController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
-    {
-        //
+    public function index(Request $request){
+
+        //Select authenticate User
         $user = Auth::User();
+
         $searchValue = $request->searchvalue;
         $page = $request->page;
         $resultPage = $request->resultPage;
@@ -33,61 +31,64 @@ class AccountController extends Controller
         $orderDirection = $request->orderDirection;
         $total = 0;
 
-        //Select Witdraws of the user
+        //Select accounts of the user
         $query = Account::Where('user_id', $user->id);
-        //Search by
 
-        if($searchValue != '')
-        {
-                $query->Where(function($query) use($searchValue){
-                    $query->Where('type', 'like', '%'.$searchValue.'%')
-                    ->orWhere('entity', 'like', '%'.$searchValue.'%')
-                    ->orWhere('address', 'like', '%'.$searchValue.'%');
-                });
+        //Search by
+        if($searchValue != ''){
+          $query->Where(function($query) use($searchValue){
+            $query->Where('type', 'like', '%'.$searchValue.'%')
+            ->orWhere('entity', 'like', '%'.$searchValue.'%')
+            ->orWhere('address', 'like', '%'.$searchValue.'%');
+          });
         }
 
         //Order By
+        if($orderBy != ''){
+          if($orderDirection != ''){
 
-        if($orderBy != '')
-        {
-            if($orderDirection != '')
-            {
-                $query->orderBy($orderBy, 'desc');
-            }else{
-                $query->orderBy($orderBy);
-            }
+            $query->orderBy($orderBy, 'desc');
+
+          }else{
+
+            $query->orderBy($orderBy);
+
+          }
         }else if($orderDirection != ''){
-            $query->orderBy('created_at', 'desc');
+
+          $query->orderBy('created_at', 'desc');
+
         }else{
-             $query->orderBy('created_at');
+
+          $query->orderBy('created_at');
+
         }
 
-        if($resultPage == null || $resultPage == 0)
-        {
-            $resultPage = 10;
+        if($resultPage == null || $resultPage == 0){
+
+          $resultPage = 10;
+
         }
 
         //Get Total of account
         $total  =  $query->get()->count();
 
-        if($page > 1)
-        {
-             $query->offset(    ($page -  1)   *    $resultPage);
+        if($page > 1){
+
+          $query->offset(($page -  1) * $resultPage);
+
         }
 
 
         $query->limit($resultPage);
+
         $account  =  $query->get();
 
-        //Get fees by month and year
-
         return response()->json(['page' => $page, 'result' => $account, 'total' => $total,], 202);
-
     }
 
 
-    public function store(Request $request)
-    {
+    public function store(Request $request){
         //
         $request->validate([
             'type' => 'required|string',
@@ -152,10 +153,10 @@ class AccountController extends Controller
     public function destroy($id)
     {
 
-        $post = Post::find($id);
+        $Account = Account::find($id);
+        
+        $Account->delete();
 
-        $post->delete();
-        $url = url('/') . '/news';
-        return view('back.success',['url' => $url, 'response' => 'Congratulations the news as been deleted']);
+        return response()->json(['response' => 'Account Deleted'], 202);
     }
 }

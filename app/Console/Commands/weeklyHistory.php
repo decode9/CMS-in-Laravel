@@ -40,184 +40,308 @@ class weeklyHistory extends Command
      *
      * @return mixed
      */
+     // Fund Percent Function for user with client roles
      private function percent($user){
-             if($user->hasRole('30')){
-                    $userInitials = $user->funds()->where('type', 'initial')->get();
-                    $userInvest = 0;
-                    foreach ($userInitials as $initial) {
-                      $userInvest += $initial->amount;
-                    }
-                    $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', null)->first();
-                    $fundInvest = $fundInitial->amount;
-                    $percent = $userInvest / $fundInvest;
-                    return $percent;
-             }
+
+       //Check if user has client role
+       if($user->hasRole('30')){
+
+         // Take Initial Invest From User
+         $userInitials = $user->funds()->where('type', 'initial')->get();
+         $userInvest = 0;
+         foreach ($userInitials as $initial) {
+           $userInvest += $initial->amount;
+         }
+
+         // Take Initial Invest From Fund
+         $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', null)->first();
+         $fundInvest = $fundInitial->amount;
+         $percent = $userInvest / $fundInvest;
+
+         // Return user Fund Percent
+         return $percent;
+       }
      }
 
+     public function handle(){
 
-    public function handle()
-    {
-        //
-        $users = User::whereHas('roles', function ($query) {
-          $query->where('code', '30');
-        })->get();
+       //Select Users With Client Role
+       $users = User::whereHas('roles', function ($query) {
+         $query->where('code', '30');
+       })->get();
 
-        $today = Carbon::now();
+       //Select Actual Date
+       $today = Carbon::now();
 
-        foreach($users as $user){
-          if($user->histories()->first() !== null && $user->periods()->first() !== null){
-            $this->info('Start History Weekly Data For User '. $user->name);
+       //Loop Users
+       foreach($users as $user){
 
-              $initial = $user->histories()->where('type', 'weekly')->get()->last();
+         //Verify If User Has Weekly histories and has a period
+         if($user->histories()->first() !== null && $user->periods()->first() !== null){
 
-              $initialT = Carbon::parse($initial->register);
-              $periods = $user->periods()->get();
-              $diffD = $initialT->diffInWeeks($today);
+           //Show In terminal
+           $this->info('Start History Data For User '. $user->name);
 
-              $init = $initialT;
+           //Select Last Date
+           $initial = $user->histories()->where('type', 'weekly')->get()->last();
+           $initialT = Carbon::parse($initial->register);
 
-              for($i = 1;$i <= $diffD; $i++){
-                $balances = array();
-                $init = $init->addWeeks(1);
-                $this->info('Weekly: Date '. $init->toFormattedDateString());
-                $sum = 0;
-                $initstamp = $init->timestamp;
-                $percent = $this->percent($user);
-                  $count = 0;
-                  $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
-                  foreach($balancesP as $balance){
-                    if(empty($balances[$count])){
-                      $balances[$count] = new \stdClass();
-                      $balances[$count]->amount = $balance->amount  * $percent;
-                      $balances[$count]->value = $balance->value;
-                      $balances[$count]->symbol = $balance->symbol;
-                      $balances[$count]->type = $balance->type;
-                      $balances[$count]->name = $balance->name;
-                      $balances[$count]->value_btc = 0;
-                    }else{
-                      foreach ($balances as $bal) {
-                        if($bal->symbol == $balance->symbol){
-                          $newBals = $bal->amount + ($balance->amount  * $percent);
-                          $bal->amount = $newBals;
-                        }
-                      }
-                    }
-                      $count += 1;
-                  }
-                  foreach($balances as $balance){
-                      if($balance->amount > 0){
-                          $symbol = $balance->symbol;
-                          sleep(1);
-                        $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$symbol.'&tsyms=USD&ts='.$initstamp);
-                        $data = json_decode($json);
-                        $symbol = $balance->symbol;
-                        if(isset($data->Response)){
-                          $this->info('Weekly: '. $balance->symbol . ' '. $data->Response);
-                          if((strtolower($symbol) == 'hedge' || strtolower($symbol) == 'origin') || (strtolower($balance->symbol) == 'sdt' || strtolower($balance->symbol) == 'tari')){
-                            $balance->value = 1;
-                          }else{
-                            if(strtolower($symbol) == 'npxs'){
-                              $balance->value = 0.001;
-                            }else{
-                              sleep(1);
-                              $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initstamp);
-                              $data = json_decode($json);
-                              $balance->value = $data->ETH->USD;
-                            }
-                          }
-                        }else{
-                          $this->info('Weekly: '. $balance->symbol . ' value: '. $data->$symbol->USD);
-                          if(strtolower($symbol) == 'prs'){
-                            sleep(1);
-                            $json2 = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initstamp);
-                            $data2 = json_decode($json2);
-                            $balance->value = $data2->ETH->USD;
-                          }else{
-                            $balance->value = $data->$symbol->USD;
-                          }
-                        }
-                          $na = $balance->amount * $balance->value;
-                          $this->info('Weekly: '. $balance->symbol . ' amount: '. $balance->amount . ' newAmount: ' . $na);
-                      }else{
-                         $na = 0;
-                      }
-                      $sum += $na;
-                  }
-                  $this->info('Weekly: Date '. $init->toFormattedDateString(). ' Total: ' . $sum);
-                  $history = new History;
-                  $history->register = $init;
-                  $history->amount = $sum;
-                  $history->type = "weekly";
-                  $history->user()->associate($user);
-                  $history->save();
-              }
-            }
-          }
+           //Diference beetween Last date and actual date
+           $diffD = $initialT->diffInWeeks($today);
 
-          $historical = History::Where('user_id', null)->where('type', 'weekly')->get()->last();
-          $attributes = isset($historical->amount) ? true : false;
+           // Declare Initial Date
+           $init = $initialT;
 
-          if($attributes){
-              $this->info('Start History Weekly Data For Fund');
-              $initialGT = Carbon::parse($historical->register);
+           //Loop Dates
+           for($i = 1;$i <= $diffD; $i++){
 
-              $diffGD = $initialGT->diffInWeeks($today);
-              $this->info('diference: ' . $diffGD);
-              $initG = $initialGT;
-              for($i = 1;$i <= $diffGD; $i++){
-                $initG = $initG->addWeeks(1);
-                $this->info('Weekly: Date '. $initG->toFormattedDateString());
-                $sum = 0;
-                $initGstamp = $initG->timestamp;
-                $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
-                  foreach($balances as $balance){
-                      if($balance->amount > 0){
+             //Create Array
+             $balances = array();
 
-                          $symbol = $balance->symbol;
-                          sleep(1);
-                        $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$symbol.'&tsyms=USD&ts='.$initGstamp);
-                        $data = json_decode($json);
-                        if(isset($data->Response)){
-                          $this->info('Weekly: '. $balance->symbol . ' '. $data->Response);
-                          if((strtolower($symbol) == 'hedge' || strtolower($symbol) == 'origin') || (strtolower($balance->symbol) == 'sdt' || strtolower($balance->symbol) == 'tari')){
-                            $balance->value = 1;
-                          }else{
-                            if(strtolower($symbol) == 'npxs'){
-                              $balance->value = 0.001;
-                            }else{
-                              sleep(1);
-                              $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initGstamp);
-                              $data = json_decode($json);
-                              $balance->value = $data->ETH->USD;
-                            }
-                          }
-                        }else{
-                          $this->info('Weekly: '. $balance->symbol . ' value: '. $data->$symbol->USD);
-                          if(strtolower($symbol) == 'prs'){
-                            sleep(1);
-                            $json2 = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initGstamp);
-                            $data2 = json_decode($json2);
-                            $balance->value = $data2->ETH->USD;
-                          }else{
-                            $balance->value = $data->$symbol->USD;
-                          }
-                        }
+             //Add Day
+             $init = $init->addWeeks(1);
 
-                          $newamount = $balance->amount * $balance->value;
-                          $this->info('Weekly: '. $balance->symbol . ' amount: '. $balance->amount . ' newAmount: ' . $newamount);
-                      }else{
-                         $newamount = 0;
-                      }
-                      $sum += $newamount;
-                  }
-                  $this->info('Weekly: Date '. $initG->toFormattedDateString(). ' Total: ' . $sum);
-                  $history = new History;
-                  $history->register = $initG;
-                  $history->amount = $sum;
-                  $history->type = "weekly";
-                  $history->save();
-              }
+             $this->info('Weekly: Date '. $init->toFormattedDateString());
 
-          }
-    }
+             //Declare Sumatory
+             $sum = 0;
+
+             //Select initial date timestamp
+             $initstamp = $init->timestamp;
+
+             //Select User Percent
+             $percent = $this->percent($user);
+
+             //declare count
+             $count = 0;
+
+             //Select Balances
+             $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+
+             //Loop Balances
+             foreach($balancesP as $balance){
+
+               //Check if $balances array if empty
+               if(empty($balances[$count])){
+
+                 //Create an object inside the array and put variables.
+                 $balances[$count] = new \stdClass();
+                 $balances[$count]->amount = $balance->amount  * $percent;
+                 $balances[$count]->value = $balance->value;
+                 $balances[$count]->symbol = $balance->symbol;
+                 $balances[$count]->type = $balance->type;
+                 $balances[$count]->name = $balance->name;
+                 $balances[$count]->value_btc = 0;
+
+               }else{
+
+                 //If $balance array is not empty change variable amount
+                 foreach ($balances as $bal) {
+                   if($bal->symbol == $balance->symbol){
+                     $newBals = $bal->amount + ($balance->amount  * $percent);
+                     $bal->amount = $newBals;
+                   }
+                 }
+
+               }
+
+               //add one to count
+               $count += 1;
+             }
+
+             //Loop $balances array
+             foreach($balances as $balance){
+               //Verify if balance amount is greater than 0
+               if($balance->amount > 0){
+
+                 //select Symbol balance
+                 $symbol = $balance->symbol;
+
+                 //Sleep System for 1 second
+                 sleep(1);
+
+                 //Get price historical data from CryptoCompare
+                 $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$symbol.'&tsyms=USD&ts='.$initstamp);
+                 $data = json_decode($json);
+
+                 //Verify If Get Error from CryptoCompare
+                 if(isset($data->Response)){
+                   $this->info('Weekly: '. $balance->symbol . ' '. $data->Response);
+
+                   //Check Symbols for assign values
+                   if((strtolower($symbol) == 'hedge' || strtolower($symbol) == 'origin') || (strtolower($balance->symbol) == 'sdt' || strtolower($balance->symbol) == 'tari')){
+
+                     //Put Balance Value
+                     $balance->value = 1;
+
+                   }else{
+                     if(strtolower($symbol) == 'npxs'){
+
+                       //Put Balance Value
+                       $balance->value = 0.001;
+
+                     }else{
+
+                       sleep(1);
+
+                       $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initstamp);
+                       $data = json_decode($json);
+
+                       //Put Data USD As Value
+                       $balance->value = $data->ETH->USD;
+                     }
+                   }
+                 }else{
+
+                   $this->info('Weekly: '. $balance->symbol . ' value: '. $data->$symbol->USD);
+
+                   //Check Symbol for assign Values
+                   if(strtolower($symbol) == 'prs'){
+
+                     sleep(1);
+
+                     $json2 = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initstamp);
+                     $data2 = json_decode($json2);
+                     $balance->value = $data2->ETH->USD;
+
+                   }else{
+
+                     $balance->value = $data->$symbol->USD;
+
+                   }
+                 }
+                 //Assign USD Amount for balance
+                 $na = $balance->amount * $balance->value;
+
+                 $this->info('Weekly: '. $balance->symbol . ' amount: '. $balance->amount . ' newAmount: ' . $na);
+
+               }else{
+                 // Assign USD Amount as 0 if balance is equal to 0
+                 $na = 0;
+
+               }
+
+               //USD Amount Summatory
+               $sum += $na;
+             }
+
+             $this->info('Weekly: Date '. $init->toFormattedDateString(). ' Total: ' . $sum);
+
+             //Create Date History in Database
+             $history = new History;
+             $history->register = $init;
+             $history->amount = $sum;
+             $history->type = "weekly";
+             $history->user()->associate($user);
+
+             $history->save();
+           }
+
+           $this->info('End Weekly Historical Data for '. $user->name);
+
+         }
+       }
+
+       //Select Last historical Data from database for Fund
+       $historical = History::Where('user_id', null)->where('type', 'weekly')->get()->last();
+
+       //Assign boolean if exist historical
+       $attributes = isset($historical->amount) ? true : false;
+
+       //Check Attributes Variable
+       if($attributes){
+
+         $this->info('Start History Data For Fund');
+
+         $initialGT = Carbon::parse($historical->register);
+         $diffGD = $initialGT->diffInWeeks($today);
+         $initG = $initialGT;
+
+         for($i = 1;$i <= $diffGD; $i++){
+
+           $this->info('Weekly: Date '. $initG->toFormattedDateString());
+
+           $sum = 0;
+
+           $initG = $initG->addWeeks(1);
+           $initGstamp = $initG->timestamp;
+
+           $balances = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+
+           foreach($balances as $balance){
+
+             if($balance->amount > 0){
+
+               $symbol = $balance->symbol;
+
+               sleep(1);
+
+               $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$symbol.'&tsyms=USD&ts='.$initGstamp);
+               $data = json_decode($json);
+
+               if(isset($data->Response)){
+                 $this->info('Weekly: '. $balance->symbol . ' '. $data->Response);
+
+                 if((strtolower($symbol) == 'hedge' || strtolower($symbol) == 'origin') || (strtolower($balance->symbol) == 'sdt' || strtolower($balance->symbol) == 'tari')){
+
+                   $balance->value = 1;
+
+                 }else{
+
+                   if(strtolower($symbol) == 'npxs'){
+
+                     $balance->value = 0.001;
+
+                   }else{
+
+                     sleep(1);
+
+                     $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initGstamp);
+                     $data = json_decode($json);
+
+                     $balance->value = $data->ETH->USD;
+
+                   }
+                 }
+               }else{
+
+                 $this->info('Weekly: '. $balance->symbol . ' value: '. $data->$symbol->USD);
+
+                 if(strtolower($symbol) == 'prs'){
+
+                   sleep(1);
+                   $json2 = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initGstamp);
+                   $data2 = json_decode($json2);
+                   $balance->value = $data2->ETH->USD;
+
+                 }else{
+
+                   $balance->value = $data->$symbol->USD;
+
+                 }
+               }
+
+               $newamount = $balance->amount * $balance->value;
+               $this->info('Weekly: '. $balance->symbol . ' amount: '. $balance->amount . ' newAmount: ' . $newamount);
+
+             }else{
+
+               $newamount = 0;
+
+             }
+
+             $sum += $newamount;
+
+           }
+
+           $this->info('Weekly: Date '. $initG->toFormattedDateString(). ' Total: ' . $sum);
+
+           $history = new History;
+           $history->register = $initG;
+           $history->amount = $sum;
+           $history->type = "weekly";
+           $history->save();
+         }
+       }
+     }
 }

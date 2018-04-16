@@ -46,7 +46,6 @@ class sendMail extends Command
 
         foreach($users as $user){
           $email = $user->email;
-          //$decrypted = Crypt::decrypt($user->password);
           Mail::to($email)->send(new WelcomeSystem());
         }
     }
