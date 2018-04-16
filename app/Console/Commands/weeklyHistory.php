@@ -156,10 +156,10 @@ class weeklyHistory extends Command
 
           if($attributes){
               $this->info('Start History Weekly Data For Fund');
-              $initialGT = Carbon::parse($historical->created_at);
+              $initialGT = Carbon::parse($historical->register);
 
               $diffGD = $initialGT->diffInWeeks($today);
-
+              $this->info('diference: ' . $diffGD);
               $initG = $initialGT;
               for($i = 1;$i <= $diffGD; $i++){
                 $initG = $initG->addWeeks(1);
