@@ -952,7 +952,7 @@ class FundsController extends Controller
 
       $ref = $this->generate(7);
 
-      if($aout <= $validP->amount){
+      if($aout <= $valid->amount){
         $order = new FundOrder;
         if($status == 'Complete'){
           $balance = Balance::find($valid->id);
@@ -1048,7 +1048,7 @@ class FundsController extends Controller
       $idin = Currency::Where('symbol', $cin)->select('id')->first();
 
 
-      if($aout <= $validP->amount){
+      if($aout <= $valid->amount){
 
 
         $balance = Balance::find($valid->id);

@@ -2835,9 +2835,16 @@ $(document).ready(function(){
                 availableBalance('#period');
 
                 $('.modal-footer').append("<div id='exButts'></div>");
+                if(currency.symbol == 'USD'){
+                  exchangeOutValue('#valueout', '#rate', '#valuein');
+                  exchangeOutValue('#valueout', '#valuein', '#rate');
+                  exchangeOutValue('#valuein', '#valueout', '#rate');
+                }else{
+                  exchangeInValue('#valueout', '#rate', '#valuein');
+                  exchangeInValue('#valueout', '#valuein', '#rate');
+                  exchangeInValue('#valuein', '#valueout', '#rate');
+                }
 
-                exchangeInValue('#valueout', '#rate', '#valuein');
-                exchangeInValue('#valueout', '#valuein', '#rate');
                 statusChange('#status');
                 makeBut = $("<button type='button' class='btn btn-alternative' name='button' id='exCont'>Make</button>");
                 addMakeExButton(makeBut);
@@ -2888,7 +2895,7 @@ $(document).ready(function(){
             })
         }
 
-        function exchangeInValue(value, select, target,){
+        function exchangeInValue(value, select, target){
             $(select).change(function(){
                 var val = $(value).val();
 
@@ -2896,6 +2903,19 @@ $(document).ready(function(){
                 var sel = $(select).val();
 
                 var newval = val / sel;
+
+                $(target).val(newval);
+            })
+        }
+
+        function exchangeOutValue(value, select, target){
+            $(select).change(function(){
+                var val = $(value).val();
+
+
+                var sel = $(select).val();
+
+                var newval = sel / val;
 
                 $(target).val(newval);
             })
