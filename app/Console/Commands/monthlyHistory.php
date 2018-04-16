@@ -141,6 +141,7 @@ class monthlyHistory extends Command
                       if($balance->amount > 0){
 
                           $symbol = $balance->symbol;
+                          sleep(2);
                         $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$symbol.'&tsyms=USD&ts='.$initstamp);
                         $data = json_decode($json);
                         if(isset($data->Response)){
@@ -152,6 +153,7 @@ class monthlyHistory extends Command
                               $balance->value = 0.001;
                             }else{
                               $this->info('Monthly: '. $balance->symbol . ' value: '. $data->$symbol->USD);
+                              sleep(2);
                               $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initstamp);
                               $data = json_decode($json);
                               $balance->value = $data->ETH->USD;
@@ -159,6 +161,7 @@ class monthlyHistory extends Command
                           }
                         }else{
                           if(strtolower($symbol) == 'prs'){
+                            sleep(2);
                             $json2 = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initstamp);
                             $data2 = json_decode($json2);
                             $balance->value = $data2->ETH->USD;
@@ -203,6 +206,7 @@ class monthlyHistory extends Command
                   foreach($balances as $balance){
                       if($balance->amount > 0){
                           $symbol = $balance->symbol;
+                          sleep(2);
                         $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$symbol.'&tsyms=USD&ts='.$initGstamp);
                         $data = json_decode($json);
                         if(isset($data->Response)){
@@ -213,6 +217,7 @@ class monthlyHistory extends Command
                             if(strtolower($symbol) == 'npxs'){
                               $balance->value = 0.001;
                             }else{
+                              sleep(2);
                               $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initGstamp);
                               $data = json_decode($json);
                               $balance->value = $data->ETH->USD;
@@ -221,6 +226,7 @@ class monthlyHistory extends Command
                         }else{
                           $this->info('Monthly: '. $balance->symbol . ' value: '. $data->$symbol->USD);
                           if(strtolower($symbol) == 'prs'){
+                            sleep(2);
                             $json2 = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initGstamp);
                             $data2 = json_decode($json2);
                             $balance->value = $data2->ETH->USD;
