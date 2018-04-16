@@ -141,18 +141,18 @@ class dailyHistory extends Command
                   foreach($balances as $balance){
                       if($balance->amount > 0){
                           $symbol = $balance->symbol;
-                          sleep(2);
+                          sleep(1);
                         $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$symbol.'&tsyms=USD&ts='.$initstamp);
                         $data = json_decode($json);
                         if(isset($data->Response)){
                           $this->info('Daily: '. $balance->symbol . ' '. $data->Response);
-                          if(strtolower($balance->symbol) == 'origin' || (strtolower($balance->symbol) == 'sdt' || strtolower($balance->symbol) == 'tari')){
+                          if((strtolower($symbol) == 'hedge' || strtolower($symbol) == 'origin') || (strtolower($balance->symbol) == 'sdt' || strtolower($balance->symbol) == 'tari')){
                             $balance->value = 1;
                           }else{
                             if(strtolower($symbol) == 'npxs'){
                               $balance->value = 0.001;
                             }else{
-                              sleep(2);
+                              sleep(1);
                               $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initstamp);
                               $data = json_decode($json);
                               $balance->value = $data->ETH->USD;
@@ -161,7 +161,7 @@ class dailyHistory extends Command
                         }else{
                           $this->info('Daily: '. $balance->symbol . ' value: '. $data->$symbol->USD);
                           if(strtolower($symbol) == 'prs'){
-                            sleep(2);
+                            sleep(1);
                             $json2 = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initstamp);
                             $data2 = json_decode($json2);
                             $balance->value = $data2->ETH->USD;
@@ -207,18 +207,18 @@ class dailyHistory extends Command
                   foreach($balances as $balance){
                       if($balance->amount > 0){
                         $symbol = $balance->symbol;
-                        sleep(2);
+                        sleep(1);
                         $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym='.$symbol.'&tsyms=USD&ts='.$initGstamp);
                         $data = json_decode($json);
                         if(isset($data->Response)){
                           $this->info('Daily: '. $balance->symbol . ' '. $data->Response);
-                          if(strtolower($balance->symbol) == 'origin' || (strtolower($balance->symbol) == 'sdt' || strtolower($balance->symbol) == 'tari')){
+                          if((strtolower($symbol) == 'hedge' || strtolower($symbol) == 'origin') || (strtolower($balance->symbol) == 'sdt' || strtolower($balance->symbol) == 'tari')){
                             $balance->value = 1;
                           }else{
                             if(strtolower($symbol) == 'npxs'){
                               $balance->value = 0.001;
                             }else{
-                              sleep(2);
+                              sleep(1);
                               $json = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initGstamp);
                               $data = json_decode($json);
                               $balance->value = $data->ETH->USD;
@@ -227,7 +227,7 @@ class dailyHistory extends Command
                         }else{
                           $this->info('Daily: '. $balance->symbol . ' value: '. $data->$symbol->USD);
                           if(strtolower($symbol) == 'prs'){
-                            sleep(2);
+                            sleep(1);
                             $json2 = file_get_contents('https://min-api.cryptocompare.com/data/pricehistorical?fsym=ETH&tsyms=USD&ts='.$initGstamp);
                             $data2 = json_decode($json2);
                             $balance->value = $data2->ETH->USD;
