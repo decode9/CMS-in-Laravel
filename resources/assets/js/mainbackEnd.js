@@ -3040,7 +3040,7 @@ $(document).ready(function(){
         /*Transaction History*/
 
         $('#table_transaction_header_currency_out').click(function (e) {
-          orderTableTransactionBy('currencies.symbol');
+          orderTableTransactionBy('symbol');
         });
 
         $('#table_transaction_header_amount_out').click(function (e) {
@@ -3056,11 +3056,11 @@ $(document).ready(function(){
         });
 
         $('#table_transaction_header_date').click(function (e) {
-          orderTableTransactionBy('fund_orders.created_at');
+          orderTableTransactionBy('created_at');
         });
 
         $('#table_transaction_header_confirmed').click(function (e) {
-          orderTableTransactionBy('fund_orders.updated_at');
+          orderTableTransactionBy('updated_at');
         });
 
         $('#table_transaction_header_status').click(function (e) {
@@ -3229,7 +3229,7 @@ $(document).ready(function(){
         }
 
         $('#table_pending_transaction_header_currency_out').click(function (e) {
-          orderTablePendingTransactionBy('currencies.symbol');
+          orderTablePendingTransactionBy('symbol');
         });
 
         $('#table_pending_transaction_header_amount_out').click(function (e) {
@@ -3245,7 +3245,7 @@ $(document).ready(function(){
         });
 
         $('#table_pending_transaction_header_date').click(function (e) {
-          orderTablePendingTransactionBy('fund_orders.created_at');
+          orderTablePendingTransactionBy('created_at');
         });
 
         $('#table_pending_transaction_header_status').click(function (e) {

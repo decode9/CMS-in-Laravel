@@ -379,7 +379,7 @@ class FundsController extends Controller
          if($user->hasRole('30')){
            $count = 0;
            $percent = $this->percent($user);
-           $query = FundOrder::where('user_id', null)->where('status', 'complete')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
+           $query = FundOrder::where('user_id', null)->where('status', 'complete')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol')->orderBy('created_at', 'desc');
            if($searchValue != ''){
                        $query->Where(function($query) use($searchValue){
                            $query->Where('out_amount', 'like', '%'.$searchValue.'%')
@@ -389,28 +389,9 @@ class FundsController extends Controller
                            ->orWhere('currencies.symbol', 'like', '%'.$searchValue.'%');
                        });
            }
-
-
-               //Order By
-
-               if($orderBy != '')
-               {
-                   if($orderDirection != '')
-                   {
-                       $query->orderBy($orderBy, 'desc');
-                   }else{
-                       $query->orderBy($orderBy);
-                   }
-               }else if($orderDirection != ''){
-                   $query->orderBy('fund_orders.created_at');
-               }else{
-                    $query->orderBy('fund_orders.created_at', 'desc');
-               }
-
-               if($resultPage == null || $resultPage == 0)
-               {
+           if($resultPage == null || $resultPage == 0) {
                    $resultPage = 10;
-               }
+            }
 
                //Get Total of fees
                $total  =  $query->get()->count();
@@ -445,7 +426,7 @@ class FundsController extends Controller
 
            usort($transactions, $this->sorting($orderDirection, $orderBy));
          }else{
-           $query = FundOrder::where('user_id', null)->where('status', 'complete')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
+           $query = FundOrder::where('user_id', null)->where('status', 'complete')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol')->orderBy('created_at', 'desc');
            //Search by
            if($searchValue != '')
            {
@@ -456,23 +437,6 @@ class FundsController extends Controller
                        ->orWhere('fund_orders.created_at', 'like', '%'.$searchValue.'%')
                        ->orWhere('currencies.symbol', 'like', '%'.$searchValue.'%');
                    });
-           }
-
-
-           //Order By
-
-           if($orderBy != '')
-           {
-               if($orderDirection != '')
-               {
-                   $query->orderBy($orderBy, 'desc');
-               }else{
-                   $query->orderBy($orderBy);
-               }
-           }else if($orderDirection != ''){
-               $query->orderBy('fund_orders.created_at');
-           }else{
-                $query->orderBy('fund_orders.created_at', 'desc');
            }
 
            if($resultPage == null || $resultPage == 0)
@@ -553,7 +517,7 @@ class FundsController extends Controller
            $count = 0;
           $percent = $this->percent($user);
                $transactions = array();
-               $query = FundOrder::where('user_id', null)->where('status', 'pending')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
+               $query = FundOrder::where('user_id', null)->where('status', 'pending')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol')->orderBy('created_at', 'desc');
                if($searchValue != '')
                {
                        $query->Where(function($query) use($searchValue){
@@ -563,23 +527,6 @@ class FundsController extends Controller
                            ->orWhere('fund_orders.created_at', 'like', '%'.$searchValue.'%')
                            ->orWhere('currencies.symbol', 'like', '%'.$searchValue.'%');
                        });
-               }
-
-
-               //Order By
-
-               if($orderBy != '')
-               {
-                   if($orderDirection != '')
-                   {
-                       $query->orderBy($orderBy, 'desc');
-                   }else{
-                       $query->orderBy($orderBy);
-                   }
-               }else if($orderDirection != ''){
-                   $query->orderBy('fund_orders.created_at');
-               }else{
-                    $query->orderBy('fund_orders.created_at', 'desc');
                }
 
                if($resultPage == null || $resultPage == 0)
@@ -620,7 +567,7 @@ class FundsController extends Controller
 
            usort($transactions, $this->sorting($orderDirection, $orderBy));
          }else{
-           $query = FundOrder::where('user_id', null)->where('status', 'pending')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol');
+           $query = FundOrder::where('user_id', null)->where('status', 'pending')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol')->orderBy('created_at', 'desc');
            //Search by
            if($searchValue != '')
            {
@@ -635,20 +582,6 @@ class FundsController extends Controller
 
 
            //Order By
-
-           if($orderBy != '')
-           {
-               if($orderDirection != '')
-               {
-                   $query->orderBy($orderBy, 'desc');
-               }else{
-                   $query->orderBy($orderBy);
-               }
-           }else if($orderDirection != ''){
-               $query->orderBy('fund_orders.created_at');
-           }else{
-                $query->orderBy('fund_orders.created_at', 'desc');
-           }
 
            if($resultPage == null || $resultPage == 0)
            {

@@ -172,21 +172,11 @@ class CurrenciesController extends Controller
         $currency->value = $value;
         $currency->save();
 
-        $periods = Period::all();
-
             $balance = new Balance;
             $balance->amount = 0;
             $balance->type = 'fund';
             $balance->currency()->associate($currency);
             $balance->save();
-          foreach ($periods as $period) {
-            $balanceP = new Balance;
-            $balanceP->amount = 0;
-            $balanceP->type = 'fund';
-            $balanceP->currency()->associate($currency);
-            $balanceP->period()->associate($period);
-            $balanceP->save();
-          }
 
 
 
