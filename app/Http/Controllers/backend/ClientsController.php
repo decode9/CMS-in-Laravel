@@ -116,7 +116,7 @@ class ClientsController extends Controller
        };
      }
 
-     //Get Total Balance in USD and BTC
+     //Get Total Balance for clients in USD and BTC
      public function total(Request $request){
 
        //Select User
@@ -267,7 +267,7 @@ class ClientsController extends Controller
 
 
         $usdvalue = $balance->amount * $balance->value;
-        
+
         //Assign USD and BTC values
         $usd += $usdvalue;
         $btc += $btcvalue;
@@ -275,330 +275,391 @@ class ClientsController extends Controller
 
       return response()->json(['usd' => $usd, 'btc' => $btc], 202);
 
-     }
+    }
 
-
+     //Index Client List
      public function index(Request $request){
 
-         $user = Auth::User();
-         $searchValue = $request->searchvalue;
-         $page = $request->page;
-         $resultPage = $request->resultPage;
-         $orderBy = $request->orderBy;
-         $orderDirection = $request->orderDirection;
-         $total = 0;
+       //Select Authenticate user
+       $user = Auth::User();
 
-         //Select Users
-         $query = User::whereHas('roles', function ($query2) {
-             $query2->where('code', '30');
-        })->WhereNotIn('users.id', [$user->id]);
-         //Search by
+       //Assign Variables
+       $searchValue = $request->searchvalue;
+       $page = $request->page;
+       $resultPage = $request->resultPage;
+       $orderBy = $request->orderBy;
+       $orderDirection = $request->orderDirection;
+       $total = 0;
 
-         if($searchValue != '')
-         {
-                 $query->Where(function($query) use($searchValue){
-                     $query->Where('name', 'like', '%'.$searchValue.'%')
-                     ->orWhere('username', 'like', '%'.$searchValue.'%')
-                     ->orWhere('email', 'like', '%'.$searchValue.'%')
-                     ->orWhere('created_at', 'like', '%'.$searchValue.'%')
-                     ->orWhere('updated_at', 'like', '%'.$searchValue.'%');
-                 });
+       //Select Users without authenticate user
+       $query = User::whereHas('roles', function ($query2) {
+         $query2->where('code', '30');
+       })->WhereNotIn('users.id', [$user->id]);
 
-         }
+       //Search by
+       if($searchValue != ''){
 
-         if($resultPage == null || $resultPage == 0)
-         {
-             $resultPage = 10;
-         }
+         $query->Where(function($query) use($searchValue){
+           $query->Where('name', 'like', '%'.$searchValue.'%')
+           ->orWhere('username', 'like', '%'.$searchValue.'%')
+           ->orWhere('email', 'like', '%'.$searchValue.'%')
+           ->orWhere('created_at', 'like', '%'.$searchValue.'%')
+           ->orWhere('updated_at', 'like', '%'.$searchValue.'%');
+         });
 
-         //Get Total of fees
-         $total  =  $query->get()->count();
-         if($page > 1)
-         {
-              $query->offset(    ($page -  1)   *    $resultPage);
-         }
+       }
 
+       if($resultPage == null || $resultPage == 0){
 
-         $query->limit($resultPage);
+         $resultPage = 10;
 
-         $users  =  $query->get();
+       }
 
-         foreach($users as $user){
-             $funds = $user->funds()->where('type', 'initial')->get();
-             $percent = $this->percent($user);
-             if(isset($funds)){
-                 $user->amount = 0;
-                 foreach($funds as $fund){
-                     $user->amount += $fund->amount;
-                 }
-             }else{
-                 $user->amount = 0;
-             }
-             $user->percent = $percent * 100;
-         }
+       //Get Total
+       $total  =  $query->get()->count();
 
-         //Get fees by month and year
-         $usersA = array();
-         $count = 0;
-         foreach ($users as $user) {
-           if(empty($usersA[$count])){
-               $usersA[$count] = new \stdClass();
-               $usersA[$count]->name = $user->name;
-               $usersA[$count]->amount = $user->amount;
-               $usersA[$count]->email = $user->email;
-               $usersA[$count]->percent = $user->percent;
-               $usersA[$count]->id = $user->id;
+       if($page > 1){
+
+         $query->offset(    ($page -  1)   *    $resultPage);
+
+       }
+
+       $query->limit($resultPage);
+
+       //Assign Query to variable
+       $users  =  $query->get();
+
+       //Loop Query
+       foreach($users as $user){
+
+         //Select Funds for user
+         $funds = $user->funds()->where('type', 'initial')->get();
+
+         //Assign percent of user
+         $percent = $this->percent($user);
+
+         //Verify if user has funds
+         if(isset($funds)){
+           $user->amount = 0;
+
+           foreach($funds as $fund){
+
+             $user->amount += $fund->amount;
+
            }
-            $count += 1;
+         }else{
+
+           $user->amount = 0;
+
          }
-         usort($usersA, $this->sorting($orderDirection, $orderBy));
-         return response()->json(['page' => $page, 'result' => $usersA,'total' => $total], 202);
+
+         //Get percent of user
+         $user->percent = $percent * 100;
+
+       }
+
+       //Create Array
+       $usersA = array();
+
+       //Assign $count variable
+       $count = 0;
+
+       //Loop Users
+       foreach ($users as $user) {
+
+         //Verify if $usersA variable is empty
+         if(empty($usersA[$count])){
+
+           //Create object in array
+           $usersA[$count] = new \stdClass();
+
+           $usersA[$count]->name = $user->name;
+           $usersA[$count]->amount = $user->amount;
+           $usersA[$count]->email = $user->email;
+           $usersA[$count]->percent = $user->percent;
+           $usersA[$count]->id = $user->id;
+         }
+         //Add 1 to count
+         $count += 1;
+
+       }
+       //Sort Query Result
+       usort($usersA, $this->sorting($orderDirection, $orderBy));
+
+       //Return Response in Json dataType
+       return response()->json(['page' => $page, 'result' => $usersA,'total' => $total], 202);
+
      }
 
+     //Get Currencies Balance for Users
      public function indexCurrency(Request $request){
 
-         $user = User::find($request->id);
-         $searchValue = $request->searchvalue;
-         $page = $request->page;
-         $resultPage = $request->resultPage;
-         $orderBy = $request->orderBy;
-         $orderDirection = $request->orderDirection;
-         $total = 0;
+       //Get Client
+       $user = User::find($request->id);
 
-         $balancesCurrency = array();
+       //Assign Variables
+       $searchValue = $request->searchvalue;
+       $page = $request->page;
+       $resultPage = $request->resultPage;
+       $orderBy = $request->orderBy;
+       $orderDirection = $request->orderDirection;
+       $total = 0;
 
-         if($user->hasRole('30')){
-           $percent = $this->percent($user);
-           $count = 0;
-           $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('amount', '>' , '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->orderBy('amount', 'desc');
+       //Assign $balancesCurrency Array
+       $balancesCurrency = array();
 
-               if($searchValue != '')
-               {
-                       $query->Where(function($query) use($searchValue){
-                           $query->Where('symbol', 'like', '%'.$searchValue.'%')
-                           ->orWhere('amount', 'like', '%'.$searchValue.'%')
-                           ->orWhere('value', 'like', '%'.$searchValue.'%');
-                       });
-               }
+       //Assign Percent of fund
+       $percent = $this->percent($user);
 
+       //Assign $count variable
+       $count = 0;
 
-               if($resultPage == null || $resultPage == 0)
-               {
-                   $resultPage = 10;
-               }
+       //Select Balances
+       $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('amount', '>' , '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->orderBy('amount', 'desc');
 
-               //Get Total of fees
-               $total  =  $query->get()->count();
+       //Verify if $searchValue is empty
+       if($searchValue != ''){
 
-               if($page > 1)
-               {
-                    $query->offset(    ($page -  1)   *    $resultPage);
-               }
+         $query->Where(function($query) use($searchValue){
+           $query->Where('symbol', 'like', '%'.$searchValue.'%')
+           ->orWhere('amount', 'like', '%'.$searchValue.'%')
+           ->orWhere('value', 'like', '%'.$searchValue.'%');
+         });
 
+       }
 
-               $query->limit($resultPage);
+       if($resultPage == null || $resultPage == 0){
 
-               $balancesCurrencyP  =  $query->get();
+         $resultPage = 10;
 
-               foreach($balancesCurrencyP as $balanceP){
+       }
 
-                  if(empty($balancesCurrency[$count])){
-                      $balancesCurrency[$count] = new \stdClass();
-                      $balancesCurrency[$count]->amount = $balanceP->amount * $percent;
-                      $balancesCurrency[$count]->value = $balanceP->value;
-                      $balancesCurrency[$count]->symbol = $balanceP->symbol;
-                      $balancesCurrency[$count]->type = $balanceP->type;
-                      $balancesCurrency[$count]->name = $balanceP->name;
-                      $balancesCurrency[$count]->equivalent = 0;
-                  }else{
-                    foreach ($balancesCurrency as $value) {
-                      if($value->symbol == $balanceP->symbol){
-                        $newBal = $value->amount + ($balanceP->amount * $percent);
-                        $value->amount = $newBal;
-                      }
+       $total  =  $query->get()->count();
 
-                    }
+       if($page > 1){
 
-                  }
-                   $count += 1;
-               }
+         $query->offset(    ($page -  1)   *    $resultPage);
 
-           //Search by
+       }
+
+       $query->limit($resultPage);
+
+       $balancesCurrencyP  =  $query->get();
+
+       //Loop Query
+       foreach($balancesCurrencyP as $balanceP){
+
+         if(empty($balancesCurrency[$count])){
+
+           $balancesCurrency[$count] = new \stdClass();
+
+           $balancesCurrency[$count]->amount = $balanceP->amount * $percent;
+           $balancesCurrency[$count]->value = $balanceP->value;
+           $balancesCurrency[$count]->symbol = $balanceP->symbol;
+           $balancesCurrency[$count]->type = $balanceP->type;
+           $balancesCurrency[$count]->name = $balanceP->name;
+           $balancesCurrency[$count]->equivalent = 0;
          }else{
-           $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->orderBy('amount', 'desc');
-           //Search by
-           if($searchValue != '')
-           {
-                   $query->Where(function($query) use($searchValue){
-                       $query->Where('symbol', 'like', '%'.$searchValue.'%')
-                       ->orWhere('amount', 'like', '%'.$searchValue.'%')
-                       ->orWhere('value', 'like', '%'.$searchValue.'%');
-                   });
+
+           foreach ($balancesCurrency as $value) {
+             if($value->symbol == $balanceP->symbol){
+
+               $newBal = $value->amount + ($balanceP->amount * $percent);
+               $value->amount = $newBal;
+             }
            }
+         }
+         $count += 1;
+       }
 
-           if($resultPage == null || $resultPage == 0)
-           {
-               $resultPage = 10;
-           }
+       foreach($balancesCurrency as $balancec){
 
-           //Get Total of fees
-           $total  =  $query->get()->count();
+         if($balancec->symbol == "USD"){
 
-           if($page > 1)
-           {
-                $query->offset(    ($page -  1)   *    $resultPage);
-           }
-
-
-           $query->limit($resultPage);
-           $balancesCurrency  =  $query->get();
+           $balancec->value = 1;
 
          }
 
-         foreach($balancesCurrency as $balancec){
-             if($balancec->symbol == "USD"){
-                $balancec->value = 1;
-             }
-             if($balancec->symbol == "VEF"){
-                $balancec->value = 217200;
-             }
+         if($balancec->symbol == "VEF"){
+
+           $balancec->value = 217200;
 
          }
-         foreach($balancesCurrency as $balancecs){
-             if($balancecs->value == "coinmarketcap"){
-               $url = 'api.coinmarketcap.com/v1/ticker/'. $balancecs->name;
-                 if($this->url_exists($url)){
-                     $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $balancecs->name);
-                     $data = json_decode($json);
-                     $balancecs->value = $data[0]->price_usd;
-                 }else{
-                   if(strtolower($balancecs->name) == 'originprotocol' || (strtolower($balancecs->name) == 'send' || strtolower($balancecs->name) == 'tari')){
-                     $balancecs->value = 1;
-                   }else{
-                     $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/ethereum');
-                     $data = json_decode($json);
-                     $balancecs->value = $data[0]->price_usd;
-                   }
-                 }
+
+       }
+
+       foreach($balancesCurrency as $balancecs){
+         if($balancecs->value == "coinmarketcap"){
+           $url = 'api.coinmarketcap.com/v1/ticker/'. $balancecs->name;
+           if($this->url_exists($url)){
+
+             $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/'. $balancecs->name);
+             $data = json_decode($json);
+
+             $balancecs->value = $data[0]->price_usd;
+           }else{
+             if(strtolower($balancecs->name) == 'originprotocol' || (strtolower($balancecs->name) == 'send' || strtolower($balancecs->name) == 'tari')){
+             $balancecs->value = 1;
+             }else{
+
+               $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/ethereum');
+               $data = json_decode($json);
+
+               $balancecs->value = $data[0]->price_usd;
              }
-             $balancecs->equivalent = $balancecs->amount * $balancecs->value;
+           }
          }
 
-         usort($balancesCurrency, $this->sorting($orderDirection, $orderBy));
+         $balancecs->equivalent = $balancecs->amount * $balancecs->value;
 
-         return response()->json(['page' => $page, 'result' => $balancesCurrency, 'total' => $total], 202);
+       }
+
+       usort($balancesCurrency, $this->sorting($orderDirection, $orderBy));
+
+       return response()->json(['page' => $page, 'result' => $balancesCurrency, 'total' => $total], 202);
      }
+
 
      public function initial(Request $request){
-         $request->validate([
-              'date' => 'required',
-             'amount' => 'required| min:01',
-             'id' => 'required',
-         ]);
 
-         $currency = Currency::Where('symbol', 'USD')->first();
-         $id = $request->id;
-         $amount = $request->amount;
-         $date = $request->date;
-         $user = User::find($id);
+       $request->validate([
+         'date' => 'required',
+         'amount' => 'required| min:01',
+         'id' => 'required',
+       ]);
 
-         $period = Period::where('close_date', null)->first();
+       //Select Currency
+       $currency = Currency::Where('symbol', 'USD')->first();
 
-         $hasini = $user->funds()->where('type', 'initial')->where('period_id', $period->id)->first();
+       //Assign Variables
+       $id = $request->id;
+       $amount = $request->amount;
+       $date = $request->date;
 
+       //Select User
+       $user = User::find($id);
 
-         if(isset($hasini)){
-             $fund = Fund::find($hasini->id);
+       //Select open period
+       $period = Period::where('close_date', null)->first();
 
-             $poolP = Fund::where('user_id', null )->where('type', 'initial')->where('period_id', $period->id)->first();
-             $newamountP = $poolP->amount - $fund->amount;
-             $newamountP = $newamountP + $amount;
+       //Declara $hasini variable
+       $hasini = $user->funds()->where('type', 'initial')->where('period_id', $period->id)->first();
 
-             $poolfP = Fund::find($poolP->id);
-             $poolfP->amount = $newamountP;
-             $poolfP->save();
+       //Verify if user has an initial invest
+       if(isset($hasini)){
 
-             $pool = Fund::where('user_id', null )->where('type', 'initial')->where('period_id', null)->first();
-             $newamount = $pool->amount - $fund->amount;
-             $newamount = $newamount + $amount;
-
-             $poolf = Fund::find($pool->id);
-             $poolf->amount = $newamount;
-             $poolf->save();
-
-             $newPamount = $period->open_amount - $fund->amount;
-             $newPamount = $newPamount + $amount;
-
-             $periodf = Period::find($period->id);
-             $periodf->open_amount = $newamount;
-             $periodf->save();
+         //Select existed fund
+         $fund = Fund::find($hasini->id);
 
 
+         //Select General Initial Fund on Period
+         $poolP = Fund::where('user_id', null )->where('type', 'initial')->where('period_id', $period->id)->first();
 
-             $balance = Balance::where('user_id', null)->where('period_id', null)->where('currency_id', '2')->first();
-             $newbalance = $balance->amount - $fund->amount;
-             $newbalance = $newbalance + $amount;
+         //Declare new amount for general initial fund on period
+         $newamountP = $poolP->amount - $fund->amount;
+         $newamountP = $newamountP + $amount;
 
-             $balancef = Balance::find($balance->id);
-             $balancef->amount = $newbalance;
-             $balancef->save();
-         }else{
-             $fund = new Fund;
+         //Update General Initial Fund on period
+         $poolfP = Fund::find($poolP->id);
+         $poolfP->amount = $newamountP;
+         $poolfP->save();
 
-             $pool = Fund::where('user_id', null)->where('type', 'initial')->where('period_id', null)->first();
-             $newamount = $pool->amount + $amount;
+         //Select General Initial Fund
+         $pool = Fund::where('user_id', null )->where('type', 'initial')->where('period_id', null)->first();
 
-             $poolf = Fund::find($pool->id);
-             $poolf->amount = $newamount;
-             $poolf->save();
+         //Declare new amount for General Initial Fund
+         $newamount = $pool->amount - $fund->amount;
+         $newamount = $newamount + $amount;
 
-             $poolP = Fund::where('user_id', null)->where('type', 'initial')->where('period_id', $period->id)->first();
-             $newamountP = $poolP->amount + $amount;
+         //Update General Initial Fund
+         $poolf = Fund::find($pool->id);
+         $poolf->amount = $newamount;
+         $poolf->save();
 
-             $poolfP = Fund::find($poolP->id);
-             $poolfP->amount = $newamountP;
-             $poolfP->save();
+         //Declare new period Amount
+         $newPamount = $period->open_amount - $fund->amount;
+         $newPamount = $newPamount + $amount;
 
-             $newPamount = $period->open_amount + $amount;
+         //Update Period
+         $periodf = Period::find($period->id);
+         $periodf->open_amount = $newamount;
+         $periodf->save();
 
-             $periodf = Period::find($period->id);
-             $periodf->open_amount = $newPamount;
-             $periodf->save();
 
-             $balance = Balance::where('user_id', null)->where('period_id', null)->where('currency_id', '2')->first();
-             $newbalance = $balance->amount + $amount;
+         //Select USD in Balance
+         $balance = Balance::where('user_id', null)->where('period_id', null)->where('currency_id', '2')->first();
 
-             $balancef = Balance::find($balance->id);
-             $balance->amount = $newbalance;
-             $balance->save();
-         }
+         //Declare new balance
+         $newbalance = $balance->amount - $fund->amount;
+         $newbalance = $newbalance + $amount;
 
-         $fund->amount = $amount;
-         $fund->reference = 'initial';
-         $fund->active = 1;
-         $fund->comment = 'Initial Invest';
-         $fund->type = "initial";
-         $fund->created_at = $date;
-         $fund->user()->associate($id);
-         $fund->period()->associate($period->id);
-         $fund->currency()->associate($currency);
+         //Update Balance
+         $balancef = Balance::find($balance->id);
+         $balancef->amount = $newbalance;
+         $balancef->save();
 
-         $fund->save();
+       }else{
 
-          $user->periods()->attach($period->id);
-          $user->save();
+         //Create New Fund
+         $fund = new Fund;
 
-         return response()->json(['result' => 'Success'], 202);
+         //Select General Initial Fund
+         $pool = Fund::where('user_id', null)->where('type', 'initial')->where('period_id', null)->first();
+         $newamount = $pool->amount + $amount;
+
+         //Update General Initial Fund
+         $poolf = Fund::find($pool->id);
+         $poolf->amount = $newamount;
+         $poolf->save();
+
+         //Select General Initial Fund for Period
+         $poolP = Fund::where('user_id', null)->where('type', 'initial')->where('period_id', $period->id)->first();
+         $newamountP = $poolP->amount + $amount;
+
+         //Update General Initial Fund for Period
+         $poolfP = Fund::find($poolP->id);
+         $poolfP->amount = $newamountP;
+         $poolfP->save();
+
+         //Declare New Period Amount
+         $newPamount = $period->open_amount + $amount;
+
+         //Update Period
+         $periodf = Period::find($period->id);
+         $periodf->open_amount = $newPamount;
+         $periodf->save();
+
+         //Select USD Balance
+         $balance = Balance::where('user_id', null)->where('period_id', null)->where('currency_id', '2')->first();
+         $newbalance = $balance->amount + $amount;
+
+         //Update Balance
+         $balancef = Balance::find($balance->id);
+         $balancef->amount = $newbalance;
+         $balancef->save();
+       }
+
+       //Assign new Fund values
+       $fund->amount = $amount;
+       $fund->reference = 'initial';
+       $fund->active = 1;
+       $fund->comment = 'Initial Invest';
+       $fund->type = "initial";
+       $fund->created_at = $date;
+
+       //Associate Fund Dependencies
+       $fund->user()->associate($id);
+       $fund->period()->associate($period->id);
+       $fund->currency()->associate($currency);
+
+       //Save Fund
+       $fund->save();
+
+       //Assignate Period to user
+       $user->periods()->attach($period->id);
+       $user->save();
+
+       //Return Response in Json dataType
+       return response()->json(['result' => 'Success'], 202);
      }
-
-     private function generate($longitud) {
-         $key = '';
-         $pattern = '1234567890';
-         $max = strlen($pattern)-1;
-         for($i=0;$i < $longitud;$i++) $key .= $pattern{mt_rand(0,$max)};
-         return $key;
-     }
-
-
-
 }
