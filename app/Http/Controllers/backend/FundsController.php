@@ -131,7 +131,7 @@ class FundsController extends Controller{
   public function total(Request $request){
 
     //Select User
-    $user = User::find($request->id);
+    $user = Auth::user();
 
     //Create $balances array
     $balances = array();
@@ -694,6 +694,7 @@ class FundsController extends Controller{
 
                    if(empty($transactions[$count])){
                        $transactions[$count] = new \stdClass();
+                       $transactions[$count]->id = $transaction->id;
                        $transactions[$count]->out_amount = $transaction->out_amount * $percent;
                        $transactions[$count]->out_currency = $transaction->out_currency;
                        $transactions[$count]->in_amount = $transaction->in_amount * $percent;
@@ -745,6 +746,7 @@ class FundsController extends Controller{
 
                if(empty($transactions[$count])){
                    $transactions[$count] = new \stdClass();
+                   $transactions[$count]->id = $transaction->id;
                    $transactions[$count]->out_amount = $transaction->out_amount;
                    $transactions[$count]->out_currency = $transaction->out_currency;
                    $transactions[$count]->in_amount = $transaction->in_amount;
@@ -835,6 +837,7 @@ class FundsController extends Controller{
 
                    if(empty($transactions[$count])){
                        $transactions[$count] = new \stdClass();
+                       $transactions[$count]->id = $transaction->id;
                        $transactions[$count]->out_amount = $transaction->out_amount * $percent;
                        $transactions[$count]->out_currency = $transaction->out_currency;
                        $transactions[$count]->in_amount = $transaction->in_amount * $percent;
@@ -889,6 +892,7 @@ class FundsController extends Controller{
 
                if(empty($transactions[$count])){
                    $transactions[$count] = new \stdClass();
+                   $transactions[$count]->id = $transaction->id;
                    $transactions[$count]->out_amount = $transaction->out_amount;
                    $transactions[$count]->out_currency = $transaction->out_currency;
                    $transactions[$count]->in_amount = $transaction->in_amount;
@@ -1142,13 +1146,13 @@ class FundsController extends Controller{
 
         $order = FundOrder::find($id);
 
-        $balancein = Balance::Where('currency_id', $order->out_currency)->where('user_id', null)->where('period_id', null)->first();
+        $balancein = Balance::Where('currency_id', $order->out_currency)->where('user_id', null)->first();
         $bin = Balance::find($balancein->id);
         $newin = $bin->amount + $order->out_amount;
         $bin->amount = $newin;
         $bin->save();
 
-        $balanceout = Balance::Where('currency_id', $order->in_currency)->where('user_id', null)->where('period_id', null)->first();
+        $balanceout = Balance::Where('currency_id', $order->in_currency)->where('user_id', null)->first();
         $bout = Balance::find($balanceout->id);
         $newout = $bout->amount - $order->in_amount;
         $bout->amount = $newout;
@@ -1180,8 +1184,8 @@ class FundsController extends Controller{
 
       $order = FundOrder::find($id);
 
-      $valid =  Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->where('currencies.symbol', $cout)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
-      $change = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->where('currencies.symbol', $cin)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
+      $valid =  Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.symbol', $cout)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
+      $change = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.symbol', $cin)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
 
 
       $idout = Currency::Where('symbol', $cout)->select('id')->first();
