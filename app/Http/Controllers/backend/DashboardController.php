@@ -157,7 +157,7 @@ class DashboardController extends Controller{
       }
 
       //Select General Balances
-      $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->where('amount', '>', '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.amount', 'value', 'symbol', 'name')->get();
+      $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('amount', '>', '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.amount', 'value', 'symbol', 'name')->orderBy('amount', 'DESC')->get();
 
       //Loop General Balances
       foreach($balancesP as $balance){

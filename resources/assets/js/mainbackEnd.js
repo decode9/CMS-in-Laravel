@@ -385,7 +385,7 @@ $(document).ready(function(){
                 symbol = $('<div class="col-sm-3"><h5>'+symbol+'</h5></div>');
                 percents = parseInt(balance.percent);
                 progress = $('<div class="col-sm-3 divPro"><div class="progress"><div class="progress-bar progress-bar-striped" id="progress'+i+'" role="progressbar" aria-valuenow="'+percents+'" aria-valuemin="0" aria-valuemax="100" style="width:'+percents+'%">'+percents+'%</div></div></div>');
-                amount = $('<div class="col-sm-3"><h5>'+formatNumber.num(balance.amount)+' '+ balance.symbol +'</h5></div>');
+                amount = $('<div class="col-sm-3"><h5>'+formatNumber2.num(balance.amount)+' '+ balance.symbol +'</h5></div>');
                 va = $('<div class="col-sm-3"><h5>$ '+formatNumber2.num(balance.equivalent)+'</h5></div>');
 
                 list2.append(symbol);
