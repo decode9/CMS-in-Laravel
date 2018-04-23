@@ -9,154 +9,157 @@ use Illuminate\Support\Facades\Auth;
 use App\User;
 use App\Newsletter;
 
-class NewsletterController extends Controller
-{
-    //
-    public function __construct()
-    {
-        $this->middleware('auth');
+class NewsletterController extends Controller{
+
+  //Execute if user is authenticated
+  public function __construct(){
+
+    $this->middleware('auth');
+
+  }
+
+  //List of Newsletters
+  public function index(Request $request){
+
+    //assign Variables
+    $searchValue = $request->searchvalue;
+    $page = $request->page;
+    $resultPage = $request->resultPage;
+    $orderBy = $request->orderBy;
+    $orderDirection = $request->orderDirection;
+    $total = 0;
+
+    //Select Newsletters
+    $query = Newsletter::LeftJoin('users', 'newsletters.user_id', '=', 'users.id')->select('newsletters.*', 'name');
+
+    //Search by
+    if($searchValue != ''){
+      $query->Where(function($query) use($searchValue){
+        $query->Where('title', 'like', '%'.$searchValue.'%')
+        ->orWhere('username', 'like', '%'.$searchValue.'%')
+        ->orWhere('message', 'like', '%'.$searchValue.'%')
+        ->orWhere('created_at', 'like', '%'.$searchValue.'%')
+        ->orWhere('updated_at', 'like', '%'.$searchValue.'%');
+      });
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index(Request $request)
-    {
+    //Order By
+    if($orderBy != ''){
 
-            $searchValue = $request->searchvalue;
-            $page = $request->page;
-            $resultPage = $request->resultPage;
-            $orderBy = $request->orderBy;
-            $orderDirection = $request->orderDirection;
-            $total = 0;
+      if($orderDirection != ''){
 
-            //Select Users
-            $query = Newsletter::LeftJoin('users', 'newsletters.user_id', '=', 'users.id')->select('newsletters.*', 'name');
-            //Search by
+        $query->orderBy($orderBy, 'desc');
 
-            if($searchValue != '')
-            {
-                    $query->Where(function($query) use($searchValue){
-                        $query->Where('title', 'like', '%'.$searchValue.'%')
-                        ->orWhere('username', 'like', '%'.$searchValue.'%')
-                        ->orWhere('message', 'like', '%'.$searchValue.'%')
-                        ->orWhere('created_at', 'like', '%'.$searchValue.'%')
-                        ->orWhere('updated_at', 'like', '%'.$searchValue.'%');
-                    });
+      }else{
 
-            }
-            //Order By
+        $query->orderBy($orderBy);
+      }
+    }else if($orderDirection != ''){
 
-            if($orderBy != '')
-            {
-                if($orderDirection != '')
-                {
-                    $query->orderBy($orderBy, 'desc');
-                }else{
-                    $query->orderBy($orderBy);
-                }
-            }else if($orderDirection != ''){
-                $query->orderBy('created_at');
-            }else{
-                 $query->orderBy('created_at', 'desc');
-            }
+      $query->orderBy('created_at');
 
-            if($resultPage == null || $resultPage == 0)
-            {
-                $resultPage = 10;
-            }
+    }else{
 
-            //Get Total of fees
-            $total  =  $query->get()->count();
-            if($page > 1)
-            {
-                 $query->offset(    ($page -  1)   *    $resultPage);
-            }
+      $query->orderBy('created_at', 'desc');
 
-
-            $query->limit($resultPage);
-
-            $newsletters  =  $query->get();
-
-            return response()->json(['page' => $page, 'result' => $newsletters,'total' => $total], 202);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    if($resultPage == null || $resultPage == 0){
 
-    public function store(Request $request)
-    {
-        //
-        $request->validate([
-            'title' => 'required| max:50',
-            'message' => 'required| max:255',
-        ]);
+      $resultPage = 10;
 
-        $user = Auth::User();
-        $title = $request->title;
-        $message = $request->message;
-
-        $new = new Newsletter;
-        $new->title = $title;
-        $new->message = $message;
-        $new->user()->associate($user);
-        $new->save();
-        return response()->json(['message' => "success"], 202);
     }
 
-    public function show($id)
-    {
-        //
+    //Get Total
+    $total  =  $query->get()->count();
+
+    if($page > 1){
+
+      $query->offset(    ($page -  1)   *    $resultPage);
+
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    $query->limit($resultPage);
 
-    public function update(Request $request)
-    {
-        //
-        $request->validate([
-            'id' => 'required',
-            'title' => 'required| max:50',
-            'message' => 'required| max:255',
-        ]);
+    //Get Newsletters
+    $newsletters  =  $query->get();
 
-        $user = Auth::User();
-        $id = $request->id;
-        $title = $request->title;
-        $message = $request->message;
+    //Return Response in JSON DataType
+    return response()->json(['page' => $page, 'result' => $newsletters,'total' => $total], 202);
+  }
 
-        $new = Newsletter::find($id);
-        $new->title = $title;
-        $new->message = $message;
-        $new->save();
+  //Store Newsletter
+  public function store(Request $request){
 
-        return response()->json(['message' => "success"], 202);
-    }
+    //Validate $request data
+    $request->validate([
+      'title' => 'required| max:50',
+      'message' => 'required| max:255',
+    ]);
 
-    /**
-     * Remove the specified resource from storage.•••••••••
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Request $request)
-    {
-        $id = $request->id;
-        $new = Newsletter::find($id);
-        $new->delete();
+    //Select Authenticated user
+    $user = Auth::User();
 
-        return response()->json(['message' => "success"], 202);
-    }
+    //Assign Variables
+    $title = $request->title;
+    $message = $request->message;
+
+    //Create Newsletter
+    $new = new Newsletter;
+    $new->title = $title;
+    $new->message = $message;
+    $new->user()->associate($user);
+    $new->save();
+
+    //Return Response in JSON DataType
+    return response()->json(['message' => "success"], 202);
+  }
+
+  //Update Newsletter
+  public function update(Request $request){
+
+    //Validate $request Data
+    $request->validate([
+
+      'id' => 'required',
+      'title' => 'required| max:50',
+      'message' => 'required| max:255',
+
+    ]);
+
+    //Select Authenticated User
+    $user = Auth::User();
+
+    //Assign Variables
+    $id = $request->id;
+    $title = $request->title;
+    $message = $request->message;
+
+    //Find Newsletter
+    $new = Newsletter::find($id);
+
+    //Modify Newsletter
+    $new->title = $title;
+    $new->message = $message;
+    $new->save();
+
+    //Return Response in JSON DataType
+    return response()->json(['message' => "success"], 202);
+  }
+
+  //Destroy Newsletter
+  public function destroy(Request $request){
+
+    //Assign Newsletter ID
+    $id = $request->id;
+
+    //Find Newsletter
+    $new = Newsletter::find($id);
+
+    //Delete
+    $new->delete();
+
+    //Return Response in JSON DataType
+    return response()->json(['message' => "success"], 202);
+  }
 }

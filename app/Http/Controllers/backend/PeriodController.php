@@ -13,204 +13,194 @@ use App\User;
 use App\Balance;
 use App\Period;
 
-class PeriodController extends Controller
-{
-    //
-    private function percent($user, $period){
-            if($user->hasRole('30')){
-                   $userInitials = $user->funds()->where('type', 'initial')->where('period_id', $period)->first();
-                   $userInvest = $userInitials->amount;
-                   $fundInitial = Fund::Where('user_id', null)->where('type', 'initial')->where('period_id', $period)->first();
-                   $fundInvest = $fundInitial->amount;
-                   $percent = $userInvest / $fundInvest;
-                   return $percent;
-            }
+class PeriodController extends Controller{
+
+  //List of Periods
+  public function index(Request $request){
+
+    //Assign Variables
+    $searchValue = $request->searchvalue;
+    $page = $request->page;
+    $resultPage = $request->resultPage;
+    $orderBy = $request->orderBy;
+    $orderDirection = $request->orderDirection;
+    $total = 0;
+
+    //Select Periods
+    $query = Period::select();
+
+    //Search by
+    if($searchValue != ''){
+
+      $query->Where(function($query) use($searchValue){
+        $query->Where('open_date', 'like', '%'.$searchValue.'%')
+        ->orWhere('open_amount', 'like', '%'.$searchValue.'%')
+        ->orWhere('close_date', 'like', '%'.$searchValue.'%')
+        ->orWhere('close_amount', 'like', '%'.$searchValue.'%')
+        ->orWhere('created_at', 'like', '%'.$searchValue.'%')
+        ->orWhere('updated_at', 'like', '%'.$searchValue.'%');
+      });
     }
 
-    public function index(Request $request){
+    //Order By
 
-        $searchValue = $request->searchvalue;
-        $page = $request->page;
-        $resultPage = $request->resultPage;
-        $orderBy = $request->orderBy;
-        $orderDirection = $request->orderDirection;
-        $total = 0;
+    if($orderBy != ''){
 
-        //Select Users
-        $query = Period::select();
-        //Search by
+      if($orderDirection != ''){
 
-        if($searchValue != '')
-        {
-                $query->Where(function($query) use($searchValue){
-                    $query->Where('open_date', 'like', '%'.$searchValue.'%')
-                    ->orWhere('open_amount', 'like', '%'.$searchValue.'%')
-                    ->orWhere('close_date', 'like', '%'.$searchValue.'%')
-                    ->orWhere('close_amount', 'like', '%'.$searchValue.'%')
-                    ->orWhere('created_at', 'like', '%'.$searchValue.'%')
-                    ->orWhere('updated_at', 'like', '%'.$searchValue.'%');
-                });
-        }
-        //Order By
+        $query->orderBy($orderBy, 'desc');
 
-        if($orderBy != '')
-        {
-            if($orderDirection != '')
-            {
-                $query->orderBy($orderBy, 'desc');
-            }else{
-                $query->orderBy($orderBy);
-            }
-        }else if($orderDirection != ''){
-            $query->orderBy('created_at');
-        }else{
-             $query->orderBy('created_at', 'desc');
-        }
+      }else{
 
-        if($resultPage == null || $resultPage == 0)
-        {
-            $resultPage = 10;
-        }
+        $query->orderBy($orderBy);
 
-        //Get Total of fees
-        $total  =  $query->get()->count();
-        if($page > 1)
-        {
-             $query->offset(    ($page -  1)   *    $resultPage);
-        }
+      }
+    }else if($orderDirection != ''){
 
+      $query->orderBy('created_at');
 
-        $query->limit($resultPage);
+    }else{
 
-        $periods  =  $query->get();
+      $query->orderBy('created_at', 'desc');
 
-        //Get fees by month and year
-
-        return response()->json(['page' => $page, 'result' => $periods,'total' => $total], 202);
     }
 
-    public function create(Request $request){
-      $request->validate([
-           'openD' => 'required',
-      ]);
+    if($resultPage == null || $resultPage == 0){
 
-      $openD = $request->openD;
+      $resultPage = 10;
 
-      $period = new Period;
-      $period->open_date = $openD;
-      $period->open_amount = 0;
-      $period->close_amount = 0;
-      $period->save();
-
-      $currency1 = Currency::Where('symbol', 'USD')->first();
-
-      $currencies = Currency::All();
-      /*
-      foreach ($currencies as $currency) {
-          $balance = new Balance;
-          $balance->type = 'fund';
-          $balance->currency()->associate($currency);
-          $balance->period()->associate($period);
-          $balance->amount = 0;
-          $balance->save();
-      }
-      */
-      $fund = new Fund;
-      $fund->amount = 0;
-      $fund->reference = 'initial';
-      $fund->active = 1;
-      $fund->comment = 'Initial Invest';
-      $fund->type = "initial";
-      $fund->created_at = $openD;
-      $fund->currency()->associate($currency1);
-      $fund->period()->associate($period);
-      $fund->save();
-
-      return response()->json(['message' => 'success'], 202);
     }
 
-    public function update(Request $request){
-      $request->validate([
-            'id' => 'required',
-           'closeD' => 'required',
-           'closeA' => 'required',
-      ]);
+    //Get Total
+    $total  =  $query->get()->count();
 
-      $closeD = $request->closeD;
-      $closeA = $request->closeA;
-      $currency1 = Currency::Where('symbol', 'USD')->first();
-      $currencies = Currency::All();
+    if($page > 1){
 
-      $period = Period::Find($request->id);
+      $query->offset(    ($page -  1)   *    $resultPage);
 
-
-
-      $period->close_date = $closeD;
-      $period->close_amount = $closeA;
-
-      $period->save();
-
-      $users = $period->users()->get();
-
-      $periodN = new Period;
-      $periodN->open_date = $closeD;
-      $periodN->open_amount = $closeA;
-      $periodN->close_amount = 0;
-
-      $periodN->save();
-
-
-      foreach($users as $user){
-        $periodN->users()->attach($user);
-        $periodN->save();
-      }
-
-      /*
-      foreach ($currencies as $currency) {
-          $balance = new Balance;
-          $balance->type = 'fund';
-          $balance->currency()->associate($currency);
-          $balance->period()->associate($periodN);
-          $balance->amount = 0;
-          $balance->save();
-      }
-      */
-
-      $fund = new Fund;
-      $fund->amount = 0;
-      $fund->reference = 'initial';
-      $fund->active = 1;
-      $fund->comment = 'Initial Invest';
-      $fund->type = "initial";
-      $fund->created_at = $closeD;
-      $fund->currency()->associate($currency1);
-      $fund->period()->associate($periodN);
-      $fund->save();
-
-      return response()->json(['message' => 'success'], 202);
     }
 
-    public function destroy(Request $request){
-      $request->validate([
-            'id' => 'required',
-      ]);
+    $query->limit($resultPage);
 
-      $id = $request->id;
+    //Get Periods
+    $periods  =  $query->get();
 
-      $funds = Fund::where('period_id', $id)->where('user_id', null)->get();
-      $balances = Balance::where('period_id', $id)->where('user_id', null)->get();
+    //Return Response in JSON DataType
+    return response()->json(['page' => $page, 'result' => $periods,'total' => $total], 202);
+  }
 
-      foreach($balances as $balance){
-        $balance->delete();
-      }
+  //Create Period
+  public function create(Request $request){
 
-      foreach($funds as $fund){
-        $fund->delete();
-      }
+    //Validate $request Data
+    $request->validate([
+      'openD' => 'required',
+    ]);
 
-      $period = Period::Find($id);
-      $period->delete();
+    //Assign Variables
+    $openD = $request->openD;
 
-      return response()->json(['message' => 'success'], 202);
+    //Create Period
+    $period = new Period;
+    $period->open_date = $openD;
+    $period->open_amount = 0;
+    $period->close_amount = 0;
+    $period->save();
+
+    //Select USD Currency
+    $currency1 = Currency::Where('symbol', 'USD')->first();
+
+    //Create Period initial Fund
+    $fund = new Fund;
+    $fund->amount = 0;
+    $fund->reference = 'initial';
+    $fund->active = 1;
+    $fund->comment = 'Initial Invest';
+    $fund->type = "initial";
+    $fund->created_at = $openD;
+    $fund->currency()->associate($currency1);
+    $fund->period()->associate($period);
+    $fund->save();
+
+    //Return Response in JSON DataType
+    return response()->json(['message' => 'success'], 202);
+  }
+
+  //Update Period
+  public function update(Request $request){
+
+    //Validate $request data
+    $request->validate([
+      'id' => 'required',
+      'closeD' => 'required',
+      'closeA' => 'required',
+    ]);
+
+    //Assign Variables
+    $closeD = $request->closeD;
+    $closeA = $request->closeA;
+
+    //Select USD Currency
+    $currency1 = Currency::Where('symbol', 'USD')->first();
+
+    //Find Period
+    $period = Period::Find($request->id);
+
+    //Update Period
+    $period->close_date = $closeD;
+    $period->close_amount = $closeA;
+    $period->save();
+
+    //Create Period
+    $periodN = new Period;
+    $periodN->open_date = $closeD;
+    $periodN->open_amount = $closeA;
+    $periodN->close_amount = 0;
+    $periodN->save();
+
+    //Create Period Initial Fund
+    $fund = new Fund;
+    $fund->amount = 0;
+    $fund->reference = 'initial';
+    $fund->active = 1;
+    $fund->comment = 'Initial Invest';
+    $fund->type = "initial";
+    $fund->created_at = $closeD;
+    $fund->currency()->associate($currency1);
+    $fund->period()->associate($periodN);
+    $fund->save();
+
+    //Return Response in JSON DataType
+    return response()->json(['message' => 'success'], 202);
+  }
+
+  //Destroy Period
+  public function destroy(Request $request){
+
+    //Validate $request Data
+    $request->validate([
+      'id' => 'required',
+    ]);
+
+    //Assign Variables
+    $id = $request->id;
+
+    //Select Period Initial Funds
+    $funds = Fund::where('period_id', $id)->where('user_id', null)->get();
+
+    //Loop Period Initial Funds
+    foreach($funds as $fund){
+      //Delete Period Initial Fund
+      $fund->delete();
     }
+
+    //Find Period
+    $period = Period::Find($id);
+
+    //Delete Period
+    $period->delete();
+
+    //Return Response in JSON DataType
+    return response()->json(['message' => 'success'], 202);
+  }
 }

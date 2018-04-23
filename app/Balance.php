@@ -15,9 +15,4 @@ class Balance extends Model
         return $this->belongsTo('App\Currency', 'currency_id');
     }
 
-
-    public function account(){
-        return $this->belongsTo('App\Account');
-    }
-
 }

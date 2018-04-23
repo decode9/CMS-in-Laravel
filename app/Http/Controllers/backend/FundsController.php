@@ -643,585 +643,497 @@ class FundsController extends Controller{
 
   }
 
-
-     public function transactions(Request $request){
-
-         $user = Auth::User();
-         $searchValue = $request->searchvalue;
-         $page = $request->page;
-         $resultPage = $request->resultPage;
-         $orderBy = $request->orderBy;
-
-         if(empty($orderBy)){
-             $orderBy = 'created_at';
-         }
-         $orderDirection = $request->orderDirection;
-         $total = 0;
-
-
-         $transactions = array();
-         if($user->hasRole('30')){
-           $count = 0;
-           $percent = $this->percent($user);
-           $query = FundOrder::where('user_id', null)->where('status', 'complete')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol')->orderBy('created_at', 'desc');
-           if($searchValue != ''){
-                       $query->Where(function($query) use($searchValue){
-                           $query->Where('out_amount', 'like', '%'.$searchValue.'%')
-                           ->orWhere('in_amount', 'like', '%'.$searchValue.'%')
-                           ->orWhere('status', 'like', '%'.$searchValue.'%')
-                           ->orWhere('fund_orders.created_at', 'like', '%'.$searchValue.'%')
-                           ->orWhere('currencies.symbol', 'like', '%'.$searchValue.'%');
-                       });
-           }
-           if($resultPage == null || $resultPage == 0) {
-                   $resultPage = 10;
-            }
-
-               //Get Total of fees
-               $total  =  $query->get()->count();
-
-               if($page > 1)
-               {
-                    $query->offset(    ($page -  1)   *    $resultPage);
-               }
-
-
-               $query->limit($resultPage);
-
-               $transactionsP  =  $query->get();
-
-               foreach($transactionsP as $transaction){
-
-                   if(empty($transactions[$count])){
-                       $transactions[$count] = new \stdClass();
-                       $transactions[$count]->out_amount = $transaction->out_amount * $percent;
-                       $transactions[$count]->out_currency = $transaction->out_currency;
-                       $transactions[$count]->in_amount = $transaction->in_amount * $percent;
-                       $transactions[$count]->in_currency = $transaction->in_currency;
-                       $transactions[$count]->symbol = $transaction->symbol;
-                       $transactions[$count]->created_at = $transaction->created_at;
-                       $transactions[$count]->reference = $transaction->reference;
-                       $transactions[$count]->status = $transaction->status;
-                       $transactions[$count]->updated_at = $transaction->updated_at;
-                       $transactions[$count]->rate = $transaction->rate;
-                   }
-                   $count += 1;
-               }
-
-           usort($transactions, $this->sorting($orderDirection, $orderBy));
-         }else{
-           $query = FundOrder::where('user_id', null)->where('status', 'complete')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol')->orderBy('created_at', 'desc');
-           //Search by
-           if($searchValue != '')
-           {
-                   $query->Where(function($query) use($searchValue){
-                       $query->Where('out_amount', 'like', '%'.$searchValue.'%')
-                       ->orWhere('in_amount', 'like', '%'.$searchValue.'%')
-                       ->orWhere('status', 'like', '%'.$searchValue.'%')
-                       ->orWhere('fund_orders.created_at', 'like', '%'.$searchValue.'%')
-                       ->orWhere('currencies.symbol', 'like', '%'.$searchValue.'%');
-                   });
-           }
-
-           if($resultPage == null || $resultPage == 0)
-           {
-               $resultPage = 10;
-           }
-
-           //Get Total of fees
-           $total  =  $query->get()->count();
-
-           if($page > 1)
-           {
-                $query->offset(    ($page -  1)   *    $resultPage);
-           }
-
-
-           $query->limit($resultPage);
-
-           $transactionsP  =  $query->get();
-           $count = 0;
-           foreach($transactionsP as $transaction){
-
-               if(empty($transactions[$count])){
-                   $transactions[$count] = new \stdClass();
-                   $transactions[$count]->out_amount = $transaction->out_amount;
-                   $transactions[$count]->out_currency = $transaction->out_currency;
-                   $transactions[$count]->in_amount = $transaction->in_amount;
-                   $transactions[$count]->in_currency = $transaction->in_currency;
-                   $transactions[$count]->symbol = $transaction->symbol;
-                   $transactions[$count]->created_at = $transaction->created_at;
-                   $transactions[$count]->reference = $transaction->reference;
-                   $transactions[$count]->status = $transaction->status;
-                   $transactions[$count]->updated_at = $transaction->updated_at;
-                   $transactions[$count]->rate = $transaction->rate;
-               }
-               $count += 1;
-           }
-           usort($transactions, $this->sorting($orderDirection, $orderBy));
-         }
-
-         foreach($transactions as $transaction){
-             $currency = Currency::find($transaction->out_currency);
-             $transaction->out_symbol = $currency->symbol;
-             $newcreated = $transaction->created_at->toFormattedDateString();
-             $newupdated = $transaction->updated_at->toFormattedDateString();
-             $transaction->created_at = $newcreated;
-             $transaction->updated_at = $newupdated;
-         }
-
-         if($user->hasRole('20') || $user->hasRole('901')){
-             $eaccess = true;
-         }else{
-             $eaccess = false;
-         }
-
-
-         //Get fees by month and year
-
-         return response()->json(['page' => $page, 'result' => $transactions, 'total' => $total, 'eaccess' => $eaccess], 202);
-     }
-
-     public function pendingTransactions(Request $request){
-
-         $user = Auth::User();
-         $searchValue = $request->searchvalue;
-         $page = $request->page;
-         $resultPage = $request->resultPage;
-         $orderBy = $request->orderBy;
-         if(empty($orderBy)){
-             $orderBy = 'created_at';
-         }
-         $orderDirection = $request->orderDirection;
-         $total = 0;
-
-         $transactions = array();
-
-         if($user->hasRole('30')){
-           $count = 0;
-          $percent = $this->percent($user);
-               $transactions = array();
-               $query = FundOrder::where('user_id', null)->where('status', 'pending')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol')->orderBy('created_at', 'desc');
-               if($searchValue != '')
-               {
-                       $query->Where(function($query) use($searchValue){
-                           $query->Where('out_amount', 'like', '%'.$searchValue.'%')
-                           ->orWhere('in_amount', 'like', '%'.$searchValue.'%')
-                           ->orWhere('status', 'like', '%'.$searchValue.'%')
-                           ->orWhere('fund_orders.created_at', 'like', '%'.$searchValue.'%')
-                           ->orWhere('currencies.symbol', 'like', '%'.$searchValue.'%');
-                       });
-               }
-
-               if($resultPage == null || $resultPage == 0)
-               {
-                   $resultPage = 10;
-               }
-
-               //Get Total of fees
-               $total  =  $query->get()->count();
-
-               if($page > 1)
-               {
-                    $query->offset(    ($page -  1)   *    $resultPage);
-               }
-
-
-               $query->limit($resultPage);
-
-               $transactionsP  =  $query->get();
-
-               foreach($transactionsP as $transaction){
-
-                   if(empty($transactions[$count])){
-                       $transactions[$count] = new \stdClass();
-                       $transactions[$count]->out_amount = $transaction->out_amount * $percent;
-                       $transactions[$count]->out_currency = $transaction->out_currency;
-                       $transactions[$count]->in_amount = $transaction->in_amount * $percent;
-                       $transactions[$count]->in_currency = $transaction->in_currency;
-                       $transactions[$count]->symbol = $transaction->symbol;
-                       $transactions[$count]->created_at = $transaction->created_at->toFormattedDateString();
-                       $transactions[$count]->reference = $transaction->reference;
-                       $transactions[$count]->status = $transaction->status;
-                       $transactions[$count]->updated_at = $transaction->updated_at->toFormattedDateString();
-                       $transactions[$count]->rate = $transaction->rate;
-                   }
-                   $count += 1;
-               }
-
-           usort($transactions, $this->sorting($orderDirection, $orderBy));
-         }else{
-           $query = FundOrder::where('user_id', null)->where('status', 'pending')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol')->orderBy('created_at', 'desc');
-           //Search by
-           if($searchValue != '')
-           {
-                   $query->Where(function($query) use($searchValue){
-                       $query->Where('out_amount', 'like', '%'.$searchValue.'%')
-                       ->orWhere('in_amount', 'like', '%'.$searchValue.'%')
-                       ->orWhere('status', 'like', '%'.$searchValue.'%')
-                       ->orWhere('fund_orders.created_at', 'like', '%'.$searchValue.'%')
-                       ->orWhere('currencies.symbol', 'like', '%'.$searchValue.'%');
-                   });
-           }
-
-
-           //Order By
-
-           if($resultPage == null || $resultPage == 0)
-           {
-               $resultPage = 10;
-           }
-
-           //Get Total of fees
-           $total  =  $query->get()->count();
-
-           if($page > 1)
-           {
-                $query->offset(    ($page -  1)   *    $resultPage);
-           }
-
-
-           $query->limit($resultPage);
-
-           $transactionsP  =  $query->get();
-           $count = 0;
-           foreach($transactionsP as $transaction){
-
-               if(empty($transactions[$count])){
-                   $transactions[$count] = new \stdClass();
-                   $transactions[$count]->out_amount = $transaction->out_amount;
-                   $transactions[$count]->out_currency = $transaction->out_currency;
-                   $transactions[$count]->in_amount = $transaction->in_amount;
-                   $transactions[$count]->in_currency = $transaction->in_currency;
-                   $transactions[$count]->symbol = $transaction->symbol;
-                   $transactions[$count]->created_at = $transaction->created_at;
-                   $transactions[$count]->reference = $transaction->reference;
-                   $transactions[$count]->status = $transaction->status;
-                   $transactions[$count]->updated_at = $transaction->updated_at;
-                   $transactions[$count]->rate = $transaction->rate;
-               }
-               $count += 1;
-           }
-           usort($transactions, $this->sorting($orderDirection, $orderBy));
-         }
-
-         foreach($transactions as $transaction){
-             $currency = Currency::find($transaction->out_currency);
-             $transaction->out_symbol = $currency->symbol;
-             $newcreated = $transaction->created_at->toFormattedDateString();
-             $newupdated = $transaction->updated_at->toFormattedDateString();
-             $transaction->created_at = $newcreated;
-             $transaction->updated_at = $newupdated;
-         }
-
-         if($user->hasRole('20') || $user->hasRole('901')){
-             $eaccess = true;
-         }else{
-             $eaccess = false;
-         }
-         //Get fees by month and year
-
-
-         return response()->json(['page' => $page, 'result' => $transactions, 'total' => $total, 'eaccess' => $eaccess], 202);
-     }
-
-
-/*
-    public function withdraws(Request $request)
-    {
-        $user = Auth::User();
-        $searchValue = $request->searchvalue;
-        $page = $request->page;
-        $resultPage = $request->resultPage;
-        $orderBy = $request->orderBy;
-        $orderDirection = $request->orderDirection;
-        $total = 0;
-
-        //Select Witdraws of the user
-        $query = Fund::Where('amount','<', '0')->where('funds.type', 'withdraw')->where('user_id', $user->id)->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('funds.*', 'symbol');
-        //Search by
-
-        if($searchValue != '')
-        {
-                $query->Where(function($query) use($searchValue){
-                    $query->Where('symbol', 'like', '%'.$searchValue.'%')
-                    ->orWhere('amount', 'like', '%'.$searchValue.'%')
-                    ->orWhere('comment', 'like', '%'.$searchValue.'%')
-                    ->orWhere('funds.created_at', 'like', '%'.$searchValue.'%');
-                });
-        }
-
-        //Order By
-
-        if($orderBy != '')
-        {
-            if($orderDirection != '')
-            {
-                $query->orderBy($orderBy, 'desc');
-            }else{
-                $query->orderBy($orderBy);
-            }
-        }else if($orderDirection != ''){
-            $query->orderBy('funds.created_at', 'desc');
-        }else{
-             $query->orderBy('funds.created_at');
-        }
-
-        if($resultPage == null || $resultPage == 0)
-        {
-            $resultPage = 10;
-        }
-
-        //Get Total of fees
-        $total  =  $query->get()->count();
-
-        if($page > 1)
-        {
-             $query->offset(    ($page -  1)   *    $resultPage);
-        }
-
-
-        $query->limit($resultPage);
-        $deposits  =  $query->get();
-
-        //Get fees by month and year
-
-        return response()->json(['page' => $page, 'result' => $deposits, 'total' => $total, 'user' => $user->name], 202);
-
+  //List of Transactions
+  public function transactions(Request $request){
+
+    //Select Authenticated user
+    $user = Auth::User();
+
+    //Assign Variables
+    $searchValue = $request->searchvalue;
+    $page = $request->page;
+    $resultPage = $request->resultPage;
+    $orderBy = $request->orderBy;
+    $orderDirection = $request->orderDirection;
+    $total = 0;
+
+    //Verify if $orderBy is empty
+    if(empty($orderBy)){
+
+      $orderBy = 'created_at';
 
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-     /*
-    public function deposits(Request $request)
-    {
-        $user = Auth::User();
-        $searchValue = $request->searchvalue;
-        $page = $request->page;
-        $resultPage = $request->resultPage;
-        $orderBy = $request->orderBy;
-        $orderDirection = $request->orderDirection;
-        $total = 0;
+    //Create $transactions array
+    $transactions = array();
 
-        //Select Deposits of the user
-        $query = Fund::Where('amount','>', '0')->where('funds.type', 'deposit')->where('user_id', $user->id)->leftJoin('currencies', 'currencies.id', '=', 'funds.currency_id')->select('funds.*', 'symbol');
-        //Search by
+    //Create $count variable
+    $count = 0;
 
-        if($searchValue != '')
-        {
-                $query->Where(function($query) use($searchValue){
-                    $query->Where('symbol', 'like', '%'.$searchValue.'%')
-                    ->orWhere('amount', 'like', '%'.$searchValue.'%')
-                    ->orWhere('comment', 'like', '%'.$searchValue.'%')
-                    ->orWhere('funds.created_at', 'like', '%'.$searchValue.'%');
-                });
-        }
-        //Order By
+    //Verify if user has client role
+    if($user->hasRole('30')){
 
-        if($orderBy != '')
-        {
-            if($orderDirection != '')
-            {
-                $query->orderBy($orderBy, 'desc');
-            }else{
-                $query->orderBy($orderBy);
-            }
-        }else if($orderDirection != ''){
-            $query->orderBy('funds.created_at');
-        }else{
-             $query->orderBy('funds.created_at', 'desc');
-        }
+      //Select user fund percent
+      $percent = $this->percent($user);
 
-        if($resultPage == null || $resultPage == 0)
-        {
-            $resultPage = 10;
-        }
+      //Select Fund Orders
+      $query = FundOrder::where('user_id', null)->where('status', 'complete')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol')->orderBy('created_at', 'desc');
 
-        //Get Total of fees
-        $total  =  $query->get()->count();
-
-        if($page > 1)
-        {
-             $query->offset(    ($page -  1)   *    $resultPage);
-        }
-
-
-        $query->limit($resultPage);
-        $deposits  =  $query->get();
-
-        //Get fees by month and year
-
-        return response()->json(['page' => $page, 'result' => $deposits, 'total' => $total, 'user' => $user->name], 202);
-
-
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-/*
-    public function store(Request $request)
-    {
-        //
-        $request->validate([
-            'currency' => 'required|string',
-            'amount' => 'required|max:50',
-            'reference' => 'required',
-            'file' =>'required',
-        ]);
-
-        $currency = Currency::Where('symbol', $request->currency)->first();
-        $user = Auth::User();
-        $name = str_replace(" ", "-", $request->reference);
-        $imageName = $name . '.' . $request->file('file')->getClientOriginalExtension();
-
-        $request->file('file')->move( public_path() . '/files/references/', $imageName);
-        $type = "deposit";
-        $fund = New Fund;
-        $fund->amount = $request->amount;
-        $fund->comment = $request->reference;
-        $fund->type = $type;
-        $fund->currency()->associate($currency);
-        $fund->user()->associate($user);
-        $fund->save();
-
-        return response()->json(['message' => 'Your Deposit #'. $fund->comment .' was processed successfully', 'deposit' => $fund, 'user' => $user->name, 'symbol' => $currency->symbol], 202);
-    }
-*/
-
-
-/*
-    public function update(Request $request)
-    {
-        //
-        $request->validate([
-            'currency' => 'required',
-            'amount' => 'required| min:01',
-            'accountId' => 'required'
-        ]);
-
-        $currency = Currency::Where('symbol', $request->currency)->first();
-        $user = Auth::User();
-
-        $key = '';
-        $pattern = '1234567890';
-        $max = strlen($pattern)-1;
-        for($i=0;$i < 7;$i++) $key .= $pattern{mt_rand(0,$max)};
-
-        $type = "withdraw";
-
-        $reference = $key;
-        $fund = New Fund;
-        $fund->amount = $request->amount;
-        $fund->comment = $reference;
-        $fund->type = $type;
-        $fund->currency()->associate($currency);
-        $fund->user()->associate($user);
-        $fund->account()->associate($request->accountId);
-        $fund->save();
-
-        return response()->json(['message' => 'Your Withdraw #'. $fund->comment .' was processed successfully', 'withdraw' => $fund, 'user' => $user->name, 'symbol' => $currency->symbol], 202);
-
-    }
-*/
-
-
-    public function destroyOrder(Request $request){
-        $request->validate([
-            'id' => 'required',
-        ]);
-
-        $id = $request->id;
-
-        $order = FundOrder::find($id);
-
-        $balancein = Balance::Where('currency_id', $order->out_currency)->where('user_id', null)->where('period_id', null)->first();
-        $bin = Balance::find($balancein->id);
-        $newin = $bin->amount + $order->out_amount;
-        $bin->amount = $newin;
-        $bin->save();
-
-        $balanceout = Balance::Where('currency_id', $order->in_currency)->where('user_id', null)->where('period_id', null)->first();
-        $bout = Balance::find($balanceout->id);
-        $newout = $bout->amount - $order->in_amount;
-        $bout->amount = $newout;
-        $bout->save();
-
-        $order->delete();
-
-          return response()->json(['message' => 'Complete'], 202);
-    }
-
-    public function validateExchange(Request $request){
-
-      $request->validate([
-          'id' => 'required',
-          'cout' => 'required',
-          'aout' => 'required| min:1',
-          'ain' => 'min:1',
-          'cin' => 'required',
-          'rate' => 'min:1',
-      ]);
-
-      $cout = $request->cout;
-      $cin = $request->cin;
-
-      $aout = $request->aout;
-      $ain = $request->ain;
-      $id = $request->id;
-      $rate = $request->rate;
-
-      $order = FundOrder::find($id);
-
-      $valid =  Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->where('currencies.symbol', $cout)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
-      $change = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('period_id', null)->where('currencies.symbol', $cin)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
-
-
-      $idout = Currency::Where('symbol', $cout)->select('id')->first();
-
-      $idin = Currency::Where('symbol', $cin)->select('id')->first();
-
-
-      if($aout <= $valid->amount){
-
-
-        $balance = Balance::find($valid->id);
-        $newbalance = $balance->amount - $aout;
-        $balance->amount = $newbalance;
-
-        $order->in_amount = $ain;
-        $order->status = 'complete';
-
-        $balancen = Balance::find($change->id);
-        $newbalancen = $balancen->amount + $ain;
-        $balancen->amount = $newbalancen;
-
-        $order->rate = $rate;
-      }else{
-        return response()->json(['error' => 'You don\'t have enough funds'], 403);
+      //Search By
+      if($searchValue != ''){
+        $query->Where(function($query) use($searchValue){
+          $query->Where('out_amount', 'like', '%'.$searchValue.'%')
+          ->orWhere('in_amount', 'like', '%'.$searchValue.'%')
+          ->orWhere('status', 'like', '%'.$searchValue.'%')
+          ->orWhere('fund_orders.created_at', 'like', '%'.$searchValue.'%')
+          ->orWhere('currencies.symbol', 'like', '%'.$searchValue.'%');
+        });
       }
 
-      $order->save();
-      $balance->save();
-      $balancen->save();
+      if($resultPage == null || $resultPage == 0) {
 
-      return response()->json(['message' => 'Your Validation was processed successfully'], 202);
-    }
-    /**
-     * Remove the specified resource from storage.•••••••••
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
+        $resultPage = 10;
+
+      }
+
+      //Get Total
+      $total  =  $query->get()->count();
+
+      if($page > 1){
+
+        $query->offset(    ($page -  1)   *    $resultPage);
+
+      }
+
+      $query->limit($resultPage);
+
+      //Get Fund Orders
+      $transactionsP  =  $query->get();
+
+      //Loop Fund Orders
+      foreach($transactionsP as $transaction){
+
+        //Verify if $transaction array is empty
+        if(empty($transactions[$count])){
+
+          //Create new object in $transactions array
+          $transactions[$count] = new \stdClass();
+
+          $transactions[$count]->out_amount = $transaction->out_amount * $percent;
+          $transactions[$count]->out_currency = $transaction->out_currency;
+          $transactions[$count]->in_amount = $transaction->in_amount * $percent;
+          $transactions[$count]->in_currency = $transaction->in_currency;
+          $transactions[$count]->symbol = $transaction->symbol;
+          $transactions[$count]->created_at = $transaction->created_at;
+          $transactions[$count]->reference = $transaction->reference;
+          $transactions[$count]->status = $transaction->status;
+          $transactions[$count]->updated_at = $transaction->updated_at;
+          $transactions[$count]->rate = $transaction->rate;
+        }
+
+        $count += 1;
+
+      }
+    }else{
+
+      //Select Fund Orders
+      $query = FundOrder::where('user_id', null)->where('status', 'complete')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol')->orderBy('created_at', 'desc');
+
+      //Search by
+      if($searchValue != ''){
+
+        $query->Where(function($query) use($searchValue){
+          $query->Where('out_amount', 'like', '%'.$searchValue.'%')
+          ->orWhere('in_amount', 'like', '%'.$searchValue.'%')
+          ->orWhere('status', 'like', '%'.$searchValue.'%')
+          ->orWhere('fund_orders.created_at', 'like', '%'.$searchValue.'%')
+          ->orWhere('currencies.symbol', 'like', '%'.$searchValue.'%');
+        });
+
+      }
+
+      if($resultPage == null || $resultPage == 0){
+
+        $resultPage = 10;
+
+      }
+
+      //Get Total
+      $total  =  $query->get()->count();
+
+      if($page > 1){
+
+        $query->offset(    ($page -  1)   *    $resultPage);
+
+      }
+
+      $query->limit($resultPage);
+
+      //Get Fund Orders
+      $transactionsP  =  $query->get();
+
+      //Loop Fund Orders
+      foreach($transactionsP as $transaction){
+
+        //Verify if $transactions array is empty
+        if(empty($transactions[$count])){
+
+          //Create object in $transactions array
+          $transactions[$count] = new \stdClass();
+
+          $transactions[$count]->out_amount = $transaction->out_amount;
+          $transactions[$count]->out_currency = $transaction->out_currency;
+          $transactions[$count]->in_amount = $transaction->in_amount;
+          $transactions[$count]->in_currency = $transaction->in_currency;
+          $transactions[$count]->symbol = $transaction->symbol;
+          $transactions[$count]->created_at = $transaction->created_at;
+          $transactions[$count]->reference = $transaction->reference;
+          $transactions[$count]->status = $transaction->status;
+          $transactions[$count]->updated_at = $transaction->updated_at;
+          $transactions[$count]->rate = $transaction->rate;
+        }
+
+        $count += 1;
+
+      }
 
     }
+
+    //Sort $transactions array
+    usort($transactions, $this->sorting($orderDirection, $orderBy));
+
+    //Loop $transcations array
+    foreach($transactions as $transaction){
+      //Select Out Currency
+      $currency = Currency::find($transaction->out_currency);
+
+      //Declare $transactions out_symbol
+      $transaction->out_symbol = $currency->symbol;
+
+      //Change date to formatted string
+      $newcreated = $transaction->created_at->toFormattedDateString();
+      $newupdated = $transaction->updated_at->toFormattedDateString();
+
+      //Put New Dates
+      $transaction->created_at = $newcreated;
+      $transaction->updated_at = $newupdated;
+    }
+
+    //Verify if user is trader or admin
+    if($user->hasRole('20') || $user->hasRole('901')){
+
+      //Return true for administrative access
+      $eaccess = true;
+
+    }else{
+
+      //Return false for administrative access
+      $eaccess = false;
+
+    }
+
+    //Return Response in JSON datatype
+    return response()->json(['page' => $page, 'result' => $transactions, 'total' => $total, 'eaccess' => $eaccess], 202);
+  }
+
+  //List of Pending Transactions
+  public function pendingTransactions(Request $request){
+    //Select Authenticated user
+    $user = Auth::User();
+
+    //Assign Variables
+    $searchValue = $request->searchvalue;
+    $page = $request->page;
+    $resultPage = $request->resultPage;
+    $orderBy = $request->orderBy;
+    $orderDirection = $request->orderDirection;
+    $total = 0;
+
+    //Verify if $orderBy is empty
+    if(empty($orderBy)){
+
+      $orderBy = 'created_at';
+
+    }
+
+    //Create $transactions array
+    $transactions = array();
+
+    //Create $count variable
+    $count = 0;
+
+    //Verify if user has client role
+    if($user->hasRole('30')){
+
+      //Select user fund percent
+      $percent = $this->percent($user);
+
+      //Select Fund Orders
+      $query = FundOrder::where('user_id', null)->where('status', 'pending')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol')->orderBy('created_at', 'desc');
+
+      //Search By
+      if($searchValue != ''){
+        $query->Where(function($query) use($searchValue){
+          $query->Where('out_amount', 'like', '%'.$searchValue.'%')
+          ->orWhere('in_amount', 'like', '%'.$searchValue.'%')
+          ->orWhere('status', 'like', '%'.$searchValue.'%')
+          ->orWhere('fund_orders.created_at', 'like', '%'.$searchValue.'%')
+          ->orWhere('currencies.symbol', 'like', '%'.$searchValue.'%');
+        });
+      }
+
+      if($resultPage == null || $resultPage == 0) {
+
+        $resultPage = 10;
+
+      }
+
+      //Get Total
+      $total  =  $query->get()->count();
+
+      if($page > 1){
+
+        $query->offset(    ($page -  1)   *    $resultPage);
+
+      }
+
+      $query->limit($resultPage);
+
+      //Get Fund Orders
+      $transactionsP  =  $query->get();
+
+      //Loop Fund Orders
+      foreach($transactionsP as $transaction){
+
+        //Verify if $transaction array is empty
+        if(empty($transactions[$count])){
+
+          //Create new object in $transactions array
+          $transactions[$count] = new \stdClass();
+
+          $transactions[$count]->out_amount = $transaction->out_amount * $percent;
+          $transactions[$count]->out_currency = $transaction->out_currency;
+          $transactions[$count]->in_amount = $transaction->in_amount * $percent;
+          $transactions[$count]->in_currency = $transaction->in_currency;
+          $transactions[$count]->symbol = $transaction->symbol;
+          $transactions[$count]->created_at = $transaction->created_at;
+          $transactions[$count]->reference = $transaction->reference;
+          $transactions[$count]->status = $transaction->status;
+          $transactions[$count]->updated_at = $transaction->updated_at;
+          $transactions[$count]->rate = $transaction->rate;
+        }
+
+        $count += 1;
+
+      }
+    }else{
+
+      //Select Fund Orders
+      $query = FundOrder::where('user_id', null)->where('status', 'pending')->leftJoin('currencies', 'currencies.id', '=', 'fund_orders.in_currency')->select('fund_orders.*', 'symbol')->orderBy('created_at', 'desc');
+
+      //Search by
+      if($searchValue != ''){
+
+        $query->Where(function($query) use($searchValue){
+          $query->Where('out_amount', 'like', '%'.$searchValue.'%')
+          ->orWhere('in_amount', 'like', '%'.$searchValue.'%')
+          ->orWhere('status', 'like', '%'.$searchValue.'%')
+          ->orWhere('fund_orders.created_at', 'like', '%'.$searchValue.'%')
+          ->orWhere('currencies.symbol', 'like', '%'.$searchValue.'%');
+        });
+
+      }
+
+      if($resultPage == null || $resultPage == 0){
+
+        $resultPage = 10;
+
+      }
+
+      //Get Total
+      $total  =  $query->get()->count();
+
+      if($page > 1){
+
+        $query->offset(    ($page -  1)   *    $resultPage);
+
+      }
+
+      $query->limit($resultPage);
+
+      //Get Fund Orders
+      $transactionsP  =  $query->get();
+
+      //Loop Fund Orders
+      foreach($transactionsP as $transaction){
+
+        //Verify if $transactions array is empty
+        if(empty($transactions[$count])){
+
+          //Create object in $transactions array
+          $transactions[$count] = new \stdClass();
+
+          $transactions[$count]->out_amount = $transaction->out_amount;
+          $transactions[$count]->out_currency = $transaction->out_currency;
+          $transactions[$count]->in_amount = $transaction->in_amount;
+          $transactions[$count]->in_currency = $transaction->in_currency;
+          $transactions[$count]->symbol = $transaction->symbol;
+          $transactions[$count]->created_at = $transaction->created_at;
+          $transactions[$count]->reference = $transaction->reference;
+          $transactions[$count]->status = $transaction->status;
+          $transactions[$count]->updated_at = $transaction->updated_at;
+          $transactions[$count]->rate = $transaction->rate;
+        }
+
+        $count += 1;
+
+      }
+
+    }
+
+    //Sort $transactions array
+    usort($transactions, $this->sorting($orderDirection, $orderBy));
+
+    //Loop $transcations array
+    foreach($transactions as $transaction){
+      //Select Out Currency
+      $currency = Currency::find($transaction->out_currency);
+
+      //Declare $transactions out_symbol
+      $transaction->out_symbol = $currency->symbol;
+
+      //Change date to formatted string
+      $newcreated = $transaction->created_at->toFormattedDateString();
+      $newupdated = $transaction->updated_at->toFormattedDateString();
+
+      //Put New Dates
+      $transaction->created_at = $newcreated;
+      $transaction->updated_at = $newupdated;
+    }
+
+    //Verify if user is trader or admin
+    if($user->hasRole('20') || $user->hasRole('901')){
+
+      //Return true for administrative access
+      $eaccess = true;
+
+    }else{
+
+      //Return false for administrative access
+      $eaccess = false;
+
+    }
+
+    //Return Response in JSON datatype
+    return response()->json(['page' => $page, 'result' => $transactions, 'total' => $total, 'eaccess' => $eaccess], 202);
+  }
+
+  //Validate Pending Transaction
+  public function validateExchange(Request $request){
+
+    //Validate $request data
+    $request->validate([
+        'id' => 'required',
+        'cout' => 'required',
+        'aout' => 'required| min:1',
+        'ain' => 'min:1',
+        'cin' => 'required',
+        'rate' => 'min:1',
+    ]);
+
+    //Declare Variables
+    $cout = $request->cout;
+    $cin = $request->cin;
+    $aout = $request->aout;
+    $ain = $request->ain;
+    $id = $request->id;
+    $rate = $request->rate;
+
+    //Find Pending Transaction
+    $order = FundOrder::find($id);
+
+    //Declare Valid Balance
+    $valid =  Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.symbol', $cout)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
+
+    //Declare Change Balance
+    $change = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('currencies.symbol', $cin)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*')->first();
+
+    //Declare In and Out Currencies
+    $idout = Currency::Where('symbol', $cout)->select('id')->first();
+    $idin = Currency::Where('symbol', $cin)->select('id')->first();
+
+    //Verify if amount is valid
+    if($aout <= $valid->amount){
+
+      //Modify Valid Balance
+      $balance = Balance::find($valid->id);
+      $newbalance = $balance->amount - $aout;
+      $balance->amount = $newbalance;
+
+      //Modify Change Balance
+      $balancen = Balance::find($change->id);
+      $newbalancen = $balancen->amount + $ain;
+      $balancen->amount = $newbalancen;
+
+      //Complete order
+      $order->in_amount = $ain;
+      $order->status = 'complete';
+      $order->rate = $rate;
+
+    }else{
+
+      //Return error
+      return response()->json(['error' => 'You don\'t have enough funds'], 403);
+
+    }
+
+    //Save changes
+    $order->save();
+    $balance->save();
+    $balancen->save();
+
+    //Return Response in JSON dataType
+    return response()->json(['message' => 'Your Validation was processed successfully'], 202);
+  }
+
+  //Destroy Order
+  public function destroyOrder(Request $request){
+
+    //Validate $request data
+    $request->validate([
+
+      'id' => 'required',
+
+    ]);
+
+    //Assign Variables
+    $id = $request->id;
+
+    //Find Fund Order
+    $order = FundOrder::find($id);
+
+    //Select Out Balance
+    $balancein = Balance::Where('currency_id', $order->out_currency)->where('user_id', null)->where('period_id', null)->first();
+
+    //Change out Balance
+    $bin = Balance::find($balancein->id);
+    $newin = $bin->amount + $order->out_amount;
+    $bin->amount = $newin;
+    $bin->save();
+
+    //Select In Balance
+    $balanceout = Balance::Where('currency_id', $order->in_currency)->where('user_id', null)->where('period_id', null)->first();
+
+    //Change in Balance
+    $bout = Balance::find($balanceout->id);
+    $newout = $bout->amount - $order->in_amount;
+    $bout->amount = $newout;
+    $bout->save();
+
+    //Delete Order
+    $order->delete();
+
+    //Return response in Json Datatype
+    return response()->json(['message' => 'Complete'], 202);
+  }
 }

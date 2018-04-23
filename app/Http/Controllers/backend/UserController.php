@@ -16,342 +16,402 @@ use App\Role;
 use App\Currency;
 use App\Balance;
 
-class UserController extends Controller
-{
+class UserController extends Controller{
 
-    public function __construct()
-    {
-        $this->middleware('auth');
+  //Execute if user is authenticated
+  public function __construct(){
+
+    $this->middleware('auth');
+
+  }
+
+  //List Users
+  public function index(Request $request) {
+
+    //Select Authenticated User
+    $user = Auth::User();
+
+    //Assign Variables
+    $searchValue = $request->searchvalue;
+    $page = $request->page;
+    $resultPage = $request->resultPage;
+    $orderBy = $request->orderBy;
+    $orderDirection = $request->orderDirection;
+    $total = 0;
+
+
+    //Select Users
+    $query = User::WhereNotIn('id', [$user->id]);
+
+    //Search by
+    if($searchValue != ''){
+
+      $query->Where(function($query) use($searchValue){
+        $query->Where('name', 'like', '%'.$searchValue.'%')
+        ->orWhere('username', 'like', '%'.$searchValue.'%')
+        ->orWhere('email', 'like', '%'.$searchValue.'%')
+        ->orWhere('created_at', 'like', '%'.$searchValue.'%')
+        ->orWhere('updated_at', 'like', '%'.$searchValue.'%');
+      });
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index(Request $request)
-    {
+    //Order By
+    if($orderBy != ''){
 
-            $user = Auth::User();
-            $searchValue = $request->searchvalue;
-            $page = $request->page;
-            $resultPage = $request->resultPage;
-            $orderBy = $request->orderBy;
-            $orderDirection = $request->orderDirection;
-            $total = 0;
+      if($orderDirection != ''){
 
-            //Select Users
-            $query = User::WhereNotIn('id', [$user->id]);
-            //Search by
+        $query->orderBy($orderBy, 'desc');
 
-            if($searchValue != '')
-            {
-                    $query->Where(function($query) use($searchValue){
-                        $query->Where('name', 'like', '%'.$searchValue.'%')
-                        ->orWhere('username', 'like', '%'.$searchValue.'%')
-                        ->orWhere('email', 'like', '%'.$searchValue.'%')
-                        ->orWhere('created_at', 'like', '%'.$searchValue.'%')
-                        ->orWhere('updated_at', 'like', '%'.$searchValue.'%');
-                    });
+      }else{
 
-            }
-            //Order By
+        $query->orderBy($orderBy);
 
-            if($orderBy != '')
-            {
-                if($orderDirection != '')
-                {
-                    $query->orderBy($orderBy, 'desc');
-                }else{
-                    $query->orderBy($orderBy);
-                }
-            }else if($orderDirection != ''){
-                $query->orderBy('created_at');
-            }else{
-                 $query->orderBy('created_at', 'desc');
-            }
+      }
+    }else if($orderDirection != ''){
 
-            if($resultPage == null || $resultPage == 0)
-            {
-                $resultPage = 10;
-            }
+      $query->orderBy('created_at');
 
-            //Get Total of fees
-            $total  =  $query->get()->count();
-            if($page > 1)
-            {
-                 $query->offset(    ($page -  1)   *    $resultPage);
-            }
+    }else{
 
+      $query->orderBy('created_at', 'desc');
 
-            $query->limit($resultPage);
-
-            $users  =  $query->get();
-
-            $roles = [];
-            foreach($users as $user){
-                $role = $user->roles()->get();
-                array_push($roles, $role);
-            }
-            //Get fees by month and year
-
-            return response()->json(['page' => $page, 'result' => $users,'total' => $total, 'roles' => $roles], 202);
     }
 
-    /**
-     * Take All roles for users
-     */
-    public function userRoles()
-    {
-        $roles = Role::All();
+    if($resultPage == null || $resultPage == 0){
 
-        return response()->json(['data' => $roles], 202);
+      $resultPage = 10;
+
     }
 
-    /**
-     * Take Manager Users for Clients
-     */
+    //Get Total
+    $total  =  $query->get()->count();
 
-    public function userClients(Request $request){
+    if($page > 1){
 
-        $rolid = $request->role;
+      $query->offset(    ($page -  1)   *    $resultPage);
 
-        $role = Role::find($rolid);
-
-        $user = $role->users()->get();
-
-        return response()->json(['data' => $user], 202);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+    $query->limit($resultPage);
 
-    public function store(Request $request)
-    {
-        //
-        $request->validate([
-            'name' => 'required| max:50',
-            'lastname' => 'required| max:50',
-            'email' => 'required|unique:users|max:50',
-            'password' => 'required|min:6|confirmed',
-            'roles' => 'required',
+    //Get Users
+    $users  =  $query->get();
 
-        ]);
+    //Create Roles Array
+    $roles = [];
 
-        $name = $request->name;
-        $lastname = $request->lastname;
-        $username = strtolower($request->username);
-        $email = strtolower($request->email);
-        $password = bcrypt($request->password);
-        $roles = $request->roles;
+    //Loop Users
+    foreach($users as $user){
 
-        $data = ['email' => $email, 'password' => $request->password];
-        $currencies = Currency::All();
+      //Get Role from user
+      $role = $user->roles()->get();
 
-        $fullname = ucfirst(strtolower($name)) . " " . ucfirst(strtolower($lastname));
+      //Insert role in roles array
+      array_push($roles, $role);
 
-        $user = new User;
-        $user->name = $fullname;
-        $user->email = $request->email;
-        $user->password= $password;
-        $user->save();
-
-        if($user->hasRole('20')){
-          foreach($currencies as $currency){
-                  $balance = New Balance;
-                  $balance->amount = 0;
-                  $balance->type = 'fund';
-                  $balance->currency()->associate($currency);
-                  $balance->user()->  associate($user);
-                  $balance->save();
-          }
-        }
-
-
-
-        foreach($roles as $role){
-            $user->roles()->attach($role);
-        }
-        if(isset($request->client)){
-            $client = $request->client;
-            $user->clients()->attach($client);
-        }
-
-        Mail::to($email)->send(new newUser($data));
-
-        return response()->json(['message' => "success"], 202);
     }
 
-    public function show(Request $request)
-    {
-        //
-        $auth = Auth::User();
-        $user = User::Where('id', $auth->id)->with('roles:slug')->first();
+    //Return Response in JSON Datatype
+    return response()->json(['page' => $page, 'result' => $users,'total' => $total, 'roles' => $roles], 202);
+  }
 
-        return response()->json(['result' => $user], 202);
+  //Get Roles for users
+  public function userRoles(){
+
+    //Select Roles
+    $roles = Role::All();
+
+    //Return Response in JSON dataType
+    return response()->json(['data' => $roles], 202);
+  }
+
+  //Get User For Clients
+  public function userClients(Request $request){
+
+    //Assign Variables
+    $rolid = $request->role;
+
+    //Find Role
+    $role = Role::find($rolid);
+
+    //Get users with trader role
+    $user = $role->users()->get();
+
+    //Return Response In JSON DataType
+    return response()->json(['data' => $user], 202);
+  }
+
+  //Create User
+  public function store(Request $request){
+
+    //Validate $request data
+    $request->validate([
+      'name' => 'required| max:50',
+      'lastname' => 'required| max:50',
+      'email' => 'required|unique:users|max:50',
+      'password' => 'required|min:6|confirmed',
+      'roles' => 'required',
+    ]);
+
+    //Assign Variables
+    $name = $request->name;
+    $lastname = $request->lastname;
+    $username = strtolower($request->username);
+    $email = strtolower($request->email);
+    $password = bcrypt($request->password);
+    $roles = $request->roles;
+
+    //Create $data Variable for Email
+    $data = ['email' => $email, 'password' => $request->password];
+
+    //Get Currencies
+    $currencies = Currency::All();
+
+    //Order Full Name
+    $fullname = ucfirst(strtolower($name)) . " " . ucfirst(strtolower($lastname));
+
+    //Create New User
+    $user = new User;
+    $user->name = $fullname;
+    $user->email = $request->email;
+    $user->password= $password;
+    $user->save();
+
+    //Loop $roles
+    foreach($roles as $role){
+
+      //Attach roles to user
+      $user->roles()->attach($role);
+
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    //Verify if user is client
+    if(isset($request->client)){
 
+      //Assign Variable
+      $client = $request->client;
 
-     public function picture(Request $request){
-
-       $request->validate([
-           'picture' => 'required',
-           'id' => 'required',
-       ]);
-
-       $id = $request->id;
-       $user = User::find($id);
-
-
-
-       if($user->image !== null){
-         Storage::delete(public_path() . '/' .$user->image);
-       }
-       $pic = $request->picture;
-
-
-       $imageName = $id . ".png";
-
-       $path = base_path() . '/public/img/profile/' . $imageName;
-
-       $pathS = '/img/profile/' . $imageName;
-       Image::make(file_get_contents($pic))->save($path);
-
-       $user->image = $pathS;
-       $user->save();
-
-      return response()->json(['message' => "success"], 202);
-     }
-    public function update(Request $request)
-    {
-        //
-        $request->validate([
-            'name' => 'required| max:50',
-            'lastname' => 'required| max:50',
-            'email' => 'required|max:50',
-            'password' => 'confirmed',
-            'roles' => 'required',
-        ]);
-
-        $id = $request->id;
-        $name = $request->name;
-        $lastname = $request->lastname;
-        $username = strtolower($request->username);
-        $email = strtolower($request->email);
-        if($request->password != ''){
-            $password = bcrypt($request->password);
-        }
-        $roles = $request->roles;
-
-        $fullname = ucfirst(strtolower($name)) . " " . ucfirst(strtolower($lastname));
-
-        $user = User::Find($id);
-
-        $user->name = $fullname;
-        $user->email = $request->email;
-        if($request->password != ''){
-            $user->password= $request->password;
-        }
-        $user->save();
-
-
-        $user->roles()->detach();
-
-        foreach($roles as $role){
-            $user->roles()->attach($role);
-        }
-
-        $user->clients()->detach();
-
-        if(isset($request->client)){
-            $client = $request->client;
-            $user->clients()->attach($client);
-        }
-
-        return response()->json(['message' => "success"], 202);
+      //Attach client to user
+      $user->clients()->attach($client);
     }
 
-    public function updateProfile(Request $request)
-    {
-        //
-        $request->validate([
-            'id' => 'required',
-            'name' => 'required| max:50',
-            'lastname' => 'required| max:50',
-            'email' => 'required|max:50',
-            'password' => 'confirmed',
-        ]);
+    //Mail To User
+    Mail::to($email)->send(new newUser($data));
 
-        $id = $request->id;
-        $name = $request->name;
-        $lastname = $request->lastname;
-        $email = strtolower($request->email);
+    //Return Response in JSON DataType
+    return response()->json(['message' => "success"], 202);
+  }
 
-        if($request->password != ''){
-            $password = bcrypt($request->password);
-        }
+  //Show User Profile
+  public function show(Request $request){
+    //Select Authenticated User
+    $auth = Auth::User();
 
-        $fullname = ucfirst(strtolower($name)) . " " . ucfirst(strtolower($lastname));
+    //Select user with Role
+    $user = User::Where('id', $auth->id)->with('roles:slug')->first();
 
+    //Return Response in JSON DataType
+    return response()->json(['result' => $user], 202);
+  }
 
-        $user = User::Find($id);
+  //Profile Picture Update
+  public function picture(Request $request){
 
-        $user->name = $fullname;
-        $user->email = $request->email;
+    //Validate $request DataType
+    $request->validate([
+      'picture' => 'required',
+      'id' => 'required',
+    ]);
 
-        if($request->password != ''){
-            $user->password= $request->password;
-        }
+    //Assign Variables
+    $id = $request->id;
+    $pic = $request->picture;
 
-        $user->save();
+    //Find User
+    $user = User::find($id);
 
-        return response()->json(['message' => "success"], 202);
+    //Verify if user has image
+    if($user->image !== null){
+
+      //Delete Image if exists
+      Storage::delete(public_path() . '/' .$user->image);
+
     }
-    /**
-     * Remove the specified resource from storage.•••••••••
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Request $request)
-    {
-        $id = $request->id;
-        $user = User::find($id);
-        $user->roles()->detach();
-        $user->clients()->detach();
 
-        $funds = $user->funds()->get();
+    //Declare Name Image
+    $imageName = $id . ".png";
 
-        if($funds){
-            foreach($funds as $fund){
-                $fd = App\Fund::find($fund->id);
-                    $fd->delete();
-            }
-        }
+    //Declare image Path
+    $path = base_path() . '/public/img/profile/' . $imageName;
 
-        $accounts = $user->accounts()->get();
+    //Declare image Path for database
+    $pathS = '/img/profile/' . $imageName;
 
-        if($accounts){
-            foreach($accounts as $account){
-                $ac = App\Fund::find($account->id);
-                    $ac->delete();
-            }
-        }
+    //Make image and save
+    Image::make(file_get_contents($pic))->save($path);
 
-        $user->delete();
+    //Save Path in database
+    $user->image = $pathS;
+    $user->save();
 
-        return response()->json(['message' => "success"], 202);
+    //Return Response in JSON DataType
+    return response()->json(['message' => "success"], 202);
+  }
+
+  //Update User
+  public function update(Request $request){
+
+    //Validate $request Data
+    $request->validate([
+      'name' => 'required| max:50',
+      'lastname' => 'required| max:50',
+      'email' => 'required|max:50',
+      'password' => 'confirmed',
+      'roles' => 'required',
+    ]);
+
+    //Assign Variables
+    $id = $request->id;
+    $name = $request->name;
+    $lastname = $request->lastname;
+    $username = strtolower($request->username);
+    $email = strtolower($request->email);
+    $roles = $request->roles;
+
+    //Verify if Password is empty
+    if($request->password != ''){
+      $password = bcrypt($request->password);
     }
+
+    //Order Fullname
+    $fullname = ucfirst(strtolower($name)) . " " . ucfirst(strtolower($lastname));
+
+    //Find User
+    $user = User::Find($id);
+
+    //Edit User
+    $user->name = $fullname;
+    $user->email = $request->email;
+
+    //Verify if Password is empty
+    if($request->password != ''){
+      $user->password= $request->password;
+    }
+
+    //Save edit user
+    $user->save();
+
+    //Detach old roles
+    $user->roles()->detach();
+
+    //Loop Roles
+    foreach($roles as $role){
+
+      //Attach New Role
+      $user->roles()->attach($role);
+
+    }
+
+    //Detach old Client
+    $user->clients()->detach();
+
+    //Verify if has client
+    if(isset($request->client)){
+
+      //Assign Variable
+      $client = $request->client;
+
+      //Attach new client
+      $user->clients()->attach($client);
+    }
+
+    //Return Response in JSON DataType
+    return response()->json(['message' => "success"], 202);
+  }
+
+  //Update User Profile
+  public function updateProfile(Request $request){
+
+    //Validate $request Data
+    $request->validate([
+      'id' => 'required',
+      'name' => 'required| max:50',
+      'lastname' => 'required| max:50',
+      'email' => 'required|max:50',
+      'password' => 'confirmed',
+    ]);
+
+    //Assign Variables
+    $id = $request->id;
+    $name = $request->name;
+    $lastname = $request->lastname;
+    $email = strtolower($request->email);
+
+    //Verify if password is empty
+    if($request->password != ''){
+
+      $password = bcrypt($request->password);
+
+    }
+
+    //Order FullName
+    $fullname = ucfirst(strtolower($name)) . " " . ucfirst(strtolower($lastname));
+
+    //Find User
+    $user = User::Find($id);
+
+    //Update User
+    $user->name = $fullname;
+    $user->email = $request->email;
+
+    if($request->password != ''){
+
+      $user->password= $request->password;
+
+    }
+
+    //Save User
+    $user->save();
+
+    //Return Response in JSON DataType
+    return response()->json(['message' => "success"], 202);
+  }
+
+  //Destroy User
+  public function destroy(Request $request){
+
+    //Assign Variables
+    $id = $request->id;
+
+    //Find User
+    $user = User::find($id);
+
+    //Detach Roles And Clients
+    $user->roles()->detach();
+    $user->clients()->detach();
+
+    //Get User Funds
+    $funds = $user->funds()->get();
+
+    //Verify if exists Funds
+    if($funds){
+
+      //Loop Funds
+      foreach($funds as $fund){
+
+        //Select Fund
+        $fd = App\Fund::find($fund->id);
+
+        //Delete Fund
+        $fd->delete();
+
+      }
+    }
+
+    //Delete User
+    $user->delete();
+
+    //Return Response in JSON DataType
+    return response()->json(['message' => "success"], 202);
+  }
 }

@@ -1,49 +1,70 @@
+
+/*Custom Font*/
 @font-face {
     font-family: florence;
     src: url(/fonts/Florsn17.ttf);
 }
+
+/*Start General CCS*/
 body{
   font-family: florence;
   height: auto;
-    background-color: #102733;
+  background-color: #102733;
 }
-.menuItem{
-    cursor: pointer;
-}
-
 a:hover{
-    text-decoration: none;
-}
-.nav{
-    font-size: 16px;
-    text-align: center;
+  text-decoration: none;
 }
 
-#mainLogo{
-        text-align: center;
-        margin-bottom: 10px;
-}
-.btn{
-    margin: 2px;
+footer{
+  width: 100%;
+  padding: 10px;
+  height: 50px;
+  color: white;
+  left: 0px;
+  position: fixed;
+  bottom: 0px;
+  z-index: 100;
+  background-color: #132a3a;
 }
 
 .row.content {
   height: auto;
   background-color: #102733;
 }
+
 .container{
-    position: relative;
-    top: 20px;
+  position: relative;
+  top: 20px;
 }
-/* Set gray background color and 100% height */
-.sidenav {
-  background-color: #112e3d;
-  height: 100%;
+
+.container-fluid{
+      margin-bottom: 50px;
 }
 
 /* On small screens, set height to 'auto' for the grid */
 @media screen and (max-width: 767px) {
   .row.content {height: auto;}
+}
+/*END General CCS*/
+
+/*Start Menu CCS*/
+.menuItem{
+  cursor: pointer;
+}
+
+.nav{
+  font-size: 16px;
+  text-align: center;
+}
+
+#mainLogo{
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.sidenav {
+  background-color: #112e3d;
+  height: 100%;
 }
 
 .navBack{
@@ -57,6 +78,44 @@ a:hover{
 .sub-nav{
   margin-top: 120px;
 }
+
+.sub-nav>li>a{
+  border-radius: 0px;
+  background-color: transparent;
+  color: rgba(255, 255, 253, 0.5);
+  border: none;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+
+.sub-nav>li>a:hover{
+  border-bottom: 2px solid #47b5b6;
+  color: white;
+  transition: all 0.2s;
+  background-color: transparent;
+}
+
+.nav-pills>li.active>a, .nav-pills>li.active>a:focus, .nav-pills>li.active>a:hover{
+  border-bottom: 2px solid #47b5b6;
+  color: white;
+  background-color: transparent;
+}
+
+.dropdown-menu{
+  border-radius: 0px;
+  background-color: #395b71;
+}
+
+.dropdown-menu>li>a{
+  color: white;
+}
+
+.nav{
+  font-family: florence;
+}
+/*END Menu CCS*/
+
+/*Start Panel CCS*/
 .panel{
   border-radius: 0px;
   background-color: #132a3a;
@@ -69,14 +128,17 @@ a:hover{
   font-family: florence;
   text-transform: uppercase;
 }
+
 .panel-alternative h4{
   font-size: 14px;
 }
+
 .panel-alternative>.panel-heading{
   border-radius: 0px;
   background-color: #132a3a;
   text-align: left;
 }
+
 .panel-alternative>.panel-footer{
   border-radius: 0px;
   background-color: #132a3a;
@@ -85,26 +147,33 @@ a:hover{
   font-weight: bold;
   border:none;
 }
+
 .panel-alternative>.panel-footer h4{
-
   font-weight: bold;
-
 }
 
+/*END panel CCS*/
+
+/*Start Button CCS*/
+.btn{
+  margin: 2px;
+}
 
 .btn-alternative{
-    border-radius: 0px;
-    background-color: transparent;
-    color: rgba(255, 255, 253, 0.5);
-    border: none;
-    transition: all 0.2s;
-    text-transform: uppercase;
+  border-radius: 0px;
+  background-color: transparent;
+  color: rgba(255, 255, 253, 0.5);
+  border: none;
+  transition: all 0.2s;
+  text-transform: uppercase;
 }
+
 .btn-alternative:hover{
   border-bottom: 2px solid #47b5b6;
   color: white;
   transition: all 0.2s;
 }
+
 .btn-alternative.active, btn-alternative:active{
   border-bottom: 2px solid #47b5b6;
   color: white;
@@ -115,6 +184,7 @@ a:hover{
   color: white;
   transition: all 0.2s;
 }
+
 .btn-alternative-success.active, btn-alternative-succes:active{
   border-bottom: 2px solid #398439;
   color: white;
@@ -125,34 +195,14 @@ a:hover{
   color: white;
   transition: all 0.2s;
 }
+
 .btn-alternative-danger.active, btn-alternative-danger:active{
   border-bottom: 2px solid #d9534f;
   color: white;
 }
+/*END button CCS*/
 
-.sub-nav>li>a{
-    border-radius: 0px;
-    background-color: transparent;
-    color: rgba(255, 255, 253, 0.5);
-    border: none;
-    transition: all 0.2s;
-    text-transform: uppercase;
-}
-.sub-nav>li>a:hover{
-  border-bottom: 2px solid #47b5b6;
-  color: white;
-  transition: all 0.2s;
-  background-color: transparent;
-}
-.nav-pills>li.active>a, .nav-pills>li.active>a:focus, .nav-pills>li.active>a:hover{
-  border-bottom: 2px solid #47b5b6;
-  color: white;
-  background-color: transparent;
-}
-
-
-
-
+/*Start Modal CCS*/
 .modal-alternative{
   border-radius: 0px;
   background-color: #132a3a;
@@ -161,85 +211,99 @@ a:hover{
   border-color:  #132a3a;
   color: white;
 }
+
 .modal-alternative>.modal-header{
-    border-color: #395b71;
+  border-color: #395b71;
 }
+
 .modal-alternative>.modal-body{
-    border-color: #395b71;
+  border-color: #395b71;
 }
+
 .modal-alternative>.modal-footer{
-    border-color: #395b71;
+  border-color: #395b71;
 }
-.colorChart{
-    height: 10px;
-}
-.list-gr p{
-    margin: 0px;
-    color: #395b71;
-}
-.list-gr h5{
-    margin: 0px;
-}
-.divPro{
-    padding-top: 7.5px;
-    padding-bottom: 4.5px;
-}
-.progress{
-    margin: 0px;
-    background-color: transparent;
-    border-radius: none;
-}
+/*END Modal CCS*/
 
+/*Start Form CCS*/
 .form-control{
-    border-radius: 0px;
-    background-color: transparent;
-    color:white;
+  border-radius: 0px;
+  background-color: transparent;
+  color:white;
 }
-.form-control option{
-    background-color: #395b71;
 
+.form-control option{
+  background-color: #395b71;
 }
+
+.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control{
+    background-color: #6b6b6b69;
+}
+/*END Form CCS*/
+
+/*Start Table CCS*/
 .table{
-    color:white;
-    font-size: 13px;
+  color:white;
+  font-size: 13px;
 }
+
 .table-striped>tbody>tr:nth-of-type(odd){
-    background-color: #395b71;
+  background-color: #395b71;
 }
+
 .table-hover>tbody>tr:hover{
-    background-color: #102734;
+  background-color: #102734;
 }
+
 .pagination>li>a, .pagination>li>span{
     color:white;
     background-color: transparent;
     border-radius: 0px;
 }
-.form-control[disabled], .form-control[readonly], fieldset[disabled] .form-control{
-    background-color: #6b6b6b69;
+/*END Table CCS*/
+
+/*DashBoard CCS*/
+.icon{
+  margin: 0px 10px;
+  text-align: center;
+  cursor: pointer;
 }
 
-.dropdown-menu{
-  border-radius: 0px;
-  background-color: #395b71;
-}
-.dropdown-menu>li>a{
-  color: white;
-}
-.nav{
-  font-family: florence;
-}
-.profilePic{
-  border: 1px solid #395b71;
-
+.icon-right {
+    transform: scaleX(-1);
+    -moz-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    -ms-transform: scaleX(-1);
 }
 
-input.cropit-image-input {
-  visibility: hidden;
+.imageIcon{
+  border-radius: 50px;
 }
-.cropit-preview{
-  width: 150px;
-  height: 150px;
+
+.colorChart{
+  height: 10px;
 }
+
+.list-gr p{
+  margin: 0px;
+  color: #395b71;
+}
+
+.list-gr h5{
+  margin: 0px;
+}
+
+.divPro{
+  padding-top: 7.5px;
+  padding-bottom: 4.5px;
+}
+
+.progress{
+  margin: 0px;
+  background-color: transparent;
+  border-radius: none;
+}
+
 .slider {
     -webkit-appearance: none;
     width: 70% !important;
@@ -273,33 +337,6 @@ input.cropit-image-input {
     border-radius: 50%;
     background: #395b71;
     cursor: pointer;
-}
-.cropit-controls{
-  top: 50px;
-  padding: 10px 15px;
-  background-color: #65616142;
-  box-shadow: inset 0px 0px 1px 0px black;
-}
-.icon{
-  margin: 0px 10px;
-  text-align: center;
-  cursor: pointer;
-}
-
-.icon-right {
-    transform: scaleX(-1);
-    -moz-transform: scaleX(-1);
-    -webkit-transform: scaleX(-1);
-    -ms-transform: scaleX(-1);
-}
-
-.imageIcon{
-  border-radius: 50px;
-}
-
-.cropit-preview-background {
-  opacity: .2;
-  color: white;
 }
 
 .list-gr{
@@ -350,30 +387,40 @@ input.cropit-image-input {
 .myPortfolio::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
-/*
- * If the slider or anything else is covered by the background image,
- * use relative or absolute position on it
- */
+
+/*END DashBoard CCS*/
+
+/*Start Profile CCS*/
+.profilePic{
+  border: 1px solid #395b71;
+}
+
+input.cropit-image-input {
+  visibility: hidden;
+}
+
+.cropit-preview{
+  width: 150px;
+  height: 150px;
+}
+
+.cropit-controls{
+  top: 50px;
+  padding: 10px 15px;
+  background-color: #65616142;
+  box-shadow: inset 0px 0px 1px 0px black;
+}
+
+.cropit-preview-background {
+  opacity: .2;
+  color: white;
+}
+
 input.cropit-image-zoom-input {
   position: relative;
 }
 
-/* Limit the background image by adding overflow: hidden */
 #image-cropper {
   overflow: hidden;
 }
-.container-fluid{
-      margin-bottom: 50px;
-}
-
-footer{
-    width: 100%;
-    padding: 10px;
-    height: 50px;
-    color: white;
-    left: 0px;
-    position: fixed;
-    bottom: 0px;
-    z-index: 100;
-    background-color: #132a3a;
-}
+/*END Profile CCS*/

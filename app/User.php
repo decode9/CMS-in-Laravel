@@ -46,10 +46,6 @@ class User extends Authenticatable
         return $this->belongsToMany('App\Period');
     }
 
-    public function accounts(){
-        return $this->hasMany('App\Account');
-    }
-
     public function balances(){
         return $this->hasMany('App\Balance');
     }
