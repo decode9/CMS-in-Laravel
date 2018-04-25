@@ -56,15 +56,6 @@ Route::post('/currencies/create', 'backend\CurrenciesController@store')->name('c
 Route::post('/currencies/update', 'backend\CurrenciesController@update')->name('currencies.update')->middleware('auth.per:0253');
 Route::post('/currencies/delete', 'backend\CurrenciesController@destroy')->name('currencies.delete')->middleware('auth.per:0254');
 
-//NEWS ADMINISTRATION BACKEND
-/*
-Route::get('/news/admin', "backend\NewsController@index")->name('news');
-Route::get('/news/new', "backend\NewsController@create")->name('create.news');
-Route::post('/news/new', "backend\NewsController@store")->name('store.news');
-Route::get('/news/edit/{id}', 'backend\NewsController@edit')->name('edit.news');
-Route::post('/news/edit/{id}', 'backend\NewsController@update')->name('update.news');
-Route::get('/news/delete/{id}', 'backend\NewsController@destroy')->name('destroy.news');
-*/
 //FUNDS
 
 Route::get('/funds', "backend\ViewsController@funds")->name('funds')->middleware('auth.per:0150');
@@ -78,21 +69,6 @@ Route::post('/funds/exchange/validate', "backend\FundsController@validateExchang
 Route::post('/funds/transactions', "backend\FundsController@transactions")->name('trasactions.funds')->middleware('auth.per:0151');
 Route::post('/funds/transactions/delete', "backend\FundsController@destroyOrder")->name('delete.funds')->middleware('auth.per:0154');
 Route::post('/funds/transactions/pending', "backend\FundsController@pendingTransactions")->name('pending.funds')->middleware('auth.per:0151');
-/*
-Route::post('/deposit', "backend\FundsController@deposits")->name('deposit.funds')->middleware('auth.per:0151');
-Route::post('/deposit/create', "backend\FundsController@store")->name('store.deposit')->middleware('auth.per:0152');
-Route::post('/withdraw', "backend\FundsController@withdraws")->name('withdraw.funds')->middleware('auth.per:0151');
-Route::post('/withdraw/create', "backend\FundsController@update")->name('update.withdraw')->middleware('auth.per:0153');
-Route::get('/funds/return', "backend\FundsController@destroy")->name('destroy.funds')->middleware('auth.per:0154');
-*/
-
-//Orders
-/*
-Route::get('/orders', "backend\ViewsController@orders")->name('orders')->middleware('auth.per:0200');
-Route::post('/orders', "backend\OrdersController@orders")->name('orders.list')->middleware('auth.per:0201');
-Route::post('/orders/buySell', "backend\OrdersController@buySell")->name('orders.buySell')->middleware('auth.per:0202');
-Route::post('/orders/balance', "backend\OrdersController@balance")->name('orders.balance')->middleware('auth.per:0202');
-*/
 
 //Clients
 
@@ -112,10 +88,3 @@ Route::post('/newsletter', 'backend\NewsletterController@index')->name('newslett
 Route::post('/newsletter/create', 'backend\NewsletterController@store')->name('newsletter.create')->middleware('auth.per:0352');
 Route::post('/newsletter/update', 'backend\NewsletterController@update')->name('newsletter.update')->middleware('auth.per:0353');
 Route::post('/newsletter/delete', 'backend\NewsletterController@destroy')->name('newsletter.delete')->middleware('auth.per:0354');
-//Accounts
-/*
-Route::post('/account', "backend\AccountController@index")->name('account.list')->middleware('auth.per:0151');
-Route::post('/account/create', "backend\AccountController@store")->name('account.create')->middleware('auth.per:0152');
-*/
-
-//TRANSACTIONS
