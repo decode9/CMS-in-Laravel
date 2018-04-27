@@ -265,7 +265,7 @@ class FundsController extends Controller{
     $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/bitcoin');
     $data = json_decode($json);
 
-    $btc = $usdvalue / $data[0]->price_usd;
+    $btc = $usd / $data[0]->price_usd;
     //Return Response in JSON Datatype
     return response()->json(['usd' => $usd, 'btc' => $btc], 202);
   }
