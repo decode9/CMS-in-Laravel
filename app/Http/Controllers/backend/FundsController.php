@@ -128,10 +128,10 @@ class FundsController extends Controller{
   }
 
   //Get Total Balance for clients in USD and BTC
-  public function total(Request $request){
+  public function total(){
 
     //Select User
-    $user = User::find($request->id);
+    $user = Auth::user();
 
     //Create $balances array
     $balances = array();
