@@ -128,10 +128,10 @@ class FundsController extends Controller{
   }
 
   //Get Total Balance for clients in USD and BTC
-  public function total(Request $request){
+  public function total(){
 
     //Select User
-    $user = User::find($request->id);
+    $user = Auth::user();
 
     //Create $balances array
     $balances = array();
@@ -194,7 +194,6 @@ class FundsController extends Controller{
           $balances[$count]->symbol = $balance->symbol;
           $balances[$count]->type = $balance->type;
           $balances[$count]->name = $balance->name;
-          $balances[$count]->value_btc = 0;
         }else{
 
           foreach ($balances as $bal) {
@@ -235,7 +234,6 @@ class FundsController extends Controller{
 
           //Assign Value as USD Price
           $balance->value = $data[0]->price_usd;
-          $balance->value_btc = $data[0]->price_btc;
 
         }else{
           //Verify Name Balance
@@ -243,7 +241,6 @@ class FundsController extends Controller{
 
             //Assign Balance Value
             $balance->value = 1;
-            $balance->value_btc = 0.0000000000001;
 
           }else{
 
@@ -251,41 +248,24 @@ class FundsController extends Controller{
             $data = json_decode($json);
 
             $balance->value = $data[0]->price_usd;
-            $balance->value_btc = $data[0]->price_btc;
 
           }
         }
       }
 
-      if($balance->symbol == "VEF"){
-
-        $balance->value_btc = 238000;
-        $btcvalue = 0;
-
-      }else{
-
-        //Assign BTC value
-        $btcvalue = $balance->amount * $balance->value_btc;
-
-      }
-
-      if($balance->symbol == "USD"){
-
-        $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/bitcoin');
-        $data = json_decode($json);
-
-        $balance->value_btc = $data[0]->price_usd;
-        $btcvalue = $balance->amount / $balance->value_btc;
-
-      }
 
       $usdvalue = $balance->amount * $balance->value;
 
       //Assign USD and BTC values
       $usd += $usdvalue;
-      $btc += $btcvalue;
+
     }
 
+    //Take BTC Value
+    $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/bitcoin');
+    $data = json_decode($json);
+
+    $btc = $usd / $data[0]->price_usd;
     //Return Response in JSON Datatype
     return response()->json(['usd' => $usd, 'btc' => $btc], 202);
   }

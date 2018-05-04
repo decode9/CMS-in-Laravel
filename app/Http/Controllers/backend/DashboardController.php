@@ -176,7 +176,6 @@ class DashboardController extends Controller{
           $balances[$count]->name = $balance->name;
           $balances[$count]->equivalent = 0;
           $balances[$count]->percent = 0;
-          $balances[$count]->value_btc = 0;
         }else{
 
           //If $balances Array is not empty sum general balance amount
@@ -209,9 +208,7 @@ class DashboardController extends Controller{
           $balances[$count]->name = $balance->name;
           $balances[$count]->equivalent = 0;
           $balances[$count]->percent = 0;
-          $balances[$count]->value_btc = 0;
         }else{
-
           foreach ($balances as $bal) {
             if($bal->symbol == $balance->symbol){
 
@@ -253,14 +250,12 @@ class DashboardController extends Controller{
 
           //Assign Data as Value
           $balance->value = $data[0]->price_usd;
-          $balance->value_btc = $data[0]->price_btc;
 
         }else{
           //Verify Balance Name
           if(strtolower($balance->name) == 'originprotocol' || (strtolower($balance->name) == 'send' || strtolower($balance->name) == 'tari')){
             //Assign $balance value
             $balance->value = 1;
-            $balance->value_btc = 0.0000000000001;
           }else{
             //Get Ethereum Value
             $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/ethereum');
@@ -268,22 +263,8 @@ class DashboardController extends Controller{
 
             //Assign data as value
             $balance->value = $data[0]->price_usd;
-            $balance->value_btc = $data[0]->price_btc;
           }
         }
-      }
-      //Verify $balance symbol
-      if($balance->symbol == "VEF"){
-
-        //Assign value
-        $balance->value_btc = 238000;
-        $btcvalue = 0;
-
-      }else{
-
-        //Assign BTC value
-        $btcvalue = $balance->amount * $balance->value_btc;
-
       }
 
       if($balance->symbol == "USD"){
@@ -294,7 +275,6 @@ class DashboardController extends Controller{
 
         //Assign bitcoin price to usd
         $balance->value_btc = $data[0]->price_usd;
-        $btcvalue = $balance->amount / $balance->value_btc;
 
       }
 
@@ -303,10 +283,13 @@ class DashboardController extends Controller{
 
       //Sum values
       $usd += $usdvalue;
-      $btc += $btcvalue;
 
     }
+    //Take BTC Value
+    $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/bitcoin');
+    $data = json_decode($json);
 
+    $btc = $usd / $data[0]->price_usd;
     foreach ($balances as $balance) {
 
       //Assign $balance percent an equivalent data
