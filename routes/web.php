@@ -30,7 +30,7 @@ Route::post('/mailcontact', 'Mail\MailController@contactMail')->name('contact.ma
 
 // BACKEND
 
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/home', 'backend\ViewsController@index')->name('home');
 Route::get('/profile', 'backend\ViewsController@profile')->name('profile')->middleware('auth.per:0');
 Route::post('/dashboard/balance', 'backend\DashboardController@balance')->name('dashboard.balance')->middleware('auth.per:0');
 Route::post('/dashboard/newsletter', 'backend\DashboardController@newsletter')->name('dashboard.newsletter')->middleware('auth.per:0');
@@ -49,6 +49,8 @@ Route::post('/users/clients', 'backend\UserController@userClients')->name('users
 Route::post('/users/profile', 'backend\UserController@show')->name('users.show')->middleware('auth.per:0');
 Route::post('/profile/upload/picture', 'backend\UserController@picture')->name('profile.upload')->middleware('auth.per:0');
 Route::post('/users/profile/update', 'backend\UserController@updateProfile')->name('users.profileUpdate')->middleware('auth.per:0');
+
+//Currencies
 
 Route::get('/currencies', 'backend\ViewsController@currencies')->name('currencies')->middleware('auth.per:0250');
 Route::post('/currencies', 'backend\CurrenciesController@index')->name('currencies.list')->middleware('auth.per:0251');
