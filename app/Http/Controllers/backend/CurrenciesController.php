@@ -186,12 +186,24 @@ class CurrenciesController extends Controller{
     $type = $request->type;
     $value = $request->value;
 
+    if(isset($request->exch)){
+      if($request->exch == 1){
+        $exch = true;
+      }else{
+        $exch = false;
+      }
+    }else{
+      $exch = false;
+    }
+
+
     //Create Currency
     $currency = new Currency;
     $currency->name = $name;
     $currency->symbol = $symbol;
     $currency->type = $type;
     $currency->value = $value;
+    $currency->exchangeable = $exch;
     $currency->save();
 
     //Create Balance for currency
@@ -227,12 +239,24 @@ class CurrenciesController extends Controller{
     $value = $request->value;
     $id = $request->id;
 
+    if(isset($request->exch)){
+      if($request->exch == 1){
+        $exch = true;
+      }else{
+        $exch = false;
+      }
+    }else{
+      $exch = false;
+    }
+
+
     //Update Currency
     $currency = Currency::Find($id);
     $currency->name = $name;
     $currency->symbol = $symbol;
     $currency->type = $type;
     $currency->value = $value;
+    $currency->exchangeable = $exch;
     $currency->save();
 
     //Return Response in Json DataType

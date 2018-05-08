@@ -1,33 +1,42 @@
-
+/*Custom Font*/
 @font-face {
     font-family: florence;
     src: url(/fonts/Florsn17.ttf);
 }
+
+/*Start General CCS*/
 html{
   height: calc(100%);
 }
 body{
-    margin: 0px;
-    height: calc(100%);
+  margin: 0px;
+  height: calc(100%);
 }
-.navBack{
-    margin: 0px;
-}
+
 .container-fluid{
   height: calc(100%);
 }
+
+.page{
+  background-image: url('/img/background.jpeg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: -webkit-fill-available;
+  height: calc(100%);
+}
+/*END General CCS*/
+
+.navBack{
+    margin: 0px;
+}
+
 .navbar{
     border-radius: 0px;
     background-color:#112e3d !important;
     font-family: florence;
 }
-.page{
-    background-image: url('/img/background.jpeg');
-    background-repeat: no-repeat;
-    background-size: cover;
-    height: -webkit-fill-available;
-    height: calc(100%);
-}
+
+
 .dropdown-menu {
     border-radius: 0px;
     background-color: #395b71;

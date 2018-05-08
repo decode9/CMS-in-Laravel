@@ -35,6 +35,7 @@
                                 <th id="table_currency_header_type" style="cursor: pointer;">Value</th>
                                 <th id="table_currency_header_date" style="cursor: pointer;">Created</th>
                                 <th id="table_currency_header_update" style="cursor: pointer;">Last Modified</th>
+                                <th id="table_currency_header_exchangeable" style="cursor: pointer;">Exchangeable</th>
                                 <th>Options</th>
                             </tr>
                         </thead>
@@ -50,7 +51,7 @@
                                         </select>
                                     </div>
                                 </th>
-                                <th id="table_currency_pagination" class="text-right" colspan="4"></th>
+                                <th id="table_currency_pagination" class="text-right" colspan="5"></th>
                             </tr>
                         </tfoot>
                         <tbody id="table_currency_content">

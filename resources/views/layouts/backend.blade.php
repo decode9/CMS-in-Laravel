@@ -82,7 +82,7 @@
     <div class="container-fluid">
         <div class="row content">
           <nav class="navbar navbar-inverse hidden-xs navBack">
-            <div class="container-fluid">
+            <div class="container-fluid" style="margin-bottom:0px;">
               <div class="navbar-header">
               </div>
               <ul class="nav navbar-nav navbar-right">

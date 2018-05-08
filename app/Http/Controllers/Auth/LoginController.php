@@ -41,6 +41,7 @@ class LoginController extends Controller
     }
 
     //Validation function for login
+    /*
     protected function validateLogin(Request $request){
        $this->validate($request, [
            $this->username() => 'required',
@@ -48,5 +49,5 @@ class LoginController extends Controller
            'g-recaptcha-response' => 'required|captcha',
        ]);
      }
-
+     */
 }
