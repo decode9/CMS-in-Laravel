@@ -161,7 +161,7 @@
               </ul><br>
           </div>
           <br>
-          <div class="col-sm-9 col-md-10 col-lg-10" id="rightContent">
+          <div class="col-sm-9 col-md-10 col-lg-10" id="rightContent" style="height:calc(100%)">
               @yield('content')
           </div>
           @endguest

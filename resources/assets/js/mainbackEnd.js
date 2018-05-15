@@ -1449,6 +1449,8 @@ $(document).ready(function(){
             })
         }
 
+
+
         /* Modal Create User */
 
         $('.btn-create').click(function(){
@@ -2046,7 +2048,11 @@ $(document).ready(function(){
                             }
 
                             var colvalue_8 = $( '<td class="text-center"></td>');
-
+                            if(currency.type == 'Token'){
+                              viewBut = $('<button type="button" class="btn btn-alternative btn-sm" id="editBut">View</button>');
+                              viewToken(viewBut, currency.type, currency.name);
+                              colvalue_8.append(viewBut);
+                            }
                             editBut = $('<button type="button" data-toggle="modal" data-target="#currencyMod" class="btn btn-alternative btn-sm" id="editBut">Edit</button>');
                             delBut = $('<button type="button" data-toggle="modal" data-target="#currencyMod" class="btn btn-alternative-danger btn-alternative btn-sm" id="delBut">Delete</button>');
                             addEditCurrencyClick(editBut, currency);
@@ -2054,6 +2060,7 @@ $(document).ready(function(){
 
                             colvalue_8.append(editBut);
                             colvalue_8.append(delBut);
+
                             rowResult.append(colvalue_1);
                             rowResult.append(colvalue_2);
                             rowResult.append(colvalue_3);
@@ -2124,6 +2131,14 @@ $(document).ready(function(){
                 page = $(this).text();
                 searchCurrency(page);
             })
+        }
+
+        function viewToken(viewbut, type, name){
+          viewbut.click(function(){
+            if(type == 'Token'){
+              $('#rightContent').html('<iframe width="100%" height="100%" src="https://icodrops.com/'+name.toLowerCase()+'"></iframe>');
+            }
+          })
         }
 
         /* Create Modal Button for Creation of currency*/
@@ -2730,7 +2745,7 @@ $(document).ready(function(){
                 selectO = $('<div class="form-group" id="selectcuchange"><label for="selectout" >Change For:</label><select id="out" class="form-control" name="selectout"></select></div>');
                 selectS = $('<div class="form-group"><label for="status">Status</label><select id="status" class="form-control" name="status"></select></div>');
                 inputO = $('<div class="form-group" id="quantitychange"><label for="valueout">Quantity</label><input id="valueout" name="valueout" type="text" class="form-control" placeholder="Quantity" required></div>');
-                inputSB = $('<input id="typeb" name="typeb" type="text" class="form-control" required style="display:none;" disabled>');
+                inputSB = $('<input id="typeb" name="typeb" type="text" class="form-control" required value="buy" style="display:none;" disabled>');
                 inputIC = $('<div id="currencyChange" style="display:none;"><input id="currencyin" name="currencyin" type="text" class="form-control" required value="'+currency.symbol+'" style="display:none;" disabled></div>');
                 inputI = $('<div class="form-group statusch" id="totalChange"><label for="valuein">Total</label><input id="valuein" name="valuein" type="text" class="form-control" placeholder="Total" ></div>');
                 inputR = $('<div class="form-group statusch" id="rateChange"><label for="rate">Exchange Rate</label><input id="rate" name="rate" type="text" class="form-control" placeholder="Exchange Rate" ></div>');
@@ -2743,7 +2758,7 @@ $(document).ready(function(){
                 $('.modal-title').empty();
                 $('.modal-body').empty();
                 $('.modal-footer').empty();
-                $('.modal-title').append('Exchange Currency');
+                $('.modal-title').append('Exchange ' + currency.symbol);
                 $('.modal-body').append(box);
 
                 buyButt = $("<button type='button' style='font-size:20px;' class='btn btn-alternative btn-alternative-success btn-alternative-selected' id='buybut' name='button'>Buy</button>");
@@ -2845,6 +2860,9 @@ $(document).ready(function(){
                 closebut = $('<button type="button" class="btn btn-alternative" data-dismiss="modal">Close</button>');
                 $('#exButts').append(makeBut);
                 $('#exButts').append(closebut);
+
+                exchangeOutValue('#valueout', '#rate', '#valuein');
+                exchangeOutValue('#valueout', '#valuein', '#rate');
 
                 $('#out').trigger("change");
                 $('#buybut').trigger("click");
@@ -2981,7 +2999,7 @@ $(document).ready(function(){
             $(selection).change(function(){
                 currency = $('#out').val();
                 if(currency == null){
-                  currency = 'USD';
+                  currency = 'VEF';
                 }
                 period = $('#period').val();
                 $.ajax({
@@ -3010,27 +3028,41 @@ $(document).ready(function(){
 
         function exchangeInValue(value, select, target){
             $(select).change(function(){
+              if(target == '#rate' || target == '#rateS'){
+
                 var val = $(value).val();
-
-
                 var sel = $(select).val();
-
                 var newval = val / sel;
 
                 $(target).val(newval);
+              }else if (target == '#valuein' || target == '#valueoutS') {
+                var val = $(value).val();
+                var sel = $(select).val();
+                var newval = val * sel;
+
+                $(target).val(newval);
+              }
+
             })
         }
 
         function exchangeOutValue(value, select, target){
             $(select).change(function(){
+              if(target == '#rate' || target == '#rateS'){
+
                 var val = $(value).val();
-
-
                 var sel = $(select).val();
 
                 var newval = sel / val;
 
                 $(target).val(newval);
+              }else if (target == '#valuein' || target == '#valueoutS') {
+                var val = $(value).val();
+                var sel = $(select).val();
+                var newval = val * sel;
+
+                $(target).val(newval);
+              }
             })
         }
 
@@ -3088,19 +3120,24 @@ $(document).ready(function(){
             confirmBut.click(function(){
               $(this).addClass('disabled');
               $(this).prop('disabled', true);
-                currencyout = $('#out').val();
 
-                currencyin = $('#currencyin').val();
+              typeb = $('#typeb').val();
 
+              if(typeb == 'buy'){
                 amountout = $('#valueout').val();
-
-                status = $('#status').val();
-
                 amountin = $('#valuein').val();
-
-                period = $('#period').val();
-
                 rate = $('#rate').val();
+              }else{
+                amountout = $('#valueoutS').val();
+                amountin = $('#valueinS').val();
+                rate = $('#rateS').val();
+              }
+              currencyout = $('#out').val();
+              currencyin = $('#currencyin').val();
+              status = $('#status').val();
+              period = $('#period').val();
+
+
 
                 created = $('#created').val();
                 created = created.replace(/\//g, '-');

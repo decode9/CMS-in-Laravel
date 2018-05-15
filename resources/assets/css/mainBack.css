@@ -1,3 +1,11 @@
+#masthead{
+  display: none !important;
+}
+
+.valute{
+  display: none !important;
+}
+
 
 /*Custom Font*/
 @font-face {

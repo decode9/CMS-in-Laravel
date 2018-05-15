@@ -499,7 +499,12 @@ class FundsController extends Controller{
     $symbol = $request->currency;
 
     //Select Currencies
-    $currencies = Currency::WhereNotIn('symbol', [$symbol] )->get();
+    if($symbol == 'USD'){
+      $currencies = Currency::WhereNotIn('symbol', [$symbol] )->get();
+    }else{
+      $currencies = Currency::WhereNotIn('symbol', [$symbol, 'BTC', 'USD'] )->get();
+    }
+    
 
     //Return Response in JSON Datatype
     return response()->json(['data' => $currencies], 202);
@@ -711,6 +716,7 @@ class FundsController extends Controller{
           $transactions[$count]->status = $transaction->status;
           $transactions[$count]->updated_at = $transaction->updated_at;
           $transactions[$count]->rate = $transaction->rate;
+          $transactions[$count]->id = $transaction->id;
         }
 
         $count += 1;
@@ -773,6 +779,7 @@ class FundsController extends Controller{
           $transactions[$count]->status = $transaction->status;
           $transactions[$count]->updated_at = $transaction->updated_at;
           $transactions[$count]->rate = $transaction->rate;
+          $transactions[$count]->id = $transaction->id;
         }
 
         $count += 1;
@@ -903,6 +910,7 @@ class FundsController extends Controller{
           $transactions[$count]->status = $transaction->status;
           $transactions[$count]->updated_at = $transaction->updated_at;
           $transactions[$count]->rate = $transaction->rate;
+          $transactions[$count]->id = $transaction->id;
         }
 
         $count += 1;
@@ -965,6 +973,7 @@ class FundsController extends Controller{
           $transactions[$count]->status = $transaction->status;
           $transactions[$count]->updated_at = $transaction->updated_at;
           $transactions[$count]->rate = $transaction->rate;
+          $transactions[$count]->id = $transaction->id;
         }
 
         $count += 1;
@@ -1095,7 +1104,7 @@ class FundsController extends Controller{
     $order = FundOrder::find($id);
 
     //Select Out Balance
-    $balancein = Balance::Where('currency_id', $order->out_currency)->where('user_id', null)->where('period_id', null)->first();
+    $balancein = Balance::Where('currency_id', $order->out_currency)->where('user_id', null)->first();
 
     //Change out Balance
     $bin = Balance::find($balancein->id);
@@ -1104,7 +1113,7 @@ class FundsController extends Controller{
     $bin->save();
 
     //Select In Balance
-    $balanceout = Balance::Where('currency_id', $order->in_currency)->where('user_id', null)->where('period_id', null)->first();
+    $balanceout = Balance::Where('currency_id', $order->in_currency)->where('user_id', null)->first();
 
     //Change in Balance
     $bout = Balance::find($balanceout->id);
