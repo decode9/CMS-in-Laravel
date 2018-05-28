@@ -65,7 +65,7 @@
                     @guest
                     <li><a href="{{ route('login') }}">Login</a></li>
                     @else
-                    <li><a href="{{ route('home') }}"><span class="glyphicon glyphicon-home" style='font-size:30px;'></span></a></li>
+                    <li><a href="{{ route('home') }}"><span class="glyphicon glyphicon-home" style='font-size:28px;'></span></a></li>
                     <li class="dropdown">
                       <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span class=""><img class="imageIcon" src="{{ url('/') }}/img/icons/user.png" width="32" alt="" height="auto"></span> {{ Auth::user()->name }}
                         <span class="caret"></span>

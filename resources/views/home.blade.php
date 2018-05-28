@@ -256,16 +256,8 @@ body{
     <div class="col-sm-12 col-md-6 col-lg-6">
       <div class="panel panel-alternative">
               <div class="panel-heading"><h4>Balance Distribution</h4></div>
-              <div class="panel-body">
-                  <div class="col-sm-5 col-md-12 col-lg-5 list-dist">
-                      <div class="list-gr">
-
-                      </div>
-                  </div>
-                  <div class="col-sm-7 col-md-12 col-lg-7" style="height:200px;">
-                      <canvas id="myChart"></canvas>
-                  </div>
-
+              <div class="panel-body">                  
+                  <div id="chartContainer" style="height: 300px; width: 100%;"></div>
               </div>
       </div>
     </div>

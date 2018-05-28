@@ -182,6 +182,7 @@
     <script src="{{ url('/') }}/js/jquery.min.js"></script>
     <script src="{{ url('/') }}/js/cropit.js"></script>
     <script src="{{ url('/') }}/vendor/Chart.js"></script>
+    <script src="{{ url('/') }}/vendor/canvasjs.min.js"></script>
     <script src="{{ url('/') }}/vendor/bootstrap/js/bootstrap.min.js"></script>
     <script src="{{ url('/') }}/vendor/validator/jquery.validate.js"></script>
     <script src="{{ url('/') }}/vendor/validator/additional-methods.min.js"></script>

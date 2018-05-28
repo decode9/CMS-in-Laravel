@@ -575,6 +575,31 @@ $(document).ready(function () {
                     var btcChart = new Chart(ctxB, configB);
                     $('#btcAmount').append(formatNumber.num(btc));
 
+                    var arraych = new Array();
+
+                    for (a = 0; a < chart['amount'].length; a++) {
+                        var colunm = { y: chart['amount'][a], label: chart['symbol'][a] };
+                        arraych.push(colunm);
+                    }
+
+                    var chart = new CanvasJS.Chart("chartContainer", {
+                        theme: "dark1", // "light1", "light2", "dark1", "dark2"
+                        exportEnabled: true,
+                        animationEnabled: true,
+                        backgroundColor: "transparent",
+                        data: [{
+                            type: "pie",
+                            startAngle: 25,
+                            toolTipContent: "<b>{label}</b>: ${y} - #percent%",
+                            showInLegend: "true",
+                            legendText: "{label}",
+                            indexLabelFontSize: 16,
+                            indexLabel: "{label} - #percent%",
+                            dataPoints: arraych
+                        }]
+                    });
+                    chart.render();
+                    chart.legend.set("fontColor", "white");
                     var ctx = document.getElementById("myChart").getContext('2d');
                     var myChart = new Chart(ctx, {
                         options: {
