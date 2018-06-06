@@ -85,7 +85,7 @@ module.exports = __webpack_require__(46);
 /** begin of line and end of line of your code.                 **/
 /** Thanks for coding                                           **/
 /**                                                             **/
-/** 1.- Jorge Bastidas - Caracas, Venezuela - 13 to 2742        **/
+/** 1.- Jorge Bastidas - Caracas, Venezuela - 13 to 5300        **/
 /*****************************************************************/
 /*****************************************************************/
 
@@ -584,7 +584,6 @@ $(document).ready(function () {
 
                     var chart = new CanvasJS.Chart("chartContainer", {
                         theme: "dark1", // "light1", "light2", "dark1", "dark2"
-                        exportEnabled: true,
                         animationEnabled: true,
                         backgroundColor: "transparent",
                         data: [{
@@ -801,25 +800,37 @@ $(document).ready(function () {
                     url: "/dashboard/charts",
                     type: 'post',
                     success: function success(data) {
-                        chart = data.result;
-                        var ctx = document.getElementById("historicalChart").getContext('2d');
-                        var myChart = new Chart(ctx, {
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false
+                        chartD = data.result;
+                        var arraych = new Array();
+
+                        for (a = 0; a < chartD.length; a++) {
+                            chart = chartD[a];
+                            var colunm = { y: chart.amount, label: chart.register };
+                            arraych.push(colunm);
+                        }
+
+                        var charts = new CanvasJS.Chart("historicalChart", {
+                            animationEnabled: true,
+                            backgroundColor: "transparent",
+                            axisX: {
+                                labelFontColor: "white"
                             },
-                            type: 'line',
-                            data: {
-                                labels: chart['register'],
-                                datasets: [{
-                                    label: 'USD Value',
-                                    data: chart['amount'],
-                                    backgroundColor: ['rgba(52, 152, 219, 0.5)'],
-                                    borderColor: ['rgba(52, 112, 241, 1)'],
-                                    borderWidth: 1
-                                }]
-                            }
+                            axisY: {
+                                title: "USD",
+                                titleFontColor: "#4F81BC",
+                                labelFontColor: "white",
+                                suffix: "$"
+                            },
+                            data: [{
+                                name: "views",
+                                type: "area",
+                                yValueFormatString: "#,##0.0$",
+                                dataPoints: arraych
+                            }]
                         });
+
+                        charts.render();
+                        charts.legend.set("fontColor", "white");
                     }
                 });
             });

@@ -359,13 +359,10 @@ class DashboardController extends Controller{
 
     //Declare Variables
     $type = $request->type;
-
-    //Declare $chart Variables
-    $chart['register'] = [];
-    $chart['amount'] = [];
+    $count = 0;
 
     //Select History Data with type
-    $query = History::Where('type', $type)->select('register', 'amount')->orderBy('register');
+    $query = History::Where('type', $type)->select('register', 'amount')->orderBy('register', 'desc')->limit(30);
 
     //Verify if user is client
     if($user->hasRole(30)){
@@ -380,12 +377,14 @@ class DashboardController extends Controller{
     //loop Histories
     foreach($histories as $history){
 
+      $chart[$count] = new \stdClass();
+
       //Assign $chart data
-      array_push($chart['amount'], $history->amount);
-      array_push($chart['register'], $history->register);
-
+      $chart[$count]->register = $history->register;
+      $chart[$count]->amount = $history->amount;
+      $count += 1;
     }
-
+    usort($chart, $this->sorting('DESC','register'));
     //Return Response In Json Datatype
     return response()->json(['result' => $chart], 202);
   }

@@ -159,7 +159,7 @@ body{
   <div class="row">
     <div class="col-sm-12">
       <div class="panel panel-alternative">
-              <div class="panel-heading">
+              <div class="panel-heading" style="height:50px;">
                 <div class="col-sm-8">
                   <h4>Historical Chart</h4>
                 </div>
@@ -171,11 +171,9 @@ body{
                   </div>
                 </div>
               </div>
-              <div class="panel-body" style="height:400px;" >
-                <div class="col-sm-12" style="height:300px;">
-                  <canvas id="historicalChart" width="600" height="300"></canvas>
+              <div class="panel-body">
+                <div id="historicalChart" style="height: 370px; width: 100%;">
                 </div>
-
               </div>
       </div>
     </div>
@@ -256,7 +254,7 @@ body{
     <div class="col-sm-12 col-md-6 col-lg-6">
       <div class="panel panel-alternative">
               <div class="panel-heading"><h4>Balance Distribution</h4></div>
-              <div class="panel-body">                  
+              <div class="panel-body">
                   <div id="chartContainer" style="height: 300px; width: 100%;"></div>
               </div>
       </div>

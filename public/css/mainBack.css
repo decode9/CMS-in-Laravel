@@ -64,7 +64,9 @@ footer{
   font-size: 16px;
   text-align: center;
 }
-
+.canvasjs-chart-credit{
+    display: none;
+}
 #mainLogo{
   text-align: center;
   margin-bottom: 10px;
