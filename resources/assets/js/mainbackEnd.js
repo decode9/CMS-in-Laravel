@@ -2084,11 +2084,11 @@ $(document).ready(function(){
                             }
 
                             var colvalue_8 = $( '<td class="text-center"></td>');
-                            if(currency.type == 'Token'){
+                            /*if(currency.type == 'Token'){
                               viewBut = $('<button type="button" class="btn btn-alternative btn-sm" id="editBut">View</button>');
                               viewToken(viewBut, currency.type, currency.name);
                               colvalue_8.append(viewBut);
-                            }
+                            }*/
                             editBut = $('<button type="button" data-toggle="modal" data-target="#currencyMod" class="btn btn-alternative btn-sm" id="editBut">Edit</button>');
                             delBut = $('<button type="button" data-toggle="modal" data-target="#currencyMod" class="btn btn-alternative-danger btn-alternative btn-sm" id="delBut">Delete</button>');
                             addEditCurrencyClick(editBut, currency);
