@@ -194,7 +194,7 @@ class DashboardController extends Controller{
       }
     }else{
 
-      $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('amount', '>', '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.amount', 'value', 'symbol', 'name', 'currency.type as ctype')->orderBy('amount', 'DESC')->get();
+      $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('amount', '>', '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.amount', 'value', 'symbol', 'name', 'currencies.type as ctype')->orderBy('amount', 'DESC')->get();
 
       foreach($balancesP as $balance){
         if(empty($balances[$count])){
