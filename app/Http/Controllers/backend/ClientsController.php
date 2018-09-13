@@ -587,7 +587,7 @@ class ClientsController extends Controller
 
 
          //Select USD in Balance
-         $balance = Balance::where('user_id', null)->where('period_id', null)->where('currency_id', '2')->first();
+         $balance = Balance::where('user_id', null)->where('currency_id', '2')->first();
 
          //Declare new balance
          $newbalance = $balance->amount - $fund->amount;
@@ -630,7 +630,7 @@ class ClientsController extends Controller
          $periodf->save();
 
          //Select USD Balance
-         $balance = Balance::where('user_id', null)->where('period_id', null)->where('currency_id', '2')->first();
+         $balance = Balance::where('user_id', null)->where('currency_id', '2')->first();
          $newbalance = $balance->amount + $amount;
 
          //Update Balance
