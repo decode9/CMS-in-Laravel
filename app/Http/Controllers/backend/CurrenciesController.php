@@ -160,7 +160,15 @@ class CurrenciesController extends Controller{
 
         }else{
 
-          $currency->value = 1;
+          //Verify Balance Name
+          if(strtolower($currency->type) == 'token'){
+            //Get Ethereum Value
+            $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/ethereum');
+            $data = json_decode($json);
+
+            //Assign data as value
+            $balance->value = $data[0]->price_usd;
+          }
 
         }
       }

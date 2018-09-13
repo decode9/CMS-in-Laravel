@@ -179,7 +179,7 @@ class FundsController extends Controller{
       }
     }else{
 
-      $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('amount', '>' , '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name')->get();
+      $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('amount', '>' , '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type as ctype', 'name')->get();
 
       $count = 0;
 
@@ -193,6 +193,7 @@ class FundsController extends Controller{
           $balances[$count]->value = $balance->value;
           $balances[$count]->symbol = $balance->symbol;
           $balances[$count]->type = $balance->type;
+          $balances[$count]->ctype = $balance->ctype;
           $balances[$count]->name = $balance->name;
         }else{
 
@@ -236,19 +237,14 @@ class FundsController extends Controller{
           $balance->value = $data[0]->price_usd;
 
         }else{
-          //Verify Name Balance
-          if(strtolower($balance->name) == 'originprotocol' || (strtolower($balance->name) == 'send' || strtolower($balance->name) == 'tari')){
-
-            //Assign Balance Value
-            $balance->value = 1;
-
-          }else{
-
+          //Verify Balance Name
+          if(strtolower($balance->ctype) == 'token'){
+            //Get Ethereum Value
             $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/ethereum');
             $data = json_decode($json);
 
+            //Assign data as value
             $balance->value = $data[0]->price_usd;
-
           }
         }
       }
@@ -297,7 +293,7 @@ class FundsController extends Controller{
       $percent = $this->percent($user);
 
       //Select Balances greater than zero
-      $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('amount', '>' , '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name', 'currencies.exchangeable')->orderBy('amount', 'desc');
+      $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('amount', '>' , '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type as ctype', 'name', 'currencies.exchangeable')->orderBy('amount', 'desc');
 
       //Search By
       if($searchValue != ''){
@@ -342,6 +338,7 @@ class FundsController extends Controller{
           $balancesCurrency[$count]->value = $balanceP->value;
           $balancesCurrency[$count]->symbol = $balanceP->symbol;
           $balancesCurrency[$count]->type = $balanceP->type;
+          $balancesCurrency[$count]->ctype = $balanceP->ctype;
           $balancesCurrency[$count]->name = $balanceP->name;
           $balancesCurrency[$count]->exchangeable = $balanceP->exchangeable;
           $balancesCurrency[$count]->equivalent = 0;
@@ -364,7 +361,7 @@ class FundsController extends Controller{
     }else{
 
       //Select Balances
-      $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type', 'name', 'currencies.exchangeable')->orderBy('amount', 'desc');
+      $query = Balance::Where('balances.type', 'fund')->where('user_id', null)->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.*', 'symbol', 'value', 'currencies.type as ctype', 'name', 'currencies.exchangeable')->orderBy('amount', 'desc');
 
       //Search by
       if($searchValue != ''){
@@ -406,6 +403,7 @@ class FundsController extends Controller{
           $balancesCurrency[$count]->value = $balanceP->value;
           $balancesCurrency[$count]->symbol = $balanceP->symbol;
           $balancesCurrency[$count]->type = $balanceP->type;
+          $balancesCurrency[$count]->ctype = $balanceP->ctype;
           $balancesCurrency[$count]->name = $balanceP->name;
           $balancesCurrency[$count]->exchangeable = $balanceP->exchangeable;
           $balancesCurrency[$count]->equivalent = 0;
@@ -458,17 +456,13 @@ class FundsController extends Controller{
           $balance->value = $data[0]->price_usd;
 
         }else{
-          //Verify $balance name
-          if(strtolower($balance->name) == 'originprotocol' || (strtolower($balance->name) == 'send' || strtolower($balance->name) == 'tari')){
-
-            //Declare Balance value
-            $balance->value = 1;
-
-          }else{
-
+          //Verify Balance Name
+          if(strtolower($balance->ctype) == 'token'){
+            //Get Ethereum Value
             $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/ethereum');
             $data = json_decode($json);
 
+            //Assign data as value
             $balance->value = $data[0]->price_usd;
           }
         }
@@ -504,7 +498,7 @@ class FundsController extends Controller{
     }else{
       $currencies = Currency::WhereNotIn('symbol', [$symbol, 'BTC', 'USD'] )->get();
     }
-    
+
 
     //Return Response in JSON Datatype
     return response()->json(['data' => $currencies], 202);
