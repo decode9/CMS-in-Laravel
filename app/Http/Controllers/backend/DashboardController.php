@@ -194,7 +194,7 @@ class DashboardController extends Controller{
       }
     }else{
 
-      $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('amount', '>', '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.amount', 'value', 'symbol', 'name', 'currencies.type as ctype')->orderBy('amount', 'DESC')->get();
+      $balancesP = Balance::Where('balances.type', 'fund')->where('user_id', null)->where('amount', '>', '0')->leftJoin('currencies', 'currencies.id', '=', 'balances.currency_id')->select('balances.amount', 'value', 'symbol', 'name')->orderBy('amount', 'DESC')->get();
 
       foreach($balancesP as $balance){
         if(empty($balances[$count])){
@@ -205,7 +205,6 @@ class DashboardController extends Controller{
           $balances[$count]->value = $balance->value;
           $balances[$count]->symbol = $balance->symbol;
           $balances[$count]->type = $balance->type;
-          $balances[$count]->ctype = $balance->ctype;
           $balances[$count]->name = $balance->name;
           $balances[$count]->equivalent = 0;
           $balances[$count]->percent = 0;
@@ -254,7 +253,10 @@ class DashboardController extends Controller{
 
         }else{
           //Verify Balance Name
-          if(strtolower($balance->ctype) == 'token'){
+          if(strtolower($balance->name) == 'originprotocol' || (strtolower($balance->name) == 'send' || strtolower($balance->name) == 'tari')){
+            //Assign $balance value
+            $balance->value = 1;
+          }else{
             //Get Ethereum Value
             $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/ethereum');
             $data = json_decode($json);
