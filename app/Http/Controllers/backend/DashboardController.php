@@ -252,18 +252,8 @@ class DashboardController extends Controller{
           $balance->value = $data[0]->price_usd;
 
         }else{
-          //Verify Balance Name
-          if(strtolower($balance->name) == 'originprotocol' || (strtolower($balance->name) == 'send' || strtolower($balance->name) == 'tari')){
-            //Assign $balance value
-            $balance->value = 1;
-          }else{
-            //Get Ethereum Value
-            $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/ethereum');
-            $data = json_decode($json);
+          $balance->value = 1;
 
-            //Assign data as value
-            $balance->value = $data[0]->price_usd;
-          }
         }
       }
 

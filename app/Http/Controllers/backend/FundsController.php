@@ -236,20 +236,10 @@ class FundsController extends Controller{
           $balance->value = $data[0]->price_usd;
 
         }else{
-          //Verify Name Balance
-          if(strtolower($balance->name) == 'originprotocol' || (strtolower($balance->name) == 'send' || strtolower($balance->name) == 'tari')){
 
             //Assign Balance Value
             $balance->value = 1;
 
-          }else{
-
-            $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/ethereum');
-            $data = json_decode($json);
-
-            $balance->value = $data[0]->price_usd;
-
-          }
         }
       }
 
@@ -458,19 +448,9 @@ class FundsController extends Controller{
           $balance->value = $data[0]->price_usd;
 
         }else{
-          //Verify $balance name
-          if(strtolower($balance->name) == 'originprotocol' || (strtolower($balance->name) == 'send' || strtolower($balance->name) == 'tari')){
 
             //Declare Balance value
             $balance->value = 1;
-
-          }else{
-
-            $json = file_get_contents('https://api.coinmarketcap.com/v1/ticker/ethereum');
-            $data = json_decode($json);
-
-            $balance->value = $data[0]->price_usd;
-          }
         }
       }
 
